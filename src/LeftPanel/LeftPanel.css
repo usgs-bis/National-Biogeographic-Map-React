@@ -1,0 +1,8 @@
+.left-panel {
+    position: absolute !important;
+    height: calc(100% - 55px);
+    width: 500px;
+    top: 55px;
+    left: 0;
+    background-color: rgb(80,80,80);
+}
