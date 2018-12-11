@@ -21,11 +21,13 @@ class LocationOverlay extends React.Component {
     }
 
     componentWillReceiveProps(props) {
-        this.setState({
-            lat: props.mouseLocation.lat ? parseFloat(props.mouseLocation.lat).toFixed(5).toString() : 'No Data',
-            lng: props.mouseLocation.lng ? parseFloat(props.mouseLocation.lng).toFixed(5).toString() : 'No Data'
-        })
-        this.setElevation()
+        if (props.mouseLocation) {
+            this.setState({
+                lat: props.mouseLocation.lat ? parseFloat(props.mouseLocation.lat).toFixed(5).toString() : 'No Data',
+                lng: props.mouseLocation.lng ? parseFloat(props.mouseLocation.lng).toFixed(5).toString() : 'No Data'
+            })
+            this.setElevation()
+        }
     }
 
     setElevation() {
@@ -38,7 +40,6 @@ class LocationOverlay extends React.Component {
                     .then(res => res.json())
                     .then(
                         (result) => {
-                            console.log(result)
                             let identifiedElevationValue = result.USGS_Elevation_Point_Query_Service
                             let elev = identifiedElevationValue.Elevation_Query.Elevation;
                             elev = elev > -20 ? numberWithCommas(parseInt(elev)) + 'ft' : "No Data"

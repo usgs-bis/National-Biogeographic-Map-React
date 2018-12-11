@@ -1,5 +1,5 @@
 import React from 'react'
-import { Map, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet'
+import { Map, TileLayer, WMSTileLayer, Marker, Popup, GeoJSON } from 'react-leaflet'
 
 import './NBM.css'
 import LocationOverlay from './LocationOverylays/LocationOverlay';
@@ -15,7 +15,8 @@ class NBM extends React.Component {
             point: null,
             parentClickHandler: props.parentClickHandler,
             feature: props.feature,
-            bounds: US_BOUNDS
+            bounds: US_BOUNDS,
+            basemap: props.basemap
         }
 
         this.key = 1;
@@ -69,13 +70,23 @@ class NBM extends React.Component {
                 return <GeoJSON key={this.key++} data={this.state.feature} />
             }
         };
+        const basemap = () => {
+            if (this.props.basemap) {
+                if (this.props.basemap.type === "TileLayer") {
+                    return <TileLayer url={this.props.basemap.serviceUrl} />
+                } else if (this.props.basemap.type === "WMSTileLayer") {
+                    return <WMSTileLayer
+                        url={this.props.basemap.serviceUrl}
+                        format={this.props.basemap.leafletProperties.format}
+                        layers={this.props.basemap.leafletProperties.layers}
+                    />
+                }
+            }
+        }
         return (
             <Map onClick={this.handleClick} bounds={this.state.bounds} onMouseMove={this.handleMouseMove} onMouseOut={this.handleMouseOut} >
-                <TileLayer
-                    attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                    url='https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}'
-                />
-                <LocationOverlay mouseLocation={this.state.mouseLocation} ></LocationOverlay>
+                {basemap()}
+                <LocationOverlay mouseLocation={this.state.mouseLocation} />
                 <MapMarker point={this.state.point}/>
                 {geojson()}
             </Map>

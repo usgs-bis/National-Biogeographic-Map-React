@@ -27,9 +27,31 @@ class App extends React.Component {
             textFocused: false
         }
 
+        this.parseBioscape = this.parseBioscape.bind(this);
         this.handleSearchBox = this.handleSearchBox.bind(this)
         this.submitHandler = this.submitHandler.bind(this);
         this.handleMapClick = this.handleMapClick.bind(this);
+        this.basemapChanged = this.basemapChanged.bind(this);
+    }
+
+    componentDidMount() {
+        this.parseBioscape()
+    }
+
+    basemapChanged(e) {
+        this.setState({
+            basemap: e
+        })
+    }
+
+    parseBioscape() {
+        let basemap = this.state.bioscape.basemaps.find(function (obj) {
+            return obj.selected === true;
+        })
+
+        this.setState({
+            basemap: basemap
+        })
     }
 
     submitHandler(e) {
@@ -95,12 +117,18 @@ class App extends React.Component {
             <div>
                 <Header title={this.state.bioscape.title}/>
                 <LeftPanel
+                    basemapChanged={this.basemapChanged}
+                    bioscape={this.state.bioscape}
                     results={this.state.results}
                     focused={this.state.textFocused}
                     textSearchHandler={this.handleSearchBox}
                     submitHandler={this.submitHandler}
                 />
-                <NBM feature={this.state.feature} parentClickHandler={this.handleMapClick}/>
+                <NBM
+                    basemap={this.state.basemap}
+                    feature={this.state.feature}
+                    parentClickHandler={this.handleMapClick}
+                />
             </div>
         );
     }
