@@ -56,6 +56,7 @@ release_image:
     - cd k8s
     - echo "${KUBE_CA_PEM}" > kube_ca.pem
     - echo "Troubleshooting - ${CI_ENVIRONMENT_SLUG}"
+    - echo "Troubleshooting - ${APPLICATION_KEY}"
     - kubectl config set-cluster default-cluster --server=${KUBE_URL} --certificate-authority="$(pwd)/kube_ca.pem"
     - kubectl config set-credentials default-admin --token=${KUBE_TOKEN}
     - kubectl config set-context default-system --cluster=default-cluster --user=default-admin --namespace=${KUBE_NAMESPACE}
@@ -66,6 +67,9 @@ release_image:
     - sed -i "s/__CI_COMMIT_REF_NAME__/${CI_COMMIT_REF_NAME}/" deployment.yml ingress.yml service.yml
     - sed -i "s?__IMAGE_PATH__?${CI_REGISTRY}/${CI_PROJECT_PATH}:${CI_COMMIT_REF_NAME}?" deployment.yml ingress.yml service.yml
     - sed -i "s/__CI_ID__/${CI_PIPELINE_ID}/" deployment.yml ingress.yml service.yml
+    - cat deployment.yml
+    - cat ingress.yml
+    - cat service.yml
     - kubectl cluster-info
     - kubectl get deployments -l app=${APPLICATION_KEY}-${CI_ENVIRONMENT_SLUG}
     - kubectl apply -f deployment.yml || (kubectl delete -f deployment.yml && kubectl apply -f deployment.yml)
