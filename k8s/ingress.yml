@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: __APPLICATION_KEY__-__CI_ENVIRONMENT_SLUG__
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    ingress.kubernetes.io/rewrite-target: /
+    # adds 301 redirect with trailing slash
+    ingress.kubernetes.io/configuration-snippet: |
+      rewrite ^(/)$ $1/ permanent;
+spec:
+  tls:
+    - hosts:
+      - __CI_ENVIRONMENT_SLUG__.staging.sciencebase.gov
+      secretName: star-staging-cert
+  rules:
+    - host: __CI_ENVIRONMENT_SLUG__.staging.sciencebase.gov
+      http:
+        paths:
+        - path: /__APPLICATION_KEY__
+          backend:
+            serviceName: __APPLICATION_KEY__-__CI_ENVIRONMENT_SLUG__
+            servicePort: 80
+
+

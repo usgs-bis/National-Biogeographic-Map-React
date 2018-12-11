@@ -10,26 +10,96 @@ const bioscapeMap = {
     "terrestrial-ecosystems-2011": nvcsBioscape
 };
 
+const TEXT_SEARCH_API = process.env.REACT_APP_BIS_API + "/api/v1/places/search/text?q=";
+const POINT_SEARCH_API = process.env.REACT_APP_BIS_API + "/api/v1/places/search/point?";
+const GET_FEATURE_API = process.env.REACT_APP_BIS_API + "/api/v1/places/search/feature?feature_id=";
+
 class App extends React.Component {
 
     constructor(props) {
         super(props)
 
         this.state = {
-            bioscape: bioscapeMap[props.bioscape]
+            bioscape: bioscapeMap[props.bioscape],
+            results: [],
+            feature: null,
+            textFocused: false
         }
+
+        this.handleSearchBox = this.handleSearchBox.bind(this)
+        this.submitHandler = this.submitHandler.bind(this);
+        this.handleMapClick = this.handleMapClick.bind(this);
+    }
+
+    submitHandler(e) {
+        fetch(GET_FEATURE_API + e.id)
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    this.setState({
+                        feature: result.hits.hits[0]["_source"]
+                    })
+                },
+                (error) => {
+                    this.setState({
+                        error
+                    });
+                }
+            )
     }
 
     handleMapClick (e) {
-        console.log("We can send this click event anywhere!", e.latlng);
+        fetch(POINT_SEARCH_API + `lat=${e.latlng.lat}&lng=${e.latlng.lng}`)
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    this.setState({
+                        results: result.hits.hits.map(a => a["_source"]["properties"]),
+                        textFocused: true
+                    })
+                },
+                (error) => {
+                    this.setState({
+                        error
+                    });
+                }
+            )
+    }
+
+    handleSearchBox(text) {
+        if (text.length < 5) {
+            this.setState({
+                results: []
+            });
+            return;
+        }
+        fetch(TEXT_SEARCH_API + text)
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    this.setState({
+                        results: result.hits.hits.map(a => a["_source"]["properties"])
+                    })
+                },
+                (error) => {
+                    this.setState({
+                        error
+                    });
+                }
+            )
     }
 
     render() {
         return (
             <div>
                 <Header title={this.state.bioscape.title}/>
-                <LeftPanel/>
-                <NBM parentClickHandler={this.handleMapClick}/>
+                <LeftPanel
+                    results={this.state.results}
+                    focused={this.state.textFocused}
+                    textSearchHandler={this.handleSearchBox}
+                    submitHandler={this.submitHandler}
+                />
+                <NBM feature={this.state.feature} parentClickHandler={this.handleMapClick}/>
             </div>
         );
     }

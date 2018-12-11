@@ -4,4 +4,5 @@
     width: calc(100% - 500px);
     top: 55px;
     left: 500px;
+    cursor: default;
 }

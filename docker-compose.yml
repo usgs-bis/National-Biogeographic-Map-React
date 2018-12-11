@@ -1,9 +1,12 @@
 version: '3.5'
 
 services:
-  nbm-react:
-    container_name: nbm-react
-    build: .
+
+  nbm-frontend:
+    container_name: nbm-frontend
+    build:
+      context: .
+      dockerfile: Dockerfile
     volumes:
       - '.:/usr/src/app'
       - '/usr/src/app/node_modules'
@@ -11,4 +14,3 @@ services:
       - '3000:3000'
     environment:
       - NODE_ENV=development
-      - CHOKIDAR_USEPOLLING=true

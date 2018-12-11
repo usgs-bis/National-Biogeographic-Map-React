@@ -1,0 +1,27 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: __APPLICATION_KEY__-__CI_ENVIRONMENT_SLUG__
+  labels:
+    app: __APPLICATION_KEY__-__CI_ENVIRONMENT_SLUG__
+    track: stable
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  template:
+    metadata:
+      labels:
+        app: __APPLICATION_KEY__-__CI_ENVIRONMENT_SLUG__
+        track: stable
+    spec:
+      imagePullSecrets:
+        - name: registrykey
+      containers:
+      - name: app
+        image: __IMAGE_PATH__
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        env:
+          - name: CI_ID
+            value: "__CI_ID__"

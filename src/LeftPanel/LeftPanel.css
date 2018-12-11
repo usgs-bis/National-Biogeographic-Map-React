@@ -5,4 +5,60 @@
     top: 55px;
     left: 0;
     background-color: rgb(80,80,80);
+    overflow-y: auto;
+    overflow-x: hidden;
 }
+
+.top-area {
+    position: relative;
+    width: 100%;
+    height: 60px;
+}
+
+.placeholder-button {
+    position: relative;
+    /*left: 25px;*/
+    top: 10px;
+    height: 35px;
+    width: 35px;
+}
+
+.top-row {
+    height: 55px;
+}
+
+.search-box {
+    position: relative;
+    top: 10px;
+    width: 100%;
+    height: 35px;
+}
+
+.input-box {
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+}
+
+.no-show {
+    width: 0;
+    height: 0;
+    z-index: -9999;
+    display: none;
+}
+
+.dropdown-results {
+    position: absolute;
+    width: 375px;
+    top: 40px !important;
+    left: 100px !important;
+    font-size: 12px;
+}
+
+.dropdown-item {
+    width: 375px !important;
+    max-width: 375px !important;
+    overflow-wrap: normal;
+    padding-left: 10px;
+}
+
