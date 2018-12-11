@@ -4,7 +4,6 @@ import { Map, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet'
 import './NBM.css'
 import LocationOverlay from './LocationOverylays/LocationOverlay';
 
-let lastTimeMouseMoved = new Date().getTime();
 let L = require('leaflet');
 const US_BOUNDS = [[21, -134], [51, -63]];
 const BUFFER = .5;
