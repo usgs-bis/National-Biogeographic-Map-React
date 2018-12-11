@@ -20,16 +20,16 @@ class App extends React.Component {
         }
     }
 
-    handleMapClick (e) {
+    handleMapClick(e) {
         console.log("We can send this click event anywhere!", e.latlng);
     }
 
     render() {
         return (
             <div>
-                <Header title={this.state.bioscape.title}/>
-                <LeftPanel/>
-                <NBM parentClickHandler={this.handleMapClick}/>
+                <Header title={this.state.bioscape.title} />
+                <LeftPanel />
+                <NBM parentClickHandler={this.handleMapClick} />
             </div>
         );
     }
