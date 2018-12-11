@@ -7,6 +7,7 @@ import nvcsBioscape from "./Bioscapes/terrestrial-ecosystems-2011"
 
 const bioscapeMap = {
     "biogeography": nbmBioscape,
+    "nbm-react": nbmBioscape,
     "terrestrial-ecosystems-2011": nvcsBioscape
 };
 
