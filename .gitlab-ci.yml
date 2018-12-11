@@ -55,6 +55,7 @@ release_image:
   script:
     - cd k8s
     - echo "${KUBE_CA_PEM}" > kube_ca.pem
+    - cat kube_ca.pem
     - echo "Troubleshooting - ${CI_ENVIRONMENT_SLUG}"
     - echo "Troubleshooting - ${APPLICATION_KEY}"
     - kubectl config set-cluster default-cluster --server=${KUBE_URL} --certificate-authority="$(pwd)/kube_ca.pem"
