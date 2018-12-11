@@ -1,0 +1,21 @@
+.location-overlay{
+    position: absolute;
+    bottom: 25px;
+    left: 25px;
+    z-index: 1000;
+    display: flex;
+    background-color: rgba(10, 10, 15, .6);
+    color: #f3f3f3;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+.location-overlay span{
+    padding: 3px;
+    font-weight: 400;
+}
+
+.location-overlay span label{
+    font-weight: 600;
+    margin-bottom: 0px
+}
