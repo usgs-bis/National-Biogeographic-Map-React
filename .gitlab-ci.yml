@@ -1,0 +1,115 @@
+image: node:10.14
+
+stages:
+  - install
+  - build
+  - release
+  - deploy
+
+variables:
+  APPLICATION_KEY: "nbm-react"
+
+
+install:
+  stage: install
+  script:
+    - yarn install
+  artifacts:
+    paths:
+      - node_modules/
+
+
+build:
+  stage: build
+  script:
+    - yarn build
+  artifacts:
+    paths:
+      - build/
+  cache:
+    key: ${CI_BUILD_REF_NAME}
+    paths:
+      - node_modules/
+
+
+release_image:
+  stage: release
+  image: "docker:latest"
+  variables:
+    DOCKER_HOST: "tcp://localhost:2375"
+  services:
+    - docker:dind
+  script:
+    - docker info
+    - docker login -u gitlab-ci-token -p ${CI_JOB_TOKEN} ${CI_REGISTRY}
+    - export DOCKER_HOST="tcp://localhost:2375"
+    - docker build -f Dockerfile-deploy --pull -t ${CI_REGISTRY_IMAGE} .
+    - docker tag ${CI_REGISTRY_IMAGE}:latest ${CI_REGISTRY}/${CI_PROJECT_PATH}:${CI_COMMIT_REF_NAME}
+    - test ! -z "${CI_COMMIT_TAG}" && docker push ${CI_REGISTRY}/${CI_PROJECT_PATH}:latest
+    - docker push ${CI_REGISTRY}/${CI_PROJECT_PATH}:${CI_COMMIT_REF_NAME}
+  tags:
+    - kube-privileged
+
+
+.deploy_template: &deploy_template
+  script:
+    - cd k8s
+    - echo "${KUBE_CA_PEM}" > kube_ca.pem
+    - echo "Troubleshooting - ${CI_ENVIRONMENT_SLUG}"
+    - kubectl config set-cluster default-cluster --server=${KUBE_URL} --certificate-authority="$(pwd)/kube_ca.pem"
+    - kubectl config set-credentials default-admin --token=${KUBE_TOKEN}
+    - kubectl config set-context default-system --cluster=default-cluster --user=default-admin --namespace=${KUBE_NAMESPACE}
+    - kubectl config use-context default-system
+    - sed -i "s/__CI_ENVIRONMENT_SLUG__/${CI_ENVIRONMENT_SLUG}/" deployment.yml ingress.yml service.yml
+    - sed -i "s/__APPLICATION_KEY__/${APPLICATION_KEY}/" deployment.yml ingress.yml service.yml
+    - sed -i "s/__CI_COMMIT_REF_SLUG__/${CI_COMMIT_REF_SLUG}/" deployment.yml ingress.yml service.yml
+    - sed -i "s/__CI_COMMIT_REF_NAME__/${CI_COMMIT_REF_NAME}/" deployment.yml ingress.yml service.yml
+    - sed -i "s?__IMAGE_PATH__?${CI_REGISTRY}/${CI_PROJECT_PATH}:${CI_COMMIT_REF_NAME}?" deployment.yml ingress.yml service.yml
+    - sed -i "s/__CI_ID__/${CI_PIPELINE_ID}/" deployment.yml ingress.yml service.yml
+    - kubectl cluster-info
+    - kubectl get deployments -l app=${APPLICATION_KEY}-${CI_ENVIRONMENT_SLUG}
+    - kubectl apply -f deployment.yml || (kubectl delete -f deployment.yml && kubectl apply -f deployment.yml)
+    - kubectl apply -f service.yml || true
+    - kubectl apply -f ingress.yml
+  tags:
+    - kube
+
+
+deploy_live:
+  image: registry.gitlab.com/gitlab-examples/kubernetes-deploy
+  stage: deploy
+  environment:
+    name: master
+    url: https://${CI_ENVIRONMENT_SLUG}.staging.sciencebase.gov/${APPLICATION_KEY}
+  only:
+    - master
+  <<: *deploy_template
+
+
+stop_master:
+  image: registry.gitlab.com/gitlab-examples/kubernetes-deploy
+  stage: deploy
+  script:
+    - cd k8s
+    - echo "${KUBE_CA_PEM}" > kube_ca.pem
+    - kubectl config set-cluster default-cluster --server=${KUBE_URL} --certificate-authority="$(pwd)/kube_ca.pem"
+    - kubectl config set-credentials default-admin --token=${KUBE_TOKEN}
+    - kubectl config set-context default-system --cluster=default-cluster --user=default-admin --namespace=${KUBE_NAMESPACE}
+    - kubectl config use-context default-system
+    - sed -i "s/__CI_ENVIRONMENT_SLUG__/${CI_ENVIRONMENT_SLUG}/" deployment.yml ingress.yml service.yml
+    - sed -i "s/__APPLICATION_KEY__/${APPLICATION_KEY}/" deployment.yml ingress.yml service.yml
+    - sed -i "s/__CI_COMMIT_REF_SLUG__/${CI_COMMIT_REF_SLUG}/" deployment.yml ingress.yml service.yml
+    - sed -i "s/__CI_COMMIT_REF_NAME__/${CI_COMMIT_REF_NAME}/" deployment.yml ingress.yml service.yml
+    - sed -i "s?__IMAGE_PATH__?${CI_REGISTRY}/${CI_PROJECT_PATH}:${CI_COMMIT_REF_NAME}?" deployment.yml ingress.yml service.yml
+    - sed -i "s/__CI_ID__/${CI_PIPELINE_ID}/" deployment.yml ingress.yml service.yml
+    - kubectl delete -f deployment.yml || true
+    - kubectl delete -f service.yml || true
+    - kubectl delete -f ingress.yml
+  when: manual
+  environment:
+    name: master
+    action: stop
+  only:
+    - master
+  tags:
+    - kube

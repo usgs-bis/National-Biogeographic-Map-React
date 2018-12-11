@@ -1,44 +1,56 @@
 import React from 'react'
-import { Map, TileLayer, Marker, Popup } from 'react-leaflet'
+import { Map, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet'
 
 import './NBM.css'
 import LocationOverlay from './LocationOverylays/LocationOverlay';
 
-const usBounds = [[21, -134], [51, -63]]
 let lastTimeMouseMoved = new Date().getTime();
+let L = require('leaflet');
+const US_BOUNDS = [[21, -134], [51, -63]];
+const BUFFER = .5;
 
 class NBM extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            bounds: usBounds,
             point: null,
-            mouseLocation: { lat: null, lng: null, elv: null },
             parentClickHandler: props.parentClickHandler,
+            feature: props.feature,
+            bounds: US_BOUNDS
         }
+
+        this.key = 1;
+
         this.handleClick = this.handleClick.bind(this);
         this.handleMouseMove = this.handleMouseMove.bind(this);
         this.handleMouseOut = this.handleMouseOut.bind(this);
-        this.parentClickHandler = this.state.parentClickHandler
     }
 
-    handleClick(e) {
-        console.log("Map clicked! We could add the marker here probably, then send the click up to the parent");
+    componentWillReceiveProps(props) {
+        if (!props.feature) return;
+        let b = L.geoJSON(props.feature).getBounds()
+        this.setState({
+            feature: props.feature,
+            bounds: [
+                [b._southWest.lat - BUFFER, b._southWest.lng - BUFFER],
+                [b._northEast.lat + BUFFER, b._northEast.lng + BUFFER]
+            ]
+        })
+    }
 
+    handleClick (e) {
         this.setState({
             point: [e.latlng.lat, e.latlng.lng]
         });
 
-        this.parentClickHandler(e)
+        this.state.parentClickHandler(e)
     };
 
     handleMouseMove(e) {
-        let elv = this.getElevation(e.latlng.lat, e.latlng.lng)
         this.setState({
             mouseLocation: {
                 lat: e.latlng.lat,
-                lng: e.latlng.lng,
-                elv: elv
+                lng: e.latlng.lng
             }
         });
     }
@@ -46,32 +58,27 @@ class NBM extends React.Component {
         this.setState({
             mouseLocation: {
                 lat: null,
-                lng: null,
-                elv: null
+                lng: null
             }
         });
     }
 
-    getElevation(lat, lng) { 
-        let currentTime = new Date().getTime();
-        if (currentTime - lastTimeMouseMoved >= 500) {
-            console.log("would get elv")
-            lastTimeMouseMoved = new Date().getTime();
-            return 24
-        }
-        lastTimeMouseMoved = new Date().getTime();
-        return null
-    }
 
     render() {
+        const geojson = () => {
+            if(this.state.feature) {
+                return <GeoJSON key={this.key++} data={this.state.feature} />
+            }
+        };
         return (
             <Map onClick={this.handleClick} bounds={this.state.bounds} onMouseMove={this.handleMouseMove} onMouseOut={this.handleMouseOut} >
                 <TileLayer
                     attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                    url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
+                    url='https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}'
                 />
-                <MapMarker point={this.state.point} />
                 <LocationOverlay mouseLocation={this.state.mouseLocation} ></LocationOverlay>
+                <MapMarker point={this.state.point}/>
+                {geojson()}
             </Map>
         );
     }

@@ -10,10 +10,8 @@ ENV PATH /usr/src/app/node_modules/.bin:$PATH
 
 # install and cache app dependencies
 COPY package.json /usr/src/app/package.json
-RUN npm install
+RUN npm install --silent
+RUN npm install react-scripts@1.1.1 -g --silent
 
-COPY ./entrypoint.sh /usr/src/app/
-# Set file permissions
-RUN ["chmod", "+x", "/usr/src/app/entrypoint.sh"]
 # start app
-ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
+CMD ["npm", "start"]
