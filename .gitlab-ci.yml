@@ -67,6 +67,9 @@ release_image:
     - sed -i "s/__CI_COMMIT_REF_NAME__/${CI_COMMIT_REF_NAME}/" deployment.yml ingress.yml service.yml
     - sed -i "s?__IMAGE_PATH__?${CI_REGISTRY}/${CI_PROJECT_PATH}:${CI_COMMIT_REF_NAME}?" deployment.yml ingress.yml service.yml
     - sed -i "s/__CI_ID__/${CI_PIPELINE_ID}/" deployment.yml ingress.yml service.yml
+    - cat deployment.yml
+    - cat ingress.yml
+    - cat service.yml
     - kubectl cluster-info
     - kubectl get deployments -l app=${APPLICATION_KEY}-${CI_ENVIRONMENT_SLUG}
     - kubectl apply -f deployment.yml || (kubectl delete -f deployment.yml && kubectl apply -f deployment.yml)
