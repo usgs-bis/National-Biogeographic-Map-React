@@ -7,7 +7,7 @@ stages:
   - deploy
 
 variables:
-  APPLICATION_KEY: "nbm"
+  APPLICATION_KEY: "nbm-react"
 
 
 install:
@@ -73,7 +73,7 @@ release_image:
     - kubectl apply -f service.yml || true
     - kubectl apply -f ingress.yml
   tags:
-    - kube-privileged
+    - kube
 
 
 deploy_live:
