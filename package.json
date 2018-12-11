@@ -1,6 +1,7 @@
 {
   "name": "nbm-react",
   "version": "0.1.0",
+  "homepage": "/nbm-react/",
   "private": true,
   "dependencies": {
     "bootstrap": "^4.1.3",
