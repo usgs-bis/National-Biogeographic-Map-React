@@ -3,6 +3,7 @@ import "./LeftPanel.css";
 import { Button, Row, Col, Collapse, CardBody, Card } from "reactstrap";
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem, FormGroup, Label } from 'reactstrap';
 import {Glyphicon, Grid} from "react-bootstrap";
+import NFHPAnalysis from "../AnalysisPackages/NFHPAnalysis"
 
 class LeftPanel extends React.Component {
     constructor(props) {
@@ -13,7 +14,6 @@ class LeftPanel extends React.Component {
             textSearchHandler: props.textSearchHandler,
             basemapChanged: props.basemapChanged,
             submitHandler: props.submitHandler,
-            textFocus: false,
             basemapsOpen: false,
             bioscape: props.bioscape
         }
@@ -27,10 +27,12 @@ class LeftPanel extends React.Component {
     }
 
     componentWillReceiveProps(props) {
-        if (props.focused) {
-            this.refs.textInput.focus()
+        if (props.feature) {
             this.setState({
-                focused: props.focused
+                feature: props.feature,
+                feature_id: props.feature.properties.feature_id,
+                feature_name: props.feature.properties.feature_name,
+                feature_class: props.feature.properties.feature_class
             })
         }
     }
@@ -57,11 +59,12 @@ class LeftPanel extends React.Component {
     }
 
     onBlur () {
-        let that = this;
-        setTimeout(function() {
+        let that = this
+        setTimeout(function () {
             that.setState({
                 focused: false
             })
+            that.refs.textInput.value = ""
         }, 100)
     }
 
@@ -71,6 +74,16 @@ class LeftPanel extends React.Component {
 
     render() {
         let that = this;
+        const featureText = () => {
+            if (this.state.feature_name) {
+                return (
+                    <div>
+                    <span className="panel-title">{this.state.feature_name}</span><br/>
+                    <span className="category-text">Category:</span><span className="feature-text">  {this.state.feature_class}</span>
+                    </div>
+                )
+            }
+        }
         return (
             <div className="left-panel">
                 <Grid>
@@ -85,7 +98,7 @@ class LeftPanel extends React.Component {
                         </Col>
                         <Col xs="10" className="no-padding">
                             <div className={"search-box"}>
-                                <input ref={"textInput"} onFocus={this.onFocus} onBlur={this.onBlur} onKeyUp={this.handleKeyUp}
+                                <input ref={"textInput"} onClick={this.onFocus} onBlur={this.onBlur} onKeyUp={this.handleKeyUp}
                                        className={"input-box"} type={"text"} />
                             </div>
                         </Col>
@@ -98,7 +111,7 @@ class LeftPanel extends React.Component {
                         <Col xs="10">
                             <Dropdown
                                 className={"dropdown-results"}
-                                isOpen={this.props.results.length > 0 && this.state.focused}
+                                isOpen={this.props.results.length > 0 && (this.state.focused || this.props.mapClicked)}
                                 toggle={this.toggleSfrDropdown}>
                                 <DropdownToggle className={"no-show"}>
                                     X
@@ -154,6 +167,8 @@ class LeftPanel extends React.Component {
                         </CardBody>
                     </Card>
                 </Collapse>
+                {featureText()}
+                <NFHPAnalysis feature_id={this.state.feature_id}/>
             </div>
         );
     }

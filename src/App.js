@@ -23,8 +23,7 @@ class App extends React.Component {
         this.state = {
             bioscape: bioscapeMap[props.bioscape],
             results: [],
-            feature: null,
-            textFocused: false
+            feature: null
         }
 
         this.parseBioscape = this.parseBioscape.bind(this);
@@ -60,7 +59,8 @@ class App extends React.Component {
             .then(
                 (result) => {
                     this.setState({
-                        feature: result.hits.hits[0]["_source"]
+                        feature: result.hits.hits[0]["_source"],
+                        mapClicked: false
                     })
                 },
                 (error) => {
@@ -78,7 +78,7 @@ class App extends React.Component {
                 (result) => {
                     this.setState({
                         results: result.hits.hits.map(a => a["_source"]["properties"]),
-                        textFocused: true
+                        mapClicked: true
                     })
                 },
                 (error) => {
@@ -120,9 +120,10 @@ class App extends React.Component {
                     basemapChanged={this.basemapChanged}
                     bioscape={this.state.bioscape}
                     results={this.state.results}
-                    focused={this.state.textFocused}
                     textSearchHandler={this.handleSearchBox}
                     submitHandler={this.submitHandler}
+                    feature={this.state.feature}
+                    mapClicked={this.state.mapClicked}
                 />
                 <NBM
                     basemap={this.state.basemap}

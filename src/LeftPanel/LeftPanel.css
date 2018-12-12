@@ -84,3 +84,20 @@
     font-size: 18px;
     font-weight: bold;
 }
+
+.panel-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: white;
+}
+
+.category-text {
+    color: lightblue;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.feature-text {
+    color: white;
+    font-size: 14px;
+}

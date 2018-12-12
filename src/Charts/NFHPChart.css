@@ -1,0 +1,17 @@
+text {
+    font-size: 14px;
+    color:rgb(204, 204, 204);
+    fill:rgb(204, 204, 204) !important;
+}
+
+#NFHPPlot {
+    text-align: center;
+}
+
+#NFHPTitle text {
+    font-size: 18px;
+}
+
+#NFHPSubTitle text {
+    font-size: 14px;
+}

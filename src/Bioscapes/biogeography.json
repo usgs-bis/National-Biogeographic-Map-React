@@ -36,5 +36,10 @@
       "serviceUrl": "//services.arcgisonline.com/arcgis/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}",
       "thumbnailImage": "https://www.arcgis.com/sharing/rest/content/items/48b8cec7ebf04b5fbdcaf70d09daff21/info/thumbnail/tempoceans.jpg"
     }
+  ],
+  "baps": [
+    {
+      "type": "NFHPAnalysis"
+    }
   ]
 }
