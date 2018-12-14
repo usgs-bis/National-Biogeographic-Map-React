@@ -2,7 +2,7 @@ import React from "react";
 import { Collapse } from "reactstrap"
 import { Glyphicon } from "react-bootstrap";
 
-import NFHPChart from "../Charts/NFHPChart";
+import HorizontalBarChart from "../Charts/HorizontalBarChart";
 
 import "./AnalysisPackages.css";
 
@@ -10,14 +10,17 @@ const SB_URL = "https://www.sciencebase.gov/catalog/item/5aa2b21ae4b0b1c392e9d96
 const NFHP_URL = process.env.REACT_APP_BIS_API + "/api/v1/nfhpmetrics/condition?feature_id=";
 
 let properties = {
-    "title" : "Fish Habitat Condition and Disturbance Summaries default"
+    "title": "Fish Habitat Condition and Disturbance Summaries default"
 }
 
 class NFHPAnalysis extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            data: null,
+            charts: {
+                horizontalBarChart: { id: "", config: {}, data: null }
+            },
+            display:false,
             title: properties.title,
             submitted: false,
             isOpen: false,
@@ -25,6 +28,8 @@ class NFHPAnalysis extends React.Component {
         }
 
         this.toggleDropdown = this.toggleDropdown.bind(this)
+        this.getCharts = this.getCharts.bind(this)
+
     }
 
     toggleDropdown() {
@@ -58,8 +63,10 @@ class NFHPAnalysis extends React.Component {
                 .then(
                     (result) => {
                         if (result && result.hits.hits[0]) {
+                            const charts = this.getCharts({ horizontalBarChart: result.hits.hits[0]._source.properties })
                             this.setState({
-                                data: result.hits.hits[0]._source.properties,
+                                charts: charts,
+                                display:true,
                                 submitted: true
                             })
                         } else {
@@ -78,22 +85,71 @@ class NFHPAnalysis extends React.Component {
         }
     }
 
+    /**
+    * Loop through the charts defined in the state and look for a data object in datas that matches. 
+    * Create the chart id, data,  and config as documented in the chart type. 
+    * @param {Object {}} datas - one enrty for each chart named the same as defined in the state
+    */
+    getCharts(datas) {
+
+        function getPercent(value, scoredKm) {
+            value = parseFloat(value)
+            return parseFloat(((value / parseFloat(scoredKm)) * 100).toFixed(1))
+        }
+        const numberWithCommas = (x) => {
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        let charts = {}
+
+        for (let chart of Object.keys(this.state.charts)) {
+
+            if (chart.toString() === "horizontalBarChart" && datas[chart]) {
+
+                const data = datas[chart]
+
+                const chartId = "NFHP"
+
+                const chartConfig = {
+                    margins: { left: 100, right:20 , top: 20, bottom: 30 },
+                    chart: { title: `Risk to Fish Habitat Degradation ${data.place_name}`, subtitle: `Fish habitat condition was scored on ${numberWithCommas(parseFloat(data.scored_km).toFixed(0))} of ${numberWithCommas((parseFloat(data.scored_km) + parseFloat(data.not_scored_km)).toFixed(0))}' NHDPlusV1 stream kilometers within ${data.place_name}` },
+                    xAxis: { key:'Percent', label: "NFHP Scored Stream Kilometers [%]", ticks: 5, tickFormat: (d) => { return `${parseInt(d)}%` } },
+                    yAxis: { key: 'Risk', label: "Risk To Fish Habitat Degradation", ticks: 5, tickFormat: (d) => { return d } },
+                    tooltip:{label:(d)=>{return `<p>${d.Risk}: ${d.Percent}%</p>`}}
+                }
+
+                const chartData = [
+                    { "Risk": "Very high", "Percent": getPercent(data.veryhigh_km, data.scored_km), "color": "#FF0000" },
+                    { "Risk": "High", "Percent": getPercent(data.high_km, data.scored_km), "color": "#FFAA00" },
+                    { "Risk": "Moderate", "Percent": getPercent(data.moderate_km, data.scored_km), "color": "#A3FF73" },
+                    { "Risk": "Low", "Percent": getPercent(data.low_km, data.scored_km), "color": "#00C5FF" },
+                    { "Risk": "Very low", "Percent": getPercent(data.verylow_km, data.scored_km), "color": "#C500FF" }
+                ]
+                chartData.reverse()
+
+                charts[chart] = { id: chartId, config: chartConfig, data: chartData }
+            }
+        }
+        return charts
+       
+    }
+
     render() {
         return (
             <div
-                style={{display: this.state.submitted && !this.state.data ? "none" : "block"}}
+                style={{ display: this.state.submitted && !this.state.display ? "none" : "block" }}
                 className="nbm-flex-row-no-padding">
                 <span onClick={this.toggleDropdown} className="bapTitle">
-                {this.state.title}
-                <Glyphicon style={{display: this.state.submitted ? "inline-block" : "none"}}
-                           className="dropdown-glyph"
-                           glyph={this.state.glyph}/>
+                    {this.state.title}
+                    <Glyphicon style={{ display: this.state.submitted ? "inline-block" : "none" }}
+                        className="dropdown-glyph"
+                        glyph={this.state.glyph} />
                 </span>
-                    <Collapse className="settings-dropdown" isOpen={this.state.isOpen}>
-                        <div className="chartsDiv">
-                            <NFHPChart data={this.state.data}/>
-                        </div>
-                    </Collapse>
+                <Collapse className="settings-dropdown" isOpen={this.state.isOpen}>
+                    <div className="chartsDiv">
+                        <HorizontalBarChart data={this.state.charts.horizontalBarChart.data} id={this.state.charts.horizontalBarChart.id} config={this.state.charts.horizontalBarChart.config} />
+                    </div>
+                </Collapse>
             </div>
         )
     }

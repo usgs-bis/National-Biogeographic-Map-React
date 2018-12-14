@@ -73,7 +73,7 @@ class LeftPanel extends React.Component {
                 focused: false
             });
             that.textInput.value = ""
-        }, 100)
+        }, 150)
     }
 
     submit(e) {
