@@ -27,24 +27,3 @@
     font-size: 14px;
     color: white;
 }
-div.chartTooltip {
-    position: absolute;
-    background: rgb(255, 255, 255);
-    font-size: 11px;
-    color: black;
-    border-radius: 4px;
-    padding: .25em;
-    pointer-events: none;
-    -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, .4);
-    box-shadow: 4px 4px 10px rgba(0, 0, 0, .4);
-    z-index: 9999;
-    max-width: 175px;
-}
-
-div.chartTooltip label {
-    font-weight: 700;
-}
-
-div.chartTooltip p{
-    margin: 5px;
-}
