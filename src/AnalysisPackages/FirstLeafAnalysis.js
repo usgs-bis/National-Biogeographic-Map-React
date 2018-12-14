@@ -1,14 +1,14 @@
 import React from "react";
 
-import BoxAndWhiskerChart from "../Charts/BoxAndWhiskerChart";
+// import BoxAndWhiskerChart from "../Charts/BoxAndWhiskerChart";
 
 import "./AnalysisPackages.css";
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/58bf0b61e4b014cc3a3a9c10?format=json"
-const FIRSTLEAF_URL = process.env.REACT_APP_BIS_API + "api/v1/phenology/place/firstleaf?feature_id=";
+const FIRSTLEAF_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenology/place/firstleaf?feature_id=";
 
 let properties = {
-    "title" : "Fish Habitat Condition and Disturbance Summaries default"
+    "title" : "First Leaf Analysis default"
 }
 
 class FirstLeafAnalysis extends React.Component {
@@ -44,9 +44,9 @@ class FirstLeafAnalysis extends React.Component {
                 .then(res => res.json())
                 .then(
                     (result) => {
-                        if (result && result.hits.hits[0]) {
+                        if (result) {
                             this.setState({
-                                data: result.hits.hits[0]._source.properties,
+                                data: result,
                                 submitted: true
                             })
                         } else {
@@ -71,9 +71,18 @@ class FirstLeafAnalysis extends React.Component {
                 <span className="bapTitle">
                 {this.state.title}
                 </span>
-                <div className="chartsDiv">
-                    <BoxAndWhiskerChart data={this.state.data}/>
+                <div>
+                    Year min: {this.props.yearMin}
                 </div>
+                <div>
+                    Year max: {this.props.yearMax}
+                </div>
+                <div>
+                    feature_id: {this.props.feature_id}
+                </div>
+                {/*<div className="chartsDiv">*/}
+                    {/*<BoxAndWhiskerChart data={this.state.data}/>*/}
+                {/*</div>*/}
             </div>
         )
     }

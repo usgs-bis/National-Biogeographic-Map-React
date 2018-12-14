@@ -4,6 +4,7 @@ import { Button, Collapse, CardBody, Card, ButtonGroup } from "reactstrap";
 import { FormGroup, Label } from 'reactstrap';
 import {Glyphicon} from "react-bootstrap";
 import NFHPAnalysis from "../AnalysisPackages/NFHPAnalysis"
+import FirstLeafAnalysis from "../AnalysisPackages/FirstLeafAnalysis";
 
 class LeftPanel extends React.Component {
     constructor(props) {
@@ -146,6 +147,13 @@ class LeftPanel extends React.Component {
                 {featureText()}
                 <div className="nbm-flex-row-no-padding">
                     <NFHPAnalysis feature_id={this.state.feature_id}/>
+                </div>
+                <div className="nbm-flex-row-no-padding">
+                    <FirstLeafAnalysis
+                        feature_id={this.state.feature_id}
+                        yearMin={this.props.yearMin}
+                        yearMax={this.props.yearMax}
+                    />
                 </div>
             </div>
         );

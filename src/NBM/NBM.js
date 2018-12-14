@@ -18,7 +18,9 @@ class NBM extends React.Component {
             feature: props.feature,
             bounds: US_BOUNDS,
             basemap: props.basemap,
-            clickable: true
+            clickable: true,
+            mapDisplay: null,
+            updateYearRange: props.updateYearRange
         }
 
         this.key = 1;
@@ -27,7 +29,9 @@ class NBM extends React.Component {
         this.handleMouseMove = this.handleMouseMove.bind(this);
         this.handleMouseOut = this.handleMouseOut.bind(this);
         this.disableDragging = this.disableDragging.bind(this);
-        this.enableDragging = this.enableDragging.bind(this)
+        this.enableDragging = this.enableDragging.bind(this);
+        this.updateMapDisplay = this.updateMapDisplay.bind(this);
+        this.updateYearRange = this.updateYearRange.bind(this);
     }
 
     componentWillReceiveProps(props) {
@@ -73,7 +77,6 @@ class NBM extends React.Component {
             clickable: false
         })
         this.refs.map.leafletElement.dragging.disable();
-        // this.refs.map.leafletElement.click.disable();
     }
 
     enableDragging() {
@@ -81,7 +84,16 @@ class NBM extends React.Component {
             clickable: true
         })
         this.refs.map.leafletElement.dragging.enable();
-        // this.refs.map.leafletElement.click.enable()
+    }
+
+    updateMapDisplay(year) {
+        this.setState({
+            mapDisplay: year
+        });
+    }
+
+    updateYearRange(years) {
+        this.state.updateYearRange(years);
     }
 
     render() {
@@ -114,7 +126,10 @@ class NBM extends React.Component {
                 <MapMarker point={this.state.point}/>
                 {geojson()}
                 <div className="global-time-slider" onMouseOver={this.disableDragging} onMouseOut={this.enableDragging}>
-                    <TimeSlider />
+                    <TimeSlider
+                        updateMapDisplay={this.updateMapDisplay}
+                        updateYearRange={this.updateYearRange}
+                    />
                 </div>
             </Map>
         );

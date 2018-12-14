@@ -26,7 +26,9 @@ class App extends React.Component {
         this.state = {
             bioscape: bioscapeMap[props.bioscape],
             results: [],
-            feature: null
+            feature: null,
+            yearMin: null,
+            yearMax: null
         }
 
         this.parseBioscape = this.parseBioscape.bind(this);
@@ -34,6 +36,7 @@ class App extends React.Component {
         this.submitHandler = this.submitHandler.bind(this);
         this.handleMapClick = this.handleMapClick.bind(this);
         this.basemapChanged = this.basemapChanged.bind(this);
+        this.updateYearRange = this.updateYearRange.bind(this);
     }
 
     componentDidMount() {
@@ -115,6 +118,13 @@ class App extends React.Component {
             )
     }
 
+    updateYearRange(years) {
+        this.setState({
+            yearMin: years[0],
+            yearMax: years[1]
+        })
+    }
+
     render() {
         return (
             <div className="vwrapper">
@@ -131,13 +141,17 @@ class App extends React.Component {
                             submitHandler={this.submitHandler}
                             feature={this.state.feature}
                             mapClicked={this.state.mapClicked}
+                            yearMin={this.state.yearMin}
+                            yearMax={this.state.yearMax}
                         />
                     </div>
                     <div id="map-area">
-                        <NBM className="relative-map"
+                        <NBM
+                            className="relative-map"
                             basemap={this.state.basemap}
                             feature={this.state.feature}
                             parentClickHandler={this.handleMapClick}
+                            updateYearRange={this.updateYearRange}
                         />
                     </div>
                 </div>
