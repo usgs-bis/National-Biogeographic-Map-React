@@ -35,6 +35,13 @@ class LeftPanel extends React.Component {
                 feature_class: props.feature.properties.feature_class
             })
         }
+
+        if (props.mapClicked) {
+            this.textInput.focus();
+            this.setState({
+                focused: true
+            })
+        }
     }
 
     basemapChanged(e) {
@@ -63,8 +70,8 @@ class LeftPanel extends React.Component {
         setTimeout(function () {
             that.setState({
                 focused: false
-            })
-            that.refs.textInput.value = ""
+            });
+            that.textInput.value = ""
         }, 100)
     }
 
@@ -96,13 +103,13 @@ class LeftPanel extends React.Component {
                         <Button className='placeholder-button' />
                     </div>
                     <div className="nbm-flex-column-big">
-                        <input ref={"textInput"} onClick={this.onFocus} onBlur={this.onBlur} onKeyUp={this.handleKeyUp}
+                        <input ref={(input) => { this.textInput = input; }}  onClick={this.onFocus} onBlur={this.onBlur} onKeyUp={this.handleKeyUp}
                                className="input-box" type={"text"} />
                     </div>
                 </div>
-                <div className="nbm-flex-row">
+                <div className="nbm-flex-row" >
                     <div className="button-group">
-                        {(this.props.results.length > 0 && (this.state.focused || this.props.mapClicked)) ? <ButtonGroup vertical>
+                        {(this.props.results.length > 0 && this.state.focused) ? <ButtonGroup vertical>
                             {this.props.results.map(function(d, idx){
                                 return (
                                     <Button className="sfr-button" style={{ whiteSpace: 'normal'}}

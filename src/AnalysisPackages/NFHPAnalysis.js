@@ -1,4 +1,6 @@
 import React from "react";
+import { Collapse } from "reactstrap"
+import { Glyphicon } from "react-bootstrap";
 
 import NFHPChart from "../Charts/NFHPChart";
 
@@ -17,8 +19,19 @@ class NFHPAnalysis extends React.Component {
         this.state = {
             data: null,
             title: properties.title,
-            submitted: false
+            submitted: false,
+            isOpen: false,
+            glyph: "menu-right"
         }
+
+        this.toggleDropdown = this.toggleDropdown.bind(this)
+    }
+
+    toggleDropdown() {
+        this.setState({
+            isOpen: !this.state.isOpen,
+            glyph: !this.state.isOpen ? "menu-down" : "menu-right"
+        })
     }
 
     componentDidMount() {
@@ -67,13 +80,20 @@ class NFHPAnalysis extends React.Component {
 
     render() {
         return (
-            <div>
-                <span className="bapTitle">
+            <div
+                style={{display: this.state.submitted && !this.state.data ? "none" : "block"}}
+                className="nbm-flex-row-no-padding">
+                <span onClick={this.toggleDropdown} className="bapTitle">
                 {this.state.title}
+                <Glyphicon style={{display: this.state.submitted ? "inline-block" : "none"}}
+                           className="dropdown-glyph"
+                           glyph={this.state.glyph}/>
                 </span>
-                <div className="chartsDiv">
-                    <NFHPChart data={this.state.data}/>
-                </div>
+                    <Collapse className="settings-dropdown" isOpen={this.state.isOpen}>
+                        <div className="chartsDiv">
+                            <NFHPChart data={this.state.data}/>
+                        </div>
+                    </Collapse>
             </div>
         )
     }

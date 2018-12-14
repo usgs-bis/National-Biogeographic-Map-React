@@ -3,6 +3,23 @@
     font-size: 18px;
     font-weight: bold;
     padding: 5px;
+    cursor: pointer;
+}
+
+.bapTitle::selection {
+    background: rgba(0,0,0,0); /* WebKit/Blink Browsers */
+}
+.bapTitle::-moz-selection {
+    background: rgba(0,0,0,0); /* Gecko Browsers */
+}
+
+.bapTitle:hover {
+    text-shadow: 0 0 1px;
+}
+
+.dropdown-glyph {
+    font-size: 18px;
+    margin-left: 5px;
 }
 
 .chartsDiv {
