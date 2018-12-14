@@ -1,0 +1,90 @@
+#panel-area {
+    width: 500px;
+    max-width: 40%;
+}
+
+#panel-area {
+    background-color: #555;
+    color: white;
+}
+
+@media only screen and (max-width: 700px) {
+    .vwrapper {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        height: 100%;
+    }
+
+    #header-area {
+        background-color: black;
+        color: white;
+        min-height: 55px;
+        line-height: 55px;
+        vertical-align: middle;
+        text-align: center;
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    #content-area {
+        background-color: green;
+        display: flex;
+        height: 100%;
+        flex-direction: column;
+    }
+    #panel-area {
+        width: 100%;
+        max-width: 100%;
+        max-height: 40%;
+        height: 40%;
+    }
+
+    #map-area {
+        background-color: orange;
+        height: 60%;
+    }
+}
+
+@media only screen and (min-width: 700px) {
+    .vwrapper {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        align-items: stretch;
+        align-content: stretch;
+        height: 100%;
+    }
+
+    #header-area {
+        background-color: black;
+        color: white;
+        min-height: 55px;
+        line-height: 55px;
+        vertical-align: middle;
+        text-align: center;
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    #content-area {
+        background-color: green;
+        flex: 1 1 auto;
+        display: flex;
+    }
+    #panel-area {
+        max-width: 500px;
+        flex: 1 0 240px;
+    }
+
+    #map-area {
+        background-color: orange;
+        flex: 1 1 200px;
+    }
+}
+
+.relative-map {
+    position: relative;
+}

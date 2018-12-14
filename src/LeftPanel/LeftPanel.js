@@ -1,8 +1,8 @@
 import React from "react";
 import "./LeftPanel.css";
-import { Button, Row, Col, Collapse, CardBody, Card } from "reactstrap";
-import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem, FormGroup, Label } from 'reactstrap';
-import {Glyphicon, Grid} from "react-bootstrap";
+import { Button, Collapse, CardBody, Card, ButtonGroup } from "reactstrap";
+import { FormGroup, Label } from 'reactstrap';
+import {Glyphicon} from "react-bootstrap";
 import NFHPAnalysis from "../AnalysisPackages/NFHPAnalysis"
 
 class LeftPanel extends React.Component {
@@ -77,7 +77,7 @@ class LeftPanel extends React.Component {
         const featureText = () => {
             if (this.state.feature_name) {
                 return (
-                    <div>
+                    <div style={{padding: "5px"}}>
                     <span className="panel-title">{this.state.feature_name}</span><br/>
                     <span className="category-text">Category:</span><span className="feature-text">  {this.state.feature_class}</span>
                     </div>
@@ -86,89 +86,60 @@ class LeftPanel extends React.Component {
         }
         return (
             <div className="left-panel">
-                <Grid>
-                    <Row className="top-row">
-                        <Col xs="1" className="no-padding">
-                            <Button onClick={this.toggleBasemapDropdown} title={"Settings"} className='placeholder-button' >
-                                <Glyphicon className="inner-glyph" glyph="menu-hamburger"/>
-                            </Button>
-                        </Col>
-                        <Col xs="1" className="no-padding">
-                            <Button className='placeholder-button' />
-                        </Col>
-                        <Col xs="10" className="no-padding">
-                            <div className={"search-box"}>
-                                <input ref={"textInput"} onClick={this.onFocus} onBlur={this.onBlur} onKeyUp={this.handleKeyUp}
-                                       className={"input-box"} type={"text"} />
-                            </div>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col xs="1">
-                        </Col>
-                        <Col xs="1">
-                        </Col>
-                        <Col xs="10">
-                            <Dropdown
-                                className={"dropdown-results"}
-                                isOpen={this.props.results.length > 0 && (this.state.focused || this.props.mapClicked)}
-                                toggle={this.toggleSfrDropdown}>
-                                <DropdownToggle className={"no-show"}>
-                                    X
-                                </DropdownToggle>
-                                <DropdownMenu right className={"dropdown-results"}
-                                              modifiers={{
-                                                  setMaxHeight: {
-                                                      enabled: true,
-                                                      order: 890,
-                                                      fn: (data) => {
-                                                          return {
-                                                              ...data,
-                                                              styles: {
-                                                                  ...data.styles,
-                                                                  overflow: 'auto',
-                                                                  maxHeight: 200
-                                                              },
-                                                          };
-                                                      },
-                                                  },
-                                              }}
-                                >
-                                    {this.props.results.map(function(d, idx){
-                                        return (
-                                            <DropdownItem
-                                                onClick={function(){that.submit(this)}}
-                                                id={d.feature_id}
-                                                key={d.feature_id}>
-                                                {d.feature_name} ({d.feature_class})
-                                            </DropdownItem>)
-                                    })}
-                                </DropdownMenu>
-                            </Dropdown>
-                        </Col>
-                    </Row>
-                </Grid>
-                <Collapse className="settings-dropdown" isOpen={this.state.basemapsOpen}>
-                    <Card>
-                        <span className="header">Basemaps</span>
-                        <CardBody>
-                            {this.state.bioscape.basemaps.map(function(d, idx) {
-                                return <FormGroup key={d.title + idx} check>
-                                    <Label check>
-                                        <input
-                                            onChange={function() {that.basemapChanged(d)}}
-                                            value={d.serviceUrl}
-                                            type="radio"
-                                            name="basemaps" />
-                                        {' ' + d.title}
-                                    </Label>
-                                </FormGroup>
+                <div className="nbm-flex-row">
+                    <div className="nbm-flex-column">
+                        <Button onClick={this.toggleBasemapDropdown} title={"Settings"} className='placeholder-button' >
+                            <Glyphicon className="inner-glyph" glyph="menu-hamburger"/>
+                        </Button>
+                    </div>
+                    <div className="nbm-flex-column">
+                        <Button className='placeholder-button' />
+                    </div>
+                    <div className="nbm-flex-column-big">
+                        <input ref={"textInput"} onClick={this.onFocus} onBlur={this.onBlur} onKeyUp={this.handleKeyUp}
+                               className="input-box" type={"text"} />
+                    </div>
+                </div>
+                <div className="nbm-flex-row">
+                    <div className="button-group">
+                        {(this.props.results.length > 0 && (this.state.focused || this.props.mapClicked)) ? <ButtonGroup vertical>
+                            {this.props.results.map(function(d, idx){
+                                return (
+                                    <Button className="sfr-button" style={{ whiteSpace: 'normal'}}
+                                        onClick={function(){that.submit(this)}}
+                                        id={d.feature_id}
+                                        key={d.feature_id}>
+                                        {d.feature_name} ({d.feature_class})
+                                    </Button>)
                             })}
-                        </CardBody>
-                    </Card>
-                </Collapse>
+                        </ButtonGroup> : null}
+                    </div>
+                </div>
+                <div className="nbm-flex-row-no-padding">
+                    <Collapse className="settings-dropdown" isOpen={this.state.basemapsOpen}>
+                        <Card>
+                            <span className="header">Basemaps</span>
+                            <CardBody>
+                                {this.state.bioscape.basemaps.map(function(d, idx) {
+                                    return <FormGroup key={d.title + idx} check>
+                                        <Label check>
+                                            <input
+                                                onChange={function() {that.basemapChanged(d)}}
+                                                value={d.serviceUrl}
+                                                type="radio"
+                                                name="basemaps" />
+                                            {' ' + d.title}
+                                        </Label>
+                                    </FormGroup>
+                                })}
+                            </CardBody>
+                        </Card>
+                    </Collapse>
+                </div>
                 {featureText()}
-                <NFHPAnalysis feature_id={this.state.feature_id}/>
+                <div className="nbm-flex-row-no-padding">
+                    <NFHPAnalysis feature_id={this.state.feature_id}/>
+                </div>
             </div>
         );
     }

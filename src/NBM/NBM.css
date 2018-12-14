@@ -1,8 +1,10 @@
 .leaflet-container {
-    position: absolute !important;
-    height: calc(100% - 55px);
-    width: calc(100% - 500px);
-    top: 55px;
-    left: 500px;
+    height: 100%;
+    width: 100%;
     cursor: default;
+}
+
+.global-time-slider {
+    position: relative;
+    top: calc(100% - 25px);
 }

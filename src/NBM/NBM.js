@@ -3,6 +3,7 @@ import { Map, TileLayer, WMSTileLayer, Marker, Popup, GeoJSON } from 'react-leaf
 
 import './NBM.css'
 import LocationOverlay from './LocationOverylays/LocationOverlay';
+import TimeSlider from "./TimeSlider/TimeSlider"
 
 let L = require('leaflet');
 const US_BOUNDS = [[21, -134], [51, -63]];
@@ -16,7 +17,8 @@ class NBM extends React.Component {
             parentClickHandler: props.parentClickHandler,
             feature: props.feature,
             bounds: US_BOUNDS,
-            basemap: props.basemap
+            basemap: props.basemap,
+            clickable: true
         }
 
         this.key = 1;
@@ -24,6 +26,8 @@ class NBM extends React.Component {
         this.handleClick = this.handleClick.bind(this);
         this.handleMouseMove = this.handleMouseMove.bind(this);
         this.handleMouseOut = this.handleMouseOut.bind(this);
+        this.disableDragging = this.disableDragging.bind(this);
+        this.enableDragging = this.enableDragging.bind(this)
     }
 
     componentWillReceiveProps(props) {
@@ -39,6 +43,7 @@ class NBM extends React.Component {
     }
 
     handleClick (e) {
+        if (!this.state.clickable) return
         this.setState({
             point: [e.latlng.lat, e.latlng.lng]
         });
@@ -63,6 +68,21 @@ class NBM extends React.Component {
         });
     }
 
+    disableDragging() {
+        this.setState({
+            clickable: false
+        })
+        this.refs.map.leafletElement.dragging.disable();
+        // this.refs.map.leafletElement.click.disable();
+    }
+
+    enableDragging() {
+        this.setState({
+            clickable: true
+        })
+        this.refs.map.leafletElement.dragging.enable();
+        // this.refs.map.leafletElement.click.enable()
+    }
 
     render() {
         const geojson = () => {
@@ -84,11 +104,18 @@ class NBM extends React.Component {
             }
         }
         return (
-            <Map onClick={this.handleClick} bounds={this.state.bounds} onMouseMove={this.handleMouseMove} onMouseOut={this.handleMouseOut} >
+            <Map ref={"map"}
+                 onClick={this.handleClick}
+                 bounds={this.state.bounds}
+                 onMouseMove={this.handleMouseMove}
+                 onMouseOut={this.handleMouseOut} >
                 {basemap()}
                 <LocationOverlay mouseLocation={this.state.mouseLocation} />
                 <MapMarker point={this.state.point}/>
                 {geojson()}
+                <div className="global-time-slider" onMouseOver={this.disableDragging} onMouseOut={this.enableDragging}>
+                    <TimeSlider />
+                </div>
             </Map>
         );
     }

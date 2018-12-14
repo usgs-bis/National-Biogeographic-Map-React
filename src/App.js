@@ -5,11 +5,14 @@ import LeftPanel from "./LeftPanel/LeftPanel";
 import nbmBioscape from "./Bioscapes/biogeography"
 import nvcsBioscape from "./Bioscapes/terrestrial-ecosystems-2011"
 
+import "./App.css";
+
 const bioscapeMap = {
     "biogeography": nbmBioscape,
     "nbm-react": nbmBioscape,
     "terrestrial-ecosystems-2011": nvcsBioscape
 };
+
 
 const TEXT_SEARCH_API = process.env.REACT_APP_BIS_API + "/api/v1/places/search/text?q=";
 const POINT_SEARCH_API = process.env.REACT_APP_BIS_API + "/api/v1/places/search/point?";
@@ -114,23 +117,32 @@ class App extends React.Component {
 
     render() {
         return (
-            <div>
-                <Header title={this.state.bioscape.title}/>
-                <LeftPanel
-                    basemapChanged={this.basemapChanged}
-                    bioscape={this.state.bioscape}
-                    results={this.state.results}
-                    textSearchHandler={this.handleSearchBox}
-                    submitHandler={this.submitHandler}
-                    feature={this.state.feature}
-                    mapClicked={this.state.mapClicked}
-                />
-                <NBM
-                    basemap={this.state.basemap}
-                    feature={this.state.feature}
-                    parentClickHandler={this.handleMapClick}
-                />
+            <div className="vwrapper">
+                <div id="header-area">
+                    <Header title={this.state.bioscape.title} />
+                </div>
+                <div id="content-area">
+                    <div id="panel-area">
+                        <LeftPanel
+                            basemapChanged={this.basemapChanged}
+                            bioscape={this.state.bioscape}
+                            results={this.state.results}
+                            textSearchHandler={this.handleSearchBox}
+                            submitHandler={this.submitHandler}
+                            feature={this.state.feature}
+                            mapClicked={this.state.mapClicked}
+                        />
+                    </div>
+                    <div id="map-area">
+                        <NBM className="relative-map"
+                            basemap={this.state.basemap}
+                            feature={this.state.feature}
+                            parentClickHandler={this.handleMapClick}
+                        />
+                    </div>
+                </div>
             </div>
+
         );
     }
 }
