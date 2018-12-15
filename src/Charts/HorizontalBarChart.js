@@ -1,6 +1,5 @@
 import React from "react";
 import * as d3 from "d3";
-
 import "./Chart.css"
 
 class HorizontalBarChart extends React.Component {
@@ -12,7 +11,6 @@ class HorizontalBarChart extends React.Component {
     componentDidUpdate() {
         this.drawChart(this.props.id, this.props.config, this.props.data)
     }
-
 
     /**
     * Draw a Horizontal Bar Chart
@@ -32,16 +30,17 @@ class HorizontalBarChart extends React.Component {
     *        { "name": "Colorado", "percent": 18.7, "color": "#FFAA00" },
     *        { "name": "Kansas", "percent": 72.8, "color": "#A3FF73" }
     *       ]
-    * 
     */
     drawChart(id, config, data) {
 
         if (!id || !config || !data) return
 
-        let chart = d3.select(`#${id}ChartContainer`)
+        const chart = d3.select(`#${id}ChartContainer`)
 
+        // Remove older renderings
         chart.selectAll("text").remove()
         chart.select(`#${id}Chart`).selectAll("div").remove()
+        chart.select(".svg-container-chart").remove()
 
         // Title
         chart.select(`#${id}Title`).append("text")
@@ -53,29 +52,34 @@ class HorizontalBarChart extends React.Component {
 
         chart.transition()
 
-        let width = 480,
-            height = 400 - config.margins.top - config.margins.bottom,
+        // This will specify the aspect ratio not the actual size of the chart.
+        // The svg is responsive and will scale to fill parent.
+        const width = 480,
+            height = 400,
             opacityHover = 1,
             otherOpacityOnHover = .8;
 
-        let x = d3.scaleLinear().range([0, width]);
-        let y = d3.scaleBand().range([height, 0]);
+        // Define x and y type and scales
+        const x = d3.scaleLinear().range([0, width]);
+        const y = d3.scaleBand().range([height, 0]);
 
-        let max = data.map(d => { return d[config.xAxis.key] }).sort(function (a, b) { return a - b; })[data.length - 1]
+        // Determine domain 
+        const max = data.map(d => { return d[config.xAxis.key] }).sort(function (a, b) { return a - b; })[data.length - 1]
         x.domain([0, max]);
         y.domain(data.map(function (d) { return d.Risk; })).padding(0.1);
 
-        let xAxis = d3.axisBottom(x)
+        // Create the x-axis
+        const xAxis = d3.axisBottom(x)
             .ticks(config.xAxis.ticks)
             .tickFormat(config.xAxis.tickFormat)
 
-        let yAxis = d3.axisLeft(y)
+        // Create the y-axis
+        const yAxis = d3.axisLeft(y)
             .ticks(config.yAxis.ticks)
             .tickFormat(config.yAxis.tickFormat)
 
-        chart.select(".svg-container-chart").remove()
-
-        let svg = chart.select(`#${id}Chart`)
+        // Create a responsive svg element
+        const svg = chart.select(`#${id}Chart`)
             .append("div")
             .classed("svg-container-chart", true)
             .append("svg")
@@ -88,25 +92,22 @@ class HorizontalBarChart extends React.Component {
             .append("g")
             .attr("transform", "translate(" + config.margins.left + "," + 0 + ")");
 
-
+        // Add the x-axis to the svg
         svg.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + height + ")")
             .attr("font-size", "11px")
             .call(xAxis);
 
+        // Add the y-axis to the svg
         svg.append("g")
             .attr("transform", "translate(" + -1 + "," + 0 + ")")
             .attr("class", "y axis")
             .attr("font-size", "11px")
-            .call(yAxis)
+            .call(yAxis);
 
-
-        var tooltip = chart.select(`#${id}Chart`).append("div")
-            .attr("class", "chartTooltip")
-            .style("opacity", 0);
-
-        svg.selectAll(".bar")
+        // Add the horizontal bars
+        const bars = svg.selectAll(".bar")
             .data(data)
             .enter().append("rect")
             .attr("class", "bar")
@@ -114,38 +115,49 @@ class HorizontalBarChart extends React.Component {
             .attr("height", y.bandwidth())
             .attr("fill", function (d) { return d.color })
             .attr("y", function (d) { return y(d[config.yAxis.key]); })
-            .attr("width", function (d) { return x(d[config.xAxis.key]); })
-            .on("mouseover", function (d) {
-                d3.selectAll('rect')
-                    .style("opacity", otherOpacityOnHover);
-                d3.select(this)
-                    .style("opacity", opacityHover);
-                tooltip.transition()
-                    .duration(200)
-                    .style("opacity", .9);
-                tooltip.html(config.tooltip.label(d))
-                    .style("left", (d3.event.pageX) + "px")
-                    .style("top", (d3.event.pageY - 28) + "px")
-                    .style("border", `3px solid ${d.color}`);
-            })
-            .on("mouseout", function (d) {
-                tooltip.transition()
-                    .duration(500)
-                    .style("opacity", 0);
-            });
+            .attr("width", function (d) { return x(d[config.xAxis.key]); });
 
-        // Label for the x axis
+        // Add a div inside chart for tooltips
+        const tooltip = chart.select(`#${id}Chart`)
+            .append("div")
+            .attr("class", "chartTooltip")
+            .style("opacity", 0);
+
+        // Add tooltip functionality on mouseOver
+        bars.on("mouseover", function (d) {
+            d3.selectAll('rect')
+                .style("opacity", otherOpacityOnHover);
+            d3.select(this)
+                .style("opacity", opacityHover);
+            tooltip.transition()
+                .duration(200)
+                .style("opacity", .9);
+            tooltip.html(config.tooltip.label(d))
+                .style("left", (d3.event.pageX) + "px")
+                .style("top", (d3.event.pageY - 28) + "px")
+                .style("border", `3px solid ${d.color}`);
+        });
+
+        // Add tooltip functionality on mouseOut
+        bars.on("mouseout", function (d) {
+            d3.selectAll('rect')
+                .style("opacity", opacityHover);
+            tooltip.transition()
+                .duration(500)
+                .style("opacity", 0);
+        });
+
+        // Add a label for the x-axis.
         svg.append("g")
             .append("text")
-            .attr("y", height + config.margins.bottom + config.margins.top - 5)
+            .attr("y", height + config.margins.top + 25)
             .attr("x", width / 2)
             .attr("fill", "rgb(0, 0, 0)")
             .attr("font-size", "14px")
             .style("text-anchor", "middle")
             .text(config.xAxis.label);
 
-
-        // Label for the y axis
+        // Add a label for the y-axis.
         svg.append("g")
             .append("text")
             .attr("transform", "rotate(-90)")
@@ -181,4 +193,3 @@ class HorizontalBarChart extends React.Component {
     }
 }
 export default HorizontalBarChart;
-

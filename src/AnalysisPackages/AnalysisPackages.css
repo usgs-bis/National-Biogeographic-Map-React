@@ -27,3 +27,13 @@
     font-size: 14px;
     color: white;
 }
+
+.chart-headers{
+text-align: center;
+}
+.submit-analysis-btn{
+    margin: 2%;
+    color: white;
+    background: grey;
+    border-radius: 5px;
+}

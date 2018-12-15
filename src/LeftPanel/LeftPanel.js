@@ -151,6 +151,7 @@ class LeftPanel extends React.Component {
                 <div className="nbm-flex-row-no-padding">
                     <FirstLeafAnalysis
                         feature_id={this.state.feature_id}
+                        feature_name={this.state.feature_name}
                         yearMin={this.props.yearMin}
                         yearMax={this.props.yearMax}
                     />

@@ -1,7 +1,7 @@
 import React from "react";
 import * as d3 from "d3";
 
-import "./NFHPChart.css"
+import "./Chart.css"
 
 class BoxAndWhiskerChart extends React.Component {
     constructor(props) {
@@ -10,175 +10,318 @@ class BoxAndWhiskerChart extends React.Component {
     }
 
     componentDidUpdate() {
-        this.drawChart()
+        this.drawChart(this.props.id, this.props.config, this.props.data)
     }
 
-    drawChart() {
-        const data = this.props.data
-        if (!data) {
-            return
-        }
-        let NFHP = d3.select("#NFHPPlot")
+    /**
+   * Draw a Box and Whisker Chart
+   * @param {string} id - name to prefix dom elements 
+   * @param {*} config - used to style the chart
+   * @param {*} data - used to build the chart
+   * 
+   * ex. congig = {
+   *        margins:{left:1,right:10,top:1,bottom:20},
+   *        chart: {title:"United States",subtitle:"Population over Time"},
+   *        xAxis:{label:"Percent Population"},
+   *        yAxis:{label:"State"}
+   *       }
+   * ex. data = {
+   *        2011 : [1,2,3,4,5,6],
+   *        2012 : [1,2,3,4,5,6]
+   *        2013 : [1,2,3,4,5,6]
+   *       }
+   */
+    drawChart(id, config, data) {
 
-        NFHP.selectAll("text").remove()
+        if (!id || !config || !data) return
 
-        data.scored_km = parseFloat(data.scored_km);
-        data.not_scored_km = parseFloat(data.not_scored_km)
-        let val1 = numberWithCommas((data.scored_km).toFixed(0))
-        let val2 = numberWithCommas((data.scored_km + data.not_scored_km).toFixed(0))
-        let title = 'Risk to Fish Habitat Degradation in ' + data.place_name;
-        let subTitle = 'Fish habitat condition was scored on ' + val1 + ' of ' + val2 + ' NHDPlusV1 stream kilometers within ' + data.place_name;
+        const chart = d3.select(`#${id}ChartContainer`)
+
+        // Remove older renderings
+        chart.selectAll("text").remove()
+        chart.select(`#${id}Chart`).selectAll("div").remove()
+        chart.select(".svg-container-chart").remove()
 
         // Title
-        NFHP.select("#NFHPTitle").append("text")
-            .text(title);
+        chart.select(`#${id}Title`).append("text")
+            .text(config.chart.title);
 
         // Subtitle
-        NFHP.select("#NFHPSubTitle").append("text")
-            .text(subTitle);
+        chart.select(`#${id}Subtitle`).append("text")
+            .text(config.chart.subtitle);
 
-        NFHP.transition()
+        chart.transition()
 
-        function getPercent(value) {
-            value = parseFloat(value)
-            return parseFloat(((value / data.scored_km) * 100).toFixed(1))
+        // This will specify the aspect ratio not the actual size of the chart.
+        // The svg is responsive and will scale to fill parent.
+        const width = 480,
+            height = 400,
+            opacityHover = 1,
+            otherOpacityOnHover = .8;
+
+        const years = Object.getOwnPropertyNames(data)
+        const reducer = (accumulator, currentValue) => accumulator + currentValue;
+        let dataSummary = {}
+        let yDomain = []
+
+        // sort the data and produce summary statistics as well as determine y-domain 
+        for (let year of years) {
+            data[year].sort((a, b) => (parseInt(a) < parseInt(b)) ? 1 : ((parseInt(b) < parseInt(a)) ? -1 : 0));
+            yDomain.push(data[year][0])
+            yDomain.push(data[year][data[year].length - 1])
+            let summary = {
+                mean: data[year].reduce(reducer) / data[year].length,
+                median: data[year][parseInt(data[year].length / 2)],
+                maximum: data[year][0],
+                minimum: data[year][parseInt(data[year].length - 1)]
+            }
+            dataSummary[year] = summary
         }
-        let chartData = [
-            { "Risk": "Very high", "Percent": getPercent(data.veryhigh_km), "color": "#FF0000" },
-            { "Risk": "High", "Percent": getPercent(data.high_km), "color": "#FFAA00" },
-            { "Risk": "Moderate", "Percent": getPercent(data.moderate_km), "color": "#A3FF73" },
-            { "Risk": "Low", "Percent": getPercent(data.low_km), "color": "#00C5FF" },
-            { "Risk": "Very low", "Percent": getPercent(data.verylow_km), "color": "#C500FF" }
-        ]
-        chartData.reverse()
 
-        let margin = { top: 20, right: 20, bottom: 25, left: 75 },
-            width = 480,
-            height = 400 - margin.top - margin.bottom;
+        // Define x and y type and scales
+        const x = d3.scalePoint();
+        const y = d3.scaleLinear();
 
+        // Set domain
+        x.domain(Object.keys(data))
+            .rangeRound([0, width])
+            .padding([0.5]);
 
-        let x = d3.scaleLinear().range([0, width]);
-        let y = d3.scaleBand().range([height, 0]);
+        y.domain([d3.min(yDomain) - 5, d3.max(yDomain) + 5])
+            .range([height, 0]);
 
-        let max = chartData.map(d => { return d.Percent }).sort(function (a, b) { return a - b; })[chartData.length - 1]
-        x.domain([0, max]);
-        y.domain(chartData.map(function(d) { return d.Risk; })).padding(0.1);
+        // scale plot width to number of years
+        const barWidth = (35 - years.length) > 5 ? (35 - years.length) : 5
 
-        let xAxis = d3.axisBottom(x)
+        // Create the x-axis
+        const xAxis = d3.axisBottom(x);
+
+        // Create the y-axis
+        const yAxis = d3.axisLeft(y)
             .ticks(5)
-            .tickFormat(function (d) { return `${parseInt(d)}%` })
+            .tickFormat((d) => { return dateFromDay(2018, (d)) });
 
-        let yAxis = d3.axisLeft(y)
+        // Prepare the data for the box plots
+        let boxPlotData = [];
+        for (let [key, groupCount] of Object.entries(data)) {
 
-        NFHP.select(".svg-container-plot").remove()
+            let record = {};
+            let localMin = d3.min(groupCount);
+            let localMax = d3.max(groupCount);
 
-        let svg = NFHP.select(`#NFHPChart`)
+            record["key"] = key;
+            record["counts"] = groupCount;
+            record["quartile"] = boxQuartiles(groupCount);
+            record["whiskers"] = [localMin, localMax];
+
+            boxPlotData.push(record);
+        }
+
+        // Create a responsive svg element
+        const svg = chart.select(`#${id}Chart`)
             .append("div")
-            .classed("svg-container-plot", true)
+            .classed("svg-container-chart", true)
             .append("svg")
             .attr("preserveAspectRatio", "xMinYMin meet")
-            .attr("viewBox", "0 0 " + (width + margin.left + margin.right) + " " + (height + margin.top + margin.bottom))
+            .attr("viewBox", "0 0 " + (width + config.margins.left + config.margins.right) + " " + (height + config.margins.top + config.margins.bottom))
             .classed("svg-content-responsive", true)
             .attr("version", "1.1")
             .attr("baseProfile", "full")
             .attr("xmlns", "http://www.w3.org/2000/svg")
             .append("g")
-            .attr("transform", "translate(" + margin.left + "," + 0 + ")");
+            .attr("transform", "translate(" + config.margins.left + "," + 0 + ")");
 
-
+        // Add the x-axis to the svg
         svg.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + height + ")")
             .attr("font-size", "11px")
             .call(xAxis);
 
+        // Add the y-axis to the svg
         svg.append("g")
-            .attr("transform", "translate(" + -1+ "," + 0 + ")")
+            .attr("transform", "translate(" + -1 + "," + 0 + ")")
             .attr("class", "y axis")
             .attr("font-size", "11px")
-            .call(yAxis)
+            .call(yAxis);
 
-        let div = NFHP.select(`#NFHPChart`)
+        // Setup the group the box plot elements will render in
+        const g = svg.append("g")
+            .attr("transform", `translate(-${parseInt(barWidth / 2)},0)`);
+
+        // Draw the box plot vertical lines
+        g.selectAll(".verticalLines")
+            .data(boxPlotData)
+            .enter()
+            .append("line")
+            .attr("x1", function (datum) {return x(datum.key) + barWidth / 2;})
+            .attr("y1", function (datum) {let whisker = datum.whiskers[0];return y(whisker);})
+            .attr("x2", function (datum) {return x(datum.key) + barWidth / 2;})
+            .attr("y2", function (datum) {return y(datum.whiskers[1]);})
+            .attr("stroke", "#000")
+            .attr("stroke-width", 1)
+            .attr("fill", "none");
+
+        // Add a div inside chart for tooltips
+        const tooltip = chart.select(`#${id}Chart`)
             .append("div")
-            .attr("class", "chartTooltip NFHPToolTip")
-            .style("opacity", 0)
-            .style("border", "3px solid rgb(56, 155, 198)");
+            .attr("class", "chartTooltip")
+            .style("opacity", 0);
 
-        svg.selectAll(".bar")
-            .data(chartData)
-            .enter().append("rect")
-            .attr("class", "bar")
-            .attr("x", 0)
-            .attr("height", y.bandwidth())
-            .attr("fill", function (d) { return d.color })
-            .attr("y", function (d) { return y(d.Risk); })
-            .attr("width", function (d) { return x(d.Percent); })
-            .on("mouseover", function (d) {
-                // d3.select(this)
-                //     .attr("fill", "rgb(45, 125, 159)");
-                div.transition()
-                    .duration(200)
-                    .style("opacity", .9);
-                div.html(toolTipLabel(d))
-                    .style("left", (d3.event.layerX < 300 ? d3.event.layerX + 10 : d3.event.layerX - 100) + "px")
-                    .style("top", (d3.event.layerY) + "px")
-                    .style("border", `3px solid ${d.color}`);
-
+        // Draw the boxes of the box plot on top of vertical lines
+        const boxes = g.selectAll("rect")
+            .data(boxPlotData)
+            .enter()
+            .append("rect")
+            .attr("width", barWidth)
+            .attr("height", function (datum) {
+                let quartiles = datum.quartile;
+                let height = y(quartiles[2]) - y(quartiles[0]);
+                return height;
             })
-            .on("mouseout", function (d) {
-                //   d3.select(this).attr("fill", function (d) { return d.color });
-                div.transition()
-                    .duration(500)
-                    .style("opacity", 0);
+            .attr("x", function (datum) {return x(datum.key);})
+            .attr("y", function (datum) {return y(datum.quartile[0]);})
+            .attr("fill", function (datum) {return datum.color;})
+            .attr("fill", "rgb(56, 155, 198)")
+            .attr("stroke", "#000")
+            .attr("stroke-width", 1);
 
-            });
+        // Add tooltip functionality on mouseOver
+        boxes.on("mouseover", function (d) {
+            d3.selectAll('rect')
+                .style("opacity", otherOpacityOnHover);
+            d3.select(this)
+                .style("opacity", opacityHover);
+            tooltip.transition()
+                .duration(200)
+                .style("opacity", .9);
+            tooltip.html(toolTipLabel(d))
+                .style("left", (d3.event.pageX) + "px")
+                .style("top", (d3.event.pageY - 28) + "px")
+                .style("border", `3px solid ${d.color}`);
+        });
 
-        // text label for the x axis
+        // Add tooltip functionality on mouseOut
+        boxes.on("mouseout", function (d) {
+            d3.selectAll('rect')
+                .style("opacity", opacityHover);
+            tooltip.transition()
+                .duration(500)
+                .style("opacity", 0);
+        });
+
+        // Add a label for the x-axis.
         svg.append("g")
             .append("text")
-            .attr("y", height + margin.bottom + margin.top - 5)
+            .attr("y", height + config.margins.top + 25)
             .attr("x", width / 2)
             .attr("fill", "rgb(0, 0, 0)")
             .attr("font-size", "14px")
             .style("text-anchor", "middle")
-            .text("NFHP Scored Stream Kilometers [%]");
+            .text(config.xAxis.label);
 
-
-        // text label for the y axis
+        // Add a label for the y-axis.
         svg.append("g")
             .append("text")
             .attr("transform", "rotate(-90)")
-            .attr("y", 0 - margin.left)
+            .attr("y", 0 - config.margins.left)
             .attr("x", 0 - (height / 2))
             .attr("dy", "1em")
             .attr("fill", "rgb(0, 0, 0)")
             .attr("font-size", "14px")
             .style("text-anchor", "middle")
-            .text("Risk To Fish Habitat Degradation");
+            .text(config.yAxis.label);
 
+        // Now render all the horizontal lines  - the whiskers
+        const horizontalLineConfigs = [
+            // Top whisker
+            {
+                x1: function (datum) { return x(datum.key) },
+                y1: function (datum) { return y(datum.whiskers[0]) },
+                x2: function (datum) { return x(datum.key) + barWidth },
+                y2: function (datum) { return y(datum.whiskers[0]) }
+            },
+
+            // Bottom whisker
+            {
+                x1: function (datum) { return x(datum.key) },
+                y1: function (datum) { return y(datum.whiskers[1]) },
+                x2: function (datum) { return x(datum.key) + barWidth },
+                y2: function (datum) { return y(datum.whiskers[1]) }
+            }
+        ];
+
+        for (let i = 0; i < horizontalLineConfigs.length; i++) {
+            let lineConfig = horizontalLineConfigs[i];
+
+            // Draw the whiskers at the min for this series
+            g.selectAll(".whiskers")
+                .data(boxPlotData)
+                .enter()
+                .append("line")
+                .attr("x1", lineConfig.x1)
+                .attr("y1", lineConfig.y1)
+                .attr("x2", lineConfig.x2)
+                .attr("y2", lineConfig.y2)
+                .attr("stroke", "#000")
+                .attr("stroke-width", 1)
+                .attr("fill", "none");
+        }
+
+        // draw median line separate in red
+        const median =
+        {
+            x1: function (datum) { return x(datum.key) },
+            y1: function (datum) { return y(datum.quartile[1]) },
+            x2: function (datum) { return x(datum.key) + barWidth },
+            y2: function (datum) { return y(datum.quartile[1]) }
+        }
+        g.selectAll(".whiskers")
+            .data(boxPlotData)
+            .enter()
+            .append("line")
+            .attr("x1", median.x1)
+            .attr("y1", median.y1)
+            .attr("x2", median.x2)
+            .attr("y2", median.y2)
+            .attr("stroke", "#FF0000")
+            .attr("stroke-width", 1)
+            .attr("fill", "rgb(255, 0, 0)")
+            .attr("class", " boxAndWhiskerMedianLine");
+
+        function boxQuartiles(d) {
+            return [
+                d3.quantile(d, .25),
+                d3.quantile(d, .5),
+                d3.quantile(d, .75)
+            ];
+        }
 
         function toolTipLabel(d) {
-
-            return `<p>${d.Risk}: ${d.Percent}%</p>`
-
+            return "Year: <b>" + d.key + "</b><br>" +
+                "Mean: <b>" + dateFromDay(2018, dataSummary[d.key].mean, d.key) + "</b><br>" +
+                "Median: <b>" + dateFromDay(2018, dataSummary[d.key].median, d.key) + "</b><br>" +
+                "Minimum: <b>" + dateFromDay(2018, dataSummary[d.key].minimum, d.key) + "</b><br>" +
+                "Maximum: <b>" + dateFromDay(2018, dataSummary[d.key].maximum, d.key) + "</b><br>"
         }
-    }
 
+        function dateFromDay(year, day) {
+            const formatTime = d3.timeFormat("%b %d");
+            let date = new Date(year, 0);
+            return formatTime(new Date(date.setDate(day)));
+        }
+
+    }
     render() {
         const divs = () => {
             if (this.props.data) {
+                const id = this.props.id
                 return (
                     <div>
-                        <div id="NFHPPlot">
-                            <div id="NFHPTitle">
-
-                            </div>
-                            <div id="NFHPSubTitle">
-
-                            </div>
-                            <div id="NFHPChart">
-
-                            </div>
+                        <div id={id + 'ChartContainer'} className="chart-container">
+                            <div id={id + 'Title'} className="title"></div>
+                            <div id={id + 'Subtitle'} className="subtitle"></div>
+                            <div id={id + 'Chart'} className="chart"></div>
                         </div>
                     </div>
                 );
@@ -192,7 +335,3 @@ class BoxAndWhiskerChart extends React.Component {
     }
 }
 export default BoxAndWhiskerChart;
-
-const numberWithCommas = (x) => {
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}

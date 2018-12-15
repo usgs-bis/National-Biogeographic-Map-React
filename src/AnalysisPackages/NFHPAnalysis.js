@@ -3,7 +3,6 @@ import { Collapse } from "reactstrap"
 import { Glyphicon } from "react-bootstrap";
 
 import HorizontalBarChart from "../Charts/HorizontalBarChart";
-
 import "./AnalysisPackages.css";
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/5aa2b21ae4b0b1c392e9d968?format=json"
@@ -20,7 +19,6 @@ class NFHPAnalysis extends React.Component {
             charts: {
                 horizontalBarChart: { id: "", config: {}, data: null }
             },
-            display:false,
             title: properties.title,
             submitted: false,
             isOpen: false,
@@ -66,12 +64,10 @@ class NFHPAnalysis extends React.Component {
                             const charts = this.getCharts({ horizontalBarChart: result.hits.hits[0]._source.properties })
                             this.setState({
                                 charts: charts,
-                                display:true,
                                 submitted: true
                             })
                         } else {
                             this.setState({
-                                data: null,
                                 submitted: true
                             })
                         }
@@ -87,7 +83,7 @@ class NFHPAnalysis extends React.Component {
 
     /**
     * Loop through the charts defined in the state and look for a data object in datas that matches. 
-    * Create the chart id, data,  and config as documented in the chart type. 
+    * Create the chart id, data, and config as documented in the chart type. 
     * @param {Object {}} datas - one enrty for each chart named the same as defined in the state
     */
     getCharts(datas) {
@@ -108,14 +104,14 @@ class NFHPAnalysis extends React.Component {
 
                 const data = datas[chart]
 
-                const chartId = "NFHP"
+                const chartId = "NFHP_HorizontalBarChart"
 
                 const chartConfig = {
-                    margins: { left: 100, right:20 , top: 20, bottom: 30 },
+                    margins: { left: 100, right: 20, top: 20, bottom: 70 },
                     chart: { title: `Risk to Fish Habitat Degradation ${data.place_name}`, subtitle: `Fish habitat condition was scored on ${numberWithCommas(parseFloat(data.scored_km).toFixed(0))} of ${numberWithCommas((parseFloat(data.scored_km) + parseFloat(data.not_scored_km)).toFixed(0))}' NHDPlusV1 stream kilometers within ${data.place_name}` },
-                    xAxis: { key:'Percent', label: "NFHP Scored Stream Kilometers [%]", ticks: 5, tickFormat: (d) => { return `${parseInt(d)}%` } },
+                    xAxis: { key: 'Percent', label: "NFHP Scored Stream Kilometers [%]", ticks: 5, tickFormat: (d) => { return `${parseInt(d)}%` } },
                     yAxis: { key: 'Risk', label: "Risk To Fish Habitat Degradation", ticks: 5, tickFormat: (d) => { return d } },
-                    tooltip:{label:(d)=>{return `<p>${d.Risk}: ${d.Percent}%</p>`}}
+                    tooltip: { label: (d) => { return `<p>${d.Risk}: ${d.Percent}%</p>` } }
                 }
 
                 const chartData = [
@@ -131,13 +127,12 @@ class NFHPAnalysis extends React.Component {
             }
         }
         return charts
-       
     }
 
     render() {
         return (
             <div
-                style={{ display: this.state.submitted && !this.state.display ? "none" : "block" }}
+                style={{ display: 'block' }}
                 className="nbm-flex-row-no-padding">
                 <span onClick={this.toggleDropdown} className="bapTitle">
                     {this.state.title}
