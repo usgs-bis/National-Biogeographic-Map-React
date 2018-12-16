@@ -103,9 +103,7 @@ class NFHPAnalysis extends React.Component {
             if (chart.toString() === "horizontalBarChart" && datas[chart]) {
 
                 const data = datas[chart]
-
                 const chartId = "NFHP_HorizontalBarChart"
-
                 const chartConfig = {
                     margins: { left: 100, right: 20, top: 20, bottom: 70 },
                     chart: { title: `Risk to Fish Habitat Degradation ${data.place_name}`, subtitle: `Fish habitat condition was scored on ${numberWithCommas(parseFloat(data.scored_km).toFixed(0))} of ${numberWithCommas((parseFloat(data.scored_km) + parseFloat(data.not_scored_km)).toFixed(0))}' NHDPlusV1 stream kilometers within ${data.place_name}` },
@@ -113,7 +111,6 @@ class NFHPAnalysis extends React.Component {
                     yAxis: { key: 'Risk', label: "Risk To Fish Habitat Degradation", ticks: 5, tickFormat: (d) => { return d } },
                     tooltip: { label: (d) => { return `<p>${d.Risk}: ${d.Percent}%</p>` } }
                 }
-
                 const chartData = [
                     { "Risk": "Very high", "Percent": getPercent(data.veryhigh_km, data.scored_km), "color": "#FF0000" },
                     { "Risk": "High", "Percent": getPercent(data.high_km, data.scored_km), "color": "#FFAA00" },
@@ -122,7 +119,6 @@ class NFHPAnalysis extends React.Component {
                     { "Risk": "Very low", "Percent": getPercent(data.verylow_km, data.scored_km), "color": "#C500FF" }
                 ]
                 chartData.reverse()
-
                 charts[chart] = { id: chartId, config: chartConfig, data: chartData }
             }
         }

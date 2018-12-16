@@ -3,6 +3,7 @@ import { Collapse } from "reactstrap"
 import { Glyphicon } from "react-bootstrap";
 
 import BoxAndWhiskerChart from "../Charts/BoxAndWhiskerChart";
+import HistogramChart from "../Charts/HistogramChart";
 import "./AnalysisPackages.css";
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/58bf0b61e4b014cc3a3a9c10?format=json"
@@ -107,10 +108,14 @@ class FirstLeafAnalysis extends React.Component {
         for (let chart of Object.keys(this.state.charts)) {
 
             if (chart.toString() === "histogram" && datas[chart]) {
-                // To Do
                 const data = datas[chart]
                 const chartId = "FL_Histogram"
-                const chartConfig = {}
+                const chartConfig = {
+                    margins: { left: 80, right: 20, top: 20, bottom: 70 },
+                    chart: { title: `First Leaf Spring Index for ${this.props.feature_name}`, subtitle: `All Years for the Period ${this.props.yearMin} to ${this.props.yearMax}` },
+                    xAxis: { label: "Day of Year" },
+                    yAxis: { label: "Number of Grid Cells" }
+                }
                 const chartData = data
                 charts[chart] = { id: chartId, config: chartConfig, data: chartData }
             }
@@ -152,10 +157,11 @@ class FirstLeafAnalysis extends React.Component {
                 </span>
                 <Collapse className="settings-dropdown" isOpen={this.state.isOpen}>
                     <div className="chartsDiv">
-                        <div className ="chart-headers" >
+                        <div className="chart-headers" >
                             Range: {this.props.yearMin} -  {this.props.yearMax}
                             <button className="submit-analysis-btn" onClick={this.submitAnalysis}>Submit</button>
                         </div>
+                        <HistogramChart data={this.state.charts.histogram.data} id={this.state.charts.histogram.id} config={this.state.charts.histogram.config} />
                         <BoxAndWhiskerChart data={this.state.charts.boxAndWhisker.data} id={this.state.charts.boxAndWhisker.id} config={this.state.charts.boxAndWhisker.config} />
                     </div>
                 </Collapse>
