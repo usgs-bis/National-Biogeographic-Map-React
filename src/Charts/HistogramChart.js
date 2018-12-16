@@ -1,8 +1,9 @@
 import React from "react";
 import * as d3 from "d3";
+
 import "./Chart.css"
 
-class HorizontalBarChart extends React.Component {
+class HistogramChart extends React.Component {
     constructor(props) {
         super(props)
         this.drawChart = this.drawChart.bind(this);
@@ -13,24 +14,23 @@ class HorizontalBarChart extends React.Component {
     }
 
     /**
-    * Draw a Horizontal Bar Chart
-    * @param {string} id - name to prefix dom elements 
-    * @param {*} config - used to style the chart
-    * @param {*} data - used to build the chart
-    * 
-    * ex. congig = {
-    *        margins:{left:1,right:10,top:1,bottom:20},
-    *        chart: {title:"United States",subtitle:"Population over Time"},
-    *        xAxis:{key:'percent',label:"Percent Population", ticks:5, tickFormat:(d)=>{return d.percent + "%"}},
-    *        yAxis:{key:'state',label:"State", ticks:5, tickFormat:(d)=>{return d.name}},
-    *        tooltip:{label:(d)=>{return 'label'}}
-    *       }
-    * ex. data = [
-    *        { "name": "Delaware", "percent": 10.4, "color": "#FF0000" },
-    *        { "name": "Colorado", "percent": 18.7, "color": "#FFAA00" },
-    *        { "name": "Kansas", "percent": 72.8, "color": "#A3FF73" }
-    *       ]
-    */
+   * Draw a Box and Whisker Chart
+   * @param {string} id - name to prefix dom elements 
+   * @param {*} config - used to style the chart
+   * @param {*} data - used to build the chart
+   * 
+   * ex. congig = {
+   *        margins:{left:1,right:10,top:1,bottom:20},
+   *        chart: {title:"United States",subtitle:"Population over Time"},
+   *        xAxis:{label:"Percent Population"},
+   *        yAxis:{label:"State"}
+   *       }
+   * ex. data = {
+   *        2011 : [1,2,3,4,5,6],
+   *        2012 : [1,2,3,4,5,6]
+   *        2013 : [1,2,3,4,5,6]
+   *       }
+   */
     drawChart(id, config, data) {
 
         if (!id || !config || !data) return
@@ -60,23 +60,31 @@ class HorizontalBarChart extends React.Component {
             otherOpacityOnHover = .8;
 
         // Define x and y type and scales
-        const x = d3.scaleLinear().range([0, width]);
-        const y = d3.scaleBand().range([height, 0]);
+        const x = d3.scaleLinear().rangeRound([0, width]);
+        const y = d3.scaleLinear().range([height, 0]);
 
-        // Determine domain 
-        const max = data.map(d => { return d[config.xAxis.key] }).sort(function (a, b) { return a - b; })[data.length - 1]
-        x.domain([0, max]);
-        y.domain(data.map(function (d) { return d.Risk; })).padding(0.1);
+        const years = Object.getOwnPropertyNames(data)
+
+        //  TODO globals for tooltip, will want to change
+        let totalCount = 0;
+        const startYear = years[0];
+        const endYear = years[years.length - 1];
+
+        const buk = 3 // will change to be set by user
+        data = processData(data, buk)
+
+        // Get and set domain
+        const domain = getDomain(data)
+        x.domain([domain.xMin + 1, domain.xMax + 2]);
+        y.domain([0, domain.yMax]);
 
         // Create the x-axis
         const xAxis = d3.axisBottom(x)
-            .ticks(config.xAxis.ticks)
-            .tickFormat(config.xAxis.tickFormat)
+            .ticks(5)
+            .tickFormat(x => { return dateFromDay(2018, (x) * buk) })
 
         // Create the y-axis
         const yAxis = d3.axisLeft(y)
-            .ticks(config.yAxis.ticks)
-            .tickFormat(config.yAxis.tickFormat)
 
         // Create a responsive svg element
         const svg = chart.select(`#${id}Chart`)
@@ -106,16 +114,17 @@ class HorizontalBarChart extends React.Component {
             .attr("font-size", "11px")
             .call(yAxis);
 
-        // Add the horizontal bars
+        // Add the histogram bars
         const bars = svg.selectAll(".bar")
             .data(data)
             .enter().append("rect")
             .attr("class", "bar")
-            .attr("x", 0)
-            .attr("height", y.bandwidth())
-            .attr("fill", function (d) { return d.color })
-            .attr("y", function (d) { return y(d[config.yAxis.key]); })
-            .attr("width", function (d) { return x(d[config.xAxis.key]); });
+            .attr("fill", "rgb(56, 155, 198)")
+            .attr("stroke", "rgb(0, 0, 0)")
+            .attr("x", function (d) { return x(d.day); })
+            .attr("width", width / (1 + (domain.xMax - domain.xMin)))
+            .attr("y", function (d) { return y(d.count); })
+            .attr("height", function (d) { return height - y(d.count); })
 
         // Add a div inside chart for tooltips
         const tooltip = chart.select(`#${id}Chart`)
@@ -132,7 +141,7 @@ class HorizontalBarChart extends React.Component {
             tooltip.transition()
                 .duration(200)
                 .style("opacity", .9);
-            tooltip.html(config.tooltip.label(d))
+            tooltip.html(toolTipLabel(d, buk))
                 .style("left", (d3.event.pageX) + "px")
                 .style("top", (d3.event.pageY - 28) + "px")
                 .style("border", `3px solid ${d.color}`);
@@ -168,8 +177,84 @@ class HorizontalBarChart extends React.Component {
             .attr("font-size", "14px")
             .style("text-anchor", "middle")
             .text(config.yAxis.label);
-    }
 
+        function emptyYear() {
+            let year = new Array(366)
+            for (let i = 0; i < year.length; i++) {
+                year[i] = 0
+            }
+            return year
+        };
+
+        function processData(rawData, factor) {
+            let days_of_year = emptyYear()
+            let processedData = []
+            totalCount = 0;
+            for (let currentYear in rawData) {
+                for (let i = 0; i < rawData[currentYear].length; i++) {
+                    days_of_year[rawData[currentYear][i]] += 1
+                    totalCount++;
+                }
+            }
+            let bucket_days_of_year = transformData(days_of_year, factor)
+            for (let i = 0; i < bucket_days_of_year.length; i++) {
+                let c = bucket_days_of_year[i]
+                processedData.push({ day: i + 1, count: c })
+            }
+            return processedData
+        };
+
+
+        function transformData(rawData, factor) {
+            let transformedData = []
+            for (let i = 0; i < rawData.length - factor; i += factor) {
+                let sum = 0
+                for (let j = 0; j < factor; j++) {
+                    sum += rawData[i + j]
+                }
+                transformedData.push(sum)
+            }
+            return transformedData
+        };
+
+        function getDomain(rawData) {
+            let xMin = 365;
+            let xMax = 0;
+            let yMax = 0;
+            for (let i = 0; i < rawData.length; i++) {
+                let c = rawData[i].count
+                if (c > yMax) { yMax = c; }
+                if (c > 0 && i < xMin) { xMin = i; }
+                else if (c > 0 && i > xMax) { xMax = i; }
+            }
+            return { xMin: xMin, xMax: xMax, yMax: yMax };
+        };
+
+
+        function toolTipLabel(d, buk) {
+            var percentage = parseInt(parseInt(d.count) / parseInt(totalCount) * 100);
+            if (percentage < 1) {
+                percentage = '< 1';
+            }
+            else {
+                percentage = percentage.toString();
+            }
+            let count = `Number of Grid Cells: <label>${parseInt(d.count)} </label> of <label>${parseInt(totalCount)} </label> ( ~ ${percentage}%)<br />  Number of Grid Cells = values that occur ${dateFromDay(2018, (d.day * buk) + 1)} to ${dateFromDay(2018, (d.day * buk) + buk)} for all selected years (${startYear} to ${endYear}). <br />`
+            if (buk === 1) {
+                return ` <p>  Day: <label> ${dateFromDay(2018, d.day)} </label><br />${count} </p>`
+            }
+            else {
+                return `<p> Days: <label> ${dateFromDay(2018, (d.day * buk) + 1)} </label> to <label> ${dateFromDay(2018, (d.day * buk) + buk)} </label><br />${count} </p>`
+            }
+        }
+
+        function dateFromDay(year, day) {
+            const formatTime = d3.timeFormat("%b %d");
+            let date = new Date(year, 0);
+            return formatTime(new Date(date.setDate(day)));
+        }
+
+    }
     render() {
         const divs = () => {
             if (this.props.data) {
@@ -192,4 +277,4 @@ class HorizontalBarChart extends React.Component {
         );
     }
 }
-export default HorizontalBarChart;
+export default HistogramChart;

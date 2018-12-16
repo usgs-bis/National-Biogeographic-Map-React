@@ -188,7 +188,7 @@ class BoxAndWhiskerChart extends React.Component {
 
         // Add tooltip functionality on mouseOver
         boxes.on("mouseover", function (d) {
-            d3.selectAll('rect')
+            chart.selectAll('rect')
                 .style("opacity", otherOpacityOnHover);
             d3.select(this)
                 .style("opacity", opacityHover);
@@ -203,7 +203,7 @@ class BoxAndWhiskerChart extends React.Component {
 
         // Add tooltip functionality on mouseOut
         boxes.on("mouseout", function (d) {
-            d3.selectAll('rect')
+            chart.selectAll('rect')
                 .style("opacity", opacityHover);
             tooltip.transition()
                 .duration(500)
