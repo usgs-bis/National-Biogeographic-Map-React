@@ -62,7 +62,7 @@ class FirstLeafAnalysis extends React.Component {
     }
 
     componentWillReceiveProps(props) {
-        if (props.feature_id) {
+        if (props.feature) {
             this.setState({
                 canSubmit: true
             })
@@ -70,8 +70,8 @@ class FirstLeafAnalysis extends React.Component {
     }
 
     submitAnalysis() {
-        if (this.props.feature_id) {
-            fetch(FIRSTLEAF_URL + `?year_min=${this.props.yearMin}&year_max=${this.props.yearMax}&feature_id=${this.props.feature_id}&token=${PUBLIC_TOKEN}`)
+        if (this.props.feature && this.props.feature.properties.feature_id) {
+            fetch(FIRSTLEAF_URL + `?year_min=${this.props.yearMin}&year_max=${this.props.yearMax}&feature_id=${this.props.feature.properties.feature_id}&token=${PUBLIC_TOKEN}`)
                 .then(res => res.json())
                 .then(
                     (result) => {
@@ -94,6 +94,9 @@ class FirstLeafAnalysis extends React.Component {
                     }
                 )
         }
+        else if (this.props.feature) {
+            // hit with drawn polygon
+        }
     }
 
     /**
@@ -112,7 +115,7 @@ class FirstLeafAnalysis extends React.Component {
                 const chartId = "FL_Histogram"
                 const chartConfig = {
                     margins: { left: 80, right: 20, top: 20, bottom: 70 },
-                    chart: { title: `First Leaf Spring Index for ${this.props.feature_name}`, subtitle: `All Years for the Period ${this.props.yearMin} to ${this.props.yearMax}` },
+                    chart: { title: `First Leaf Spring Index for ${this.props.feature.properties.feature_name}`, subtitle: `All Years for the Period ${this.props.yearMin} to ${this.props.yearMax}` },
                     xAxis: { label: "Day of Year" },
                     yAxis: { label: "Number of Grid Cells" }
                 }

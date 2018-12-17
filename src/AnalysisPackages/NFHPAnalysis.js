@@ -55,8 +55,8 @@ class NFHPAnalysis extends React.Component {
     }
 
     componentWillReceiveProps(props) {
-        if (props.feature_id) {
-            fetch(NFHP_URL + props.feature_id)
+        if (props.feature && props.feature.properties.feature_id) {
+            fetch(NFHP_URL + props.feature.properties.feature_id)
                 .then(res => res.json())
                 .then(
                     (result) => {
@@ -106,7 +106,7 @@ class NFHPAnalysis extends React.Component {
                 const chartId = "NFHP_HorizontalBarChart"
                 const chartConfig = {
                     margins: { left: 100, right: 20, top: 20, bottom: 70 },
-                    chart: { title: `Risk to Fish Habitat Degradation ${data.place_name}`, subtitle: `Fish habitat condition was scored on ${numberWithCommas(parseFloat(data.scored_km).toFixed(0))} of ${numberWithCommas((parseFloat(data.scored_km) + parseFloat(data.not_scored_km)).toFixed(0))}' NHDPlusV1 stream kilometers within ${data.place_name}` },
+                    chart: { title: `Risk to Fish Habitat Degradation ${this.props.feature.properties.feature_name}`, subtitle: `Fish habitat condition was scored on ${numberWithCommas(parseFloat(data.scored_km).toFixed(0))} of ${numberWithCommas((parseFloat(data.scored_km) + parseFloat(data.not_scored_km)).toFixed(0))}' NHDPlusV1 stream kilometers within ${data.place_name}` },
                     xAxis: { key: 'Percent', label: "NFHP Scored Stream Kilometers [%]", ticks: 5, tickFormat: (d) => { return `${parseInt(d)}%` } },
                     yAxis: { key: 'Risk', label: "Risk To Fish Habitat Degradation", ticks: 5, tickFormat: (d) => { return d } },
                     tooltip: { label: (d) => { return `<p>${d.Risk}: ${d.Percent}%</p>` } }
