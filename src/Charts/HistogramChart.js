@@ -10,7 +10,6 @@ class HistogramChart extends React.Component {
     }
 
     componentDidUpdate() {
-        console.log(this.props.bucketSize)
         this.drawChart(this.props.id, this.props.config, this.props.data, parseInt(this.props.bucketSize))
     }
 

@@ -180,7 +180,7 @@ class FirstLeafAnalysis extends React.Component {
                         <div className="chart-headers" >
                             
                             <button className="submit-analysis-btn" onClick={this.submitAnalysis}>Analyze Time Period: {this.props.yearMin} to  {this.props.yearMax}</button>
-                            <div className="bucket-size-div">
+                            <div className="bucket-size-div" style={{ display: this.state.charts.histogram.data ? "block" : "none" }}>
                                 <span>Binwidth: {this.state.bucketSize.value}</span>
                                 <input
                                     ref={(input) => { this.bucketSize = input; }}
@@ -197,7 +197,7 @@ class FirstLeafAnalysis extends React.Component {
                         <BoxAndWhiskerChart data={this.state.charts.boxAndWhisker.data} id={this.state.charts.boxAndWhisker.id} config={this.state.charts.boxAndWhisker.config} />
                         <div className="chart-footers" >
                             <div className="anotations">
-                                First Leaf Spring Index data were provided by the <a href="https://www.usanpn.org">USA National Phenology Network</a>, data retrieved {new Date().toDateString()}
+                                First Leaf Spring Index data was provided by the <a href="https://www.usanpn.org">USA National Phenology Network</a>, data retrieved {new Date().toDateString()}
                                 <br></br>
                                 <br></br>
                                 <a target={"_blank"} href={"https://geoserver-dev.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=average_leaf_prism"}>https://geoserver-dev.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=average_leaf_prism</a>
