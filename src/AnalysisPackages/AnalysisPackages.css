@@ -37,3 +37,26 @@ text-align: center;
     background: grey;
     border-radius: 5px;
 }
+
+.bucket-size-div{
+    width: 90%;
+    margin: auto;
+    text-align: left;
+}
+
+.chart-footers{
+    padding-bottom: 10px;
+    padding-top: 10px;
+}
+
+.chart-footers .anotations{
+    width: 90%;
+    margin: auto;
+    padding: 10px;
+    border-radius: 6px;
+    background-color: rgba(10, 10, 15, .2);
+    min-height: 50px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+
+}

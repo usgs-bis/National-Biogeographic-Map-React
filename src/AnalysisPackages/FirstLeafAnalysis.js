@@ -4,6 +4,7 @@ import { Glyphicon } from "react-bootstrap";
 
 import BoxAndWhiskerChart from "../Charts/BoxAndWhiskerChart";
 import HistogramChart from "../Charts/HistogramChart";
+import RidgelinePlotChart from "../Charts/RidgelinePlotChart";
 import "./AnalysisPackages.css";
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/58bf0b61e4b014cc3a3a9c10?format=json"
@@ -23,6 +24,7 @@ class FirstLeafAnalysis extends React.Component {
                 ridgelinePlot: { id: "", config: {}, data: null },
                 boxAndWhisker: { id: "", config: {}, data: null }
             },
+            bucketSize: { value: 3 },
             title: properties.title,
             submitted: false,
             canSubmit: false,
@@ -33,6 +35,8 @@ class FirstLeafAnalysis extends React.Component {
         this.toggleDropdown = this.toggleDropdown.bind(this)
         this.getCharts = this.getCharts.bind(this)
         this.submitAnalysis = this.submitAnalysis.bind(this)
+        this.setBucketSize = this.setBucketSize.bind(this)
+
 
 
     }
@@ -59,6 +63,8 @@ class FirstLeafAnalysis extends React.Component {
                     });
                 }
             )
+        this.setBucketSize()
+
     }
 
     componentWillReceiveProps(props) {
@@ -126,7 +132,12 @@ class FirstLeafAnalysis extends React.Component {
                 // To Do
                 const data = datas[chart]
                 const chartId = "FL_RidgelinePlot"
-                const chartConfig = {}
+                const chartConfig = {
+                    margins: { left: 80, right: 20, top: 35, bottom: 70 },
+                    chart: { title: `First Leaf Spring Index for ${this.props.feature_name}`, subtitle: `All Years for the Period ${this.props.yearMin} to ${this.props.yearMax}` },
+                    xAxis: { label: "Day of Year" },
+                    yAxis: { label: "Year" }
+                }
                 const chartData = data
                 charts[chart] = { id: chartId, config: chartConfig, data: chartData }
             }
@@ -147,6 +158,12 @@ class FirstLeafAnalysis extends React.Component {
         return charts
     }
 
+    setBucketSize() {
+        this.setState({
+            bucketSize: this.bucketSize
+        })
+    }
+
     render() {
         return (
             <div
@@ -161,11 +178,31 @@ class FirstLeafAnalysis extends React.Component {
                 <Collapse className="settings-dropdown" isOpen={this.state.isOpen}>
                     <div className="chartsDiv">
                         <div className="chart-headers" >
-                            Range: {this.props.yearMin} -  {this.props.yearMax}
-                            <button className="submit-analysis-btn" onClick={this.submitAnalysis}>Submit</button>
+                            
+                            <button className="submit-analysis-btn" onClick={this.submitAnalysis}>Analyze Time Period: {this.props.yearMin} to  {this.props.yearMax}</button>
+                            <div className="bucket-size-div">
+                                <span>Binwidth: {this.state.bucketSize.value}</span>
+                                <input
+                                    ref={(input) => { this.bucketSize = input; }}
+                                    onChange={this.setBucketSize}
+                                    defaultValue={this.state.bucketSize.value}
+                                    min={1}
+                                    max={5}
+                                    step="1"
+                                    type="range" />
+                            </div>
                         </div>
-                        <HistogramChart data={this.state.charts.histogram.data} id={this.state.charts.histogram.id} config={this.state.charts.histogram.config} />
+                        <HistogramChart data={this.state.charts.histogram.data} id={this.state.charts.histogram.id} config={this.state.charts.histogram.config} bucketSize={this.state.bucketSize.value} />
+                        <RidgelinePlotChart data={this.state.charts.ridgelinePlot.data} id={this.state.charts.ridgelinePlot.id} config={this.state.charts.ridgelinePlot.config} bucketSize={this.state.bucketSize.value} />
                         <BoxAndWhiskerChart data={this.state.charts.boxAndWhisker.data} id={this.state.charts.boxAndWhisker.id} config={this.state.charts.boxAndWhisker.config} />
+                        <div className="chart-footers" >
+                            <div className="anotations">
+                                First Leaf Spring Index data were provided by the <a href="https://www.usanpn.org">USA National Phenology Network</a>, data retrieved {new Date().toDateString()}
+                                <br></br>
+                                <br></br>
+                                <a target={"_blank"} href={"https://geoserver-dev.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=average_leaf_prism"}>https://geoserver-dev.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=average_leaf_prism</a>
+                            </div>
+                        </div>
                     </div>
                 </Collapse>
             </div>
