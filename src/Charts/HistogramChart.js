@@ -10,14 +10,16 @@ class HistogramChart extends React.Component {
     }
 
     componentDidUpdate() {
-        this.drawChart(this.props.id, this.props.config, this.props.data)
+        console.log(this.props.bucketSize)
+        this.drawChart(this.props.id, this.props.config, this.props.data, parseInt(this.props.bucketSize))
     }
 
     /**
-   * Draw a Box and Whisker Chart
+   * Draw a Histogram Chart
    * @param {string} id - name to prefix dom elements 
    * @param {*} config - used to style the chart
    * @param {*} data - used to build the chart
+   * @param {*} bucketSize - used to buld histogram
    * 
    * ex. congig = {
    *        margins:{left:1,right:10,top:1,bottom:20},
@@ -27,11 +29,11 @@ class HistogramChart extends React.Component {
    *       }
    * ex. data = {
    *        2011 : [1,2,3,4,5,6],
-   *        2012 : [1,2,3,4,5,6]
+   *        2012 : [1,2,3,4,5,6],
    *        2013 : [1,2,3,4,5,6]
    *       }
    */
-    drawChart(id, config, data) {
+    drawChart(id, config, data, bucketSize) {
 
         if (!id || !config || !data) return
 
@@ -70,8 +72,7 @@ class HistogramChart extends React.Component {
         const startYear = years[0];
         const endYear = years[years.length - 1];
 
-        const buk = 3 // will change to be set by user
-        data = processData(data, buk)
+        data = processData(data, bucketSize)
 
         // Get and set domain
         const domain = getDomain(data)
@@ -81,7 +82,7 @@ class HistogramChart extends React.Component {
         // Create the x-axis
         const xAxis = d3.axisBottom(x)
             .ticks(5)
-            .tickFormat(x => { return dateFromDay(2018, (x) * buk) })
+            .tickFormat(x => { return dateFromDay(2018, (x) * bucketSize) })
 
         // Create the y-axis
         const yAxis = d3.axisLeft(y)
@@ -141,7 +142,7 @@ class HistogramChart extends React.Component {
             tooltip.transition()
                 .duration(200)
                 .style("opacity", .9);
-            tooltip.html(toolTipLabel(d, buk))
+            tooltip.html(toolTipLabel(d, bucketSize))
                 .style("left", (d3.event.pageX) + "px")
                 .style("top", (d3.event.pageY - 28) + "px")
                 .style("border", `3px solid ${d.color}`);
@@ -231,7 +232,7 @@ class HistogramChart extends React.Component {
         };
 
 
-        function toolTipLabel(d, buk) {
+        function toolTipLabel(d, bucketSize) {
             var percentage = parseInt(parseInt(d.count) / parseInt(totalCount) * 100);
             if (percentage < 1) {
                 percentage = '< 1';
@@ -239,12 +240,12 @@ class HistogramChart extends React.Component {
             else {
                 percentage = percentage.toString();
             }
-            let count = `Number of Grid Cells: <label>${parseInt(d.count)} </label> of <label>${parseInt(totalCount)} </label> ( ~ ${percentage}%)<br />  Number of Grid Cells = values that occur ${dateFromDay(2018, (d.day * buk) + 1)} to ${dateFromDay(2018, (d.day * buk) + buk)} for all selected years (${startYear} to ${endYear}). <br />`
-            if (buk === 1) {
+            let count = `Number of Grid Cells: <label>${parseInt(d.count)} </label> of <label>${parseInt(totalCount)} </label> ( ~ ${percentage}%)<br />  Number of Grid Cells = values that occur ${dateFromDay(2018, (d.day * bucketSize) + 1)} to ${dateFromDay(2018, (d.day * bucketSize) + bucketSize)} for all selected years (${startYear} to ${endYear}). <br />`
+            if (bucketSize === 1) {
                 return ` <p>  Day: <label> ${dateFromDay(2018, d.day)} </label><br />${count} </p>`
             }
             else {
-                return `<p> Days: <label> ${dateFromDay(2018, (d.day * buk) + 1)} </label> to <label> ${dateFromDay(2018, (d.day * buk) + buk)} </label><br />${count} </p>`
+                return `<p> Days: <label> ${dateFromDay(2018, (d.day * bucketSize) + 1)} </label> to <label> ${dateFromDay(2018, (d.day * bucketSize) + bucketSize)} </label><br />${count} </p>`
             }
         }
 
