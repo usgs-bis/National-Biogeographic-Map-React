@@ -18,7 +18,8 @@ class LeftPanel extends React.Component {
             basemapChanged: props.basemapChanged,
             submitHandler: props.submitHandler,
             basemapsOpen: false,
-            bioscape: props.bioscape
+            bioscape: props.bioscape,
+            updateAnalysisLayers: props.updateAnalysisLayers
         }
         this.handleKeyUp = this.handleKeyUp.bind(this);
         this.toggleSfrDropdown = this.toggleSfrDropdown.bind(this)

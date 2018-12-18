@@ -37,6 +37,7 @@ class App extends React.Component {
         this.handleMapClick = this.handleMapClick.bind(this);
         this.basemapChanged = this.basemapChanged.bind(this);
         this.updateYearRange = this.updateYearRange.bind(this);
+        this.updateAnalysisLayers = this.updateAnalysisLayers.bind(this)
     }
 
     componentDidMount() {
@@ -125,9 +126,17 @@ class App extends React.Component {
         })
     }
 
+    updateAnalysisLayers(layers) {
+        this.setState({
+            analysisLayers: layers
+        })
+    }
+
     render() {
         return (
             <div className="vwrapper">
+                <div className="loading-spinner">
+                </div>
                 <div id="header-area">
                     <Header title={this.state.bioscape.title} />
                 </div>
@@ -143,6 +152,7 @@ class App extends React.Component {
                             mapClicked={this.state.mapClicked}
                             yearMin={this.state.yearMin}
                             yearMax={this.state.yearMax}
+                            updateAnalysisLayers={this.updateAnalysisLayers}
                         />
                     </div>
                     <div id="map-area">
@@ -152,6 +162,7 @@ class App extends React.Component {
                             feature={this.state.feature}
                             parentClickHandler={this.handleMapClick}
                             updateYearRange={this.updateYearRange}
+                            analysisLayers={this.state.analysisLayers}
                         />
                     </div>
                 </div>

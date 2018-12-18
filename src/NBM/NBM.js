@@ -46,6 +46,26 @@ class NBM extends React.Component {
         })
     }
 
+    componentDidUpdate(prevProps) {
+        let that = this;
+        if (prevProps.analysisLayers !== this.props.analysisLayers) {
+            let currentLayers = this.props.analysisLayers ? this.props.analysisLayers : []
+            let oldLayers = prevProps.analysisLayers ? prevProps.analysisLayers : []
+
+            oldLayers.forEach(function (item) {
+                if (currentLayers.indexOf(item) === -1) {
+                    that.refs.map.leafletElement.removeLayer(item.layer)
+                }
+            })
+
+            currentLayers.forEach(function (item) {
+                if (oldLayers.indexOf(item) === -1) {
+                    that.refs.map.leafletElement.addLayer(item.layer)
+                }
+            })
+        }
+    }
+
     handleClick (e) {
         if (!this.state.clickable) return
         this.setState({

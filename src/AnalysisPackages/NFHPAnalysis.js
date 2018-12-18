@@ -1,6 +1,9 @@
 import React from "react";
 import { Collapse } from "reactstrap"
 import { Glyphicon } from "react-bootstrap";
+import { DynamicMapLayer } from "esri-leaflet"
+import { FormGroup, Label } from 'reactstrap';
+import { BarLoader } from "react-spinners"
 
 import HorizontalBarChart from "../Charts/HorizontalBarChart";
 import "./AnalysisPackages.css";
@@ -8,8 +11,8 @@ import "./AnalysisPackages.css";
 const SB_URL = "https://www.sciencebase.gov/catalog/item/5aa2b21ae4b0b1c392e9d968?format=json"
 const NFHP_URL = process.env.REACT_APP_BIS_API + "/api/v1/nfhpmetrics/condition?feature_id=";
 
-let properties = {
-    "title": "Fish Habitat Condition and Disturbance Summaries"
+const sb_properties = {
+    "title": "Fish Habitat Condition and Disturbance Summaries default"
 }
 
 class NFHPAnalysis extends React.Component {
@@ -19,15 +22,30 @@ class NFHPAnalysis extends React.Component {
             charts: {
                 horizontalBarChart: { id: "", config: {}, data: null }
             },
-            title: properties.title,
+            title: sb_properties.title,
             submitted: false,
             isOpen: false,
-            glyph: "menu-right"
+            glyph: "menu-right",
+            enabledLayers: {
+                nfhp_service: false
+            },
+            layers : {
+                "nfhp_service": {
+                    "title": "Risk to Fish Habitat Degradation",
+                    "layer": new DynamicMapLayer({
+                        "url": "https://gis1.usgs.gov/arcgis/rest/services/nfhp2015/HCI_Dissolved_NFHP2015_v20160907/MapServer"
+                    }),
+                    "opacity": 1
+                }
+            },
+            updateAnalysisLayers: props.updateAnalysisLayers,
+            value: []
         }
 
         this.toggleDropdown = this.toggleDropdown.bind(this)
         this.getCharts = this.getCharts.bind(this)
-
+        this.updateAnalysisLayers = this.updateAnalysisLayers.bind(this)
+        this.setOpacity = this.setOpacity.bind(this)
     }
 
     toggleDropdown() {
@@ -54,9 +72,12 @@ class NFHPAnalysis extends React.Component {
             )
     }
 
-    componentWillReceiveProps(props) {
-        if (props.feature && props.feature.properties.feature_id) {
-            fetch(NFHP_URL + props.feature.properties.feature_id)
+    componentDidUpdate(prevProps) {
+        if (this.props.feature_id !== prevProps.feature_id) {
+            this.setState({
+                loading: true
+            })
+            fetch(NFHP_URL + this.props.feature_id)
                 .then(res => res.json())
                 .then(
                     (result) => {
@@ -64,17 +85,27 @@ class NFHPAnalysis extends React.Component {
                             const charts = this.getCharts({ horizontalBarChart: result.hits.hits[0]._source.properties })
                             this.setState({
                                 charts: charts,
-                                submitted: true
+                                submitted: true,
+                                loading: false
                             })
                         } else {
                             this.setState({
-                                submitted: true
+                                charts: {
+                                    horizontalBarChart: { id: "", config: {}, data: null }
+                                },
+                                submitted: true,
+                                enabledLayers: {
+                                    nfhp_service: false,
+                                    loading: false
+                                }
                             })
+                            this.props.updateAnalysisLayers([])
                         }
                     },
                     (error) => {
                         this.setState({
-                            error
+                            error,
+                            loading: false
                         });
                     }
                 )
@@ -125,7 +156,56 @@ class NFHPAnalysis extends React.Component {
         return charts
     }
 
+    updateAnalysisLayers() {
+        let that = this
+        let enabledLayers = []
+        Object.keys(this.state.layers).forEach(function(key) {
+            if (that[key].checked) {
+                let obj = {enabledLayers: {}}
+                obj.enabledLayers[key] = true
+                that.setState(obj)
+                enabledLayers.push(that.state.layers[key])
+            } else {
+                let obj = {enabledLayers: {}}
+                obj.enabledLayers[key] = false
+                that.setState(obj)
+            }
+        })
+
+        this.state.updateAnalysisLayers(enabledLayers)
+    }
+
+    setOpacity(key) {
+        this.state.layers[key].layer.setOpacity(this[key + "Opacity"].value)
+    }
+
     render() {
+        let that = this
+        const getAnalysisLayers = () => {
+            return Object.keys(this.state.layers).map(function (key) {
+                let layer = that.state.layers[key]
+                return <FormGroup key={key} check>
+                    <Label check>
+                        <input
+                            ref={(input) => { that[key] = input; }}
+                            onChange={function() {that.updateAnalysisLayers()}}
+                            checked={that.state.enabledLayers[key]}
+                            type="checkbox" />
+                        {' ' + layer.title}
+                    </Label>
+                    <input style={{width: "50%"}}
+                        ref={(input) => { that[key + "Opacity"] = input; }}
+                        onChange={function() {
+                            that.setOpacity(key)
+                        }}
+                        type="range"
+                        step=".05"
+                        min="0"
+                        max="1"
+                        defaultValue={1}/>
+                </FormGroup>
+            })
+        }
         return (
             <div
                 style={{ display: 'block' }}
@@ -133,12 +213,19 @@ class NFHPAnalysis extends React.Component {
                 <span onClick={this.toggleDropdown} className="bapTitle">
                     {this.state.title}
                     <Glyphicon style={{ display: this.state.submitted ? "inline-block" : "none" }}
-                        className="dropdown-glyph"
-                        glyph={this.state.glyph} />
+                               className="dropdown-glyph"
+                               glyph={this.state.glyph} />
                 </span>
-                <Collapse className="settings-dropdown" isOpen={this.state.isOpen}>
+                <Collapse className="settings-dropdown" isOpen={this.state.isOpen && !!this.state.charts.horizontalBarChart.data}>
+                    <BarLoader color={"white"} loading={this.state.loading}/>
+                    <div className="analysis-layers">
+                        {getAnalysisLayers()}
+                    </div>
                     <div className="chartsDiv">
-                        <HorizontalBarChart data={this.state.charts.horizontalBarChart.data} id={this.state.charts.horizontalBarChart.id} config={this.state.charts.horizontalBarChart.config} />
+                        <HorizontalBarChart
+                            data={this.state.charts.horizontalBarChart.data}
+                            id={this.state.charts.horizontalBarChart.id}
+                            config={this.state.charts.horizontalBarChart.config} />
                     </div>
                 </Collapse>
             </div>
