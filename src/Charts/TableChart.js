@@ -1,39 +1,15 @@
 import React from "react";
 import "./Chart.css"
-import * as d3 from "d3";
 
 class TableChart extends React.Component {
     constructor(props) {
         super(props)
-        this.drawChart = this.drawChart.bind(this);
         this.createTable = this.createTable.bind(this)
     }
 
     componentDidUpdate() {
-        this.drawChart(this.props.id, this.props.config, this.props.data)
     }
 
-
-    drawChart(id, config, data) {
-
-        if (!id || !config || !data) return
-
-        const chart = d3.select(`#${id}ChartContainer`)
-
-        // Remove older renderings
-        chart.selectAll("text").remove()
-        chart.select(`#${id}Chart`).selectAll("div").remove()
-        chart.select(".svg-container-chart").remove()
-
-        // Title
-        chart.select(`#${id}Title`).append("text")
-            .text(config.chart.title);
-
-        // Subtitle
-        chart.select(`#${id}Subtitle`).append("text")
-            .text(config.chart.subtitle);
-
-    }
 
     createTable(data) {
         let table = []
@@ -59,12 +35,14 @@ class TableChart extends React.Component {
                 return (
                     <div>
                         <div id={id + 'ChartContainer'} className="chart-container">
-                            <div id={id + 'Title'} className="title"></div>
-                            <div id={id + 'Subtitle'} className="subtitle"></div>
+                            <div id={id + 'Title'} className="title">
+                                <text>{this.props.config.chart.title}</text>
+                            </div>
+                            <div id={id + 'Subtitle'} className="subtitle">
+                                <text>{this.props.config.chart.title}</text>
+                            </div>
                             <div id={id + 'Chart'} className="chart">
-                                <div className="analysis-chart-container">
-                                    {this.createTable(this.props.data)}
-                                </div>
+                                {this.createTable(this.props.data)}
                             </div>
                         </div>
                     </div>
