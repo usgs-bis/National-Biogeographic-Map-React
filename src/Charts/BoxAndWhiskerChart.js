@@ -33,8 +33,6 @@ class BoxAndWhiskerChart extends React.Component {
    */
     drawChart(id, config, data) {
 
-        if (!id || !config || !data) return
-
         const chart = d3.select(`#${id}ChartContainer`)
 
         // Remove older renderings
@@ -42,6 +40,10 @@ class BoxAndWhiskerChart extends React.Component {
         chart.select(`#${id}Chart`).selectAll("div").remove()
         chart.select(".svg-container-chart").remove()
 
+
+        if (!id || !config || !data) return
+
+       
         // Title
         chart.select(`#${id}Title`).append("text")
             .text(config.chart.title);

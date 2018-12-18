@@ -8,14 +8,14 @@ import RidgelinePlotChart from "../Charts/RidgelinePlotChart";
 import "./AnalysisPackages.css";
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/58bf0b61e4b014cc3a3a9c10?format=json"
-const FIRSTLEAF_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenology/place/firstleaf"
+const FIRSTBLOOM_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenology/place/firstbloom"
 const PUBLIC_TOKEN = process.env.REACT_APP_PUBLIC_TOKEN
 
 let properties = {
-    "title": "First Leaf Spring Index"
+    "title": "First Bloom Spring Index"
 }
 
-class FirstLeafAnalysis extends React.Component {
+class FirstBloomAnalysis extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -25,7 +25,6 @@ class FirstLeafAnalysis extends React.Component {
                 boxAndWhisker: { id: "", config: {}, data: null }
             },
             bucketSize: { value: 3 },
-            feature_id: null,
             title: properties.title,
             submitted: false,
             canSubmit: false,
@@ -80,7 +79,6 @@ class FirstLeafAnalysis extends React.Component {
 
     componentWillReceiveProps(props) {
         if (props.feature && props.feature.properties.feature_id !== this.state.feature_id) {
-
             this.clearCharts()
             this.setState({
                 canSubmit: true,
@@ -92,7 +90,7 @@ class FirstLeafAnalysis extends React.Component {
     submitAnalysis() {
         if (this.props.feature && this.props.feature.properties.feature_id) {
             this.clearCharts()
-            fetch(FIRSTLEAF_URL + `?year_min=${this.props.yearMin}&year_max=${this.props.yearMax}&feature_id=${this.props.feature.properties.feature_id}&token=${PUBLIC_TOKEN}`)
+            fetch(FIRSTBLOOM_URL + `?year_min=${this.props.yearMin}&year_max=${this.props.yearMax}&feature_id=${this.props.feature.properties.feature_id}&token=${PUBLIC_TOKEN}`)
                 .then(res => res.json())
                 .then(
                     (result) => {
@@ -133,10 +131,10 @@ class FirstLeafAnalysis extends React.Component {
 
             if (chart.toString() === "histogram" && datas[chart]) {
                 const data = datas[chart]
-                const chartId = "FL_Histogram"
+                const chartId = "FB_Histogram"
                 const chartConfig = {
                     margins: { left: 80, right: 20, top: 20, bottom: 70 },
-                    chart: { title: `First Leaf Spring Index for ${this.props.feature.properties.feature_name}`, subtitle: `All Years for the Period ${this.props.yearMin} to ${this.props.yearMax}` },
+                    chart: { title: `First Bloom Spring Index for ${this.props.feature.properties.feature_name}`, subtitle: `All Years for the Period ${this.props.yearMin} to ${this.props.yearMax}` },
                     xAxis: { label: "Day of Year" },
                     yAxis: { label: "Number of Grid Cells" }
                 }
@@ -146,10 +144,10 @@ class FirstLeafAnalysis extends React.Component {
             else if (chart.toString() === "ridgelinePlot" && datas[chart]) {
                 // To Do
                 const data = datas[chart]
-                const chartId = "FL_RidgelinePlot"
+                const chartId = "FB_RidgelinePlot"
                 const chartConfig = {
                     margins: { left: 80, right: 20, top: 35, bottom: 70 },
-                    chart: { title: `First Leaf Spring Index for ${this.props.feature.properties.feature_name}`, subtitle: `All Years for the Period ${this.props.yearMin} to ${this.props.yearMax}` },
+                    chart: { title: `First Bloom Spring Index for ${this.props.feature.properties.feature_name}`, subtitle: `All Years for the Period ${this.props.yearMin} to ${this.props.yearMax}` },
                     xAxis: { label: "Day of Year" },
                     yAxis: { label: "Year" }
                 }
@@ -159,10 +157,10 @@ class FirstLeafAnalysis extends React.Component {
             else if (chart.toString() === "boxAndWhisker" && datas[chart]) {
 
                 const data = datas[chart]
-                const chartId = "FL_BoxAndWhisker"
+                const chartId = "FB_BoxAndWhisker"
                 const chartConfig = {
                     margins: { left: 80, right: 20, top: 20, bottom: 70 },
-                    chart: { title: `First Leaf Spring Index for ${this.props.feature.properties.feature_name}`, subtitle: `All Years for the Period ${this.props.yearMin} to ${this.props.yearMax}` },
+                    chart: { title: `First Bloom Spring Index for ${this.props.feature.properties.feature_name}`, subtitle: `All Years for the Period ${this.props.yearMin} to ${this.props.yearMax}` },
                     xAxis: { label: "Year" },
                     yAxis: { label: "Day of Year" }
                 }
@@ -212,10 +210,10 @@ class FirstLeafAnalysis extends React.Component {
                         <BoxAndWhiskerChart data={this.state.charts.boxAndWhisker.data} id={this.state.charts.boxAndWhisker.id} config={this.state.charts.boxAndWhisker.config} />
                         <div className="chart-footers" >
                             <div className="anotations">
-                                First Leaf Spring Index data was provided by the <a href="https://www.usanpn.org">USA National Phenology Network</a>, data retrieved {new Date().toDateString()}
+                                First Bloom Spring Index data was provided by the <a href="https://www.usanpn.org">USA National Phenology Network</a>, data retrieved {new Date().toDateString()}
                                 <br></br>
                                 <br></br>
-                                <a target={"_blank"} href={"https://geoserver-dev.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=average_leaf_prism"}>https://geoserver-dev.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=average_leaf_prism</a>
+                                <a target={"_blank"} href={"https://geoserver-dev.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=average_bloom_prism"}>https://geoserver-dev.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=average_bloom_prism</a>
                             </div>
                         </div>
                     </div>
@@ -224,4 +222,4 @@ class FirstLeafAnalysis extends React.Component {
         )
     }
 }
-export default FirstLeafAnalysis;
+export default FirstBloomAnalysis;
