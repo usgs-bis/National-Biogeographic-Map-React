@@ -67,3 +67,34 @@ padding-top: 15px;
 .analysis-layers {
     font-size: 12px;
 }
+.chart-titles{
+    width: 90%;
+    margin: auto;
+    padding: 1%;
+    text-align: center;
+    color: rgb(204, 204, 204);
+    fill: rgb(204, 204, 204) !important;
+}
+
+.title {
+    margin-top: 10px;
+    font-size: 18px;
+}
+ .subtitle  {
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.half-chart{
+    width: 50%;
+    display: inline-block;
+}
+.spp-raido-btn{
+    text-align: left;
+    width: 30%;
+    margin: auto;
+}
+
+.spp-raido-btn input{
+    margin-right: 5px;
+}

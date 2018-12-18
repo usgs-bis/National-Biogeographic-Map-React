@@ -7,7 +7,7 @@ import NFHPAnalysis from "../AnalysisPackages/NFHPAnalysis"
 import FirstLeafAnalysis from "../AnalysisPackages/FirstLeafAnalysis";
 import FirstBloomAnalysis from "../AnalysisPackages/FirstBloomAnalysis";
 import FirstLeafBloomComparisonAnalysis from "../AnalysisPackages/FirstLeafBloomComparisonAnalysis";
-
+import SpeciesProtectionAnalysis  from "../AnalysisPackages/SpeciesProtectionAnalysis";
 class LeftPanel extends React.Component {
     constructor(props) {
         super(props)
@@ -191,6 +191,11 @@ class LeftPanel extends React.Component {
                             feature={this.state.feature}
                             yearMin={this.props.yearMin}
                             yearMax={this.props.yearMax}
+                        />
+                    </div>
+                    <div className="nbm-flex-row-no-padding">
+                        <SpeciesProtectionAnalysis
+                            feature={this.state.feature}
                         />
                     </div>
                 </div>

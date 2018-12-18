@@ -35,6 +35,7 @@ class NFHPAnalysis extends React.Component {
                     "layer": new DynamicMapLayer({
                         "url": "https://gis1.usgs.gov/arcgis/rest/services/nfhp2015/HCI_Dissolved_NFHP2015_v20160907/MapServer"
                     }),
+                    
                     "opacity": 1
                 }
             },
