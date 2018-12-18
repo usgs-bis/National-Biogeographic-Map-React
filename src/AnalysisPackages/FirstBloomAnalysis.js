@@ -147,7 +147,7 @@ class FirstBloomAnalysis extends React.Component {
                 const chartId = "FB_RidgelinePlot"
                 const chartConfig = {
                     margins: { left: 80, right: 20, top: 35, bottom: 70 },
-                    chart: { title: `First Bloom Spring Index for ${this.props.feature.properties.feature_name}`, subtitle: `All Years for the Period ${this.props.yearMin} to ${this.props.yearMax}` },
+                    chart: { title: `First Bloom Spring Index for ${this.props.feature.properties.feature_name}`, subtitle: `By Year for the Period ${this.props.yearMin} to ${this.props.yearMax}` },
                     xAxis: { label: "Day of Year" },
                     yAxis: { label: "Year" }
                 }
