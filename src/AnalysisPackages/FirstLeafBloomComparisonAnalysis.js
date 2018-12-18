@@ -1,7 +1,10 @@
 import React from "react";
 import { Collapse } from "reactstrap"
 import { Glyphicon } from "react-bootstrap";
+import L from "leaflet"
+import { BarLoader } from "react-spinners"
 
+import withSharedAnalysisCharacteristics from "./AnalysisPackage"
 import ComparisonChart from "../Charts/ComparisonChart";
 import "./AnalysisPackages.css";
 
@@ -14,7 +17,38 @@ let properties = {
     "title": "First Leaf / First Bloom Spring Index Comparison"
 }
 
-class FirstLeafBloomComparisonAnalysis extends React.Component {
+const layers = {
+    first_leaf_service: {
+        title: "Average Leaf PRISM",
+        layer: L.tileLayer.wms(
+            "https://geoserver.usanpn.org/geoserver/si-x/wms",
+            {
+                format: "image/png",
+                layers: "average_leaf_prism",
+                opacity: .5,
+                transparent: true
+            }
+        ),
+        timeEnabled: true,
+        checked: false
+    },
+    first_bloom_service: {
+        title: "Average Bloom PRISM",
+        layer: L.tileLayer.wms(
+            "https://geoserver.usanpn.org/geoserver/si-x/wms",
+            {
+                format: "image/png",
+                layers: "average_bloom_prism",
+                opacity: .5,
+                transparent: true
+            }
+        ),
+        timeEnabled: true,
+        checked: false
+    }
+}
+
+class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -25,14 +59,19 @@ class FirstLeafBloomComparisonAnalysis extends React.Component {
             submitted: false,
             canSubmit: false,
             isOpen: false,
-            glyph: "menu-right"
+            glyph: "menu-right",
+            loading: false
         }
 
         this.toggleDropdown = this.toggleDropdown.bind(this)
         this.getCharts = this.getCharts.bind(this)
         this.submitAnalysis = this.submitAnalysis.bind(this)
         this.clearCharts = this.clearCharts.bind(this)
-
+        this.toggleLayerDropdown = this.props.toggleLayerDropdown.bind(this)
+        this.getAnalysisLayers = this.props.getAnalysisLayers.bind(this)
+        this.updateAnalysisLayers = this.props.updateAnalysisLayers.bind(this)
+        this.setOpacity = this.props.setOpacity.bind(this)
+        this.resetAnalysisLayers =  this.props.resetAnalysisLayers.bind(this)
     }
 
     toggleDropdown() {
@@ -82,6 +121,9 @@ class FirstLeafBloomComparisonAnalysis extends React.Component {
 
     submitAnalysis() {
         if (this.props.feature && this.props.feature.properties.feature_id) {
+            this.setState({
+                loading: true
+            })
             this.clearCharts()
             let firstLeafFetch = fetch(FIRSTLEAF_URL + `?year_min=${this.props.yearMin}&year_max=${this.props.yearMax}&feature_id=${this.props.feature.properties.feature_id}&token=${PUBLIC_TOKEN}`)
                 .then(res => { return res.json() },
@@ -102,7 +144,9 @@ class FirstLeafBloomComparisonAnalysis extends React.Component {
                     const charts = this.getCharts({ comparison: { leaf: results[0], bloom: results[1] } })
                     this.setState({
                         charts: charts,
-                        submitted: true
+                        submitted: true,
+                        loading: false,
+                        layers: this.resetAnalysisLayers()
                     })
                 }
             })
@@ -153,6 +197,8 @@ class FirstLeafBloomComparisonAnalysis extends React.Component {
                         glyph={this.state.glyph} />
                 </span>
                 <Collapse className="settings-dropdown" isOpen={this.state.isOpen}>
+                    <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading}/>
+                    {this.getAnalysisLayers()}
                     <div className="chartsDiv">
                         <div className="chart-headers" >
                             <button className="submit-analysis-btn" onClick={this.submitAnalysis}>Analyze Time Period: {this.props.yearMin} to  {this.props.yearMax}</button>
@@ -163,7 +209,7 @@ class FirstLeafBloomComparisonAnalysis extends React.Component {
                                 First Leaf / First Bloom Spring Index Comparison data were provided by  the <a href="https://www.usanpn.org">USA National Phenology Network</a>, data retrieved {new Date().toDateString()}
                                 <br></br>
                                 <br></br>
-                                <a target={"_blank"} href={"https://geoserver-dev.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=average_leaf_prism,average_bloom_prism"}>https://geoserver-dev.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=average_leaf_prism,average_bloom_prism</a>
+                                <a target={"_blank"} href={"https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&service=WMS&layers=average_leaf_prism,average_bloom_prism"}>https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=average_leaf_prism,average_bloom_prism</a>
                             </div>
                         </div>
                     </div>
@@ -172,4 +218,6 @@ class FirstLeafBloomComparisonAnalysis extends React.Component {
         )
     }
 }
+const FirstLeafBloomComparisonAnalysis = withSharedAnalysisCharacteristics(FirstLeafBloomComparisonAnalysisPackage, layers);
+
 export default FirstLeafBloomComparisonAnalysis;

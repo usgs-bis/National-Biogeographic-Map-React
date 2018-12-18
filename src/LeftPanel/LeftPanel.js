@@ -174,6 +174,7 @@ class LeftPanel extends React.Component {
                     </div>
                     <div className="nbm-flex-row-no-padding">
                         <FirstLeafAnalysis
+                            updateAnalysisLayers={this.state.updateAnalysisLayers}
                             feature={this.state.feature}
                             yearMin={this.props.yearMin}
                             yearMax={this.props.yearMax}
@@ -181,6 +182,7 @@ class LeftPanel extends React.Component {
                     </div>
                     <div className="nbm-flex-row-no-padding">
                         <FirstBloomAnalysis
+                            updateAnalysisLayers={this.state.updateAnalysisLayers}
                             feature={this.state.feature}
                             yearMin={this.props.yearMin}
                             yearMax={this.props.yearMax}
@@ -188,6 +190,7 @@ class LeftPanel extends React.Component {
                     </div>
                     <div className="nbm-flex-row-no-padding">
                         <FirstLeafBloomComparisonAnalysis
+                            updateAnalysisLayers={this.state.updateAnalysisLayers}
                             feature={this.state.feature}
                             yearMin={this.props.yearMin}
                             yearMax={this.props.yearMax}

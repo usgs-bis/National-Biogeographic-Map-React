@@ -2,11 +2,12 @@ import React from "react";
 import { Collapse } from "reactstrap"
 import { Glyphicon } from "react-bootstrap";
 import { DynamicMapLayer } from "esri-leaflet"
-import { FormGroup, Label } from 'reactstrap';
 import { BarLoader } from "react-spinners"
 
 import HorizontalBarChart from "../Charts/HorizontalBarChart";
 import "./AnalysisPackages.css";
+
+import withSharedAnalysisCharacteristics from "./AnalysisPackage"
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/5aa2b21ae4b0b1c392e9d968?format=json"
 const NFHP_URL = process.env.REACT_APP_BIS_API + "/api/v1/nfhpmetrics/condition?feature_id=";
@@ -15,7 +16,18 @@ let sb_properties = {
     "title": "Fish Habitat Condition and Disturbance Summaries"
 }
 
-class NFHPAnalysis extends React.Component {
+const layers = {
+    nfhp_service: {
+        title: "Risk to Fish Habitat Degradation",
+        layer: new DynamicMapLayer({
+            url: "https://gis1.usgs.gov/arcgis/rest/services/nfhp2015/HCI_Dissolved_NFHP2015_v20160907/MapServer",
+            opacity: .5
+        }),
+        checked: false
+    }
+}
+
+class NFHPAnalysisPackage extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -25,28 +37,18 @@ class NFHPAnalysis extends React.Component {
             title: sb_properties.title,
             submitted: false,
             isOpen: false,
+            layersOpen: false,
             glyph: "menu-right",
-            enabledLayers: {
-                nfhp_service: false
-            },
-            layers : {
-                "nfhp_service": {
-                    "title": "Risk to Fish Habitat Degradation",
-                    "layer": new DynamicMapLayer({
-                        "url": "https://gis1.usgs.gov/arcgis/rest/services/nfhp2015/HCI_Dissolved_NFHP2015_v20160907/MapServer"
-                    }),
-                    
-                    "opacity": 1
-                }
-            },
-            updateAnalysisLayers: props.updateAnalysisLayers,
             value: []
         }
 
         this.toggleDropdown = this.toggleDropdown.bind(this)
         this.getCharts = this.getCharts.bind(this)
-        this.updateAnalysisLayers = this.updateAnalysisLayers.bind(this)
-        this.setOpacity = this.setOpacity.bind(this)
+        this.toggleLayerDropdown = this.props.toggleLayerDropdown.bind(this)
+        this.updateAnalysisLayers = this.props.updateAnalysisLayers.bind(this)
+        this.setOpacity = this.props.setOpacity.bind(this)
+        this.getAnalysisLayers = this.props.getAnalysisLayers.bind(this)
+        this.resetAnalysisLayers =  this.props.resetAnalysisLayers.bind(this)
     }
 
     toggleDropdown() {
@@ -97,12 +99,8 @@ class NFHPAnalysis extends React.Component {
                                     horizontalBarChart: { id: "", config: {}, data: null }
                                 },
                                 submitted: true,
-                                enabledLayers: {
-                                    nfhp_service: false,
-                                    loading: false
-                                }
+                                layers: this.resetAnalysisLayers()
                             })
-                            this.props.updateAnalysisLayers([])
                         }
                     },
                     (error) => {
@@ -116,10 +114,10 @@ class NFHPAnalysis extends React.Component {
     }
 
     /**
-    * Loop through the charts defined in the state and look for a data object in datas that matches. 
-    * Create the chart id, data, and config as documented in the chart type. 
-    * @param {Object {}} datas - one enrty for each chart named the same as defined in the state
-    */
+     * Loop through the charts defined in the state and look for a data object in datas that matches.
+     * Create the chart id, data, and config as documented in the chart type.
+     * @param {Object {}} datas - one enrty for each chart named the same as defined in the state
+     */
     getCharts(datas) {
 
         function getPercent(value, scoredKm) {
@@ -159,56 +157,7 @@ class NFHPAnalysis extends React.Component {
         return charts
     }
 
-    updateAnalysisLayers() {
-        let that = this
-        let enabledLayers = []
-        Object.keys(this.state.layers).forEach(function(key) {
-            if (that[key].checked) {
-                let obj = {enabledLayers: {}}
-                obj.enabledLayers[key] = true
-                that.setState(obj)
-                enabledLayers.push(that.state.layers[key])
-            } else {
-                let obj = {enabledLayers: {}}
-                obj.enabledLayers[key] = false
-                that.setState(obj)
-            }
-        })
-
-        this.state.updateAnalysisLayers(enabledLayers)
-    }
-
-    setOpacity(key) {
-        this.state.layers[key].layer.setOpacity(this[key + "Opacity"].value)
-    }
-
     render() {
-        let that = this
-        const getAnalysisLayers = () => {
-            return Object.keys(this.state.layers).map(function (key) {
-                let layer = that.state.layers[key]
-                return <FormGroup key={key} check>
-                    <Label check>
-                        <input
-                            ref={(input) => { that[key] = input; }}
-                            onChange={function() {that.updateAnalysisLayers()}}
-                            checked={that.state.enabledLayers[key]}
-                            type="checkbox" />
-                        {' ' + layer.title}
-                    </Label>
-                    <input style={{width: "50%"}}
-                        ref={(input) => { that[key + "Opacity"] = input; }}
-                        onChange={function() {
-                            that.setOpacity(key)
-                        }}
-                        type="range"
-                        step=".05"
-                        min="0"
-                        max="1"
-                        defaultValue={1}/>
-                </FormGroup>
-            })
-        }
         return (
             <div
                 style={{ display: (!!this.state.charts.horizontalBarChart.data || ! this.state.submitted) ? 'block' : 'none' }}
@@ -221,9 +170,7 @@ class NFHPAnalysis extends React.Component {
                 </span>
                 <Collapse className="settings-dropdown" isOpen={this.state.isOpen && !!this.state.charts.horizontalBarChart.data}>
                     <BarLoader color={"white"} loading={this.state.loading}/>
-                    <div className="analysis-layers">
-                        {getAnalysisLayers()}
-                    </div>
+                    {this.getAnalysisLayers()}
                     <div className="chartsDiv">
                         <HorizontalBarChart
                             data={this.state.charts.horizontalBarChart.data}
@@ -235,4 +182,6 @@ class NFHPAnalysis extends React.Component {
         )
     }
 }
+const NFHPAnalysis = withSharedAnalysisCharacteristics(NFHPAnalysisPackage, layers);
+
 export default NFHPAnalysis;

@@ -98,3 +98,19 @@ padding-top: 15px;
 .spp-raido-btn input{
     margin-right: 5px;
 }
+
+.analysis-layers-dropdown {
+    padding-left: 5px;
+    margin-left: 1%;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.analysis-layers-dropdown:hover {
+    text-shadow: 0 0 1px;
+}
+
+.analysis-dropdown-glyph {
+    font-size: 12px;
+    margin-left: 5px;
+}
