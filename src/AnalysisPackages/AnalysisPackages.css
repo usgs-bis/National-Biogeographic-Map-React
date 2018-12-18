@@ -4,6 +4,7 @@
     font-weight: bold;
     padding: 5px;
     cursor: pointer;
+    margin-left: 1%;
 }
 
 .bapTitle::selection {

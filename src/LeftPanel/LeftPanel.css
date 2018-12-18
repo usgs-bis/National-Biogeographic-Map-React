@@ -45,7 +45,7 @@
     font-weight: bold;
 }
 
-.button-group {
+.button-group {  
     width: 100%;
     font-size: 14px;
     max-height: 200px;
@@ -59,6 +59,7 @@
 .sfr-button {
     width: 100%;
     font-size: 14px;
+    text-align: left;
 }
 
 .left-panel {
@@ -67,10 +68,27 @@
     overflow-y: auto;
 }
 
+.panel-header{
+    padding: 5px;
+    padding-top: 0px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #424243;
+}
 .panel-title {
     font-size: 28px;
     font-weight: bold;
     color: white;
+    text-align: center;
+}
+
+.panel-subtitle{
+    margin-left: 1%;
+    text-align: left;
+}
+
+.panel-buttons{
+    text-align: center;
+    font-size: small;
 }
 
 .category-text {
