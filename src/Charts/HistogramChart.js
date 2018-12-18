@@ -34,14 +34,15 @@ class HistogramChart extends React.Component {
    */
     drawChart(id, config, data, bucketSize) {
 
-        if (!id || !config || !data) return
-
         const chart = d3.select(`#${id}ChartContainer`)
 
         // Remove older renderings
         chart.selectAll("text").remove()
         chart.select(`#${id}Chart`).selectAll("div").remove()
         chart.select(".svg-container-chart").remove()
+
+        if (!id || !config || !data) return
+
 
         // Title
         chart.select(`#${id}Title`).append("text")

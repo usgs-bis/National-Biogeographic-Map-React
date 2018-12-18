@@ -9,7 +9,7 @@ const SB_URL = "https://www.sciencebase.gov/catalog/item/5aa2b21ae4b0b1c392e9d96
 const NFHP_URL = process.env.REACT_APP_BIS_API + "/api/v1/nfhpmetrics/condition?feature_id=";
 
 let properties = {
-    "title": "Fish Habitat Condition and Disturbance Summaries default"
+    "title": "Fish Habitat Condition and Disturbance Summaries"
 }
 
 class NFHPAnalysis extends React.Component {

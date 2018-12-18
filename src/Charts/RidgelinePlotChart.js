@@ -33,14 +33,14 @@ class RidgelinePlotChart extends React.Component {
   */
     drawChart(id, config, data, bucketSize) {
 
-        if (!id || !config || !data) return
-
         const chart = d3.select(`#${id}ChartContainer`)
 
         // Remove older renderings
         chart.selectAll("text").remove()
         chart.select(`#${id}Chart`).selectAll("div").remove()
         chart.select(".svg-container-chart").remove()
+
+        if (!id || !config || !data) return
 
         // Title
         chart.select(`#${id}Title`).append("text")
@@ -145,7 +145,7 @@ class RidgelinePlotChart extends React.Component {
         // clip rectangle
         smooth.append("defs")
             .append("clipPath")
-            .attr("id", "cut-off-path")
+            .attr("id", `cut-off-path${id}`)
             .append("rect")
             .attr("width", width)
             .attr("height", y.bandwidth() * overlapFactor);
@@ -187,7 +187,7 @@ class RidgelinePlotChart extends React.Component {
             .attr("stroke", "rgb(0, 0, 0,.2)")
             .attr("stroke-width", "1")
             .attr("class", "area")
-            .attr("clip-path", "url(#cut-off-path)")
+            .attr("clip-path", `url(#cut-off-path${id})`)
             .attr("d", function (year) {
                 return d3.area()
                     .curve(d3.curveBasis)

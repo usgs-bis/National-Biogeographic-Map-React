@@ -5,6 +5,8 @@ import { FormGroup, Label } from 'reactstrap';
 import {Glyphicon} from "react-bootstrap";
 import NFHPAnalysis from "../AnalysisPackages/NFHPAnalysis"
 import FirstLeafAnalysis from "../AnalysisPackages/FirstLeafAnalysis";
+import FirstBloomAnalysis from "../AnalysisPackages/FirstBloomAnalysis";
+
 
 class LeftPanel extends React.Component {
     constructor(props) {
@@ -150,6 +152,13 @@ class LeftPanel extends React.Component {
                 </div>
                 <div className="nbm-flex-row-no-padding">
                     <FirstLeafAnalysis
+                        feature={this.state.feature}
+                        yearMin={this.props.yearMin}
+                        yearMax={this.props.yearMax}
+                    />
+                </div>
+                <div className="nbm-flex-row-no-padding">
+                    <FirstBloomAnalysis
                         feature={this.state.feature}
                         yearMin={this.props.yearMin}
                         yearMax={this.props.yearMax}
