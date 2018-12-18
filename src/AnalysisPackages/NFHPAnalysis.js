@@ -2,11 +2,12 @@ import React from "react";
 import { Collapse } from "reactstrap"
 import { Glyphicon } from "react-bootstrap";
 import { DynamicMapLayer } from "esri-leaflet"
-import { FormGroup, Label } from 'reactstrap';
 import { BarLoader } from "react-spinners"
 
 import HorizontalBarChart from "../Charts/HorizontalBarChart";
 import "./AnalysisPackages.css";
+
+import withSharedAnalysisCharacteristics from "./AnalysisPackage"
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/5aa2b21ae4b0b1c392e9d968?format=json"
 const NFHP_URL = process.env.REACT_APP_BIS_API + "/api/v1/nfhpmetrics/condition?feature_id=";
@@ -26,7 +27,7 @@ const layers = {
     }
 }
 
-class NFHPAnalysis extends React.Component {
+class NFHPAnalysisPackage extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -38,28 +39,16 @@ class NFHPAnalysis extends React.Component {
             isOpen: false,
             layersOpen: false,
             glyph: "menu-right",
-            layers : layers,
-            updateAnalysisLayers: props.updateAnalysisLayers,
             value: []
         }
 
         this.toggleDropdown = this.toggleDropdown.bind(this)
-        this.toggleLayerDropdown = this.toggleLayerDropdown.bind(this)
         this.getCharts = this.getCharts.bind(this)
-        this.updateAnalysisLayers = this.updateAnalysisLayers.bind(this)
-        this.setOpacity = this.setOpacity.bind(this)
-        this.getAnalysisLayers = this.getAnalysisLayers.bind(this)
-        this.resetAnalysisLayers =  this.resetAnalysisLayers.bind(this)
-    }
-
-    resetAnalysisLayers() {
-        this.props.updateAnalysisLayers([])
-        let l = layers
-        Object.keys(l).forEach(function(key) {
-            l[key].checked = false
-        })
-
-        return l
+        this.toggleLayerDropdown = this.props.toggleLayerDropdown.bind(this)
+        this.updateAnalysisLayers = this.props.updateAnalysisLayers.bind(this)
+        this.setOpacity = this.props.setOpacity.bind(this)
+        this.getAnalysisLayers = this.props.getAnalysisLayers.bind(this)
+        this.resetAnalysisLayers =  this.props.resetAnalysisLayers.bind(this)
     }
 
     toggleDropdown() {
@@ -168,81 +157,6 @@ class NFHPAnalysis extends React.Component {
         return charts
     }
 
-    updateAnalysisLayers() {
-        let that = this
-        let enabledLayers = []
-        Object.keys(this.state.layers).forEach(function(key) {
-            if (that[key].checked) {
-                let obj = that.state
-                let l = obj.layers
-                l[key].checked = true
-                obj.layers = l
-                that.setState(obj)
-                enabledLayers.push(that.state.layers[key])
-            } else {
-                let obj = that.state
-                let l = obj.layers
-                l[key].checked = false
-                obj.layers = l
-                that.setState(obj)
-            }
-        })
-
-        this.state.updateAnalysisLayers(enabledLayers)
-    }
-
-    toggleLayerDropdown() {
-        this.setState({layersOpen: !this.state.layersOpen})
-    }
-
-    setOpacity(key) {
-        this.state.layers[key].layer.setOpacity(this[key + "Opacity"].value)
-    }
-
-    getAnalysisLayers () {
-        let that = this
-        if (this.state.layers) {
-            return (
-                <div className="analysis-layers">
-                    <span onClick={that.toggleLayerDropdown} className="analysis-layers-dropdown">
-                    {"Analysis Layers"}
-                        <Glyphicon
-                            className="analysis-dropdown-glyph"
-                            glyph={that.state.layersOpen ? "menu-down" : "menu-right"}
-                        />
-                </span>
-                    <Collapse isOpen={that.state.layersOpen}>
-                        {Object.keys(this.state.layers).map(function (key) {
-                            let layer = that.state.layers[key]
-                            return (
-                                <FormGroup key={key} check>
-                                    <Label check>
-                                        <input
-                                            ref={(input) => { that[key] = input; }}
-                                            onChange={function() {that.updateAnalysisLayers()}}
-                                            checked={that.state.layers[key].checked}
-                                            type="checkbox" />
-                                        {' ' + layer.title}
-                                    </Label>
-                                    <input style={{width: "50%"}}
-                                           ref={(input) => { that[key + "Opacity"] = input; }}
-                                           onChange={function() {
-                                               that.setOpacity(key)
-                                           }}
-                                           type="range"
-                                           step=".05"
-                                           min="0"
-                                           max="1"
-                                           defaultValue={.5}/>
-                                </FormGroup>
-                            )
-                        })}
-                    </Collapse>
-                </div>
-            )
-        }
-    }
-
     render() {
         return (
             <div
@@ -268,4 +182,6 @@ class NFHPAnalysis extends React.Component {
         )
     }
 }
+const NFHPAnalysis = withSharedAnalysisCharacteristics(NFHPAnalysisPackage, layers);
+
 export default NFHPAnalysis;

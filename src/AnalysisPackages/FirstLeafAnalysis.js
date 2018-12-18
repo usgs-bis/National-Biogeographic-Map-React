@@ -2,9 +2,9 @@ import React from "react";
 import { Collapse } from "reactstrap"
 import { Glyphicon } from "react-bootstrap";
 import L from "leaflet"
-import { FormGroup, Label } from 'reactstrap';
 import { BarLoader } from "react-spinners"
 
+import withSharedAnalysisCharacteristics from "./AnalysisPackage"
 import BoxAndWhiskerChart from "../Charts/BoxAndWhiskerChart";
 import HistogramChart from "../Charts/HistogramChart";
 import RidgelinePlotChart from "../Charts/RidgelinePlotChart";
@@ -20,7 +20,7 @@ let properties = {
 
 const layers = {
     first_leaf_service: {
-        title: "First Leaf",
+        title: "Average Leaf PRISM",
         layer: L.tileLayer.wms(
             "https://geoserver.usanpn.org/geoserver/si-x/wms",
             {
@@ -35,7 +35,7 @@ const layers = {
     }
 }
 
-class FirstLeafAnalysis extends React.Component {
+class FirstLeafAnalysisPackage extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -45,7 +45,6 @@ class FirstLeafAnalysis extends React.Component {
                 boxAndWhisker: { id: "", config: {}, data: null }
             },
             layers: layers,
-            updateAnalysisLayers: props.updateAnalysisLayers,
             loading: false,
             bucketSize: { value: 3 },
             feature_id: null,
@@ -61,10 +60,11 @@ class FirstLeafAnalysis extends React.Component {
         this.submitAnalysis = this.submitAnalysis.bind(this)
         this.setBucketSize = this.setBucketSize.bind(this)
         this.clearCharts = this.clearCharts.bind(this)
-        this.toggleLayerDropdown = this.toggleLayerDropdown.bind(this)
-        this.getAnalysisLayers = this.getAnalysisLayers.bind(this)
-        this.setOpacity = this.setOpacity.bind(this)
-        this.resetAnalysisLayers =  this.resetAnalysisLayers.bind(this)
+        this.toggleLayerDropdown = this.props.toggleLayerDropdown.bind(this)
+        this.getAnalysisLayers = this.props.getAnalysisLayers.bind(this)
+        this.updateAnalysisLayers = this.props.updateAnalysisLayers.bind(this)
+        this.setOpacity = this.props.setOpacity.bind(this)
+        this.resetAnalysisLayers =  this.props.resetAnalysisLayers.bind(this)
     }
 
     toggleDropdown() {
@@ -211,91 +211,6 @@ class FirstLeafAnalysis extends React.Component {
         })
     }
 
-    resetAnalysisLayers() {
-        this.props.updateAnalysisLayers([])
-        let l = layers
-        Object.keys(l).forEach(function(key) {
-            l[key].checked = false
-        })
-
-        return l
-    }
-
-    updateAnalysisLayers() {
-        let that = this
-        let enabledLayers = []
-        Object.keys(this.state.layers).forEach(function(key) {
-            if (that[key].checked) {
-                let obj = that.state
-                let l = obj.layers
-                l[key].checked = true
-                obj.layers = l
-                that.setState(obj)
-                enabledLayers.push(that.state.layers[key])
-            } else {
-                let obj = that.state
-                let l = obj.layers
-                l[key].checked = false
-                obj.layers = l
-                that.setState(obj)
-            }
-        })
-
-        this.state.updateAnalysisLayers(enabledLayers)
-    }
-
-    toggleLayerDropdown() {
-        this.setState({layersOpen: !this.state.layersOpen})
-    }
-
-    setOpacity(key) {
-        this.state.layers[key].layer.setOpacity(this[key + "Opacity"].value)
-    }
-
-    getAnalysisLayers () {
-        let that = this
-        if (this.state.layers) {
-            return (
-                <div className="analysis-layers">
-                    <span onClick={that.toggleLayerDropdown} className="analysis-layers-dropdown">
-                    {"Analysis Layers"}
-                        <Glyphicon
-                            className="analysis-dropdown-glyph"
-                            glyph={that.state.layersOpen ? "menu-down" : "menu-right"}
-                        />
-                </span>
-                    <Collapse isOpen={that.state.layersOpen}>
-                        {Object.keys(this.state.layers).map(function (key) {
-                            let layer = that.state.layers[key]
-                            return (
-                                <FormGroup key={key} check>
-                                    <Label check>
-                                        <input
-                                            ref={(input) => { that[key] = input; }}
-                                            onChange={function() {that.updateAnalysisLayers()}}
-                                            checked={that.state.layers[key].checked}
-                                            type="checkbox" />
-                                        {' ' + layer.title}
-                                    </Label>
-                                    <input style={{width: "50%"}}
-                                           ref={(input) => { that[key + "Opacity"] = input; }}
-                                           onChange={function() {
-                                               that.setOpacity(key)
-                                           }}
-                                           type="range"
-                                           step=".05"
-                                           min="0"
-                                           max="1"
-                                           defaultValue={.5}/>
-                                </FormGroup>
-                            )
-                        })}
-                    </Collapse>
-                </div>
-            )
-        }
-    }
-
     render() {
         return (
             <div
@@ -334,7 +249,7 @@ class FirstLeafAnalysis extends React.Component {
                                 First Leaf Spring Index data was provided by the <a href="https://www.usanpn.org">USA National Phenology Network</a>, data retrieved {new Date().toDateString()}
                                 <br></br>
                                 <br></br>
-                                <a target={"_blank"} href={"https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=average_leaf_prism"}>https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=average_leaf_prism</a>
+                                <a target={"_blank"} href={"https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&service=WMS&layers=average_leaf_prism"}>https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=average_leaf_prism</a>
                             </div>
                         </div>
                     </div>
@@ -343,4 +258,6 @@ class FirstLeafAnalysis extends React.Component {
         )
     }
 }
+const FirstLeafAnalysis = withSharedAnalysisCharacteristics(FirstLeafAnalysisPackage, layers);
+
 export default FirstLeafAnalysis;
