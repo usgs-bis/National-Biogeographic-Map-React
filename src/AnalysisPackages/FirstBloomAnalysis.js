@@ -1,6 +1,9 @@
 import React from "react";
 import { Collapse } from "reactstrap"
 import { Glyphicon } from "react-bootstrap";
+import L from "leaflet"
+import { FormGroup, Label } from 'reactstrap';
+import { BarLoader } from "react-spinners"
 
 import BoxAndWhiskerChart from "../Charts/BoxAndWhiskerChart";
 import HistogramChart from "../Charts/HistogramChart";
@@ -15,6 +18,23 @@ let properties = {
     "title": "First Bloom Spring Index"
 }
 
+const layers = {
+    first_leaf_service: {
+        title: "First Leaf",
+        layer: L.tileLayer.wms(
+            "https://geoserver.usanpn.org/geoserver/si-x/wms",
+            {
+                format: "image/png",
+                layers: "average_bloom_prism",
+                opacity: .5,
+                transparent: true
+            }
+        ),
+        timeEnabled: true,
+        checked: false
+    }
+}
+
 class FirstBloomAnalysis extends React.Component {
     constructor(props) {
         super(props)
@@ -24,6 +44,9 @@ class FirstBloomAnalysis extends React.Component {
                 ridgelinePlot: { id: "", config: {}, data: null },
                 boxAndWhisker: { id: "", config: {}, data: null }
             },
+            layers: layers,
+            updateAnalysisLayers: props.updateAnalysisLayers,
+            loading: false,
             bucketSize: { value: 3 },
             title: properties.title,
             submitted: false,
@@ -37,7 +60,10 @@ class FirstBloomAnalysis extends React.Component {
         this.submitAnalysis = this.submitAnalysis.bind(this)
         this.setBucketSize = this.setBucketSize.bind(this)
         this.clearCharts = this.clearCharts.bind(this)
-
+        this.toggleLayerDropdown = this.toggleLayerDropdown.bind(this)
+        this.getAnalysisLayers = this.getAnalysisLayers.bind(this)
+        this.setOpacity = this.setOpacity.bind(this)
+        this.resetAnalysisLayers =  this.resetAnalysisLayers.bind(this)
     }
 
     toggleDropdown() {
@@ -89,6 +115,9 @@ class FirstBloomAnalysis extends React.Component {
 
     submitAnalysis() {
         if (this.props.feature && this.props.feature.properties.feature_id) {
+            this.setState({
+                loading: true
+            })
             this.clearCharts()
             fetch(FIRSTBLOOM_URL + `?year_min=${this.props.yearMin}&year_max=${this.props.yearMax}&feature_id=${this.props.feature.properties.feature_id}&token=${PUBLIC_TOKEN}`)
                 .then(res => res.json())
@@ -98,17 +127,21 @@ class FirstBloomAnalysis extends React.Component {
                             const charts = this.getCharts({ histogram: result, ridgelinePlot: result, boxAndWhisker: result })
                             this.setState({
                                 charts: charts,
-                                submitted: true
+                                submitted: true,
+                                loading: false
                             })
                         } else {
                             this.setState({
-                                submitted: true
+                                submitted: true,
+                                loading: false,
+                                layers: this.resetAnalysisLayers()
                             })
                         }
                     },
                     (error) => {
                         this.setState({
-                            error
+                            error,
+                            loading: false
                         });
                     }
                 )
@@ -177,6 +210,91 @@ class FirstBloomAnalysis extends React.Component {
         })
     }
 
+    resetAnalysisLayers() {
+        this.props.updateAnalysisLayers([])
+        let l = layers
+        Object.keys(l).forEach(function(key) {
+            l[key].checked = false
+        })
+
+        return l
+    }
+
+    updateAnalysisLayers() {
+        let that = this
+        let enabledLayers = []
+        Object.keys(this.state.layers).forEach(function(key) {
+            if (that[key].checked) {
+                let obj = that.state
+                let l = obj.layers
+                l[key].checked = true
+                obj.layers = l
+                that.setState(obj)
+                enabledLayers.push(that.state.layers[key])
+            } else {
+                let obj = that.state
+                let l = obj.layers
+                l[key].checked = false
+                obj.layers = l
+                that.setState(obj)
+            }
+        })
+
+        this.state.updateAnalysisLayers(enabledLayers)
+    }
+
+    toggleLayerDropdown() {
+        this.setState({layersOpen: !this.state.layersOpen})
+    }
+
+    setOpacity(key) {
+        this.state.layers[key].layer.setOpacity(this[key + "Opacity"].value)
+    }
+
+    getAnalysisLayers () {
+        let that = this
+        if (this.state.layers) {
+            return (
+                <div className="analysis-layers">
+                    <span onClick={that.toggleLayerDropdown} className="analysis-layers-dropdown">
+                    {"Analysis Layers"}
+                        <Glyphicon
+                            className="analysis-dropdown-glyph"
+                            glyph={that.state.layersOpen ? "menu-down" : "menu-right"}
+                        />
+                </span>
+                    <Collapse isOpen={that.state.layersOpen}>
+                        {Object.keys(this.state.layers).map(function (key) {
+                            let layer = that.state.layers[key]
+                            return (
+                                <FormGroup key={key} check>
+                                    <Label check>
+                                        <input
+                                            ref={(input) => { that[key] = input; }}
+                                            onChange={function() {that.updateAnalysisLayers()}}
+                                            checked={that.state.layers[key].checked}
+                                            type="checkbox" />
+                                        {' ' + layer.title}
+                                    </Label>
+                                    <input style={{width: "50%"}}
+                                           ref={(input) => { that[key + "Opacity"] = input; }}
+                                           onChange={function() {
+                                               that.setOpacity(key)
+                                           }}
+                                           type="range"
+                                           step=".05"
+                                           min="0"
+                                           max="1"
+                                           defaultValue={.5}/>
+                                </FormGroup>
+                            )
+                        })}
+                    </Collapse>
+                </div>
+            )
+        }
+    }
+
     render() {
         return (
             <div
@@ -189,6 +307,8 @@ class FirstBloomAnalysis extends React.Component {
                         glyph={this.state.glyph} />
                 </span>
                 <Collapse className="settings-dropdown" isOpen={this.state.isOpen}>
+                    <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading}/>
+                    {this.getAnalysisLayers()}
                     <div className="chartsDiv">
                         <div className="chart-headers" >
 
@@ -213,7 +333,7 @@ class FirstBloomAnalysis extends React.Component {
                                 First Bloom Spring Index data was provided by the <a href="https://www.usanpn.org">USA National Phenology Network</a>, data retrieved {new Date().toDateString()}
                                 <br></br>
                                 <br></br>
-                                <a target={"_blank"} href={"https://geoserver-dev.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=average_bloom_prism"}>https://geoserver-dev.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=average_bloom_prism</a>
+                                <a target={"_blank"} href={"https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=average_bloom_prism"}>https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=average_bloom_prism</a>
                             </div>
                         </div>
                     </div>

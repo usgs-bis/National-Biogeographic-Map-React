@@ -61,6 +61,13 @@ class NBM extends React.Component {
             currentLayers.forEach(function (item) {
                 if (oldLayers.indexOf(item) === -1) {
                     that.refs.map.leafletElement.addLayer(item.layer)
+                    if (item.timeEnabled) {
+                        item.layer.setParams(
+                            {
+                                time: `${that.state.mapDisplay}-01-01`
+                            }
+                        )
+                    }
                 }
             })
         }
@@ -110,6 +117,18 @@ class NBM extends React.Component {
         this.setState({
             mapDisplay: year
         });
+
+        if (this.props.analysisLayers) {
+            this.props.analysisLayers.forEach(function (item) {
+                if (item.timeEnabled) {
+                    item.layer.setParams(
+                        {
+                            time: `${year}-01-01`
+                        }
+                    )
+                }
+            })
+        }
     }
 
     updateYearRange(years) {
@@ -119,7 +138,12 @@ class NBM extends React.Component {
     render() {
         const geojson = () => {
             if(this.state.feature) {
-                return <GeoJSON key={this.key++} data={this.state.feature} />
+                return (
+                    <div>
+                        <GeoJSON style={{color: "black", fill: false, weight: 4}} key={this.key++} data={this.state.feature} />
+                        <GeoJSON style={{color: "red", fill: false, weight: 2}} key={this.key++} data={this.state.feature} />
+                    </div>
+                )
             }
         };
         const basemap = () => {
