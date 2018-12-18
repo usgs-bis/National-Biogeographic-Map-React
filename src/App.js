@@ -4,7 +4,6 @@ import Header from "./Header/Header";
 import LeftPanel from "./LeftPanel/LeftPanel";
 import nbmBioscape from "./Bioscapes/biogeography"
 import nvcsBioscape from "./Bioscapes/terrestrial-ecosystems-2011"
-
 import "./App.css";
 
 const bioscapeMap = {
@@ -78,7 +77,7 @@ class App extends React.Component {
             )
     }
 
-    handleMapClick (e) {
+    handleMapClick(e) {
         fetch(POINT_SEARCH_API + `lat=${e.latlng.lat}&lng=${e.latlng.lng}`)
             .then(res => res.json())
             .then(
@@ -141,7 +140,8 @@ class App extends React.Component {
                     <Header title={this.state.bioscape.title} />
                 </div>
                 <div id="content-area">
-                    <div id="panel-area">
+                   
+                    <div id="panel-area" className="panel-area">
                         <LeftPanel
                             basemapChanged={this.basemapChanged}
                             bioscape={this.state.bioscape}
@@ -155,6 +155,8 @@ class App extends React.Component {
                             updateAnalysisLayers={this.updateAnalysisLayers}
                         />
                     </div>
+                  
+                    
                     <div id="map-area">
                         <NBM
                             className="relative-map"

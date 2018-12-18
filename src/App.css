@@ -1,9 +1,9 @@
-#panel-area {
+.panel-area {
     width: 500px;
     max-width: 40%;
 }
 
-#panel-area {
+.panel-area {
     background-color: #555;
     color: white;
 }
@@ -34,7 +34,7 @@
         height: 100%;
         flex-direction: column;
     }
-    #panel-area {
+    .panel-area {
         width: 100%;
         max-width: 100%;
         max-height: 40%;
@@ -74,7 +74,7 @@
         flex: 1 1 auto;
         display: flex;
     }
-    #panel-area {
+    .panel-area {
         max-width: 500px;
         flex: 1 0 240px;
     }
