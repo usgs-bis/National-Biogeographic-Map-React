@@ -11,8 +11,8 @@ import "./AnalysisPackages.css";
 const SB_URL = "https://www.sciencebase.gov/catalog/item/5aa2b21ae4b0b1c392e9d968?format=json"
 const NFHP_URL = process.env.REACT_APP_BIS_API + "/api/v1/nfhpmetrics/condition?feature_id=";
 
-const sb_properties = {
-    "title": "Fish Habitat Condition and Disturbance Summaries default"
+let sb_properties = {
+    "title": "Fish Habitat Condition and Disturbance Summaries"
 }
 
 class NFHPAnalysis extends React.Component {
@@ -73,11 +73,13 @@ class NFHPAnalysis extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (this.props.feature_id !== prevProps.feature_id) {
+        if (this.props.feature &&
+            this.props.feature.properties.feature_id &&
+            (!prevProps.feature || this.props.feature.properties.feature_id !== prevProps.feature.properties.feature_id)) {
             this.setState({
                 loading: true
             })
-            fetch(NFHP_URL + this.props.feature_id)
+            fetch(NFHP_URL + this.props.feature.properties.feature_id)
                 .then(res => res.json())
                 .then(
                     (result) => {
@@ -208,7 +210,7 @@ class NFHPAnalysis extends React.Component {
         }
         return (
             <div
-                style={{ display: 'block' }}
+                style={{ display: (!!this.state.charts.horizontalBarChart.data || ! this.state.submitted) ? 'block' : 'none' }}
                 className="nbm-flex-row-no-padding">
                 <span onClick={this.toggleDropdown} className="bapTitle">
                     {this.state.title}

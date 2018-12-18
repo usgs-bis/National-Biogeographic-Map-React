@@ -167,7 +167,10 @@ class LeftPanel extends React.Component {
                 </div>
                 <div className="analysis-package-container">
                     <div className="nbm-flex-row-no-padding">
-                        <NFHPAnalysis feature={this.state.feature} />
+                        <NFHPAnalysis
+                            updateAnalysisLayers={this.state.updateAnalysisLayers}
+                            feature={this.state.feature}
+                        />
                     </div>
                     <div className="nbm-flex-row-no-padding">
                         <FirstLeafAnalysis
