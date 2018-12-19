@@ -48,7 +48,7 @@ class TableChart extends React.Component {
                                 <span>{this.props.config.chart.title}</span>
                             </div>
                             <div id={id + 'Subtitle'} className="subtitle">
-                                <span>{this.props.config.chart.title}</span>
+                                <span>{this.props.config.chart.subtitle}</span>
                             </div>
                             <div id={id + 'Chart'} className="chart">
                                 <div className="analysis-chart-container">
