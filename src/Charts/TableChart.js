@@ -15,32 +15,25 @@ class TableChart extends React.Component {
     createTableBody(data) {
         let table = []
 
-        let first = true
         // Outer loop to create parent
-        for (let i = 0; i < data.length; i++) {
+        for (let i = 1; i < data.length; i++) {
             let children = []
             //Inner loop to create children
             for (let j = 0; j < data[0].length; j++) {
-                if (first) {
-                    children.push(<th key={`${i}_${j}`}>{data[i][j]}</th>)
-                }
-                else {
-                    children.push(<td key={`${i}_${j}`}>{data[i][j]}</td>)
-                }
+                children.push(<td key={`${i}_${j}`}>{data[i][j]}</td>)
             }
-            first = false
             //Create the parent and add the children
             table.push(<tr key={`${i}_row`}>{children}</tr>)
         }
-        return table
+        return <tbody>{table}</tbody>
     }
 
     createTableHeader(data) {
         let headers = []
         for (let i = 0; i < data[0].length; i++) {
-            headers.push(<span className="table-header" key={`${i}_header`}>{data[0][i]}</span>)
+            headers.push(<th key={`${i}_head`}>{data[0][i]}</th>)
         }
-        return headers
+        return <thead><tr>{headers}</tr></thead>
     }
 
 
@@ -60,11 +53,8 @@ class TableChart extends React.Component {
                             </div>
                             <div id={id + 'Chart'} className="chart">
                                 <div className="analysis-chart-container">
-                                    {/* <div className="table-headers">
-                                        {this.createTableHeader(this.props.data)}
-                                    </div>
-                                    {this.createTableBody(this.props.data)} */}
                                     <table>
+                                        {this.createTableHeader(this.props.data)}
                                         {this.createTableBody(this.props.data)}
                                     </table>
 

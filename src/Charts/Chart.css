@@ -85,9 +85,12 @@ text {
     text-align: left;
 }
 
-.analysis-chart-container tr:first-child{
+.analysis-chart-container thead{
  
     font-weight: bold;
     color: lightblue;
     padding: 5px;
+}
+.legend text{
+    font-size: 12px;
 }

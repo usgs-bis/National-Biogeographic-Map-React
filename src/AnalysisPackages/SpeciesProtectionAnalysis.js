@@ -236,6 +236,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                     margins: { left: 20, right: 20, top: 20, bottom: 125 },
                     chart: { title: `GAP Status 1 & 2`, subtitle: `` },
                     tooltip: { label: (d) => { return `<p><div>${d.data.name}</div><div>${d.data.count} species</div></p>` } },
+                    legend: { rectSize: 12, spacing: 4, leftOffset: 6, fontSize: 'smaller' },
                     onClick: (d) => { this.filterTableData(d) }
                 }
                 const chartData = dataTemplate.status_1_2
@@ -247,6 +248,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                     margins: { left: 20, right: 20, top: 20, bottom: 125 },
                     chart: { title: `GAP Status 1, 2 & 3`, subtitle: `` },
                     tooltip: { label: (d) => { return `<p><div>${d.data.name}</div><div>${d.data.count} species</div></p>` } },
+                    legend: { rectSize: 12, spacing: 4, leftOffset: 6, fontSize: 'smaller' },
                     onClick: (d) => { this.filterTableData(d) }
 
                 }
@@ -272,25 +274,25 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                 }
 
                 let chartTitle = `${tableType} in ${this.props.feature.properties.feature_name} (${preData.length})`
-                let chartData = [[<span>Species Name</span>,<span></span>, <span>Range</span>, <span>Habitat</span>]]
+                let chartData = [[<span>Species Name</span>, <span></span>, <span>Range</span>, <span>Habitat</span>]]
                 let protectedPercent = <span></span>
 
                 if (this.state.gapRange !== 'ALL') {
                     preData = preData.filter((d) => { return d[this.state.gapStatus] === this.state.gapRange })
                     if (this.state.gapStatus === 'status_1_2_group') chartTitle = `${preData.length} Species with ${this.state.gapRange}% within GAP Status 1 & 2 in ${this.props.feature.properties.feature_name}`
                     if (this.state.gapStatus === 'status_1_2_3_group') chartTitle = `${preData.length} Species with ${this.state.gapRange}% within GAP Status 1, 2 & 3 in ${this.props.feature.properties.feature_name}`
-                    chartData = [[<span>Species Name</span>,  <span>Protected</span>, <span>Range</span>, <span>Habitat</span>]]
+                    chartData = [[<span>Species Name</span>, <span>Protected</span>, <span>Range</span>, <span>Habitat</span>]]
                 }
 
                 for (let row of preData) {
                     const name = <span>{`${row.common_name} (${row.scientific_name})`}</span>
-                    if(this.state.gapRange !== 'ALL'){
+                    if (this.state.gapRange !== 'ALL') {
                         if (this.state.gapStatus === 'status_1_2_group') protectedPercent = <span>{`${parseFloat(row.status_1_2).toFixed(2)}%`}</span>
                         if (this.state.gapStatus === 'status_1_2_3_group') protectedPercent = <span>{`${parseFloat(row.status_1_2_3).toFixed(2)}%`}</span>
                     }
                     const raido1 = <input id={`Range_${row.sppcode}`} type="radio" name={`Range_${row.sppcode}`} value={row.sppcode} />
                     const raido2 = <input id={`Habitat_${row.sppcode}`} type="radio" name={`Habitat_${row.sppcode}`} value={row.sppcode} />
-                    chartData.push([name,protectedPercent, raido1, raido2,])
+                    chartData.push([name, protectedPercent, raido1, raido2,])
                 }
                 const chartConfig = {
                     margins: { left: 20, right: 20, top: 20, bottom: 125 },
