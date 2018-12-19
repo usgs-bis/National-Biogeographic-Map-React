@@ -66,6 +66,8 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
             },
             data: null,
             taxaLetter: "ALL",
+            gapStatus: "ALL",
+            gapRange: "ALL",
             title: sb_properties.title,
             submitted: false,
             isOpen: false,
@@ -84,7 +86,9 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
         this.getAnalysisLayers = this.props.getAnalysisLayers.bind(this)
         this.updateAnalysisLayers = this.props.updateAnalysisLayers.bind(this)
         this.setOpacity = this.props.setOpacity.bind(this)
-        this.resetAnalysisLayers =  this.props.resetAnalysisLayers.bind(this)
+        this.resetAnalysisLayers = this.props.resetAnalysisLayers.bind(this)
+        this.resetSppTable = this.resetSppTable.bind(this)
+        this.filterTableData = this.filterTableData.bind(this)
     }
 
     toggleDropdown() {
@@ -164,18 +168,18 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
         let charts = {}
         let dataTemplate = {
             status_1_2: [
-                { color: '#660000', count: 0, name: '< 1%', percent: 0.0 },
-                { color: '#FF0000', count: 0, name: '1 - 10%', percent: 0.0 },
-                { color: '#EDCB62', count: 0, name: '10 - 17%', percent: 0.0 },
-                { color: '#9CCB19', count: 0, name: '17 - 50%', percent: 0.0 },
-                { color: '#228B22', count: 0, name: '> 50%', percent: 0.0 },
+                { color: '#660000', count: 0, name: '< 1%', percent: 0.0, status: 'status_1_2_group', range: '<1' },
+                { color: '#FF0000', count: 0, name: '1 - 10%', percent: 0.0, status: 'status_1_2_group', range: '1-10' },
+                { color: '#EDCB62', count: 0, name: '10 - 17%', percent: 0.0, status: 'status_1_2_group', range: '10-17' },
+                { color: '#9CCB19', count: 0, name: '17 - 50%', percent: 0.0, status: 'status_1_2_group', range: '17-50' },
+                { color: '#228B22', count: 0, name: '> 50%', percent: 0.0, status: 'status_1_2_group', range: '>50' },
             ],
             status_1_2_3: [
-                { color: '#660000', count: 0, name: '< 1%', percent: 0.0 },
-                { color: '#FF0000', count: 0, name: '1 - 10%', percent: 0.0 },
-                { color: '#EDCB62', count: 0, name: '10 - 17%', percent: 0.0 },
-                { color: '#9CCB19', count: 0, name: '17 - 50%', percent: 0.0 },
-                { color: '#228B22', count: 0, name: '> 50%', percent: 0.0 },
+                { color: '#660000', count: 0, name: '< 1%', percent: 0.0, status: 'status_1_2_3_group', range: '<1' },
+                { color: '#FF0000', count: 0, name: '1 - 10%', percent: 0.0, status: 'status_1_2_3_group', range: '1-10' },
+                { color: '#EDCB62', count: 0, name: '10 - 17%', percent: 0.0, status: 'status_1_2_3_group', range: '10-17' },
+                { color: '#9CCB19', count: 0, name: '17 - 50%', percent: 0.0, status: 'status_1_2_3_group', range: '17-50' },
+                { color: '#228B22', count: 0, name: '> 50%', percent: 0.0, status: 'status_1_2_3_group', range: '>50' },
             ],
             species: {
                 all: [],
@@ -193,7 +197,9 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                 status_1_2: row.gapstat12perc,
                 status_1_2_3: row.gapstat123perc,
                 taxaletter: row.taxa,
-                sppcode: row.sppcode
+                sppcode: row.sppcode,
+                status_1_2_group: row.gapstat12group,
+                status_1_2_3_group: row.gapstat123group
             }
             dataTemplate.species.all.push(c)
             if (c.taxaletter === 'A') dataTemplate.species.amphibian_species.push(c)
@@ -229,7 +235,8 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                 const chartConfig = {
                     margins: { left: 20, right: 20, top: 20, bottom: 125 },
                     chart: { title: `GAP Status 1 & 2`, subtitle: `` },
-                    tooltip: { label: (d) => { return `<p><div>${d.data.name}</div><div>${d.data.count} species</div></p>` } }
+                    tooltip: { label: (d) => { return `<p><div>${d.data.name}</div><div>${d.data.count} species</div></p>` } },
+                    onClick: (d) => { this.filterTableData(d) }
                 }
                 const chartData = dataTemplate.status_1_2
                 charts[chart] = { id: chartId, config: chartConfig, data: chartData }
@@ -239,7 +246,9 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                 const chartConfig = {
                     margins: { left: 20, right: 20, top: 20, bottom: 125 },
                     chart: { title: `GAP Status 1, 2 & 3`, subtitle: `` },
-                    tooltip: { label: (d) => { return `<p><div>${d.data.name}</div><div>${d.data.count} species</div></p>` } }
+                    tooltip: { label: (d) => { return `<p><div>${d.data.name}</div><div>${d.data.count} species</div></p>` } },
+                    onClick: (d) => { this.filterTableData(d) }
+
                 }
                 const chartData = dataTemplate.status_1_2_3
                 charts[chart] = { id: chartId, config: chartConfig, data: chartData }
@@ -261,15 +270,31 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                     preData = dataTemplate.species.reptile_species
                     tableType = "Reptiles";
                 }
-                let chartData = [[<span>Species Name</span>, <span>Range</span>, <span>Habitat</span>]]
+
+                let chartTitle = `${tableType} in ${this.props.feature.properties.feature_name} (${preData.length})`
+                let chartData = [[<span>Species Name</span>,<span></span>, <span>Range</span>, <span>Habitat</span>]]
+                let protectedPercent = <span></span>
+
+                if (this.state.gapRange !== 'ALL') {
+                    preData = preData.filter((d) => { return d[this.state.gapStatus] === this.state.gapRange })
+                    if (this.state.gapStatus === 'status_1_2_group') chartTitle = `${preData.length} Species with ${this.state.gapRange}% within GAP Status 1 & 2 in ${this.props.feature.properties.feature_name}`
+                    if (this.state.gapStatus === 'status_1_2_3_group') chartTitle = `${preData.length} Species with ${this.state.gapRange}% within GAP Status 1, 2 & 3 in ${this.props.feature.properties.feature_name}`
+                    chartData = [[<span>Species Name</span>,  <span>Protected</span>, <span>Range</span>, <span>Habitat</span>]]
+                }
+
                 for (let row of preData) {
-                    let raido1 = <input id={`Range_${row.sppcode}`} type="radio" name={`Range_${row.sppcode}`} value={row.sppcode} />//`<input type="radio" id="Range_${row.sppcode}" name="spp_Range" value="${row.sppcode}" onClick="">`
-                    let raido2 = <input id={`Habitat_${row.sppcode}`} type="radio" name={`Habitat_${row.sppcode}`} value={row.sppcode} />//`<input type="radio" id="Habitat_${row.sppcode}" name="spp_Habitat" value="${row.sppcode}" onClick="">`
-                    chartData.push([<span>{`${row.common_name} (${row.scientific_name})`}</span>, raido1, raido2,])
+                    const name = <span>{`${row.common_name} (${row.scientific_name})`}</span>
+                    if(this.state.gapRange !== 'ALL'){
+                        if (this.state.gapStatus === 'status_1_2_group') protectedPercent = <span>{`${parseFloat(row.status_1_2).toFixed(2)}%`}</span>
+                        if (this.state.gapStatus === 'status_1_2_3_group') protectedPercent = <span>{`${parseFloat(row.status_1_2_3).toFixed(2)}%`}</span>
+                    }
+                    const raido1 = <input id={`Range_${row.sppcode}`} type="radio" name={`Range_${row.sppcode}`} value={row.sppcode} />
+                    const raido2 = <input id={`Habitat_${row.sppcode}`} type="radio" name={`Habitat_${row.sppcode}`} value={row.sppcode} />
+                    chartData.push([name,protectedPercent, raido1, raido2,])
                 }
                 const chartConfig = {
                     margins: { left: 20, right: 20, top: 20, bottom: 125 },
-                    chart: { title: `${tableType} in ${this.props.feature.properties.feature_name} (${chartData.length})`, subtitle: `` },
+                    chart: { title: chartTitle, subtitle: `` },
                 }
                 charts[chart] = { id: chartId, config: chartConfig, data: chartData }
 
@@ -289,7 +314,34 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                 loading: false
             })
         })
+    }
 
+    resetSppTable() {
+        this.setState({
+            gapStatus: "ALL",
+            gapRange: "ALL"
+        }, () => {
+            const charts = this.getCharts(this.state.data)
+            this.setState({
+                charts: charts,
+                submitted: true,
+                loading: false
+            })
+        })
+    }
+
+    filterTableData(d) {
+        this.setState({
+            gapStatus: d.status,
+            gapRange: d.range
+        }, () => {
+            const charts = this.getCharts(this.state.data)
+            this.setState({
+                charts: charts,
+                submitted: true,
+                loading: false
+            })
+        })
     }
 
     render() {
@@ -304,7 +356,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                                glyph={this.state.glyph} />
                 </span>
                 <Collapse className="settings-dropdown" isOpen={this.state.isOpen && !!this.state.charts.gap12.data}>
-                    <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading}/>
+                    <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
                     {this.getAnalysisLayers()}
                     <div
                         style={{ display: (this.props.feature && this.props.feature.properties.feature_name) ? 'block' : 'none' }}
@@ -319,9 +371,6 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                                 <div><input type="radio" name="species" value={"M"} checked={this.state.taxaLetter === "M"} onChange={this.onSpeciesChanged} />Mammals</div>
                                 <div><input type="radio" name="species" value={"R"} checked={this.state.taxaLetter === "R"} onChange={this.onSpeciesChanged} />Reptiles</div>
                             </div>
-
-
-
                         </div>
                         <div>
                             <div className="half-chart">
@@ -336,6 +385,9 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                                     id={this.state.charts.gap123.id}
                                     config={this.state.charts.gap123.config} />
                             </div>
+                        </div>
+                        <div className="chart-headers">
+                            <button className="submit-analysis-btn" onClick={this.resetSppTable}>Clear Chart Selection</button>
                         </div>
                         <TableChart
                             data={this.state.charts.gapTable.data}

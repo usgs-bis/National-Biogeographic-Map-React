@@ -62,45 +62,32 @@ text {
 }
 
 .analysis-chart-container{
-    max-height: 500px;
-    overflow-y: scroll;
+    max-height: 600px;
+    overflow-y: auto;
+    margin-bottom: 20px;
     border: 1px solid #737272;
+    border-radius: 10px;
+    margin: 5px;
+}
+.analysis-chart-container table{
+    border-collapse: collapse;
+    padding: 0;
     background-color: rgba(30,30,35,.5);
-    margin: 10px;
-    border-radius: 5px;
+}
+.analysis-chart-container th span, .analysis-chart-container td span {
+  padding: 5px;
 }
 
-.analysis-chart-container div{
-    text-align: left;
+.analysis-chart-container tr{
+ 
     border-top: 1px solid #737272;
     border-bottom: 1px solid #737272;
+    text-align: left;
 }
 
-.analysis-chart-container span {
-    padding:5px;
-    display: inline-flex;
-    width: 15%
-}
-.analysis-chart-container div span span{
-    width: 100% !important;
-}
-.analysis-chart-container div span:first-child{
-    width: 65%;
-    font-size: small;
-}
-
-.analysis-chart-container div span input{
-    width: 50%;
-    margin: auto;
-}
-
-.analysis-chart-container span {
-    padding:5px;
-    display: inline-flex;
-    width: 15%;
-}
-.table-headers{
-}
-.table-header span{
-    font-size: medium !important;
+.analysis-chart-container tr:first-child{
+ 
+    font-weight: bold;
+    color: lightblue;
+    padding: 5px;
 }

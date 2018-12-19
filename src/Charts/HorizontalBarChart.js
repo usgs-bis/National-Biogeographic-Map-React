@@ -23,7 +23,8 @@ class HorizontalBarChart extends React.Component {
     *        chart: {title:"United States",subtitle:"Population over Time"},
     *        xAxis:{key:'percent',label:"Percent Population", ticks:5, tickFormat:(d)=>{return d.percent + "%"}},
     *        yAxis:{key:'state',label:"State", ticks:5, tickFormat:(d)=>{return d.name}},
-    *        tooltip:{label:(d)=>{return 'label'}}
+    *        tooltip:{label:(d)=>{return 'label'}},
+    *        legend:true
     *       }
     * ex. data = [
     *        { "name": "Delaware", "percent": 10.4, "color": "#FF0000" },
@@ -57,7 +58,9 @@ class HorizontalBarChart extends React.Component {
         const width = 480,
             height = 400,
             opacityHover = 1,
-            otherOpacityOnHover = .8;
+            otherOpacityOnHover = .8,
+            legendRectSize = 12,
+            legendSpacing = 4;
 
         // Define x and y type and scales
         const x = d3.scaleLinear().range([0, width]);
@@ -66,7 +69,7 @@ class HorizontalBarChart extends React.Component {
         // Determine domain 
         const max = data.map(d => { return d[config.xAxis.key] }).sort(function (a, b) { return a - b; })[data.length - 1]
         x.domain([0, max]);
-        y.domain(data.map(function (d) { return d.Risk; })).padding(0.1);
+        y.domain(data.map(function (d) { return d[config.yAxis.key]; })).padding(0.1);
 
         // Create the x-axis
         const xAxis = d3.axisBottom(x)
@@ -168,6 +171,33 @@ class HorizontalBarChart extends React.Component {
             .attr("font-size", "14px")
             .style("text-anchor", "middle")
             .text(config.yAxis.label);
+
+        if (config.legend) {
+            const legend = svg.selectAll('.legend')
+                .data(data)
+                .enter()
+                .append('g')
+                .attr('class', 'legend')
+                .attr('transform', function (d, i) {
+                    return 'translate(' + 0 + ',' + (height + 40 + (25 * i)) + ')';
+                });
+
+            legend.append('rect')
+                .attr('width', legendRectSize)
+                .attr('height', legendRectSize)
+                .style('fill', function (d, i) {
+                    return d.color
+                })
+                .style("stroke", "black")
+                .style("stroke-width", "1px");
+
+            legend.append('text')
+                .attr('x', legendRectSize + legendSpacing)
+                .attr('y', legendRectSize - legendSpacing)
+                .attr('font-size', 'smaller')
+                .text(function (d) { return d[config.yAxis.key]; });
+        }
+
     }
 
     render() {
