@@ -13,7 +13,6 @@ import PhenologyAnalysis from "../AnalysisPackages/PhenologyAnalysis";
 class LeftPanel extends React.Component {
     constructor(props) {
         super(props)
-
         this.state = {
             results: props.results,
             textSearchHandler: props.textSearchHandler,
@@ -21,7 +20,8 @@ class LeftPanel extends React.Component {
             submitHandler: props.submitHandler,
             basemapsOpen: false,
             bioscape: props.bioscape,
-            updateAnalysisLayers: props.updateAnalysisLayers
+            updateAnalysisLayers: props.updateAnalysisLayers,
+            priorityBap: "bap1"
         }
         this.handleKeyUp = this.handleKeyUp.bind(this);
         this.toggleSfrDropdown = this.toggleSfrDropdown.bind(this)
@@ -32,7 +32,7 @@ class LeftPanel extends React.Component {
         this.basemapChanged = this.basemapChanged.bind(this);
         this.share = this.share.bind(this);
         this.report = this.report.bind(this);
-
+        this.updateAnalysisLayers = this.updateAnalysisLayers.bind(this)
     }
 
     componentWillReceiveProps(props) {
@@ -91,8 +91,17 @@ class LeftPanel extends React.Component {
     share(){}
     report(){}
 
+    updateAnalysisLayers(enabledLayers, bapId) {
+        this.setState({
+            priorityBap: bapId
+        })
+
+        this.state.updateAnalysisLayers(enabledLayers)
+    }
+
     render() {
         let that = this;
+        let counter = 1;
         const featureText = () => {
             if (this.state.feature_name) {
                 return (
@@ -169,45 +178,57 @@ class LeftPanel extends React.Component {
                 </div>
                 <div className="analysis-package-container">
                     <div className="nbm-flex-row-no-padding">
-                        <NFHPAnalysis
-                            updateAnalysisLayers={this.state.updateAnalysisLayers}
-                            feature={this.state.feature}
-                        />
-                    </div>
-                    <div className="nbm-flex-row-no-padding">
                         <FirstLeafAnalysis
-                            updateAnalysisLayers={this.state.updateAnalysisLayers}
+                            updateAnalysisLayers={this.updateAnalysisLayers}
                             feature={this.state.feature}
                             yearMin={this.props.yearMin}
                             yearMax={this.props.yearMax}
+                            priorityBap={this.state.priorityBap}
+                            bapId={`bap${counter++}`}
                         />
                     </div>
                     <div className="nbm-flex-row-no-padding">
                         <FirstBloomAnalysis
-                            updateAnalysisLayers={this.state.updateAnalysisLayers}
+                            updateAnalysisLayers={this.updateAnalysisLayers}
                             feature={this.state.feature}
                             yearMin={this.props.yearMin}
                             yearMax={this.props.yearMax}
+                            priorityBap={this.state.priorityBap}
+                            bapId={`bap${counter++}`}
                         />
                     </div>
                     <div className="nbm-flex-row-no-padding">
                         <FirstLeafBloomComparisonAnalysis
-                            updateAnalysisLayers={this.state.updateAnalysisLayers}
+                            updateAnalysisLayers={this.updateAnalysisLayers}
                             feature={this.state.feature}
                             yearMin={this.props.yearMin}
                             yearMax={this.props.yearMax}
+                            priorityBap={this.state.priorityBap}
+                            bapId={`bap${counter++}`}
+                        />
+                    </div>
+                    <div className="nbm-flex-row-no-padding">
+                        <NFHPAnalysis
+                            updateAnalysisLayers={this.updateAnalysisLayers}
+                            feature={this.state.feature}
+                            priorityBap={this.state.priorityBap}
+                            bapId={`bap${counter++}`}
                         />
                     </div>
                     <div className="nbm-flex-row-no-padding">
                         <EcosystemProtectionAnalysis
-                            updateAnalysisLayers={this.state.updateAnalysisLayers}
+                            updateAnalysisLayers={this.updateAnalysisLayers}
                             feature={this.state.feature}
+                            priorityBap={this.state.priorityBap}
+                            bapId={`bap${counter++}`}
                         />
                     </div>
                     <div className="nbm-flex-row-no-padding">
                         <SpeciesProtectionAnalysis
-                            updateAnalysisLayers={this.state.updateAnalysisLayers}
+                            updateAnalysisLayers={this.updateAnalysisLayers}
                             feature={this.state.feature}
+                            priorityBap={this.state.priorityBap}
+                            bapId={`bap${counter++}`}
                         />
                     </div>
                     <div className="nbm-flex-row-no-padding">

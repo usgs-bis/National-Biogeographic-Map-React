@@ -13,7 +13,8 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage, layers) => {
                 glyph: "menu-right",
                 updateAnalysisLayers: props.updateAnalysisLayers,
                 value: [],
-                layers: layers
+                layers: layers,
+                bapId: props.bapId
             }
             this.toggleLayerDropdown = this.toggleLayerDropdown.bind(this)
             this.updateAnalysisLayers = this.updateAnalysisLayers.bind(this)
@@ -21,6 +22,23 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage, layers) => {
             this.getAnalysisLayers = this.getAnalysisLayers.bind(this)
             this.resetAnalysisLayers =  this.resetAnalysisLayers.bind(this)
             this.inputRefs = {}
+        }
+
+        componentDidUpdate(prevProps) {
+            if (prevProps.priorityBap !== this.props.priorityBap) {
+                if (this.props.priorityBap !== this.state.bapId) {
+                    let l = layers;
+                    let that = this;
+                    Object.keys(l).forEach(function(key) {
+                        l[key].checked = false
+                        that.inputRefs[key].checked = false
+                    })
+
+                    this.setState({
+                        layers: l
+                    })
+                }
+            }
         }
 
         resetAnalysisLayers() {
@@ -53,7 +71,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage, layers) => {
                 }
             })
 
-            this.state.updateAnalysisLayers(enabledLayers)
+            this.state.updateAnalysisLayers(enabledLayers, this.state.bapId)
         }
 
         toggleLayerDropdown() {

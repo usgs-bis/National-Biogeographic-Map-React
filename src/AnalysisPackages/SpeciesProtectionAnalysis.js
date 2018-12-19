@@ -161,6 +161,23 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                     }
                 )
         }
+
+        if (prevProps.priorityBap !== this.props.priorityBap) {
+            if (this.props.priorityBap !== this.props.bapId) {
+                let l = layers;
+                let that = this;
+                Object.keys(l).forEach(function(key) {
+                    l[key].checked = false
+                    if (that.inputRefs) {
+                        that.inputRefs[key].checked = false
+                    }
+                })
+
+                this.setState({
+                    layers: l
+                })
+            }
+        }
     }
 
     changeFilter(e, layerKey) {
