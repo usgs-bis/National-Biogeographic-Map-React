@@ -4,18 +4,18 @@ import "./Chart.css"
 class TableChart extends React.Component {
     constructor(props) {
         super(props)
-        this.createTable = this.createTable.bind(this)
+        this.createTableBody = this.createTableBody.bind(this)
+        this.createTableHeader = this.createTableHeader.bind(this)
     }
 
     componentDidUpdate() {
     }
 
 
-    createTable(data) {
+    createTableBody(data) {
         let table = []
-
         // Outer loop to create parent
-        for (let i = 0; i < data.length; i++) {
+        for (let i = 1; i < data.length; i++) {
             let children = []
             //Inner loop to create children
             for (let j = 0; j < data[0].length; j++) {
@@ -27,6 +27,15 @@ class TableChart extends React.Component {
         return table
     }
 
+    createTableHeader(data) {
+        let headers = []
+        for (let i = 0; i < data[0].length; i++) {
+            headers.push(<span className="table-header" key={`${i}_header`}>{data[0][i]}</span>)
+        }
+        return headers
+    }
+
+
 
     render() {
         const divs = () => {
@@ -36,14 +45,17 @@ class TableChart extends React.Component {
                     <div>
                         <div id={id + 'ChartContainer'} className="chart-container">
                             <div id={id + 'Title'} className="title">
-                                <text>{this.props.config.chart.title}</text>
+                                <span>{this.props.config.chart.title}</span>
                             </div>
                             <div id={id + 'Subtitle'} className="subtitle">
-                                <text>{this.props.config.chart.title}</text>
+                                <span>{this.props.config.chart.title}</span>
                             </div>
                             <div id={id + 'Chart'} className="chart">
                                 <div className="analysis-chart-container">
-                                    {this.createTable(this.props.data)}
+                                    <div className="table-headers">
+                                        {this.createTableHeader(this.props.data)}
+                                    </div>
+                                    {this.createTableBody(this.props.data)}
                                 </div>
 
                             </div>

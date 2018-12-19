@@ -78,18 +78,19 @@ text {
 .analysis-chart-container span {
     padding:5px;
     display: inline-flex;
-    width: 10%
+    width: 15%
 }
 .analysis-chart-container div span span{
     width: 100% !important;
 }
 .analysis-chart-container div span:first-child{
-    width: 70%;
+    width: 65%;
     font-size: small;
 }
 
-.analysis-chart-container div:first-child{
-    font-size: small;
+.analysis-chart-container div span input{
+    width: 50%;
+    margin: auto;
 }
 
 .analysis-chart-container span {
@@ -97,6 +98,8 @@ text {
     display: inline-flex;
     width: 15%;
 }
-.analysis-chart-container div:first-child{
-    font-size: small;
+.table-headers{
+}
+.table-header span{
+    font-size: medium !important;
 }
