@@ -69,12 +69,12 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage, layers) => {
                 return (
                     <div className="analysis-layers">
                     <span onClick={that.toggleLayerDropdown} className="analysis-layers-dropdown">
-                    {"Analysis Layers"}
+                        {"Analysis Layers"}
                         <Glyphicon
                             className="analysis-dropdown-glyph"
                             glyph={that.state.layersOpen ? "menu-down" : "menu-right"}
                         />
-                </span>
+                    </span>
                         <Collapse isOpen={that.state.layersOpen}>
                             {Object.keys(this.state.layers).map(function (key) {
                                 let layer = that.state.layers[key]

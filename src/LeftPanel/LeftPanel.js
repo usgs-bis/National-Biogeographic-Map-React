@@ -198,6 +198,7 @@ class LeftPanel extends React.Component {
                     </div>
                     <div className="nbm-flex-row-no-padding">
                         <SpeciesProtectionAnalysis
+                            updateAnalysisLayers={this.state.updateAnalysisLayers}
                             feature={this.state.feature}
                         />
                     </div>
