@@ -7,6 +7,7 @@ import { BarLoader } from "react-spinners"
 import withSharedAnalysisCharacteristics from "./AnalysisPackage"
 import PieChart from "../Charts/PieChart"
 import TableChart from "../Charts/TableChart"
+import HorizontalBarChart from "../Charts/HorizontalBarChart";
 
 import "./AnalysisPackages.css";
 
@@ -39,6 +40,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
         super(props)
         this.state = {
             charts: {
+                protectionStatus: { id: "", config: {}, data: null },
                 gap12: { id: "", config: {}, data: null },
                 gap123: { id: "", config: {}, data: null },
                 gapTable: { id: "", config: {}, data: null },
@@ -117,6 +119,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                         } else {
                             this.setState({
                                 charts: {
+                                    protectionStatus: { id: "", config: {}, data: null },
                                     gap12: { id: "", config: {}, data: null },
                                     gap123: { id: "", config: {}, data: null },
                                     gapTable: { id: "", config: {}, data: null },
@@ -186,7 +189,16 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
 
         let charts = {}
         let dataTemplate = {
-            ecoregion_protection: data.protection,
+            ecoregion_protection: [
+                {
+                    name: "CONUS",
+                    chart_data: []
+                },
+                {
+                    name: this.props.feature.properties.feature_name,
+                    chart_data: []
+                }
+            ],
             ecosystem_coverage: [],
             ecological_systems: [],
             gap1_2: [
@@ -204,6 +216,56 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                 { color: '#228B22', count: 0, name: '> 50%', status: 'status_1_2_3_group', range: '>50' },
             ],
         }
+        const placeName = this.props.feature.properties.feature_name
+        if (data.protection.CONUS) {
+            let total = parseFloat(data.protection.CONUS.gapstat1ac)
+                + parseFloat(data.protection.CONUS.gapstat2ac)
+                + parseFloat(data.protection.CONUS.gapstat3ac)
+                + parseFloat(data.protection.CONUS.gapstat4ac);
+            let temp = [
+                {
+                    id: "Status12",
+                    value: numberWithCommas(parseInt(data.protection.CONUS.gapstat1ac + data.protection.CONUS.gapstat2ac)),
+                    percent: ((data.protection.CONUS.gapstat1ac + data.protection.CONUS.gapstat2ac) / total) * 100
+                },
+                {
+                    id: "Status3",
+                    value: numberWithCommas(parseInt(data.protection.CONUS.gapstat3ac)),
+                    percent: (data.protection.CONUS.gapstat3ac / total) * 100
+                },
+                {
+                    id: "Status4",
+                    value: numberWithCommas(parseInt(data.protection.CONUS.gapstat4ac)),
+                    percent: (data.protection.CONUS.gapstat4ac / total) * 100
+                }
+            ]
+            dataTemplate.ecoregion_protection[0].chart_data = temp
+        }
+        if (data.protection[placeName]) {
+            let total = parseFloat(data.protection[placeName].gapstat1ac)
+                + parseFloat(data.protection[placeName].gapstat2ac)
+                + parseFloat(data.protection[placeName].gapstat3ac)
+                + parseFloat(data.protection[placeName].gapstat4ac);
+            let temp = [
+                {
+                    id: "Status12",
+                    value: numberWithCommas(parseInt(data.protection[placeName].gapstat1ac + data.protection[placeName].gapstat2ac)),
+                    percent: ((data.protection[placeName].gapstat1ac + data.protection[placeName].gapstat2ac) / total) * 100
+                },
+                {
+                    id: "Status3",
+                    value: numberWithCommas(parseInt(data.protection[placeName].gapstat3ac)),
+                    percent: (data.protection[placeName].gapstat3ac / total) * 100
+                },
+                {
+                    id: "Status4",
+                    value: numberWithCommas(parseInt(data.protection[placeName].gapstat4ac)),
+                    percent: (data.protection[placeName].gapstat4ac / total) * 100
+                }
+            ]
+            dataTemplate.ecoregion_protection[1].chart_data = temp
+        }
+
         for (let row of data.systems) {
             if (!row.eco_code || !row.eco_code.includes('.')) {
                 let c = {
@@ -256,7 +318,78 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
 
 
         for (let chart of Object.keys(this.state.charts)) {
-            if (chart.toString() === "gap12" && data) {
+            if (chart.toString() === "protectionStatus" && data) {
+
+                const chartId = "EP_protectionStatus"
+                const chartConfig = {
+                    margins: { left: 100, right: 20, top: 20, bottom: 100 },
+                    chart: { title: `Protection Status of ${this.props.feature.properties.feature_name} Compared to the Continental United States`, subtitle: `` },
+                    xAxis: { key: 'Percent', label: "", ticks: 5, tickFormat: (d) => { return `${parseInt(d)}%` } },
+                    yAxis: { key: 'name', label: "", ticks: 2, tickFormat: (d) => { return d } },
+                    tooltip: {
+                        label: (d) => {
+                            let p = ""
+                            let v = ""
+                            let g = ""
+                            if (d && d[1] - d[0] === d.data['Gap Status 1 & 2']) {
+                                p = parseFloat(d.data['Gap Status 1 & 2']).toFixed(2).toString() + "%"
+                                v = d.data.status12_v + " acers"
+                                g = "Gap Status 1 & 2"
+                            }
+                            else if (d && d[1] - d[0] === d.data['Gap Status 3']) {
+                                p = parseFloat(d.data['Gap Status 3']).toFixed(2).toString() + "%"
+                                v = d.data.status3_v + " acers"
+                                g = "Gap Status 3"
+                            }
+                            else if (d && d[1] - d[0] === d.data['Gap Status 4']) {
+                                p = parseFloat(d.data['Gap Status 4']).toFixed(2).toString() + "%"
+                                v = d.data.status4_v + " acers"
+                                g = "Gap Status 4"
+                            }
+                            return `<div"><div>${g}</div><div>${p}</div><div>${v}</div></div>`
+                        },
+                        color: (d) => {
+                            if (d && d[1] - d[0] === d.data['Gap Status 1 & 2']) {
+                                return "#5a8f29"
+                            }
+                            else if (d && d[1] - d[0] === d.data['Gap Status 3']) {
+                                return "#cccccc"
+                            }
+                            else if (d && d[1] - d[0] === d.data['Gap Status 4']) {
+                                return "#424243"
+                            }
+                            return 'black'
+                        }
+                    },
+                    legend: true,
+                    stacked: true
+                }
+                let chartData = [
+                    {
+                        name: placeName,
+                        total: 100,
+                        status12_v: dataTemplate.ecoregion_protection[1].chart_data[0].value,
+                        'Gap Status 1 & 2': dataTemplate.ecoregion_protection[1].chart_data[0].percent,
+                        status3_v: dataTemplate.ecoregion_protection[1].chart_data[1].value,
+                        'Gap Status 3': dataTemplate.ecoregion_protection[1].chart_data[1].percent,
+                        status4_v: dataTemplate.ecoregion_protection[1].chart_data[2].value,
+                        'Gap Status 4': dataTemplate.ecoregion_protection[1].chart_data[2].percent
+                    },
+                    {
+                        name: 'CONUS',
+                        total: 100,
+                        status12_v: dataTemplate.ecoregion_protection[0].chart_data[0].value,
+                        'Gap Status 1 & 2': dataTemplate.ecoregion_protection[0].chart_data[0].percent,
+                        status3_v: dataTemplate.ecoregion_protection[0].chart_data[1].value,
+                        'Gap Status 3': dataTemplate.ecoregion_protection[0].chart_data[1].percent,
+                        status4_v: dataTemplate.ecoregion_protection[0].chart_data[2].value,
+                        'Gap Status 4': dataTemplate.ecoregion_protection[0].chart_data[2].percent
+                    }
+                ]
+                chartData.columns = ["name", 'Gap Status 1 & 2', 'Gap Status 3', 'Gap Status 4']
+                charts[chart] = { id: chartId, config: chartConfig, data: chartData }
+            }
+            else if (chart.toString() === "gap12" && data) {
                 const chartId = "EP_GAP12"
                 const chartConfig = {
                     margins: { left: 20, right: 20, top: 20, bottom: 125 },
@@ -384,6 +517,10 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                     <div
                         style={{ display: (this.props.feature && this.props.feature.properties.feature_name) ? 'block' : 'none' }}
                         className="chartsDiv">
+                        <HorizontalBarChart
+                            data={this.state.charts.protectionStatus.data}
+                            id={this.state.charts.protectionStatus.id}
+                            config={this.state.charts.protectionStatus.config} />
 
                         <div>
                             <div className="chart-titles">
