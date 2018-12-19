@@ -22,6 +22,7 @@ class PieChart extends React.Component {
     *        margins:{left:1,right:10,top:1,bottom:20},
     *        chart: {title:"United States",subtitle:"Population over Time"},
     *        tooltip:{label:(d)=>{return 'label'}},
+    *        legend:{rectSize:12,spacing:4,leftOffset:6,fontSize:'smaller'}
     *        onClick: (d)=>{this.doSomthing()}
     *       }
     * ex. data = [
@@ -57,9 +58,7 @@ class PieChart extends React.Component {
             padding = 10,
             opacity = .8,
             opacityHover = 1,
-            otherOpacityOnHover = .8,
-            legendRectSize = 12,
-            legendSpacing = 4;
+            otherOpacityOnHover = .8;
 
         const radius = Math.min(width - padding, height - padding) / 2;
 
@@ -69,13 +68,13 @@ class PieChart extends React.Component {
             .classed("svg-container-chart", true)
             .append("svg")
             .attr("preserveAspectRatio", "xMinYMin meet")
-            .attr("viewBox", "0 0 " + (width) + " " + (height + config.margins.top + config.margins.bottom))
+            .attr("viewBox", "0 0 " + (width + config.margins.left + config.margins.right ) + " " + (height + config.margins.top + config.margins.bottom))
             .classed("svg-content-responsive", true)
             .attr("version", "1.1")
             .attr("baseProfile", "full")
             .attr("xmlns", "http://www.w3.org/2000/svg")
             .append("g")
-            .attr('transform', 'translate(' + ((width / 2)) + ',' + (height / 2) + ')');
+            .attr('transform', 'translate(' + ((width + config.margins.left + config.margins.right ) / 2) + ',' + (height / 2) + ')');
 
         const arc = d3.arc()
             .innerRadius(0)
@@ -135,12 +134,12 @@ class PieChart extends React.Component {
             .append('g')
             .attr('class', 'legend')
             .attr('transform', function (d, i) {
-                return 'translate(' + ((-1 * (width / 6)) ) + ',' + (height / 2 + 20 + (15 * i)) + ')';
+                return 'translate(' + ((-1 * (width / config.legend.leftOffset)) ) + ',' + (height / 2 + 20 + (15 * i)) + ')';
             });
 
         legend.append('rect')
-            .attr('width', legendRectSize)
-            .attr('height', legendRectSize)
+            .attr('width', config.legend.rectSize)
+            .attr('height', config.legend.rectSize)
             .style('fill', function (d, i) {
                 return d.color
             })
@@ -148,9 +147,9 @@ class PieChart extends React.Component {
             .style("stroke-width", "1px");
 
         legend.append('text')
-            .attr('x', legendRectSize + legendSpacing)
-            .attr('y', legendRectSize - legendSpacing)
-            .attr('font-size', 'smaller')
+            .attr('x', config.legend.rectSize + config.legend.spacing + 2)
+            .attr('y', config.legend.rectSize - config.legend.spacing + 2)
+            .attr('font-size', config.legend.fontSize)
             .text(function (d) { return d.name; });
 
 
