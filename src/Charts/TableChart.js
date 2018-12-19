@@ -42,7 +42,10 @@ class TableChart extends React.Component {
                                 <text>{this.props.config.chart.title}</text>
                             </div>
                             <div id={id + 'Chart'} className="chart">
-                                {this.createTable(this.props.data)}
+                                <div className="analysis-chart-container">
+                                    {this.createTable(this.props.data)}
+                                </div>
+
                             </div>
                         </div>
                     </div>

@@ -64,4 +64,39 @@ text {
 .analysis-chart-container{
     max-height: 500px;
     overflow-y: scroll;
+    border-top: 1px solid #737272;
+    border-bottom: 1px solid #737272;
+    background-color: rgba(30,30,35,.5);
+}
+
+.analysis-chart-container div{
+    text-align: left;
+    border-top: 1px solid #737272;
+    border-bottom: 1px solid #737272;
+}
+
+.analysis-chart-container span {
+    padding:5px;
+    display: inline-flex;
+    width: 10%
+}
+.analysis-chart-container div span span{
+    width: 100% !important;
+}
+.analysis-chart-container div span:first-child{
+    width: 70%;
+    font-size: small;
+}
+
+.analysis-chart-container div:first-child{
+    font-size: small;
+}
+
+.analysis-chart-container span {
+    padding:5px;
+    display: inline-flex;
+    width: 15%;
+}
+.analysis-chart-container div:first-child{
+    font-size: small;
 }

@@ -228,7 +228,7 @@ class SpeciesProtectionAnalysis extends React.Component {
                     preData = dataTemplate.species.reptile_species
                     tableType = "Reptiles";
                 }
-                let chartData = [["Species Name", "Range", "Habitat"]]
+                let chartData = [[<span>Species Name</span>, <span>Range</span>, <span>Habitat</span>]]
                 for (let row of preData) {
                     let raido1 = <input id={`Range_${row.sppcode}`} type="radio" name={`Range_${row.sppcode}`} value={row.sppcode} />//`<input type="radio" id="Range_${row.sppcode}" name="spp_Range" value="${row.sppcode}" onClick="">`
                     let raido2 = <input id={`Habitat_${row.sppcode}`} type="radio" name={`Habitat_${row.sppcode}`} value={row.sppcode} />//`<input type="radio" id="Habitat_${row.sppcode}" name="spp_Habitat" value="${row.sppcode}" onClick="">`
