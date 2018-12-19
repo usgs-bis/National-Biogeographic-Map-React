@@ -23,8 +23,9 @@ class HorizontalBarChart extends React.Component {
     *        chart: {title:"United States",subtitle:"Population over Time"},
     *        xAxis:{key:'percent',label:"Percent Population", ticks:5, tickFormat:(d)=>{return d.percent + "%"}},
     *        yAxis:{key:'state',label:"State", ticks:5, tickFormat:(d)=>{return d.name}},
-    *        tooltip:{label:(d)=>{return 'label'}},
-    *        legend:true
+    *        tooltip:{label:(d)=>{return 'label'} color:(d)=>{return 'black'}},
+    *        legend:true,
+    *        stacked:false
     *       }
     * ex. data = [
     *        { "name": "Delaware", "percent": 10.4, "color": "#FF0000" },
@@ -65,9 +66,13 @@ class HorizontalBarChart extends React.Component {
         // Define x and y type and scales
         const x = d3.scaleLinear().range([0, width]);
         const y = d3.scaleBand().range([height, 0]);
+        const z = d3.scaleOrdinal(["#5a8f29", "#cccccc", "#424243"])
+        //.range(["#5a8f29", "#cccccc", "#424243"]);
+        const stack = d3.stack();
 
         // Determine domain 
-        const max = data.map(d => { return d[config.xAxis.key] }).sort(function (a, b) { return a - b; })[data.length - 1]
+        let max = data.map(d => { return d[config.xAxis.key] }).sort(function (a, b) { return a - b; })[data.length - 1]
+        if (config.stacked) max = 100
         x.domain([0, max]);
         y.domain(data.map(function (d) { return d[config.yAxis.key]; })).padding(0.1);
 
@@ -110,15 +115,60 @@ class HorizontalBarChart extends React.Component {
             .call(yAxis);
 
         // Add the horizontal bars
-        const bars = svg.selectAll(".bar")
-            .data(data)
-            .enter().append("rect")
-            .attr("class", "bar")
-            .attr("x", 0)
-            .attr("height", y.bandwidth())
-            .attr("fill", function (d) { return d.color })
-            .attr("y", function (d) { return y(d[config.yAxis.key]); })
-            .attr("width", function (d) { return x(d[config.xAxis.key]); });
+        let bars = null
+        if (!config.stacked) {
+            bars = svg.selectAll(".bar")
+                .data(data)
+                .enter().append("rect")
+                .attr("class", "bar")
+                .attr("x", 0)
+                .attr("height", y.bandwidth())
+                .attr("fill", function (d) { return d.color })
+                .attr("y", function (d) { return y(d[config.yAxis.key]); })
+                .attr("width", function (d) { return x(d[config.xAxis.key]); });
+
+        }
+        else {
+            bars = svg.selectAll(".serie")
+                .data(stack.keys(data.columns.slice(1))(data))
+                .enter().append("g")
+                .attr("class", "serie")
+                .attr("fill", function (d) { return z(d.key); })
+                .selectAll("rect")
+                .data(function (d) { return d; })
+                .enter().append("rect")
+                .attr("data-legend", function (d) { return d.data[config.yAxis.key] })
+                .attr("y", function (d) { return y(d.data[config.yAxis.key]); })
+                .attr("x", function (d) { return x(d[0]); })
+                .attr("width", function (d) { return x(d[1]) - x(d[0]); })
+                .attr("height", y.bandwidth())
+                .style("stroke", "black")
+                .style("stroke-width", "1px")
+            if (config.legend) {
+
+
+                const legend = svg.selectAll('.legend')
+                    .data(z.domain())
+                    .enter()
+                    .append('g')
+                    .attr('class', 'legend')
+                    .attr('transform', function (d, i) {
+                        return 'translate(' + 0 + ',' + (height + 40 + (25 * i)) + ')';
+                    });
+
+                legend.append('rect')
+                    .attr('width', legendRectSize)
+                    .attr('height', legendRectSize)
+                    .style('fill', z)
+                    .style("stroke", "black")
+                    .style("stroke-width", "1px");
+
+                legend.append('text')
+                    .attr('x', legendRectSize + legendSpacing)
+                    .attr('y', legendRectSize - legendSpacing)
+                    .text(function (d) { return d; });
+            }
+        }
 
         // Add a div inside chart for tooltips
         const tooltip = chart.select(`#${id}Chart`)
@@ -138,7 +188,7 @@ class HorizontalBarChart extends React.Component {
             tooltip.html(config.tooltip.label(d))
                 .style("left", (d3.event.pageX) + "px")
                 .style("top", (d3.event.pageY - 28) + "px")
-                .style("border", `3px solid ${d.color}`);
+                .style("border", `3px solid ${config.stacked ? config.tooltip.color(d) :d.color}`);
         });
 
         // Add tooltip functionality on mouseOut
@@ -172,7 +222,7 @@ class HorizontalBarChart extends React.Component {
             .style("text-anchor", "middle")
             .text(config.yAxis.label);
 
-        if (config.legend) {
+        if (config.legend & !config.stacked) {
             const legend = svg.selectAll('.legend')
                 .data(data)
                 .enter()
