@@ -1,9 +1,10 @@
 import React from "react";
 import { Collapse } from "reactstrap"
 import { Glyphicon } from "react-bootstrap";
-import { DynamicMapLayer } from "esri-leaflet"
-import { FormGroup, Label } from 'reactstrap';
+import L from "leaflet"
 import { BarLoader } from "react-spinners"
+
+import withSharedAnalysisCharacteristics from "./AnalysisPackage"
 import PieChart from "../Charts/PieChart"
 import TableChart from "../Charts/TableChart"
 
@@ -16,7 +17,24 @@ let sb_properties = {
     "title": "Protection Status of Terrestrial Vertebrate Species"
 }
 
-class SpeciesProtectionAnalysis extends React.Component {
+const layers = {
+    species_protection_service: {
+        title: "Average Leaf PRISM",
+        layer: L.tileLayer.wms(
+            "https://geoserver.usanpn.org/geoserver/si-x/wms",
+            {
+                format: "image/png",
+                layers: "average_leaf_prism",
+                opacity: .5,
+                transparent: true
+            }
+        ),
+        timeEnabled: true,
+        checked: false
+    }
+}
+
+class SpeciesProtectionAnalysisPackage extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -34,24 +52,18 @@ class SpeciesProtectionAnalysis extends React.Component {
             enabledLayers: {
                 nfhp_service: false
             },
-            layers: {
-                "nfhp_service": {
-                    "title": "Risk to Fish Habitat Degradation",
-                    "layer": new DynamicMapLayer({
-                        "url": "https://gis1.usgs.gov/arcgis/rest/services/nfhp2015/HCI_Dissolved_NFHP2015_v20160907/MapServer"
-                    }),
-                    "opacity": .5
-                }
-            },
-            updateAnalysisLayers: props.updateAnalysisLayers,
+            layers: layers,
             value: []
         }
 
         this.toggleDropdown = this.toggleDropdown.bind(this)
         this.getCharts = this.getCharts.bind(this)
-        this.updateAnalysisLayers = this.updateAnalysisLayers.bind(this)
-        this.setOpacity = this.setOpacity.bind(this)
         this.onSpeciesChanged = this.onSpeciesChanged.bind(this)
+        this.toggleLayerDropdown = this.props.toggleLayerDropdown.bind(this)
+        this.getAnalysisLayers = this.props.getAnalysisLayers.bind(this)
+        this.updateAnalysisLayers = this.props.updateAnalysisLayers.bind(this)
+        this.setOpacity = this.props.setOpacity.bind(this)
+        this.resetAnalysisLayers =  this.props.resetAnalysisLayers.bind(this)
     }
 
     toggleDropdown() {
@@ -245,29 +257,6 @@ class SpeciesProtectionAnalysis extends React.Component {
         return charts
     }
 
-    updateAnalysisLayers() {
-        let that = this
-        let enabledLayers = []
-        Object.keys(this.state.layers).forEach(function (key) {
-            if (that[key].checked) {
-                let obj = { enabledLayers: {} }
-                obj.enabledLayers[key] = true
-                that.setState(obj)
-                enabledLayers.push(that.state.layers[key])
-            } else {
-                let obj = { enabledLayers: {} }
-                obj.enabledLayers[key] = false
-                that.setState(obj)
-            }
-        })
-
-        this.state.updateAnalysisLayers(enabledLayers)
-    }
-
-    setOpacity(key) {
-        this.state.layers[key].layer.setOpacity(this[key + "Opacity"].value)
-    }
-
     onSpeciesChanged(e) {
         this.setState({
             taxaLetter: e.currentTarget.value
@@ -283,32 +272,6 @@ class SpeciesProtectionAnalysis extends React.Component {
     }
 
     render() {
-        let that = this
-        const getAnalysisLayers = () => {
-            return Object.keys(this.state.layers).map(function (key) {
-                let layer = that.state.layers[key]
-                return <FormGroup key={key} check>
-                    <Label check>
-                        <input
-                            ref={(input) => { that[key] = input; }}
-                            onChange={function () { that.updateAnalysisLayers() }}
-                            checked={that.state.enabledLayers[key]}
-                            type="checkbox" />
-                        {' ' + layer.title}
-                    </Label>
-                    <input style={{ width: "50%" }}
-                        ref={(input) => { that[key + "Opacity"] = input; }}
-                        onChange={function () {
-                            that.setOpacity(key)
-                        }}
-                        type="range"
-                        step=".05"
-                        min="0"
-                        max="1"
-                        defaultValue={1} />
-                </FormGroup>
-            })
-        }
         return (
             <div
                 style={{ display: (!!this.state.charts.gap12.data || !this.state.submitted) ? 'block' : 'none' }}
@@ -320,10 +283,8 @@ class SpeciesProtectionAnalysis extends React.Component {
                         glyph={this.state.glyph} />
                 </span>
                 <Collapse className="settings-dropdown" isOpen={this.state.isOpen && !!this.state.charts.gap12.data}>
-                    <BarLoader color={"white"} loading={this.state.loading} />
-                    <div className="analysis-layers">
-                        {getAnalysisLayers()}
-                    </div>
+                    <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading}/>
+                    {this.getAnalysisLayers()}
                     <div
                         style={{ display: (this.props.feature && this.props.feature.properties.feature_name) ? 'block' : 'none' }}
                         className="chartsDiv">
@@ -365,4 +326,6 @@ class SpeciesProtectionAnalysis extends React.Component {
         )
     }
 }
+const SpeciesProtectionAnalysis = withSharedAnalysisCharacteristics(SpeciesProtectionAnalysisPackage, layers);
+
 export default SpeciesProtectionAnalysis;
