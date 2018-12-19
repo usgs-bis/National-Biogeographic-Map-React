@@ -20,6 +20,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage, layers) => {
             this.setOpacity = this.setOpacity.bind(this)
             this.getAnalysisLayers = this.getAnalysisLayers.bind(this)
             this.resetAnalysisLayers =  this.resetAnalysisLayers.bind(this)
+            this.inputRefs = {}
         }
 
         resetAnalysisLayers() {
@@ -82,7 +83,8 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage, layers) => {
                                     <FormGroup key={key} check>
                                         <Label check>
                                             <input
-                                                ref={(input) => { that[key] = input; }}
+                                                style={{display: layer.hideCheckbox ? "none" : "inline-block"}}
+                                                ref={(input) => { that[key] = input; that["inputRefs"][key] = input }}
                                                 onChange={function() {that.updateAnalysisLayers()}}
                                                 checked={that.state.layers[key].checked}
                                                 type="checkbox" />
@@ -112,9 +114,10 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage, layers) => {
                 <AnalysisPackage
                     setOpacity={this.setOpacity}
                     toggleLayerDropdown={this.toggleLayerDropdown}
-                    updateAnalysisLayers={this.updateAnalysisLayers}
+                    updateBapLayers={this.updateAnalysisLayers}
                     resetAnalysisLayers={this.resetAnalysisLayers}
                     getAnalysisLayers={this.getAnalysisLayers}
+                    inputRefs={this.inputRefs}
                     {...this.props}
                 />
             );

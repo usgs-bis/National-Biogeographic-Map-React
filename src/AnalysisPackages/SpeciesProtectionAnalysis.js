@@ -34,11 +34,11 @@ const layers = {
             {
                 format: "image/png",
                 opacity: .5,
-                transparent: true,
-                layers: "Green Toad (Anaxyrus debilis) aGRTOx v1"
+                transparent: true
             }
         ),
-        checked: false
+        checked: false,
+        hideCheckbox: true
     },
     habitat_map: {
         title: "Habitat Map",
@@ -47,11 +47,11 @@ const layers = {
             {
                 format: "image/png",
                 opacity: .5,
-                transparent: true,
-                layers: "Green Toad (Anaxyrus debilis) aGRTOx v1"
+                transparent: true
             }
         ),
-        checked: false
+        checked: false,
+        hideCheckbox: true
     }
 }
 
@@ -85,10 +85,12 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
         this.toggleLayerDropdown = this.props.toggleLayerDropdown.bind(this)
         this.getAnalysisLayers = this.props.getAnalysisLayers.bind(this)
         this.updateAnalysisLayers = this.props.updateAnalysisLayers.bind(this)
+        this.updateBapLayers = this.props.updateBapLayers.bind(this)
         this.setOpacity = this.props.setOpacity.bind(this)
         this.resetAnalysisLayers = this.props.resetAnalysisLayers.bind(this)
         this.resetSppTable = this.resetSppTable.bind(this)
         this.filterTableData = this.filterTableData.bind(this)
+        this.changeFilter = this.changeFilter.bind(this)
     }
 
     toggleDropdown() {
@@ -161,10 +163,20 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
         }
     }
 
+    changeFilter(e, layerKey) {
+        let otherKey = layerKey === "species_range" ? "habitat_map" : "species_range"
+        let layer = this.state.layers[layerKey]
+        layer.layer.setParams({
+            layers: e.currentTarget.value
+        })
+
+        this.props.inputRefs[layerKey].checked = true
+        this.props.inputRefs[otherKey].checked = false
+        this.updateBapLayers()
+    }
 
     getCharts(data) {
-
-
+        let that = this;
         let charts = {}
         let dataTemplate = {
             status_1_2: [
@@ -290,9 +302,19 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                         if (this.state.gapStatus === 'status_1_2_group') protectedPercent = <span>{`${parseFloat(row.status_1_2).toFixed(2)}%`}</span>
                         if (this.state.gapStatus === 'status_1_2_3_group') protectedPercent = <span>{`${parseFloat(row.status_1_2_3).toFixed(2)}%`}</span>
                     }
-                    const raido1 = <input id={`Range_${row.sppcode}`} type="radio" name={`Range_${row.sppcode}`} value={row.sppcode} />
-                    const raido2 = <input id={`Habitat_${row.sppcode}`} type="radio" name={`Habitat_${row.sppcode}`} value={row.sppcode} />
-                    chartData.push([name, protectedPercent, raido1, raido2,])
+                    const radio1 = <input
+                        id={`Range_${row.sppcode}`}
+                        type="radio"
+                        name={`sp_radio`}
+                        onChange={function(e) {that.changeFilter(e, "species_range")}}
+                        value={`${row.common_name} (${row.scientific_name}) ${row.sppcode} v1`} />
+                    const radio2 = <input
+                        id={`Habitat_${row.sppcode}`}
+                        type="radio"
+                        name={`sp_radio`}
+                        onChange={function(e) {that.changeFilter(e, "habitat_map")}}
+                        value={`${row.common_name} (${row.scientific_name}) ${row.sppcode} v1`} />
+                    chartData.push([name,protectedPercent, radio1, radio2,])
                 }
                 const chartConfig = {
                     margins: { left: 20, right: 20, top: 20, bottom: 125 },
@@ -366,7 +388,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                         <div className="chart-titles">
                             <div className="title">Protection Status of Species in {this.props.feature ? this.props.feature.properties.feature_name : ''}</div>
                             <div className="subtitle">(Click on a slice to filter the table and see only species whose habitat falls in that percent of protection. Click on a radio button to see only species of that type.)</div>
-                            <div className="spp-raido-btn">
+                            <div className="spp-radio-btn">
                                 <div><input type="radio" name="species" value={"ALL"} checked={this.state.taxaLetter === "ALL"} onChange={this.onSpeciesChanged} />All</div>
                                 <div><input type="radio" name="species" value={"A"} checked={this.state.taxaLetter === "A"} onChange={this.onSpeciesChanged} />Amphibians</div>
                                 <div><input type="radio" name="species" value={"B"} checked={this.state.taxaLetter === "B"} onChange={this.onSpeciesChanged} />Birds</div>
