@@ -3,6 +3,7 @@ import { Collapse } from "reactstrap"
 import { Glyphicon } from "react-bootstrap";
 import L from "leaflet"
 import { BarLoader } from "react-spinners"
+import { TiledMapLayer } from "esri-leaflet";
 
 import withSharedAnalysisCharacteristics from "./AnalysisPackage"
 import PieChart from "../Charts/PieChart"
@@ -18,18 +19,38 @@ let sb_properties = {
 }
 
 const layers = {
-    species_protection_service: {
-        title: "Average Leaf PRISM",
+    gap_status: {
+        title: "PAD-US v1.4 GAP Status Code",
+        layer: new TiledMapLayer({
+            url: "https://gis1.usgs.gov/arcgis/rest/services/PADUS1_4/GAP_Status_Code/MapServer",
+            opacity: .5
+        }),
+        checked: false
+    },
+    species_range: {
+        title: "Species Range",
         layer: L.tileLayer.wms(
-            "https://geoserver.usanpn.org/geoserver/si-x/wms",
+            "https://www.sciencebase.gov/geoserver/CONUS_Range_2001/wms",
             {
                 format: "image/png",
-                layers: "average_leaf_prism",
                 opacity: .5,
-                transparent: true
+                transparent: true,
+                layers: "Green Toad (Anaxyrus debilis) aGRTOx v1"
             }
         ),
-        timeEnabled: true,
+        checked: false
+    },
+    habitat_map: {
+        title: "Habitat Map",
+        layer: L.tileLayer.wms(
+            "https://www.sciencebase.gov/geoserver/CONUS_HabMap_2001/wms",
+            {
+                format: "image/png",
+                opacity: .5,
+                transparent: true,
+                layers: "Green Toad (Anaxyrus debilis) aGRTOx v1"
+            }
+        ),
         checked: false
     }
 }
@@ -279,8 +300,8 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                 <span onClick={this.toggleDropdown} className="bapTitle">
                     {this.state.title}
                     <Glyphicon style={{ display: this.state.submitted ? "inline-block" : "none" }}
-                        className="dropdown-glyph"
-                        glyph={this.state.glyph} />
+                               className="dropdown-glyph"
+                               glyph={this.state.glyph} />
                 </span>
                 <Collapse className="settings-dropdown" isOpen={this.state.isOpen && !!this.state.charts.gap12.data}>
                     <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading}/>
