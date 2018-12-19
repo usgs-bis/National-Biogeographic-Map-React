@@ -61,7 +61,7 @@ class FirstBloomAnalysisPackage extends React.Component {
         this.clearCharts = this.clearCharts.bind(this)
         this.toggleLayerDropdown = this.props.toggleLayerDropdown.bind(this)
         this.getAnalysisLayers = this.props.getAnalysisLayers.bind(this)
-        this.updateAnalysisLayers = this.props.updateAnalysisLayers.bind(this)
+        this.updateBapLayers = this.props.updateBapLayers.bind(this)
         this.setOpacity = this.props.setOpacity.bind(this)
         this.resetAnalysisLayers =  this.props.resetAnalysisLayers.bind(this)
     }

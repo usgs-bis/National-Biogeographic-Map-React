@@ -3,6 +3,7 @@ import { Collapse } from "reactstrap"
 import { Glyphicon } from "react-bootstrap";
 import L from "leaflet"
 import { BarLoader } from "react-spinners"
+import { TiledMapLayer } from "esri-leaflet";
 
 import withSharedAnalysisCharacteristics from "./AnalysisPackage"
 import PieChart from "../Charts/PieChart"
@@ -19,18 +20,25 @@ let sb_properties = {
 }
 
 const layers = {
-    ecosystem_protection_service: {
-        title: "Average Leaf PRISM",
+    gap_status: {
+        title: "PAD-US v1.4 GAP Status Code",
+        layer: new TiledMapLayer({
+            url: "https://gis1.usgs.gov/arcgis/rest/services/PADUS1_4/GAP_Status_Code/MapServer",
+            opacity: .5
+        }),
+        checked: false
+    },
+    ecological_systems: {
+        title: "GAP Landcover 2011 Ecological System",
         layer: L.tileLayer.wms(
-            "https://geoserver.usanpn.org/geoserver/si-x/wms",
+            "https://www.sciencebase.gov/geoserver/nvcs/wms",
             {
                 format: "image/png",
-                layers: "average_leaf_prism",
                 opacity: .5,
-                transparent: true
+                transparent: true,
+                layers: "ecological_system"
             }
         ),
-        timeEnabled: true,
         checked: false
     }
 }
@@ -64,7 +72,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
         this.getCharts = this.getCharts.bind(this)
         this.toggleLayerDropdown = this.props.toggleLayerDropdown.bind(this)
         this.getAnalysisLayers = this.props.getAnalysisLayers.bind(this)
-        this.updateAnalysisLayers = this.props.updateAnalysisLayers.bind(this)
+        this.updateBapLayers = this.props.updateBapLayers.bind(this)
         this.setOpacity = this.props.setOpacity.bind(this)
         this.resetAnalysisLayers = this.props.resetAnalysisLayers.bind(this)
         this.filterTableData = this.filterTableData.bind(this)
@@ -312,10 +320,6 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
         }
 
         dataTemplate.ecosystem_coverage.sort((a, b) => { return a.percent > b.percent ? -1 : 1 })
-
-        console.log(dataTemplate)
-
-
 
         for (let chart of Object.keys(this.state.charts)) {
             if (chart.toString() === "protectionStatus" && data) {

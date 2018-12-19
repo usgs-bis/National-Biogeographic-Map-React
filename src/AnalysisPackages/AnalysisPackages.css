@@ -89,13 +89,13 @@ padding-top: 15px;
     width: 50%;
     display: inline-block;
 }
-.spp-raido-btn{
+.spp-radio-btn{
     text-align: left;
     width: 30%;
     margin: auto;
 }
 
-.spp-raido-btn input{
+.spp-radio-btn input{
     margin-right: 5px;
 }
 

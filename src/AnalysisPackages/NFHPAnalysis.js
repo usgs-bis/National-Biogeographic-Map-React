@@ -45,7 +45,7 @@ class NFHPAnalysisPackage extends React.Component {
         this.toggleDropdown = this.toggleDropdown.bind(this)
         this.getCharts = this.getCharts.bind(this)
         this.toggleLayerDropdown = this.props.toggleLayerDropdown.bind(this)
-        this.updateAnalysisLayers = this.props.updateAnalysisLayers.bind(this)
+        this.updateBapLayers = this.props.updateBapLayers.bind(this)
         this.setOpacity = this.props.setOpacity.bind(this)
         this.getAnalysisLayers = this.props.getAnalysisLayers.bind(this)
         this.resetAnalysisLayers =  this.props.resetAnalysisLayers.bind(this)
