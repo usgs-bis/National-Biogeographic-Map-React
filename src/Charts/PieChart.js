@@ -21,7 +21,8 @@ class PieChart extends React.Component {
     * ex. congig = {
     *        margins:{left:1,right:10,top:1,bottom:20},
     *        chart: {title:"United States",subtitle:"Population over Time"},
-    *        tooltip:{label:(d)=>{return 'label'}}
+    *        tooltip:{label:(d)=>{return 'label'}},
+    *        onClick: (d)=>{this.doSomthing()}
     *       }
     * ex. data = [
     *        { "name": "Delaware", "percent": 10.4, "color": "#FF0000" },
@@ -94,6 +95,10 @@ class PieChart extends React.Component {
             .style('opacity', opacity)
             .style('stroke', 'white');
 
+        path.on("click", function (d) {
+            config.onClick(d.data)
+        })
+
         // Add a div inside chart for tooltips
         const tooltip = chart.select(`#${id}Chart`)
             .append("div")
@@ -123,8 +128,6 @@ class PieChart extends React.Component {
                 .duration(500)
                 .style("opacity", 0);
         });
-
-     
 
         const legend = svg.selectAll('.legend')
             .data(data)
