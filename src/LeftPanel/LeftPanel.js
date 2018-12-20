@@ -1,8 +1,9 @@
 import React from "react";
 import "./LeftPanel.css";
 import { Button, Collapse, CardBody, Card, ButtonGroup } from "reactstrap";
-import { FormGroup, Label } from 'reactstrap';
 import { Glyphicon } from "react-bootstrap";
+import {RadioGroup} from "../CustomRadio/CustomRadio";
+
 import NFHPAnalysis from "../AnalysisPackages/NFHPAnalysis"
 import FirstLeafAnalysis from "../AnalysisPackages/FirstLeafAnalysis";
 import FirstBloomAnalysis from "../AnalysisPackages/FirstBloomAnalysis";
@@ -158,18 +159,10 @@ class LeftPanel extends React.Component {
                         <Card>
                             <span className="header">Basemaps</span>
                             <CardBody>
-                                {this.state.bioscape.basemaps.map(function (d, idx) {
-                                    return <FormGroup key={d.title + idx} check>
-                                        <Label check>
-                                            <input
-                                                onChange={function () { that.basemapChanged(d) }}
-                                                value={d.serviceUrl}
-                                                type="radio"
-                                                name="basemaps" />
-                                            {' ' + d.title}
-                                        </Label>
-                                    </FormGroup>
-                                })}
+                                <RadioGroup style={{width: "100%"}}
+                                    options={this.state.bioscape.basemaps}
+                                    onChange={this.basemapChanged}
+                                />
                             </CardBody>
                         </Card>
                     </Collapse>

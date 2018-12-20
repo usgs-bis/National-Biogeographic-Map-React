@@ -36,8 +36,10 @@
 .card {
     font-size: 14px;
     color: white;
-    background-color: rgb(33,33,33);
+    background-color: #454545;
     padding: 5px;
+    border: 1px solid #777;
+    border-radius: 4px;
 }
 
 .header {
