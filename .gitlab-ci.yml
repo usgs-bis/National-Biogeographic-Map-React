@@ -80,14 +80,14 @@ deploy_live:
   image: registry.gitlab.com/gitlab-examples/kubernetes-deploy
   stage: deploy
   environment:
-    name: ${CI_ENVIRONMENT_SLUG}
+    name: master
     url: https://${CI_ENVIRONMENT_SLUG}.staging.sciencebase.gov/${APPLICATION_KEY}
-#  only:
-#    - master
+  only:
+    - master
   <<: *deploy_template
 
 
-stop_env:
+stop_master:
   image: registry.gitlab.com/gitlab-examples/kubernetes-deploy
   stage: deploy
   script:
@@ -108,9 +108,9 @@ stop_env:
     - kubectl delete -f ingress.yml
   when: manual
   environment:
-    name: ${CI_ENVIRONMENT_SLUG}
+    name: master
     action: stop
-#  only:
-#    - master
+  only:
+    - master
   tags:
     - kube
