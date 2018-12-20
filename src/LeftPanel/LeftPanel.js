@@ -9,6 +9,7 @@ import FirstBloomAnalysis from "../AnalysisPackages/FirstBloomAnalysis";
 import FirstLeafBloomComparisonAnalysis from "../AnalysisPackages/FirstLeafBloomComparisonAnalysis";
 import SpeciesProtectionAnalysis  from "../AnalysisPackages/SpeciesProtectionAnalysis";
 import EcosystemProtectionAnalysis from "../AnalysisPackages/EcosystemProtectionAnalysis";
+import PhenologyAnalysis from "../AnalysisPackages/PhenologyAnalysis";
 class LeftPanel extends React.Component {
     constructor(props) {
         super(props)
@@ -228,6 +229,12 @@ class LeftPanel extends React.Component {
                             feature={this.state.feature}
                             priorityBap={this.state.priorityBap}
                             bapId={`bap${counter++}`}
+                        />
+                    </div>
+                    <div className="nbm-flex-row-no-padding">
+                        <PhenologyAnalysis
+                            updateAnalysisLayers={this.state.updateAnalysisLayers}
+                            feature={this.state.feature}
                         />
                     </div>
                 </div>

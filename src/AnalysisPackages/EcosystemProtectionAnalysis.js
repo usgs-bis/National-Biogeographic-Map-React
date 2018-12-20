@@ -326,7 +326,9 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
 
                 const chartId = "EP_protectionStatus"
                 const chartConfig = {
-                    margins: { left: 100, right: 20, top: 20, bottom: 100 },
+                    height:200,
+                    width:400,
+                    margins: { left: 50 + (6 * this.props.feature.properties.feature_name.length), right: 20, top: 20, bottom: 100 },
                     chart: { title: `Protection Status of ${this.props.feature.properties.feature_name} Compared to the Continental United States`, subtitle: `` },
                     xAxis: { key: 'Percent', label: "", ticks: 5, tickFormat: (d) => { return `${parseInt(d)}%` } },
                     yAxis: { key: 'name', label: "", ticks: 2, tickFormat: (d) => { return d } },
@@ -335,19 +337,19 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                             let p = ""
                             let v = ""
                             let g = ""
-                            if (d && d[1] - d[0] === d.data['Gap Status 1 & 2']) {
+                            if (d && Math.abs(d[1] - d[0] - d.data['Gap Status 1 & 2']) < 0.01 ) {
                                 p = parseFloat(d.data['Gap Status 1 & 2']).toFixed(2).toString() + "%"
-                                v = d.data.status12_v + " acers"
+                                v = d.data.status12_v + " acres"
                                 g = "Gap Status 1 & 2"
                             }
-                            else if (d && d[1] - d[0] === d.data['Gap Status 3']) {
+                            else if (d && Math.abs(d[1] - d[0] - d.data['Gap Status 3']) < 0.01) {
                                 p = parseFloat(d.data['Gap Status 3']).toFixed(2).toString() + "%"
-                                v = d.data.status3_v + " acers"
+                                v = d.data.status3_v + " acres"
                                 g = "Gap Status 3"
                             }
-                            else if (d && d[1] - d[0] === d.data['Gap Status 4']) {
+                            else if (d && Math.abs(d[1] - d[0] - d.data['Gap Status 4']) < 0.01) {
                                 p = parseFloat(d.data['Gap Status 4']).toFixed(2).toString() + "%"
-                                v = d.data.status4_v + " acers"
+                                v = d.data.status4_v + " acres"
                                 g = "Gap Status 4"
                             }
                             return `<div"><div>${g}</div><div>${p}</div><div>${v}</div></div>`
