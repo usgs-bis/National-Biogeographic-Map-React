@@ -1,6 +1,4 @@
 import React from "react";
-import { Collapse } from "reactstrap"
-import { Glyphicon } from "react-bootstrap";
 import L from "leaflet"
 import { BarLoader } from "react-spinners"
 
@@ -14,7 +12,7 @@ const SB_URL = "https://www.sciencebase.gov/catalog/item/58bf0b61e4b014cc3a3a9c1
 const FIRSTLEAF_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenology/place/firstleaf"
 const PUBLIC_TOKEN = process.env.REACT_APP_PUBLIC_TOKEN
 
-let properties = {
+let sb_properties = {
     "title": "First Leaf Spring Index"
 }
 
@@ -48,11 +46,7 @@ class FirstLeafAnalysisPackage extends React.Component {
             loading: false,
             bucketSize: { value: 3 },
             feature_id: null,
-            title: properties.title,
-            submitted: false,
-            canSubmit: false,
-            isOpen: false,
-            glyph: "menu-right"
+            canSubmit: false
         }
 
         this.toggleDropdown = this.toggleDropdown.bind(this)
@@ -60,11 +54,6 @@ class FirstLeafAnalysisPackage extends React.Component {
         this.submitAnalysis = this.submitAnalysis.bind(this)
         this.setBucketSize = this.setBucketSize.bind(this)
         this.clearCharts = this.clearCharts.bind(this)
-        this.toggleLayerDropdown = this.props.toggleLayerDropdown.bind(this)
-        this.getAnalysisLayers = this.props.getAnalysisLayers.bind(this)
-        this.updateBapLayers = this.props.updateBapLayers.bind(this)
-        this.setOpacity = this.props.setOpacity.bind(this)
-        this.resetAnalysisLayers =  this.props.resetAnalysisLayers.bind(this)
     }
 
     toggleDropdown() {
@@ -72,25 +61,6 @@ class FirstLeafAnalysisPackage extends React.Component {
             isOpen: !this.state.isOpen,
             glyph: !this.state.isOpen ? "menu-down" : "menu-right"
         })
-    }
-
-    componentDidMount() {
-        fetch(SB_URL)
-            .then(res => res.json())
-            .then(
-                (result) => {
-                    this.setState({
-                        submitted: false
-                    })
-                },
-                (error) => {
-                    this.setState({
-                        error
-                    });
-                }
-            )
-        this.setBucketSize()
-
     }
 
     clearCharts() {
@@ -111,6 +81,7 @@ class FirstLeafAnalysisPackage extends React.Component {
                 canSubmit: true,
                 feature_id: props.feature.properties.feature_id
             })
+            this.props.canOpen(true)
         }
     }
 
@@ -128,15 +99,17 @@ class FirstLeafAnalysisPackage extends React.Component {
                             const charts = this.getCharts({ histogram: result, ridgelinePlot: result, boxAndWhisker: result })
                             this.setState({
                                 charts: charts,
-                                submitted: true,
                                 loading: false
                             })
+                            this.props.isEnabled(true)
+                            this.props.canOpen(true)
                         } else {
                             this.setState({
-                                submitted: true,
                                 loading: false,
-                                layers: this.resetAnalysisLayers()
+                                layers: this.props.resetAnalysisLayers()
                             })
+                            this.props.isEnabled(false)
+                            this.props.canOpen(false)
                         }
                     },
                     (error) => {
@@ -213,51 +186,41 @@ class FirstLeafAnalysisPackage extends React.Component {
 
     render() {
         return (
-            <div
-                style={{ display: 'block' }}
-                className="nbm-flex-row-no-padding">
-                <span onClick={this.toggleDropdown} className="bapTitle">
-                    {this.state.title}
-                    <Glyphicon style={{ display: this.state.canSubmit ? "inline-block" : "none" }}
-                               className="dropdown-glyph"
-                               glyph={this.state.glyph} />
-                </span>
-                <Collapse className="settings-dropdown" isOpen={this.state.isOpen}>
-                    <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading}/>
-                    {this.getAnalysisLayers()}
-                    <div className="chartsDiv">
-                        <div className="chart-headers" >
+            <div>
+                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading}/>
+                {this.props.getAnalysisLayers()}
+                <div className="chartsDiv">
+                    <div className="chart-headers" >
 
-                            <button className="submit-analysis-btn" onClick={this.submitAnalysis}>Analyze Time Period: {this.props.yearMin} to  {this.props.yearMax}</button>
-                            <div className="bucket-size-div" style={{ display: this.state.charts.histogram.data ? "block" : "none" }}>
-                                <span>Binwidth: {this.state.bucketSize.value}</span>
-                                <input
-                                    ref={(input) => { this.bucketSize = input; }}
-                                    onChange={this.setBucketSize}
-                                    defaultValue={this.state.bucketSize.value}
-                                    min={1}
-                                    max={5}
-                                    step="1"
-                                    type="range" />
-                            </div>
-                        </div>
-                        <HistogramChart data={this.state.charts.histogram.data} id={this.state.charts.histogram.id} config={this.state.charts.histogram.config} bucketSize={this.state.bucketSize.value} />
-                        <RidgelinePlotChart data={this.state.charts.ridgelinePlot.data} id={this.state.charts.ridgelinePlot.id} config={this.state.charts.ridgelinePlot.config} bucketSize={this.state.bucketSize.value} />
-                        <BoxAndWhiskerChart data={this.state.charts.boxAndWhisker.data} id={this.state.charts.boxAndWhisker.id} config={this.state.charts.boxAndWhisker.config} />
-                        <div className="chart-footers" >
-                            <div className="anotations">
-                                First Leaf Spring Index data was provided by the <a href="https://www.usanpn.org">USA National Phenology Network</a>, data retrieved {new Date().toDateString()}
-                                <br></br>
-                                <br></br>
-                                <a target={"_blank"} href={"https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&service=WMS&layers=average_leaf_prism"}>https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=average_leaf_prism</a>
-                            </div>
+                        <button className="submit-analysis-btn" onClick={this.submitAnalysis}>Analyze Time Period: {this.props.yearMin} to  {this.props.yearMax}</button>
+                        <div className="bucket-size-div" style={{ display: this.state.charts.histogram.data ? "block" : "none" }}>
+                            <span>Binwidth: {this.state.bucketSize.value}</span>
+                            <input
+                                ref={(input) => { this.bucketSize = input; }}
+                                onChange={this.setBucketSize}
+                                defaultValue={this.state.bucketSize.value}
+                                min={1}
+                                max={5}
+                                step="1"
+                                type="range" />
                         </div>
                     </div>
-                </Collapse>
+                    <HistogramChart data={this.state.charts.histogram.data} id={this.state.charts.histogram.id} config={this.state.charts.histogram.config} bucketSize={this.state.bucketSize.value} />
+                    <RidgelinePlotChart data={this.state.charts.ridgelinePlot.data} id={this.state.charts.ridgelinePlot.id} config={this.state.charts.ridgelinePlot.config} bucketSize={this.state.bucketSize.value} />
+                    <BoxAndWhiskerChart data={this.state.charts.boxAndWhisker.data} id={this.state.charts.boxAndWhisker.id} config={this.state.charts.boxAndWhisker.config} />
+                    <div className="chart-footers" >
+                        <div className="anotations">
+                            First Leaf Spring Index data was provided by the <a href="https://www.usanpn.org">USA National Phenology Network</a>, data retrieved {new Date().toDateString()}
+                            <br></br>
+                            <br></br>
+                            <a target={"_blank"} href={"https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&service=WMS&layers=average_leaf_prism"}>https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=average_leaf_prism</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         )
     }
 }
-const FirstLeafAnalysis = withSharedAnalysisCharacteristics(FirstLeafAnalysisPackage, layers);
+const FirstLeafAnalysis = withSharedAnalysisCharacteristics(FirstLeafAnalysisPackage, layers, sb_properties, SB_URL);
 
 export default FirstLeafAnalysis;

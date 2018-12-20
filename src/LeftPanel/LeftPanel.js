@@ -233,8 +233,10 @@ class LeftPanel extends React.Component {
                     </div>
                     <div className="nbm-flex-row-no-padding">
                         <PhenologyAnalysis
-                            updateAnalysisLayers={this.state.updateAnalysisLayers}
+                            updateAnalysisLayers={this.updateAnalysisLayers}
                             feature={this.state.feature}
+                            priorityBap={this.state.priorityBap}
+                            bapId={`bap${counter++}`}
                         />
                     </div>
                 </div>

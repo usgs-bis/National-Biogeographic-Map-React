@@ -1,6 +1,4 @@
 import React from "react";
-import { Collapse } from "reactstrap"
-import { Glyphicon } from "react-bootstrap";
 import { DynamicMapLayer } from "esri-leaflet"
 import { BarLoader } from "react-spinners"
 
@@ -34,45 +32,11 @@ class NFHPAnalysisPackage extends React.Component {
             charts: {
                 horizontalBarChart: { id: "", config: {}, data: null }
             },
-            title: sb_properties.title,
-            submitted: false,
-            isOpen: false,
             layersOpen: false,
-            glyph: "menu-right",
             value: []
         }
 
-        this.toggleDropdown = this.toggleDropdown.bind(this)
         this.getCharts = this.getCharts.bind(this)
-        this.toggleLayerDropdown = this.props.toggleLayerDropdown.bind(this)
-        this.updateBapLayers = this.props.updateBapLayers.bind(this)
-        this.setOpacity = this.props.setOpacity.bind(this)
-        this.getAnalysisLayers = this.props.getAnalysisLayers.bind(this)
-        this.resetAnalysisLayers =  this.props.resetAnalysisLayers.bind(this)
-    }
-
-    toggleDropdown() {
-        this.setState({
-            isOpen: !this.state.isOpen,
-            glyph: !this.state.isOpen ? "menu-down" : "menu-right"
-        })
-    }
-
-    componentDidMount() {
-        fetch(SB_URL)
-            .then(res => res.json())
-            .then(
-                (result) => {
-                    this.setState({
-                        title: result.title
-                    })
-                },
-                (error) => {
-                    this.setState({
-                        error
-                    });
-                }
-            )
     }
 
     componentDidUpdate(prevProps) {
@@ -90,17 +54,20 @@ class NFHPAnalysisPackage extends React.Component {
                             const charts = this.getCharts({ horizontalBarChart: result.hits.hits[0]._source.properties })
                             this.setState({
                                 charts: charts,
-                                submitted: true,
                                 loading: false
                             })
+                            this.props.isEnabled(true)
+                            this.props.canOpen(true)
+
                         } else {
                             this.setState({
                                 charts: {
                                     horizontalBarChart: { id: "", config: {}, data: null }
                                 },
-                                submitted: true,
-                                layers: this.resetAnalysisLayers()
+                                layers: this.props.resetAnalysisLayers()
                             })
+                            this.props.isEnabled(false)
+                            this.props.canOpen(false)
                         }
                     },
                     (error) => {
@@ -159,29 +126,19 @@ class NFHPAnalysisPackage extends React.Component {
 
     render() {
         return (
-            <div
-                style={{ display: (!!this.state.charts.horizontalBarChart.data || ! this.state.submitted) ? 'block' : 'none' }}
-                className="nbm-flex-row-no-padding">
-                <span onClick={this.toggleDropdown} className="bapTitle">
-                    {this.state.title}
-                    <Glyphicon style={{ display: this.state.submitted ? "inline-block" : "none" }}
-                               className="dropdown-glyph"
-                               glyph={this.state.glyph} />
-                </span>
-                <Collapse className="settings-dropdown" isOpen={this.state.isOpen && !!this.state.charts.horizontalBarChart.data}>
-                    <BarLoader color={"white"} loading={this.state.loading}/>
-                    {this.getAnalysisLayers()}
-                    <div className="chartsDiv">
-                        <HorizontalBarChart
-                            data={this.state.charts.horizontalBarChart.data}
-                            id={this.state.charts.horizontalBarChart.id}
-                            config={this.state.charts.horizontalBarChart.config} />
-                    </div>
-                </Collapse>
+            <div>
+                <BarLoader color={"white"} loading={this.state.loading}/>
+                {this.props.getAnalysisLayers()}
+                <div className="chartsDiv">
+                    <HorizontalBarChart
+                        data={this.state.charts.horizontalBarChart.data}
+                        id={this.state.charts.horizontalBarChart.id}
+                        config={this.state.charts.horizontalBarChart.config} />
+                </div>
             </div>
         )
     }
 }
-const NFHPAnalysis = withSharedAnalysisCharacteristics(NFHPAnalysisPackage, layers);
+const NFHPAnalysis = withSharedAnalysisCharacteristics(NFHPAnalysisPackage, layers, sb_properties, SB_URL);
 
 export default NFHPAnalysis;

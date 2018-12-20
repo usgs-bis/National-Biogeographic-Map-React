@@ -1,6 +1,4 @@
 import React from "react";
-import { Collapse } from "reactstrap"
-import { Glyphicon } from "react-bootstrap";
 import { DynamicMapLayer } from "esri-leaflet"
 import { BarLoader } from "react-spinners"
 
@@ -36,50 +34,14 @@ class PhenologyAnalysisPackage extends React.Component {
         this.state = {
             data: null,
             dates: [{ name: 'Current', date: new Date() }, { name: 'Six-Day', date: new Date(new Date().getTime() + 6 * 86400000) }],
-            submitted: false,
             canSubmit: false,
-            isOpen: false,
-            glyph: "menu-right",
             loading: false,
-            title: sb_properties.title
         }
 
-        this.toggleDropdown = this.toggleDropdown.bind(this)
         this.getCharts = this.getCharts.bind(this)
-        this.toggleLayerDropdown = this.props.toggleLayerDropdown.bind(this)
-        this.updateBapLayers = this.props.updateBapLayers.bind(this)
-        this.setOpacity = this.props.setOpacity.bind(this)
-        this.getAnalysisLayers = this.props.getAnalysisLayers.bind(this)
-        this.resetAnalysisLayers = this.props.resetAnalysisLayers.bind(this)
         this.getFetchForDate = this.getFetchForDate.bind(this)
         this.submitAnalysis = this.submitAnalysis.bind(this)
         this.clearCharts = this.clearCharts.bind(this)
-    }
-
-
-    toggleDropdown() {
-        this.setState({
-            isOpen: !this.state.isOpen,
-            glyph: !this.state.isOpen ? "menu-down" : "menu-right"
-        })
-    }
-
-    componentDidMount() {
-        fetch(SB_URL)
-            .then(res => res.json())
-            .then(
-                (result) => {
-                    this.setState({
-                        submitted: false,
-                        title: result.title
-                    })
-                },
-                (error) => {
-                    this.setState({
-                        error
-                    });
-                }
-            )
     }
 
     componentWillReceiveProps(props) {
@@ -89,6 +51,7 @@ class PhenologyAnalysisPackage extends React.Component {
                 canSubmit: true,
                 feature_id: props.feature.properties.feature_id
             })
+            this.props.canOpen(true)
         }
     }
 
@@ -127,9 +90,14 @@ class PhenologyAnalysisPackage extends React.Component {
                     //const charts = this.getCharts(results)
                     this.setState({
                         data: results,
-                        submitted: true,
                         loading: false
                     })
+                    this.props.isEnabled(true)
+                    this.props.canOpen(true)
+                } else {
+                    this.props.isEnabled(false)
+                    this.props.canOpen(false)
+                    this.props.resetAnalysisLayers()
                 }
             })
         }
@@ -313,29 +281,23 @@ class PhenologyAnalysisPackage extends React.Component {
 
     render() {
         return (
-            <div
-                style={{ display: 'block' }}
-                className="nbm-flex-row-no-padding">
-                <span onClick={this.toggleDropdown} className="bapTitle">
-                    {this.state.title}
-                    <Glyphicon style={{ display: this.state.canSubmit ? "inline-block" : "none" }}
-                        className="dropdown-glyph"
-                        glyph={this.state.glyph} />
-                </span>
-                <Collapse className="settings-dropdown" isOpen={this.state.isOpen}>
+                <div>
                     <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
-                    {this.getAnalysisLayers()}
+                    {this.props.getAnalysisLayers()}
                     <div className="chartsDiv">
                         <div className="chart-headers" >
                             <button className="submit-analysis-btn" onClick={this.submitAnalysis}>Get Phenology Forecast</button>
                         </div>
                         {this.getCharts(this.state.data)}
                     </div>
-                </Collapse>
-            </div>
+                </div>
         )
     }
 }
-const PhenologyAnalysis = withSharedAnalysisCharacteristics(PhenologyAnalysisPackage, layers);
+const PhenologyAnalysis = withSharedAnalysisCharacteristics(
+    PhenologyAnalysisPackage,
+    layers,
+    sb_properties,
+    SB_URL);
 
 export default PhenologyAnalysis;
