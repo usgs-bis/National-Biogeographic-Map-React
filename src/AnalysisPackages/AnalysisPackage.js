@@ -3,25 +3,53 @@ import { Collapse } from "reactstrap"
 import { Glyphicon } from "react-bootstrap";
 import { FormGroup, Label } from 'reactstrap';
 
-const withSharedAnalysisCharacteristics = (AnalysisPackage, layers) => {
+import "./AnalysisPackages.css"
+
+const withSharedAnalysisCharacteristics = (AnalysisPackage,
+                                           layers,
+                                           sb_properties,
+                                           sb_url) => {
     class HOC extends React.Component {
         constructor(props) {
             super(props)
             this.state = {
+                sb_properties: sb_properties,
                 submitted: false,
+                canOpen: false,
                 isOpen: false,
                 glyph: "menu-right",
                 updateAnalysisLayers: props.updateAnalysisLayers,
                 value: [],
                 layers: layers,
-                bapId: props.bapId
+                bapId: props.bapId,
+                isEnabled: true,
             }
+            this.toggleDropdown = this.toggleDropdown.bind(this)
             this.toggleLayerDropdown = this.toggleLayerDropdown.bind(this)
             this.updateAnalysisLayers = this.updateAnalysisLayers.bind(this)
             this.setOpacity = this.setOpacity.bind(this)
             this.getAnalysisLayers = this.getAnalysisLayers.bind(this)
             this.resetAnalysisLayers =  this.resetAnalysisLayers.bind(this)
+            this.updateEnabled = this.updateEnabled.bind(this)
+            this.canOpen = this.canOpen.bind(this)
             this.inputRefs = {}
+        }
+
+        componentDidMount() {
+            fetch(sb_url)
+                .then(res => res.json())
+                .then(
+                    (result) => {
+                        this.setState({
+                            sb_properties: result
+                        })
+                    },
+                    (error) => {
+                        this.setState({
+                            error
+                        });
+                    }
+                )
         }
 
         componentDidUpdate(prevProps) {
@@ -127,17 +155,52 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage, layers) => {
             }
         }
 
+        updateEnabled(enabled) {
+            this.setState({
+                isEnabled: enabled
+            })
+        }
+
+        canOpen(canOpen) {
+            this.setState({
+                canOpen: canOpen
+            })
+        }
+
+        toggleDropdown() {
+            if (this.state.canOpen) {
+                this.setState({
+                    isOpen: !this.state.isOpen,
+                    glyph: !this.state.isOpen ? "menu-down" : "menu-right"
+                })
+            }
+        }
+
         render() {
             return (
-                <AnalysisPackage
-                    setOpacity={this.setOpacity}
-                    toggleLayerDropdown={this.toggleLayerDropdown}
-                    updateBapLayers={this.updateAnalysisLayers}
-                    resetAnalysisLayers={this.resetAnalysisLayers}
-                    getAnalysisLayers={this.getAnalysisLayers}
-                    inputRefs={this.inputRefs}
-                    {...this.props}
-                />
+                <div
+                    style={{ display: this.state.isEnabled ? 'block' : 'none' }}
+                    className="nbm-flex-row-no-padding">
+                    <span onClick={this.toggleDropdown} className="bapTitle">
+                        {this.state.sb_properties.title}
+                        <Glyphicon style={{ display: this.state.canOpen ? "inline-block" : "none" }}
+                                   className="dropdown-glyph"
+                                   glyph={this.state.glyph} />
+                    </span>
+                    <Collapse className="settings-dropdown" isOpen={this.state.isOpen && this.state.isEnabled}>
+                        <AnalysisPackage
+                            setOpacity={this.setOpacity}
+                            toggleLayerDropdown={this.toggleLayerDropdown}
+                            updateBapLayers={this.updateAnalysisLayers}
+                            resetAnalysisLayers={this.resetAnalysisLayers}
+                            getAnalysisLayers={this.getAnalysisLayers}
+                            isEnabled={this.updateEnabled}
+                            canOpen={this.canOpen}
+                            inputRefs={this.inputRefs}
+                            {...this.props}
+                        />
+                    </Collapse>
+                </div>
             );
         }
 
