@@ -12,6 +12,13 @@ class HorizontalBarChart extends React.Component {
         this.drawChart(this.props.id, this.props.config, this.props.data)
     }
 
+    componentDidMount() {
+        this.render()
+        this.drawChart(this.props.id, this.props.config, this.props.data)
+       
+    }
+
+
     /**
     * Draw a Horizontal Bar Chart
     * @param {string} id - name to prefix dom elements 
@@ -19,6 +26,8 @@ class HorizontalBarChart extends React.Component {
     * @param {*} data - used to build the chart
     * 
     * ex. congig = {
+    *        width: 200,
+    *        height:400,
     *        margins:{left:1,right:10,top:1,bottom:20},
     *        chart: {title:"United States",subtitle:"Population over Time"},
     *        xAxis:{key:'percent',label:"Percent Population", ticks:5, tickFormat:(d)=>{return d.percent + "%"}},
@@ -56,8 +65,8 @@ class HorizontalBarChart extends React.Component {
 
         // This will specify the aspect ratio not the actual size of the chart.
         // The svg is responsive and will scale to fill parent.
-        const width = 480,
-            height = 400,
+        const width = config.width ? config.width : 480,
+            height = config.height ? config.height : 400,
             opacityHover = 1,
             otherOpacityOnHover = .8,
             legendRectSize = 12,
@@ -142,8 +151,8 @@ class HorizontalBarChart extends React.Component {
                 .attr("x", function (d) { return x(d[0]); })
                 .attr("width", function (d) { return x(d[1]) - x(d[0]); })
                 .attr("height", y.bandwidth())
-                .style("stroke", "black")
-                .style("stroke-width", "1px")
+                .style("stroke", "rgb(204, 204, 204)")
+                .style("stroke-width", "0.5")
             if (config.legend) {
 
 
@@ -188,7 +197,7 @@ class HorizontalBarChart extends React.Component {
             tooltip.html(config.tooltip.label(d))
                 .style("left", (d3.event.pageX) + "px")
                 .style("top", (d3.event.pageY - 28) + "px")
-                .style("border", `3px solid ${config.stacked ? config.tooltip.color(d) :d.color}`);
+                .style("border", `3px solid ${config.stacked ? config.tooltip.color(d) : d.color}`);
         });
 
         // Add tooltip functionality on mouseOut
