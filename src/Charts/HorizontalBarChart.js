@@ -254,7 +254,6 @@ class HorizontalBarChart extends React.Component {
                 .attr('font-size', 'smaller')
                 .text(function (d) { return d[config.yAxis.key]; });
         }
-        console.log(this.getChartImage(id))
     }
 
     // returns a promise with a dataURI - i.e. base 64 encoded PNG
