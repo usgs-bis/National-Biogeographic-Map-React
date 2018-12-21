@@ -124,13 +124,13 @@ class PhenologyAnalysisPackage extends React.Component {
         }
 
         let rawData = {
-            "agdd_32": {
-                "Current": data[0][`${this.state.dates[0].date.getFullYear()}-${this.state.dates[0].date.getMonth() + 1}-${this.state.dates[0].date.getDate()}`],
-                "Six-Day": data[2][`${this.state.dates[1].date.getFullYear()}-${this.state.dates[1].date.getMonth() + 1}-${this.state.dates[1].date.getDate()}`]
-            },
             "agdd_50": {
                 "Current": data[1][`${this.state.dates[0].date.getFullYear()}-${this.state.dates[0].date.getMonth() + 1}-${this.state.dates[0].date.getDate()}`],
                 "Six-Day": data[3][`${this.state.dates[1].date.getFullYear()}-${this.state.dates[1].date.getMonth() + 1}-${this.state.dates[1].date.getDate()}`]
+            },
+            "agdd_32": {
+                "Current": data[0][`${this.state.dates[0].date.getFullYear()}-${this.state.dates[0].date.getMonth() + 1}-${this.state.dates[0].date.getDate()}`],
+                "Six-Day": data[2][`${this.state.dates[1].date.getFullYear()}-${this.state.dates[1].date.getMonth() + 1}-${this.state.dates[1].date.getDate()}`]
             }
         }
 
@@ -250,12 +250,12 @@ class PhenologyAnalysisPackage extends React.Component {
                     const timeIndex = time === 'Current' ? 0 : 1
                     const chartId = `PHENO_${pestName.replace(/\s/g, '')}_${time}`
                     const chartConfig = {
-                        width:400,
-                        height:150,
-                        margins: { left: 50, right: 20, top: 20, bottom: 70 },
-                        chart: { title: `${pestName}`, subtitle: `` },
+                        width: 400,
+                        height: 150,
+                        margins: { left: 50, right: 20, top: 20, bottom: timeIndex ? 75 : 30 },
+                        chart: { title: timeIndex ? '' : `${pestName}`, subtitle: `` },
                         xAxis: { key: 'acres', label: "Approximate Acreage", ticks: 5, tickFormat: (d) => { return `${numberWithCommas(parseInt(d))}` } },
-                        yAxis: { key: 'name', label: `${time}  ${this.state.dates[timeIndex].date.getFullYear()}-${this.state.dates[timeIndex].date.getMonth() + 1}-${this.state.dates[timeIndex].date.getDate()}`, ticks: 5, tickFormat: (d) => { ''} },
+                        yAxis: { key: 'name', label: `${time}  ${this.state.dates[timeIndex].date.getFullYear()}-${this.state.dates[timeIndex].date.getMonth() + 1}-${this.state.dates[timeIndex].date.getDate()}`, ticks: 5, tickFormat: (d) => { '' } },
                         tooltip: { label: (d) => { return `<p>${d.name}: ${numberWithCommas(d.acres)} Acres</p>` } }
                     }
                     let chartDataFormatted = []
@@ -281,16 +281,24 @@ class PhenologyAnalysisPackage extends React.Component {
 
     render() {
         return (
-                <div>
-                    <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
-                    {this.props.getAnalysisLayers()}
-                    <div className="chartsDiv">
-                        <div className="chart-headers" >
-                            <button className="submit-analysis-btn" onClick={this.submitAnalysis}>Get Phenology Forecast</button>
+            <div>
+                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
+                {this.props.getAnalysisLayers()}
+                <div className="chartsDiv">
+                    <div className="chart-headers" >
+                        <button className="submit-analysis-btn" onClick={this.submitAnalysis}>Get Phenology Forecast</button>
+                    </div>
+                    {this.getCharts(this.state.data)}
+                    <div className="chart-footers" >
+                        <div className="anotations">
+                            Phenology Forecasts data were provided by the <a href="https://www.usanpn.org">USA National Phenology Network</a>, data retrieved {new Date().toDateString()}
+                            <br></br>
+                            <br></br>
+                            <a target={"_blank"} href={"https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&service=WMS&layers=agdd_50f,agdd"}>https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=agdd_50f,agdd</a>
                         </div>
-                        {this.getCharts(this.state.data)}
                     </div>
                 </div>
+            </div>
         )
     }
 }
