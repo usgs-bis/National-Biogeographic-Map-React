@@ -285,7 +285,7 @@ class PhenologyAnalysisPackage extends React.Component {
                         width:400,
                         height:150,
                         margins: { left: 50, right: 20, top: 20, bottom: 70 },
-                        chart: { title: `${pestName}`, subtitle: `` },
+                        chart: { title: '', subtitle: `${pestName}` },
                         xAxis: { key: 'acres', label: "Approximate Acreage", ticks: 5, tickFormat: (d) => { return `${numberWithCommas(parseInt(d))}` } },
                         yAxis: { key: 'name', label: `${time}  ${this.state.dates[timeIndex].date.getFullYear()}-${this.state.dates[timeIndex].date.getMonth() + 1}-${this.state.dates[timeIndex].date.getDate()}`, ticks: 5, tickFormat: (d) => { ''} },
                         tooltip: { label: (d) => { return `<p>${d.name}: ${numberWithCommas(d.acres)} Acres</p>` } }

@@ -15,7 +15,7 @@ class HorizontalBarChart extends React.Component {
     componentDidMount() {
         this.render()
         this.drawChart(this.props.id, this.props.config, this.props.data)
-       
+
     }
 
 
@@ -169,8 +169,8 @@ class HorizontalBarChart extends React.Component {
                     .attr('width', legendRectSize)
                     .attr('height', legendRectSize)
                     .style('fill', z)
-                    .style("stroke", "black")
-                    .style("stroke-width", "1px");
+                    .style("stroke", "rgb(204, 204, 204)")
+                    .style("stroke-width", "0.5")
 
                 legend.append('text')
                     .attr('x', legendRectSize + legendSpacing)
