@@ -1,7 +1,4 @@
-.panel-area {
-    width: 500px;
-    max-width: 40%;
-}
+
 
 .panel-area {
     background-color: #555;
@@ -35,10 +32,8 @@
         flex-direction: column;
     }
     .panel-area {
-        width: 100%;
-        max-width: 100%;
-        max-height: 40%;
-        height: 40%;
+        width: 100% !important;
+        height: 40% ;
     }
 
     #map-area {
@@ -75,8 +70,7 @@
         display: flex;
     }
     .panel-area {
-        max-width: 500px;
-        flex: 1 0 240px;
+        
     }
 
     #map-area {
