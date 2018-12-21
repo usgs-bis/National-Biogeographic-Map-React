@@ -133,3 +133,6 @@
     flex-basis: 100%;
     flex: 8;
 }
+.analysis-package-container{
+    padding: 2%;
+}
