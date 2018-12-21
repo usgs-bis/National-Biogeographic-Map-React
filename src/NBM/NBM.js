@@ -20,7 +20,9 @@ class NBM extends React.Component {
             basemap: props.basemap,
             clickable: true,
             mapDisplay: null,
-            updateYearRange: props.updateYearRange
+            updateYearRange: props.updateYearRange,
+            setMap: props.setMap
+
         }
 
         this.key = 1;
@@ -44,6 +46,10 @@ class NBM extends React.Component {
                 [b._northEast.lat + BUFFER, b._northEast.lng + BUFFER]
             ]
         })
+    }
+
+    componentDidMount(){
+        this.state.setMap(this.refs.map)
     }
 
     componentDidUpdate(prevProps) {

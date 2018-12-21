@@ -4,6 +4,7 @@ import Header from "./Header/Header";
 import LeftPanel from "./LeftPanel/LeftPanel";
 import nbmBioscape from "./Bioscapes/biogeography"
 import nvcsBioscape from "./Bioscapes/terrestrial-ecosystems-2011"
+import Resizable from 're-resizable';
 import "./App.css";
 
 const bioscapeMap = {
@@ -27,7 +28,8 @@ class App extends React.Component {
             results: [],
             feature: null,
             yearMin: null,
-            yearMax: null
+            yearMax: null,
+            map: null
         }
 
         this.parseBioscape = this.parseBioscape.bind(this);
@@ -37,6 +39,7 @@ class App extends React.Component {
         this.basemapChanged = this.basemapChanged.bind(this);
         this.updateYearRange = this.updateYearRange.bind(this);
         this.updateAnalysisLayers = this.updateAnalysisLayers.bind(this)
+        this.setMap = this.setMap.bind(this)
     }
 
     componentDidMount() {
@@ -46,6 +49,11 @@ class App extends React.Component {
     basemapChanged(e) {
         this.setState({
             basemap: e
+        })
+    }
+    setMap(map) {
+        this.setState({
+            map: map
         })
     }
 
@@ -138,8 +146,14 @@ class App extends React.Component {
                     <Header title={this.state.bioscape.title} />
                 </div>
                 <div id="content-area">
-                   
-                    <div id="panel-area" className="panel-area">
+                    <Resizable
+                        className="panel-area"
+                        enable={{ top: false, right: true, bottom: false, left: false, topRight: false, bottomRight: false, bottomLeft: false, topLeft: false }}
+                        defaultSize={{ width: 500 }}
+                        minWidth={250}
+                        maxWidth={1000}
+                        onResizeStop={()=>{this.state.map.leafletElement.invalidateSize()}}
+                    >
                         <LeftPanel
                             basemapChanged={this.basemapChanged}
                             bioscape={this.state.bioscape}
@@ -152,9 +166,8 @@ class App extends React.Component {
                             yearMax={this.state.yearMax}
                             updateAnalysisLayers={this.updateAnalysisLayers}
                         />
-                    </div>
-                  
-                    
+                    </Resizable>
+
                     <div id="map-area">
                         <NBM
                             className="relative-map"
@@ -163,6 +176,8 @@ class App extends React.Component {
                             parentClickHandler={this.handleMapClick}
                             updateYearRange={this.updateYearRange}
                             analysisLayers={this.state.analysisLayers}
+                            setMap={this.setMap}
+
                         />
                     </div>
                 </div>
