@@ -308,8 +308,12 @@ class ComparisonChart extends React.Component {
                 return (
                     <div>
                         <div id={id + 'ChartContainer'} className="chart-container">
-                            <div id={id + 'Title'} className="title"></div>
-                            <div id={id + 'Subtitle'} className="subtitle"></div>
+                            <div
+                                style={{ display: this.props.config.chart.title ? "block" : "none" }}
+                                id={id + 'Title'} className="title"></div>
+                            <div
+                                style={{ display: this.props.config.chart.subtitle ? "block" : "none" }}
+                                id={id + 'Subtitle'} className="subtitle"></div>
                             <div id={id + 'Chart'} className="chart"></div>
                         </div>
                     </div>

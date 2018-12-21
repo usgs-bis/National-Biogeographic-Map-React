@@ -45,10 +45,14 @@ class TableChart extends React.Component {
                 return (
                     <div>
                         <div id={id + 'ChartContainer'} className="chart-container">
-                            <div id={id + 'Title'} className="title">
+                            <div
+                                style={{ display: this.props.config.chart.title ? "block" : "none" }}
+                                id={id + 'Title'} className="title">
                                 <span>{this.props.config.chart.title}</span>
                             </div>
-                            <div id={id + 'Subtitle'} className="subtitle">
+                            <div
+                                style={{ display: this.props.config.chart.subtitle ? "block" : "none" }}
+                                id={id + 'Subtitle'} className="subtitle">
                                 <span>{this.props.config.chart.subtitle}</span>
                             </div>
                             <div id={id + 'Chart'} className="chart">
