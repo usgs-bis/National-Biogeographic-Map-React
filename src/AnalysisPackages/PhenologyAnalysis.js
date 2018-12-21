@@ -139,69 +139,69 @@ class PhenologyAnalysisPackage extends React.Component {
                 "Apple Maggot": {
                     "Not Approaching Treatment Window": {
                         "range": [0, 650],
-                        "color": "#999999"
+                        "color": "rgb(153,153,153)"
                     },
                     "Approaching Treatment Window": {
                         "range": [650, 900],
-                        "color": "#FFED6F"
+                        "color": "rgb(255,237,111)"
                     },
                     "Treatment Window": {
                         "range": [900, 2000],
-                        "color": "#41AB5D"
+                        "color": "rgb(65,171,93)"
                     },
                     "Treatment Window Passed": {
                         "range": [2000],
-                        "color": "#C19A6B"
+                        "color": "rgb(193,154,107)"
                     },
                 },
                 "Emerald Ash Borer": {
                     "Not Approaching Treatment Window": {
                         "range": [0, 350],
-                        "color": "#999999"
+                        "color": "rgb(153,153,153)"
                     },
                     "Approaching Treatment Window": {
                         "range": [350, 450],
-                        "color": "#FFED6F"
+                        "color": "rgb(255,237,111)"
                     },
                     "Treatment Window": {
                         "range": [450, 1500],
-                        "color": "#41AB5D"
+                        "color": "rgb(65,171,93)"
                     },
                     "Treatment Window Passed": {
                         "range": [1500],
-                        "color": "#C19A6B"
+                        "color": "rgb(193,154,107)"
                     },
                 },
                 "Lilac Borer": {
                     "Not Approaching Treatment Window": {
                         "range": [0, 350],
-                        "color": "#999999"
+                        "color": "rgb(153,153,153)"
                     },
                     "Approaching Treatment Window": {
                         "range": [350, 500],
-                        "color": "#FFED6F"
+                        "color": "rgb(255,237,111)"
                     },
                     "Treatment Window": {
                         "range": [500, 1300],
-                        "color": "#41AB5D"
+                        "color": "rgb(65,171,93)"
                     },
                     "Treatment Window Passed": {
                         "range": [1300],
-                        "color": "#C19A6B"
+                        "color": "rgb(193,154,107)"
                     },
                 },
                 "Winter Moth": {
                     "Not Approaching Treatment Window": {
                         "range": [0, 20],
-                        "color": "#999999"
+                        "color": "rgb(153,153,153)"
                     },
                     "Treatment Window": {
                         "range": [20, 350],
-                        "color": "#41AB5D"
+                        "color": "rgb(65,171,93)"
                     },
                     "Treatment Window Passed": {
                         "range": [350],
-                        "color": "#C19A6B"
+                        "color": "rgb(193,154,107)"
                     },
                 }
             },
@@ -209,19 +209,19 @@ class PhenologyAnalysisPackage extends React.Component {
                 "Hemlock Woolly Adelgid": {
                     "Not Approaching Treatment Window": {
                         "range": [0, 25],
-                        "color": "#999999"
+                        "color": "rgb(153,153,153)"
                     },
                     "Approaching Treatment Window": {
                         "range": [25, 1000],
-                        "color": "#FFED6F"
+                        "color": "rgb(255,237,111)"
                     },
                     "Treatment Window": {
                         "range": [1000, 2200],
-                        "color": "#41AB5D"
+                        "color": "rgb(65,171,93)"
                     },
                     "Treatment Window Passed": {
                         "range": [2200],
-                        "color": "#C19A6B"
+                        "color": "rgb(193,154,107)"
                     },
                 }
             }

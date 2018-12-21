@@ -111,11 +111,11 @@ class NFHPAnalysisPackage extends React.Component {
                     tooltip: { label: (d) => { return `<p>${d.Risk}: ${d.Percent}%</p>` } }
                 }
                 const chartData = [
-                    { "Risk": "Very high", "Percent": getPercent(data.veryhigh_km, data.scored_km), "color": "#FF0000" },
-                    { "Risk": "High", "Percent": getPercent(data.high_km, data.scored_km), "color": "#FFAA00" },
-                    { "Risk": "Moderate", "Percent": getPercent(data.moderate_km, data.scored_km), "color": "#A3FF73" },
-                    { "Risk": "Low", "Percent": getPercent(data.low_km, data.scored_km), "color": "#00C5FF" },
-                    { "Risk": "Very low", "Percent": getPercent(data.verylow_km, data.scored_km), "color": "#C500FF" }
+                    { "Risk": "Very high", "Percent": getPercent(data.veryhigh_km, data.scored_km), "color": "rgb(255,0,0)" },
+                    { "Risk": "High", "Percent": getPercent(data.high_km, data.scored_km), "color": "rgb(255,170,0)" },
+                    { "Risk": "Moderate", "Percent": getPercent(data.moderate_km, data.scored_km), "color": "rgb(163,255,115)" },
+                    { "Risk": "Low", "Percent": getPercent(data.low_km, data.scored_km), "color": "rgb(0,197,255)" },
+                    { "Risk": "Very low", "Percent": getPercent(data.verylow_km, data.scored_km), "color": "rgb(197,0,255)" }
                 ]
                 chartData.reverse()
                 charts[chart] = { id: chartId, config: chartConfig, data: chartData }

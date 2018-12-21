@@ -6,6 +6,7 @@ class HorizontalBarChart extends React.Component {
     constructor(props) {
         super(props)
         this.drawChart = this.drawChart.bind(this);
+        this.getChartImage = this.getChartImage.bind(this)
     }
 
     componentDidUpdate() {
@@ -15,9 +16,7 @@ class HorizontalBarChart extends React.Component {
     componentDidMount() {
         this.render()
         this.drawChart(this.props.id, this.props.config, this.props.data)
-
     }
-
 
     /**
     * Draw a Horizontal Bar Chart
@@ -75,8 +74,7 @@ class HorizontalBarChart extends React.Component {
         // Define x and y type and scales
         const x = d3.scaleLinear().range([0, width]);
         const y = d3.scaleBand().range([height, 0]);
-        const z = d3.scaleOrdinal(["#5a8f29", "#cccccc", "#424243"])
-        //.range(["#5a8f29", "#cccccc", "#424243"]);
+        const z = d3.scaleOrdinal(["rgb(90,143,41)", "rgb(204,204,204)", "rgb(66,66,67)"])
         const stack = d3.stack();
 
         // Determine domain 
@@ -256,7 +254,30 @@ class HorizontalBarChart extends React.Component {
                 .attr('font-size', 'smaller')
                 .text(function (d) { return d[config.yAxis.key]; });
         }
+        console.log(this.getChartImage(id))
+    }
 
+    // returns a promise with a dataURI - i.e. base 64 encoded PNG
+    getChartImage(id) {
+        return new Promise((resolve, reject) => {
+            try {
+                const canvasContainer = d3.select(`#${id}ChartContainer`)
+                    .append('div')
+                    .attr("class", `${id}Class`)
+                    .html(`<canvas id="canvas${id}" width="800" height="800" style="position: fixed;"></canvas>`)
+
+                const canvas = document.getElementById(`canvas${id}`);
+                const image = new Image();
+                image.onload = () => {
+                    canvas.getContext("2d").drawImage(image, 0, 0, 800, 800);
+                    canvasContainer.remove()
+                    resolve(canvas.toDataURL())
+                }
+                const svg = "data:image/svg+xml," + d3.select(`#${id}ChartContainer .svg-container-chart`).html()
+                image.src = svg
+            }
+            catch (error) { reject(error) }
+        })
     }
 
     render() {

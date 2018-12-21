@@ -161,18 +161,18 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
         let charts = {}
         let dataTemplate = {
             status_1_2: [
-                { color: '#660000', count: 0, name: '< 1%', percent: 0.0, status: 'status_1_2_group', range: '<1' },
-                { color: '#FF0000', count: 0, name: '1 - 10%', percent: 0.0, status: 'status_1_2_group', range: '1-10' },
-                { color: '#EDCB62', count: 0, name: '10 - 17%', percent: 0.0, status: 'status_1_2_group', range: '10-17' },
-                { color: '#9CCB19', count: 0, name: '17 - 50%', percent: 0.0, status: 'status_1_2_group', range: '17-50' },
-                { color: '#228B22', count: 0, name: '> 50%', percent: 0.0, status: 'status_1_2_group', range: '>50' },
+                { color: 'rgb(102,0,0)', count: 0, name: '< 1%', percent: 0.0, status: 'status_1_2_group', range: '<1' },
+                { color: 'rgb(255,0,0)', count: 0, name: '1 - 10%', percent: 0.0, status: 'status_1_2_group', range: '1-10' },
+                { color: 'rgb(237,203,98)', count: 0, name: '10 - 17%', percent: 0.0, status: 'status_1_2_group', range: '10-17' },
+                { color: 'rgb(156,203,25)', count: 0, name: '17 - 50%', percent: 0.0, status: 'status_1_2_group', range: '17-50' },
+                { color: 'rgb(34,139,34)', count: 0, name: '> 50%', percent: 0.0, status: 'status_1_2_group', range: '>50' },
             ],
             status_1_2_3: [
-                { color: '#660000', count: 0, name: '< 1%', percent: 0.0, status: 'status_1_2_3_group', range: '<1' },
-                { color: '#FF0000', count: 0, name: '1 - 10%', percent: 0.0, status: 'status_1_2_3_group', range: '1-10' },
-                { color: '#EDCB62', count: 0, name: '10 - 17%', percent: 0.0, status: 'status_1_2_3_group', range: '10-17' },
-                { color: '#9CCB19', count: 0, name: '17 - 50%', percent: 0.0, status: 'status_1_2_3_group', range: '17-50' },
-                { color: '#228B22', count: 0, name: '> 50%', percent: 0.0, status: 'status_1_2_3_group', range: '>50' },
+                { color: 'rgb(102,0,0)', count: 0, name: '< 1%', percent: 0.0, status: 'status_1_2_3_group', range: '<1' },
+                { color: 'rgb(255,0,0)', count: 0, name: '1 - 10%', percent: 0.0, status: 'status_1_2_3_group', range: '1-10' },
+                { color: 'rgb(237,203,98)', count: 0, name: '10 - 17%', percent: 0.0, status: 'status_1_2_3_group', range: '10-17' },
+                { color: 'rgb(156,203,25)', count: 0, name: '17 - 50%', percent: 0.0, status: 'status_1_2_3_group', range: '17-50' },
+                { color: 'rgb(34,139,34)', count: 0, name: '> 50%', percent: 0.0, status: 'status_1_2_3_group', range: '>50' },
             ],
             species: {
                 all: [],
