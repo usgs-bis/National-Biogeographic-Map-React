@@ -134,8 +134,6 @@ class App extends React.Component {
     render() {
         return (
             <div className="vwrapper">
-                <div className="loading-spinner">
-                </div>
                 <div id="header-area">
                     <Header title={this.state.bioscape.title} />
                 </div>

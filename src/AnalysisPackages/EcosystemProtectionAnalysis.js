@@ -1,6 +1,4 @@
 import React from "react";
-import { Collapse } from "reactstrap"
-import { Glyphicon } from "react-bootstrap";
 import L from "leaflet"
 import { BarLoader } from "react-spinners"
 import { TiledMapLayer } from "esri-leaflet";
@@ -57,10 +55,6 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
             data: null,
             gapStatus: "ALL",
             gapRange: "ALL",
-            title: sb_properties.title,
-            submitted: false,
-            isOpen: false,
-            glyph: "menu-right",
             enabledLayers: {
                 nfhp_service: false
             },
@@ -68,42 +62,11 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
             value: []
         }
 
-        this.toggleDropdown = this.toggleDropdown.bind(this)
         this.getCharts = this.getCharts.bind(this)
-        this.toggleLayerDropdown = this.props.toggleLayerDropdown.bind(this)
-        this.getAnalysisLayers = this.props.getAnalysisLayers.bind(this)
-        this.updateBapLayers = this.props.updateBapLayers.bind(this)
-        this.setOpacity = this.props.setOpacity.bind(this)
-        this.resetAnalysisLayers = this.props.resetAnalysisLayers.bind(this)
         this.filterTableData = this.filterTableData.bind(this)
         this.getColorFromName = this.getColorFromName.bind(this)
         this.resetEcoTable = this.resetEcoTable.bind(this)
     }
-
-    toggleDropdown() {
-        this.setState({
-            isOpen: !this.state.isOpen,
-            glyph: !this.state.isOpen ? "menu-down" : "menu-right"
-        })
-    }
-
-    componentDidMount() {
-        fetch(SB_URL)
-            .then(res => res.json())
-            .then(
-                (result) => {
-                    this.setState({
-                        title: result.title
-                    })
-                },
-                (error) => {
-                    this.setState({
-                        error
-                    });
-                }
-            )
-    }
-
 
     componentDidUpdate(prevProps) {
         if (this.props.feature &&
@@ -124,6 +87,8 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                                 submitted: true,
                                 loading: false
                             })
+                            this.props.isEnabled(true)
+                            this.props.canOpen(true)
                         } else {
                             this.setState({
                                 charts: {
@@ -139,7 +104,9 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                                     loading: false
                                 }
                             })
-                            this.props.updateAnalysisLayers([])
+                            this.props.isEnabled(false)
+                            this.props.canOpen(false)
+                            this.props.resetAnalysisLayers()
                         }
                     },
                     (error) => {
@@ -508,18 +475,9 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
 
     render() {
         return (
-            <div
-                style={{ display: (!!this.state.charts.gap12.data || !this.state.submitted) ? 'block' : 'none' }}
-                className="nbm-flex-row-no-padding">
-                <span onClick={this.toggleDropdown} className="bapTitle">
-                    {this.state.title}
-                    <Glyphicon style={{ display: this.state.submitted ? "inline-block" : "none" }}
-                        className="dropdown-glyph"
-                        glyph={this.state.glyph} />
-                </span>
-                <Collapse className="settings-dropdown" isOpen={this.state.isOpen && !!this.state.charts.gap12.data}>
+                <div>
                     <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
-                    {this.getAnalysisLayers()}
+                    {this.props.getAnalysisLayers()}
                     <div
                         style={{ display: (this.props.feature && this.props.feature.properties.feature_name) ? 'block' : 'none' }}
                         className="chartsDiv">
@@ -559,11 +517,13 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                             id={this.state.charts.gapCoverage.id}
                             config={this.state.charts.gapCoverage.config} />
                     </div>
-                </Collapse>
-            </div>
+                </div>
         )
     }
 }
-const EcosystemProtectionAnalysis = withSharedAnalysisCharacteristics(EcosystemProtectionAnalysisPackage, layers);
+const EcosystemProtectionAnalysis = withSharedAnalysisCharacteristics(EcosystemProtectionAnalysisPackage,
+    layers,
+    sb_properties,
+    SB_URL);
 
 export default EcosystemProtectionAnalysis;

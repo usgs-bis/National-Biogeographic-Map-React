@@ -1,0 +1,9 @@
+.radio-option {
+    cursor: pointer;
+    width: 100%;
+    border-bottom: 1px solid #999;
+}
+
+.radio-option:hover {
+    text-shadow: 0 0 1px;
+}
