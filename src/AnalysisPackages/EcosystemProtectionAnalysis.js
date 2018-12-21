@@ -122,24 +122,24 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
     getColorFromName(name) {
         const colorMap = {
 
-            'Forest & Woodland': '#267300',
-            'Shrubland & Herb Vegetation': '#F6C467',
-            'Shrub & Herb Vegetation': '#F6C467',
-            'Desert and Semi-Desert': '#D2B48C',
-            'Desert & Semi-Desert': '#D2B48C',
-            'Polar & High Montane Scrub Grassland & Barrens': '#EDE0F2',
-            'Polar & High Montane Scrub, Grassland & Barrens': '#EDE0F2',
-            'Aquatic Vegetation': '#00C5FF',
-            'Open Rock Vegetation': '#555857',
-            'Agricultural And Developed Vegetation': '#FEFEC1',
-            'Agricultural & Developed Vegetation': '#FEFEC1',
-            'Developed & Other Human Use': '#C94D42',
-            'Introduced & Semi Natural Vegetation': '#A1459C',
-            'Recently Disturbed or Modified': '#872E26',
-            'Open Water': '#002EC2',
-            'Nonvascular & Sparse Vascular Rock Vegetation': '#8C8F91'
+            'Forest & Woodland': 'rgb(38,115,0)',
+            'Shrubland & Herb Vegetation': 'rgb(246,196,103)',
+            'Shrub & Herb Vegetation': 'rgb(246,196,103)',
+            'Desert and Semi-Desert': 'rgb(210,180,140)',
+            'Desert & Semi-Desert': 'rgb(210,180,140)',
+            'Polar & High Montane Scrub Grassland & Barrens': 'rgb(237,224,242)',
+            'Polar & High Montane Scrub, Grassland & Barrens': 'rgb(237,224,242)',
+            'Aquatic Vegetation': 'rgb(0,197,255)',
+            'Open Rock Vegetation': 'rgb(85,88,87)',
+            'Agricultural And Developed Vegetation': 'rgb(254,254,193)',
+            'Agricultural & Developed Vegetation': 'rgb(254,254,193)',
+            'Developed & Other Human Use': 'rgb(201,77,66)',
+            'Introduced & Semi Natural Vegetation': 'rgb(161,69,156)',
+            'Recently Disturbed or Modified': 'rgb(135,46,38)',
+            'Open Water': 'rgb(0,46,194)',
+            'Nonvascular & Sparse Vascular Rock Vegetation': 'rgb(140,143,145)'
         }
-        return colorMap[name] ? colorMap[name] : '#000000'
+        return colorMap[name] ? colorMap[name] : 'rgb(0,0,0)'
     }
 
     resetEcoTable() {
@@ -177,18 +177,18 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
             ecosystem_coverage: [],
             ecological_systems: [],
             gap1_2: [
-                { color: '#660000', count: 0, name: '< 1%', status: 'status_1_2_group', range: '<1' },
-                { color: '#FF0000', count: 0, name: '1 - 10%', status: 'status_1_2_group', range: '1-10' },
-                { color: '#EDCB62', count: 0, name: '10 - 17%', status: 'status_1_2_group', range: '10-17' },
-                { color: '#9CCB19', count: 0, name: '17 - 50%', status: 'status_1_2_group', range: '17-50' },
-                { color: '#228B22', count: 0, name: '> 50%', status: 'status_1_2_group', range: '>50' },
+                { color: 'rgb(102,0,0)', count: 0, name: '< 1%', status: 'status_1_2_group', range: '<1' },
+                { color: 'rgb(255,0,0)', count: 0, name: '1 - 10%', status: 'status_1_2_group', range: '1-10' },
+                { color: 'rgb(237,203,98)', count: 0, name: '10 - 17%', status: 'status_1_2_group', range: '10-17' },
+                { color: 'rgb(156,203,25)', count: 0, name: '17 - 50%', status: 'status_1_2_group', range: '17-50' },
+                { color: 'rgb(34,139,34)', count: 0, name: '> 50%', status: 'status_1_2_group', range: '>50' },
             ],
             gap1_2_3: [
-                { color: '#660000', count: 0, name: '< 1%', status: 'status_1_2_3_group', range: '<1' },
-                { color: '#FF0000', count: 0, name: '1 - 10%', status: 'status_1_2_3_group', range: '1-10' },
-                { color: '#EDCB62', count: 0, name: '10 - 17%', status: 'status_1_2_3_group', range: '10-17' },
-                { color: '#9CCB19', count: 0, name: '17 - 50%', status: 'status_1_2_3_group', range: '17-50' },
-                { color: '#228B22', count: 0, name: '> 50%', status: 'status_1_2_3_group', range: '>50' },
+                { color: 'rgb(102,0,0)', count: 0, name: '< 1%', status: 'status_1_2_3_group', range: '<1' },
+                { color: 'rgb(255,0,0)', count: 0, name: '1 - 10%', status: 'status_1_2_3_group', range: '1-10' },
+                { color: 'rgb(237,203,98)', count: 0, name: '10 - 17%', status: 'status_1_2_3_group', range: '10-17' },
+                { color: 'rgb(156,203,25)', count: 0, name: '17 - 50%', status: 'status_1_2_3_group', range: '17-50' },
+                { color: 'rgb(34,139,34)', count: 0, name: '> 50%', status: 'status_1_2_3_group', range: '>50' },
             ],
         }
         const placeName = this.props.feature.properties.feature_name
@@ -323,13 +323,13 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                         },
                         color: (d) => {
                             if (d && d[1] - d[0] === d.data['Gap Status 1 & 2']) {
-                                return "#5a8f29"
+                                return "rgb(90,143,41)"
                             }
                             else if (d && d[1] - d[0] === d.data['Gap Status 3']) {
-                                return "#cccccc"
+                                return "rgb(204,204,204)"
                             }
                             else if (d && d[1] - d[0] === d.data['Gap Status 4']) {
-                                return "#424243"
+                                return "rgb(66,66,67)"
                             }
                             return 'black'
                         }
