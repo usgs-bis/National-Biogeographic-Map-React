@@ -6,14 +6,16 @@ class HorizontalBarChart extends React.Component {
     constructor(props) {
         super(props)
         this.drawChart = this.drawChart.bind(this);
-        this.getChartImage = this.getChartImage.bind(this)
+        this.print = this.print.bind(this)
     }
+    
 
     componentDidUpdate() {
         this.drawChart(this.props.id, this.props.config, this.props.data)
     }
 
     componentDidMount() {
+        this.props.onRef(this)
         this.render()
         this.drawChart(this.props.id, this.props.config, this.props.data)
     }
@@ -257,7 +259,7 @@ class HorizontalBarChart extends React.Component {
     }
 
     // returns a promise with a dataURI - i.e. base 64 encoded PNG
-    getChartImage(id) {
+    print(id) {
         return new Promise((resolve, reject) => {
             try {
                 const canvasContainer = d3.select(`#${id}ChartContainer`)

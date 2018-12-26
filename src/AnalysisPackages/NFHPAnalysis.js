@@ -37,7 +37,12 @@ class NFHPAnalysisPackage extends React.Component {
         }
 
         this.getCharts = this.getCharts.bind(this)
+        this.print = this.print.bind(this)
     }
+
+    componentDidMount() {
+        this.props.onRef(this)
+      }
 
     componentDidUpdate(prevProps) {
         if (this.props.feature &&
@@ -124,16 +129,22 @@ class NFHPAnalysisPackage extends React.Component {
         return charts
     }
 
+    print() {
+        return this.HorizontalBarChart.print(this.state.charts.horizontalBarChart.id)
+    }
+
     render() {
         return (
             <div>
-                <BarLoader color={"white"} loading={this.state.loading}/>
+                <BarLoader color={"white"} loading={this.state.loading} />
                 {this.props.getAnalysisLayers()}
                 <div className="chartsDiv">
                     <HorizontalBarChart
+                        onRef={ref => (this.HorizontalBarChart = ref)}
                         data={this.state.charts.horizontalBarChart.data}
                         id={this.state.charts.horizontalBarChart.id}
-                        config={this.state.charts.horizontalBarChart.config} />
+                        config={this.state.charts.horizontalBarChart.config}
+                    />
                 </div>
             </div>
         )

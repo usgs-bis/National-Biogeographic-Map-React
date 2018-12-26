@@ -3,7 +3,8 @@ import "./LeftPanel.css";
 import { Button, Collapse, CardBody, Card, ButtonGroup } from "reactstrap";
 import { Glyphicon } from "react-bootstrap";
 import {RadioGroup} from "../CustomRadio/CustomRadio";
-
+import pdfMake from "pdfmake/build/pdfmake.js"
+import * as pdfFonts from 'pdfmake/build/vfs_fonts.js';
 import NFHPAnalysis from "../AnalysisPackages/NFHPAnalysis"
 import FirstLeafAnalysis from "../AnalysisPackages/FirstLeafAnalysis";
 import FirstBloomAnalysis from "../AnalysisPackages/FirstBloomAnalysis";
@@ -13,6 +14,7 @@ import EcosystemProtectionAnalysis from "../AnalysisPackages/EcosystemProtection
 import PhenologyAnalysis from "../AnalysisPackages/PhenologyAnalysis";
 import OBISAnalysis from "../AnalysisPackages/OBISAnalysis";
 
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 class LeftPanel extends React.Component {
     constructor(props) {
         super(props)
@@ -25,6 +27,7 @@ class LeftPanel extends React.Component {
             bioscape: props.bioscape,
             updateAnalysisLayers: props.updateAnalysisLayers,
             priorityBap: "bap1"
+
         }
         this.handleKeyUp = this.handleKeyUp.bind(this);
         this.toggleSfrDropdown = this.toggleSfrDropdown.bind(this)
@@ -92,7 +95,36 @@ class LeftPanel extends React.Component {
     }
 
     share(){}
-    report(){}
+
+    report(){
+
+        this.NFHPAnalysis.print().then((res)=>{
+            var docDefinition = {
+                content: [
+                  // if you don't need styles, you can use a simple string to define a paragraph
+                  'This is a standard paragraph, using default style',
+             
+                  // using a { text: '...' } object lets you set styling properties
+                  { text: 'This paragraph will have a bigger font', fontSize: 15 },
+                  { image: res, alignment: 'center', width: 500 },
+
+             
+                  // if you set pass an array instead of a string, you'll be able
+                  // to style any fragment individually
+                  {
+                    text: [
+                      'This paragraph is defined as an array of elements to make it possible to ',
+                      { text: 'restyle part of it and make it bigger ', fontSize: 15 },
+                      'than the rest.'
+                    ]
+                  }
+                ]
+              }
+              pdfMake.createPdf(docDefinition).download(`${this.state.feature_name}.pdf`);
+        })
+        
+
+    }
 
     updateAnalysisLayers(enabledLayers, bapId) {
         this.setState({
@@ -204,10 +236,12 @@ class LeftPanel extends React.Component {
                     </div>
                     <div className="nbm-flex-row-no-padding">
                         <NFHPAnalysis
+                            onRef={ref => (this.NFHPAnalysis = ref)}
                             updateAnalysisLayers={this.updateAnalysisLayers}
                             feature={this.state.feature}
                             priorityBap={this.state.priorityBap}
                             bapId={`bap${counter++}`}
+
                         />
                     </div>
                     <div className="nbm-flex-row-no-padding">
