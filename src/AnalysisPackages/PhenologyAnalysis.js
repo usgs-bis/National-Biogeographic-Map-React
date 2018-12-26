@@ -268,6 +268,7 @@ class PhenologyAnalysisPackage extends React.Component {
                     }
                     charts.push(
                         <HorizontalBarChart
+                            onRef={ref => (this.HorizontalBarChart = ref)}
                             key={chartId}
                             data={chartDataFormatted}
                             id={chartId}

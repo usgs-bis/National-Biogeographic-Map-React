@@ -293,8 +293,8 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
 
                 const chartId = "EP_protectionStatus"
                 const chartConfig = {
-                    height:200,
-                    width:400,
+                    height: 200,
+                    width: 400,
                     margins: { left: 50 + (6 * this.props.feature.properties.feature_name.length), right: 20, top: 20, bottom: 100 },
                     chart: { title: `Protection Status of ${this.props.feature.properties.feature_name} Compared to the Continental United States`, subtitle: `` },
                     xAxis: { key: 'Percent', label: "", ticks: 5, tickFormat: (d) => { return `${parseInt(d)}%` } },
@@ -304,7 +304,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                             let p = ""
                             let v = ""
                             let g = ""
-                            if (d && Math.abs(d[1] - d[0] - d.data['Gap Status 1 & 2']) < 0.01 ) {
+                            if (d && Math.abs(d[1] - d[0] - d.data['Gap Status 1 & 2']) < 0.01) {
                                 p = parseFloat(d.data['Gap Status 1 & 2']).toFixed(2).toString() + "%"
                                 v = d.data.status12_v + " acres"
                                 g = "Gap Status 1 & 2"
@@ -475,49 +475,50 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
 
     render() {
         return (
-                <div>
-                    <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
-                    {this.props.getAnalysisLayers()}
-                    <div
-                        style={{ display: (this.props.feature && this.props.feature.properties.feature_name) ? 'block' : 'none' }}
-                        className="chartsDiv">
-                        <HorizontalBarChart
-                            data={this.state.charts.protectionStatus.data}
-                            id={this.state.charts.protectionStatus.id}
-                            config={this.state.charts.protectionStatus.config} />
+            <div>
+                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
+                {this.props.getAnalysisLayers()}
+                <div
+                    style={{ display: (this.props.feature && this.props.feature.properties.feature_name) ? 'block' : 'none' }}
+                    className="chartsDiv">
+                    <HorizontalBarChart
+                        onRef={ref => (this.HorizontalBarChart = ref)}
+                        data={this.state.charts.protectionStatus.data}
+                        id={this.state.charts.protectionStatus.id}
+                        config={this.state.charts.protectionStatus.config} />
 
-                        <div>
-                            <div className="chart-titles">
-                                <div className="title">Protection Status of {this.props.feature ? this.props.feature.properties.feature_name : ''}</div>
-                                <div className="subtitle">Click on a slice to filter the table and see only systems with that percent of protection.)</div>
-                            </div>
-                            <div className="half-chart">
-                                <PieChart
-                                    data={this.state.charts.gap12.data}
-                                    id={this.state.charts.gap12.id}
-                                    config={this.state.charts.gap12.config} />
-                            </div>
-                            <div className="half-chart">
-                                <PieChart
-                                    data={this.state.charts.gap123.data}
-                                    id={this.state.charts.gap123.id}
-                                    config={this.state.charts.gap123.config} />
-                            </div>
+                    <div>
+                        <div className="chart-titles">
+                            <div className="title">Protection Status of {this.props.feature ? this.props.feature.properties.feature_name : ''}</div>
+                            <div className="subtitle">Click on a slice to filter the table and see only systems with that percent of protection.)</div>
                         </div>
-
-                        <div className="chart-headers">
-                            <button className="submit-analysis-btn" onClick={this.resetEcoTable}>Clear Chart Selection</button>
+                        <div className="half-chart">
+                            <PieChart
+                                data={this.state.charts.gap12.data}
+                                id={this.state.charts.gap12.id}
+                                config={this.state.charts.gap12.config} />
                         </div>
-                        <TableChart
-                            data={this.state.charts.gapTable.data}
-                            id={this.state.charts.gapTable.id}
-                            config={this.state.charts.gapTable.config} />
-                        <PieChart
-                            data={this.state.charts.gapCoverage.data}
-                            id={this.state.charts.gapCoverage.id}
-                            config={this.state.charts.gapCoverage.config} />
+                        <div className="half-chart">
+                            <PieChart
+                                data={this.state.charts.gap123.data}
+                                id={this.state.charts.gap123.id}
+                                config={this.state.charts.gap123.config} />
+                        </div>
                     </div>
+
+                    <div className="chart-headers">
+                        <button className="submit-analysis-btn" onClick={this.resetEcoTable}>Clear Chart Selection</button>
+                    </div>
+                    <TableChart
+                        data={this.state.charts.gapTable.data}
+                        id={this.state.charts.gapTable.id}
+                        config={this.state.charts.gapTable.config} />
+                    <PieChart
+                        data={this.state.charts.gapCoverage.data}
+                        id={this.state.charts.gapCoverage.id}
+                        config={this.state.charts.gapCoverage.config} />
                 </div>
+            </div>
         )
     }
 }
