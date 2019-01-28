@@ -267,11 +267,12 @@ class PhenologyAnalysisPackage extends React.Component {
                 }
             }
             let charts = []
+            let refs = []
             for (let layer of Object.keys(rawData)) {
                 for (let pestName of Object.keys(chartData[layer])) {
                     for (let time of Object.keys(rawData[layer])) {
                         const timeIndex = time === 'Current' ? 0 : 1
-                        const chartId = `PHENO_${pestName.replace(/\s/g, '')}_${time}`
+                        let chartId = `PHENO_${pestName.replace(/\s/g, '')}_${time}`
                         const chartConfig = {
                             width: 400,
                             height: 150,
@@ -291,7 +292,7 @@ class PhenologyAnalysisPackage extends React.Component {
                         }
                         charts.push(
                             <HorizontalBarChart
-                                onRef={ref => (this.HorizontalBarChart = ref)}
+                                onRef={ref => {(this.chartId = ref); refs.push(this.chartId)}}
                                 key={chartId}
                                 data={chartDataFormatted}
                                 id={chartId}
@@ -301,7 +302,8 @@ class PhenologyAnalysisPackage extends React.Component {
                 }
             }
             this.setState({
-                charts: charts
+                charts: charts,
+                refs:refs
             })
 
         }
@@ -316,8 +318,10 @@ class PhenologyAnalysisPackage extends React.Component {
 
     print() {
         let p = []
-        for (let chart of this.state.charts) {
-            p.push(chart.print(chart.props.id))
+        console.log(this.state.charts)
+        console.log(this.state.refs)
+        for (let i =0; i< this.state.refs.length; i++) {
+            p.push(this.state.refs[i].print(this.state.charts[i].props.id))
         }
         return p
     }
