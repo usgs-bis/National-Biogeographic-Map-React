@@ -98,27 +98,22 @@ class LeftPanel extends React.Component {
 
     report() {
 
-        this.NFHPAnalysis.print().then((res) => {
+        let charts = []
+        charts.push(this.FirstLeafAnalysis.print())
+        charts.push(this.FirstBloomAnalysis.print())
+        charts.push(this.FirstLeafBloomComparisonAnalysis.print())
+        charts.push(this.NFHPAnalysis.print())
+        charts.push(this.EcosystemProtectionAnalysis.print())
+        charts.push(this.SpeciesProtectionAnalysis.print())
+        charts.push(this.PhenologyAnalysis.print())
+        charts.push(this.OBISAnalysis.print())
+
+        Promise.all(charts.flat()).then(res => {
             var docDefinition = {
-                content: [
-                    // if you don't need styles, you can use a simple string to define a paragraph
-                    'This is a standard paragraph, using default style',
-
-                    // using a { text: '...' } object lets you set styling properties
-                    { text: 'This paragraph will have a bigger font', fontSize: 15 },
-                    { image: res, alignment: 'center', width: 500 },
-
-
-                    // if you set pass an array instead of a string, you'll be able
-                    // to style any fragment individually
-                    {
-                        text: [
-                            'This paragraph is defined as an array of elements to make it possible to ',
-                            { text: 'restyle part of it and make it bigger ', fontSize: 15 },
-                            'than the rest.'
-                        ]
-                    }
-                ]
+                content: []
+            }
+            for(let r of res){
+                docDefinition.content.push({ image: r, alignment: 'center', width: 500 })
             }
             pdfMake.createPdf(docDefinition).download(`${this.state.feature_name}.pdf`);
         })
@@ -206,7 +201,7 @@ class LeftPanel extends React.Component {
                 <div className="analysis-package-container">
                     <div className="nbm-flex-row-no-padding">
                         <FirstLeafAnalysis
-                            onRef={ref => (this.NFHPAnalysis = ref)}
+                            onRef={ref => (this.FirstLeafAnalysis = ref)}
                             updateAnalysisLayers={this.updateAnalysisLayers}
                             feature={this.state.feature}
                             yearMin={this.props.yearMin}
@@ -217,7 +212,7 @@ class LeftPanel extends React.Component {
                     </div>
                     <div className="nbm-flex-row-no-padding">
                         <FirstBloomAnalysis
-                            onRef={ref => (this.NFHPAnalysis = ref)}
+                            onRef={ref => (this.FirstBloomAnalysis = ref)}
                             updateAnalysisLayers={this.updateAnalysisLayers}
                             feature={this.state.feature}
                             yearMin={this.props.yearMin}
@@ -228,7 +223,7 @@ class LeftPanel extends React.Component {
                     </div>
                     <div className="nbm-flex-row-no-padding">
                         <FirstLeafBloomComparisonAnalysis
-                            onRef={ref => (this.NFHPAnalysis = ref)}
+                            onRef={ref => (this.FirstLeafBloomComparisonAnalysis = ref)}
                             updateAnalysisLayers={this.updateAnalysisLayers}
                             feature={this.state.feature}
                             yearMin={this.props.yearMin}
@@ -249,7 +244,7 @@ class LeftPanel extends React.Component {
                     </div>
                     <div className="nbm-flex-row-no-padding">
                         <EcosystemProtectionAnalysis
-                            onRef={ref => (this.NFHPAnalysis = ref)}
+                            onRef={ref => (this.EcosystemProtectionAnalysis = ref)}
                             updateAnalysisLayers={this.updateAnalysisLayers}
                             feature={this.state.feature}
                             priorityBap={this.state.priorityBap}
@@ -258,7 +253,7 @@ class LeftPanel extends React.Component {
                     </div>
                     <div className="nbm-flex-row-no-padding">
                         <SpeciesProtectionAnalysis
-                            onRef={ref => (this.NFHPAnalysis = ref)}
+                            onRef={ref => (this.SpeciesProtectionAnalysis = ref)}
                             updateAnalysisLayers={this.updateAnalysisLayers}
                             feature={this.state.feature}
                             priorityBap={this.state.priorityBap}
@@ -267,7 +262,7 @@ class LeftPanel extends React.Component {
                     </div>
                     <div className="nbm-flex-row-no-padding">
                         <PhenologyAnalysis
-                            onRef={ref => (this.NFHPAnalysis = ref)}
+                            onRef={ref => (this.PhenologyAnalysis = ref)}
                             updateAnalysisLayers={this.updateAnalysisLayers}
                             feature={this.state.feature}
                             priorityBap={this.state.priorityBap}
@@ -276,7 +271,7 @@ class LeftPanel extends React.Component {
                     </div>
                     <div className="nbm-flex-row-no-padding">
                         <OBISAnalysis
-                            onRef={ref => (this.NFHPAnalysis = ref)}
+                            onRef={ref => (this.OBISAnalysis = ref)}
                             updateAnalysisLayers={this.updateAnalysisLayers}
                             feature={this.state.feature}
                             priorityBap={this.state.priorityBap}

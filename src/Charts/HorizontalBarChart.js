@@ -5,13 +5,27 @@ import "./Chart.css"
 class HorizontalBarChart extends React.Component {
     constructor(props) {
         super(props)
+        this.state = {
+            id: null,
+            config: null,
+            data: null
+        }
         this.drawChart = this.drawChart.bind(this);
         this.print = this.print.bind(this)
     }
-    
+
 
     componentDidUpdate() {
-        this.drawChart(this.props.id, this.props.config, this.props.data)
+        if (this.state.data !== this.props.data) {
+            this.setState({
+                id: this.props.id,
+                config: this.props.config,
+                data: this.props.data,
+            }, () => {
+                this.drawChart(this.props.id, this.props.config, this.props.data)
+
+            })
+        }
     }
 
     componentDidMount() {

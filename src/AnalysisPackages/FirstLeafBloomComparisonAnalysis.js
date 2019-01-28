@@ -60,7 +60,13 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
         this.getCharts = this.getCharts.bind(this)
         this.submitAnalysis = this.submitAnalysis.bind(this)
         this.clearCharts = this.clearCharts.bind(this)
+        this.print = this.print.bind(this)
+
     }
+
+    componentDidMount() {
+        this.props.onRef(this)
+      }
 
     clearCharts() {
         let charts = {}
@@ -155,6 +161,15 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
         return charts
     }
 
+    print() {
+        if(this.state.charts.comparison.data){
+            return [
+                this.ComparisonChart.print(this.state.charts.comparison.id)
+            ]
+        }
+        return []
+    }
+
 
     render() {
         return (
@@ -165,7 +180,7 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
                     <div className="chart-headers" >
                         <button className="submit-analysis-btn" onClick={this.submitAnalysis}>Analyze Time Period: {this.props.yearMin} to  {this.props.yearMax}</button>
                     </div>
-                    <ComparisonChart data={this.state.charts.comparison.data} id={this.state.charts.comparison.id} config={this.state.charts.comparison.config} />
+                    <ComparisonChart onRef={ref => (this.ComparisonChart = ref)} data={this.state.charts.comparison.data} id={this.state.charts.comparison.id} config={this.state.charts.comparison.config} />
                     <div className="chart-footers" >
                         <div className="anotations">
                             First Leaf / First Bloom Spring Index Comparison data were provided by  the <a href="https://www.usanpn.org">USA National Phenology Network</a>, data retrieved {new Date().toDateString()}
