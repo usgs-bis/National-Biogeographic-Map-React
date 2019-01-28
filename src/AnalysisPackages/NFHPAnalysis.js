@@ -129,8 +129,14 @@ class NFHPAnalysisPackage extends React.Component {
         return charts
     }
 
+    
     print() {
-        return this.HorizontalBarChart.print(this.state.charts.horizontalBarChart.id)
+        if(this.state.charts.horizontalBarChart.data){
+            return [
+                this.HorizontalBarChart.print(this.state.charts.horizontalBarChart.id)
+            ]
+        }
+        return []
     }
 
     render() {

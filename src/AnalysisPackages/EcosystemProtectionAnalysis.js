@@ -66,6 +66,11 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
         this.filterTableData = this.filterTableData.bind(this)
         this.getColorFromName = this.getColorFromName.bind(this)
         this.resetEcoTable = this.resetEcoTable.bind(this)
+        this.print = this.print.bind(this)
+    }
+
+    componentDidMount() {
+        this.props.onRef(this)
     }
 
     componentDidUpdate(prevProps) {
@@ -473,6 +478,18 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
         })
     }
 
+    print() {
+        if (this.state.charts.protectionStatus.data) {
+            return [
+                this.HorizontalBarChart.print(this.state.charts.protectionStatus.id),
+                this.PieChart.print(this.state.charts.gap12.id),
+                this.PieChart.print(this.state.charts.gap123.id),
+                this.PieChart.print(this.state.charts.gapCoverage.id)
+            ]
+        }
+        return []
+    }
+
     render() {
         return (
             <div>
@@ -494,12 +511,14 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                         </div>
                         <div className="half-chart">
                             <PieChart
+                                onRef={ref => (this.PieChart = ref)}
                                 data={this.state.charts.gap12.data}
                                 id={this.state.charts.gap12.id}
                                 config={this.state.charts.gap12.config} />
                         </div>
                         <div className="half-chart">
                             <PieChart
+                                onRef={ref => (this.PieChart = ref)}
                                 data={this.state.charts.gap123.data}
                                 id={this.state.charts.gap123.id}
                                 config={this.state.charts.gap123.config} />
@@ -510,10 +529,12 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                         <button className="submit-analysis-btn" onClick={this.resetEcoTable}>Clear Chart Selection</button>
                     </div>
                     <TableChart
+                        onRef={ref => (this.TableChart = ref)}
                         data={this.state.charts.gapTable.data}
                         id={this.state.charts.gapTable.id}
                         config={this.state.charts.gapTable.config} />
                     <PieChart
+                        onRef={ref => (this.PieChart = ref)}
                         data={this.state.charts.gapCoverage.data}
                         id={this.state.charts.gapCoverage.id}
                         config={this.state.charts.gapCoverage.config} />

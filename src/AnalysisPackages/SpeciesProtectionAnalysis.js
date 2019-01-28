@@ -78,7 +78,13 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
         this.resetSppTable = this.resetSppTable.bind(this)
         this.filterTableData = this.filterTableData.bind(this)
         this.changeFilter = this.changeFilter.bind(this)
+        this.print = this.print.bind(this)
+
     }
+
+    componentDidMount() {
+        this.props.onRef(this)
+      }
 
     componentDidUpdate(prevProps) {
         if (this.props.feature &&
@@ -346,6 +352,17 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
         })
     }
 
+    print() {
+        if(this.state.charts.gap12.data){
+            return [
+                this.PieChart.print(this.state.charts.gap12.id),
+                this.PieChart.print(this.state.charts.gap123.id)
+            ]
+        }
+        return []
+    }
+
+
     render() {
         return (
                 <div>
@@ -368,12 +385,14 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                         <div>
                             <div className="half-chart">
                                 <PieChart
+                                    onRef={ref => (this.PieChart = ref)}
                                     data={this.state.charts.gap12.data}
                                     id={this.state.charts.gap12.id}
                                     config={this.state.charts.gap12.config} />
                             </div>
                             <div className="half-chart">
                                 <PieChart
+                                    onRef={ref => (this.PieChart = ref)}
                                     data={this.state.charts.gap123.data}
                                     id={this.state.charts.gap123.id}
                                     config={this.state.charts.gap123.config} />

@@ -5,18 +5,35 @@ import "./Chart.css"
 class SpeciesCountChart extends React.Component {
     constructor(props) {
         super(props)
+        this.state = {
+            id: null,
+            config: null,
+            data: null
+        }
         this.drawChart = this.drawChart.bind(this);
         this.getChartImage = this.getChartImage.bind(this)
-    }
-
-    componentDidUpdate() {
-        this.drawChart(this.props.id, this.props.config, this.props.data)
+        this.print = this.print.bind(this)
     }
 
     componentDidMount() {
+        this.props.onRef(this)
         this.render()
         this.drawChart(this.props.id, this.props.config, this.props.data)
     }
+
+    componentDidUpdate() {
+        if (this.state.data !== this.props.data) {
+            this.setState({
+                id: this.props.id,
+                config: this.props.config,
+                data: this.props.data,
+            }, () => {
+                this.drawChart(this.props.id, this.props.config, this.props.data)
+
+            })
+        }
+    }
+
 
     /**
     * Draw a Species Count Chart
@@ -181,6 +198,29 @@ class SpeciesCountChart extends React.Component {
 
     // returns a promise with a dataURI - i.e. base 64 encoded PNG
     getChartImage(id) {
+        return new Promise((resolve, reject) => {
+            try {
+                const canvasContainer = d3.select(`#${id}ChartContainer`)
+                    .append('div')
+                    .attr("class", `${id}Class`)
+                    .html(`<canvas id="canvas${id}" width="800" height="800" style="position: fixed;"></canvas>`)
+
+                const canvas = document.getElementById(`canvas${id}`);
+                const image = new Image();
+                image.onload = () => {
+                    canvas.getContext("2d").drawImage(image, 0, 0, 800, 800);
+                    canvasContainer.remove()
+                    resolve(canvas.toDataURL())
+                }
+                const svg = "data:image/svg+xml," + d3.select(`#${id}ChartContainer .svg-container-chart`).html()
+                image.src = svg
+            }
+            catch (error) { reject(error) }
+        })
+    }
+
+     // returns a promise with a dataURI - i.e. base 64 encoded PNG
+     print(id) {
         return new Promise((resolve, reject) => {
             try {
                 const canvasContainer = d3.select(`#${id}ChartContainer`)

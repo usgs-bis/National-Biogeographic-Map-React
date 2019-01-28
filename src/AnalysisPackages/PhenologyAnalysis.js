@@ -36,12 +36,19 @@ class PhenologyAnalysisPackage extends React.Component {
             dates: [{ name: 'Current', date: new Date() }, { name: 'Six-Day', date: new Date(new Date().getTime() + 6 * 86400000) }],
             canSubmit: false,
             loading: false,
+            charts: []
         }
 
         this.getCharts = this.getCharts.bind(this)
         this.getFetchForDate = this.getFetchForDate.bind(this)
         this.submitAnalysis = this.submitAnalysis.bind(this)
         this.clearCharts = this.clearCharts.bind(this)
+        this.print = this.print.bind(this)
+        this.getFormattedDate = this.getFormattedDate.bind(this)
+    }
+
+    componentDidMount() {
+        this.props.onRef(this)
     }
 
     componentWillReceiveProps(props) {
@@ -61,9 +68,16 @@ class PhenologyAnalysisPackage extends React.Component {
         })
     }
 
+    getFormattedDate(date) {
+        const year = date.getFullYear()
+        let month = ('0' + (date.getMonth() + 1)).slice(-2);
+        const day = ('0' + date.getDate()).slice(-2);
+        return `${year}-${month}-${day}`
+    }
+
 
     getFetchForDate(url, date) {
-        const formattedDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+        const formattedDate = this.getFormattedDate(date)
         return fetch(`${url}&date=${formattedDate}`)
             .then(res => { return res.json() },
                 (error) => {
@@ -87,18 +101,25 @@ class PhenologyAnalysisPackage extends React.Component {
             }
             Promise.all(fetches).then(results => {
                 if (results) {
-                    //const charts = this.getCharts(results)
                     this.setState({
                         data: results,
                         loading: false
+                    }, () => {
+                        this.getCharts(this.state.data)
                     })
                     this.props.isEnabled(true)
                     this.props.canOpen(true)
+
                 } else {
                     this.props.isEnabled(false)
                     this.props.canOpen(false)
                     this.props.resetAnalysisLayers()
                 }
+            }, (error) => {
+                this.setState({
+                    error,
+                    loading: false
+                });
             })
         }
     }
@@ -112,173 +133,195 @@ class PhenologyAnalysisPackage extends React.Component {
 
         if (!data) return
 
-        function inRange(num, bucket, name) {
-            if (bucket.length === 1) {
-                return num > bucket[0]
-            } else {
-                return num > bucket[0] && num <= bucket[1]
-            }
-        }
-        const numberWithCommas = (x) => {
-            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
+        try {
 
-        let rawData = {
-            "agdd_50": {
-                "Current": data[1][`${this.state.dates[0].date.getFullYear()}-${this.state.dates[0].date.getMonth() + 1}-${this.state.dates[0].date.getDate()}`],
-                "Six-Day": data[3][`${this.state.dates[1].date.getFullYear()}-${this.state.dates[1].date.getMonth() + 1}-${this.state.dates[1].date.getDate()}`]
-            },
-            "agdd_32": {
-                "Current": data[0][`${this.state.dates[0].date.getFullYear()}-${this.state.dates[0].date.getMonth() + 1}-${this.state.dates[0].date.getDate()}`],
-                "Six-Day": data[2][`${this.state.dates[1].date.getFullYear()}-${this.state.dates[1].date.getMonth() + 1}-${this.state.dates[1].date.getDate()}`]
-            }
-        }
-
-        let chartData = {
-            "agdd_50": {
-                "Apple Maggot": {
-                    "Not Approaching Treatment Window": {
-                        "range": [0, 650],
-                        "color": "rgb(153,153,153)"
-                    },
-                    "Approaching Treatment Window": {
-                        "range": [650, 900],
-                        "color": "rgb(255,237,111)"
-                    },
-                    "Treatment Window": {
-                        "range": [900, 2000],
-                        "color": "rgb(65,171,93)"
-                    },
-                    "Treatment Window Passed": {
-                        "range": [2000],
-                        "color": "rgb(193,154,107)"
-                    },
-                },
-                "Emerald Ash Borer": {
-                    "Not Approaching Treatment Window": {
-                        "range": [0, 350],
-                        "color": "rgb(153,153,153)"
-                    },
-                    "Approaching Treatment Window": {
-                        "range": [350, 450],
-                        "color": "rgb(255,237,111)"
-                    },
-                    "Treatment Window": {
-                        "range": [450, 1500],
-                        "color": "rgb(65,171,93)"
-                    },
-                    "Treatment Window Passed": {
-                        "range": [1500],
-                        "color": "rgb(193,154,107)"
-                    },
-                },
-                "Lilac Borer": {
-                    "Not Approaching Treatment Window": {
-                        "range": [0, 350],
-                        "color": "rgb(153,153,153)"
-                    },
-                    "Approaching Treatment Window": {
-                        "range": [350, 500],
-                        "color": "rgb(255,237,111)"
-                    },
-                    "Treatment Window": {
-                        "range": [500, 1300],
-                        "color": "rgb(65,171,93)"
-                    },
-                    "Treatment Window Passed": {
-                        "range": [1300],
-                        "color": "rgb(193,154,107)"
-                    },
-                },
-                "Winter Moth": {
-                    "Not Approaching Treatment Window": {
-                        "range": [0, 20],
-                        "color": "rgb(153,153,153)"
-                    },
-                    "Treatment Window": {
-                        "range": [20, 350],
-                        "color": "rgb(65,171,93)"
-                    },
-                    "Treatment Window Passed": {
-                        "range": [350],
-                        "color": "rgb(193,154,107)"
-                    },
-                }
-            },
-            "agdd_32": {
-                "Hemlock Woolly Adelgid": {
-                    "Not Approaching Treatment Window": {
-                        "range": [0, 25],
-                        "color": "rgb(153,153,153)"
-                    },
-                    "Approaching Treatment Window": {
-                        "range": [25, 1000],
-                        "color": "rgb(255,237,111)"
-                    },
-                    "Treatment Window": {
-                        "range": [1000, 2200],
-                        "color": "rgb(65,171,93)"
-                    },
-                    "Treatment Window Passed": {
-                        "range": [2200],
-                        "color": "rgb(193,154,107)"
-                    },
+            function inRange(num, bucket, name) {
+                if (bucket.length === 1) {
+                    return num > bucket[0]
+                } else {
+                    return num > bucket[0] && num <= bucket[1]
                 }
             }
-        }
+            const numberWithCommas = (x) => {
+                return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            }
 
-        for (let layer of Object.keys(rawData)) {
-            for (let time of Object.keys(rawData[layer])) {
-                for (let num of rawData[layer][time]) {
-                    for (let speciesName of Object.keys(chartData[layer])) {
-                        for (let categoryLabel of Object.keys(chartData[layer][speciesName])) {
-                            if (chartData[layer][speciesName][categoryLabel][time] === undefined) {
-                                chartData[layer][speciesName][categoryLabel][time] = 0;
-                            }
-                            if (inRange(num, chartData[layer][speciesName][categoryLabel]["range"], speciesName)) {
-                                chartData[layer][speciesName][categoryLabel][time] = chartData[layer][speciesName][categoryLabel][time] + 1
-                            }
-                        }
+            let rawData = {
+                "agdd_50": {
+                    "Current": data[1][`${this.getFormattedDate(this.state.dates[0].date)}`],
+                    "Six-Day": data[3][`${this.getFormattedDate(this.state.dates[1].date)}`]
+                },
+                "agdd_32": {
+                    "Current": data[0][`${this.getFormattedDate(this.state.dates[0].date)}`],
+                    "Six-Day": data[2][`${this.getFormattedDate(this.state.dates[1].date)}`]
+                }
+            }
+
+            let chartData = {
+                "agdd_50": {
+                    "Apple Maggot": {
+                        "Not Approaching Treatment Window": {
+                            "range": [0, 650],
+                            "color": "rgb(153,153,153)"
+                        },
+                        "Approaching Treatment Window": {
+                            "range": [650, 900],
+                            "color": "rgb(255,237,111)"
+                        },
+                        "Treatment Window": {
+                            "range": [900, 2000],
+                            "color": "rgb(65,171,93)"
+                        },
+                        "Treatment Window Passed": {
+                            "range": [2000],
+                            "color": "rgb(193,154,107)"
+                        },
+                    },
+                    "Emerald Ash Borer": {
+                        "Not Approaching Treatment Window": {
+                            "range": [0, 350],
+                            "color": "rgb(153,153,153)"
+                        },
+                        "Approaching Treatment Window": {
+                            "range": [350, 450],
+                            "color": "rgb(255,237,111)"
+                        },
+                        "Treatment Window": {
+                            "range": [450, 1500],
+                            "color": "rgb(65,171,93)"
+                        },
+                        "Treatment Window Passed": {
+                            "range": [1500],
+                            "color": "rgb(193,154,107)"
+                        },
+                    },
+                    "Lilac Borer": {
+                        "Not Approaching Treatment Window": {
+                            "range": [0, 350],
+                            "color": "rgb(153,153,153)"
+                        },
+                        "Approaching Treatment Window": {
+                            "range": [350, 500],
+                            "color": "rgb(255,237,111)"
+                        },
+                        "Treatment Window": {
+                            "range": [500, 1300],
+                            "color": "rgb(65,171,93)"
+                        },
+                        "Treatment Window Passed": {
+                            "range": [1300],
+                            "color": "rgb(193,154,107)"
+                        },
+                    },
+                    "Winter Moth": {
+                        "Not Approaching Treatment Window": {
+                            "range": [0, 20],
+                            "color": "rgb(153,153,153)"
+                        },
+                        "Treatment Window": {
+                            "range": [20, 350],
+                            "color": "rgb(65,171,93)"
+                        },
+                        "Treatment Window Passed": {
+                            "range": [350],
+                            "color": "rgb(193,154,107)"
+                        },
+                    }
+                },
+                "agdd_32": {
+                    "Hemlock Woolly Adelgid": {
+                        "Not Approaching Treatment Window": {
+                            "range": [0, 25],
+                            "color": "rgb(153,153,153)"
+                        },
+                        "Approaching Treatment Window": {
+                            "range": [25, 1000],
+                            "color": "rgb(255,237,111)"
+                        },
+                        "Treatment Window": {
+                            "range": [1000, 2200],
+                            "color": "rgb(65,171,93)"
+                        },
+                        "Treatment Window Passed": {
+                            "range": [2200],
+                            "color": "rgb(193,154,107)"
+                        },
                     }
                 }
             }
-        }
-        let charts = []
-        for (let layer of Object.keys(rawData)) {
-            for (let pestName of Object.keys(chartData[layer])) {
+
+            for (let layer of Object.keys(rawData)) {
                 for (let time of Object.keys(rawData[layer])) {
-                    const timeIndex = time === 'Current' ? 0 : 1
-                    const chartId = `PHENO_${pestName.replace(/\s/g, '')}_${time}`
-                    const chartConfig = {
-                        width: 400,
-                        height: 150,
-                        margins: { left: 50, right: 20, top: 20, bottom: timeIndex ? 75 : 30 },
-                        chart: { title: timeIndex ? '' : `${pestName}`, subtitle: `` },
-                        xAxis: { key: 'acres', label: "Approximate Acreage", ticks: 5, tickFormat: (d) => { return `${numberWithCommas(parseInt(d))}` } },
-                        yAxis: { key: 'name', label: `${time}  ${this.state.dates[timeIndex].date.getFullYear()}-${this.state.dates[timeIndex].date.getMonth() + 1}-${this.state.dates[timeIndex].date.getDate()}`, ticks: 5, tickFormat: (d) => { '' } },
-                        tooltip: { label: (d) => { return `<p>${d.name}: ${numberWithCommas(d.acres)} Acres</p>` } }
-                    }
-                    let chartDataFormatted = []
-                    let windows = ['Not Approaching Treatment Window', 'Approaching Treatment Window', 'Treatment Window', 'Treatment Window Passed']
-                    windows.reverse()
-                    for (let window of windows) {
-                        if (chartData[layer][pestName][window]) {
-                            chartDataFormatted.push({ "name": window, "acres": timeIndex ? chartData[layer][pestName][window]['Current'] : chartData[layer][pestName][window]['Six-Day'], "color": chartData[layer][pestName][window].color })
+                    for (let num of rawData[layer][time]) {
+                        for (let speciesName of Object.keys(chartData[layer])) {
+                            for (let categoryLabel of Object.keys(chartData[layer][speciesName])) {
+                                if (chartData[layer][speciesName][categoryLabel][time] === undefined) {
+                                    chartData[layer][speciesName][categoryLabel][time] = 0;
+                                }
+                                if (inRange(num, chartData[layer][speciesName][categoryLabel]["range"], speciesName)) {
+                                    chartData[layer][speciesName][categoryLabel][time] = chartData[layer][speciesName][categoryLabel][time] + 1
+                                }
+                            }
                         }
                     }
-                    charts.push(
-                        <HorizontalBarChart
-                            onRef={ref => (this.HorizontalBarChart = ref)}
-                            key={chartId}
-                            data={chartDataFormatted}
-                            id={chartId}
-                            config={chartConfig} />
-                    )
                 }
             }
+            let charts = []
+            for (let layer of Object.keys(rawData)) {
+                for (let pestName of Object.keys(chartData[layer])) {
+                    for (let time of Object.keys(rawData[layer])) {
+                        const timeIndex = time === 'Current' ? 0 : 1
+                        const chartId = `PHENO_${pestName.replace(/\s/g, '')}_${time}`
+                        const chartConfig = {
+                            width: 400,
+                            height: 150,
+                            margins: { left: 50, right: 20, top: 20, bottom: timeIndex ? 75 : 30 },
+                            chart: { title: timeIndex ? '' : `${pestName}`, subtitle: `` },
+                            xAxis: { key: 'acres', label: "Approximate Acreage", ticks: 5, tickFormat: (d) => { return `${numberWithCommas(parseInt(d))}` } },
+                            yAxis: { key: 'name', label: `${time}  ${this.getFormattedDate(this.state.dates[timeIndex].date)}`, ticks: 5, tickFormat: (d) => { '' } },
+                            tooltip: { label: (d) => { return `<p>${d.name}: ${numberWithCommas(d.acres)} Acres</p>` } }
+                        }
+                        let chartDataFormatted = []
+                        let windows = ['Not Approaching Treatment Window', 'Approaching Treatment Window', 'Treatment Window', 'Treatment Window Passed']
+                        windows.reverse()
+                        for (let window of windows) {
+                            if (chartData[layer][pestName][window]) {
+                                chartDataFormatted.push({ "name": window, "acres": timeIndex ? chartData[layer][pestName][window]['Current'] : chartData[layer][pestName][window]['Six-Day'], "color": chartData[layer][pestName][window].color })
+                            }
+                        }
+                        charts.push(
+                            <HorizontalBarChart
+                                onRef={ref => (this.HorizontalBarChart = ref)}
+                                key={chartId}
+                                data={chartDataFormatted}
+                                id={chartId}
+                                config={chartConfig} />
+                        )
+                    }
+                }
+            }
+            this.setState({
+                charts: charts
+            })
+
         }
-        return charts
+        catch (error) {
+            this.setState({
+                error,
+                loading: false
+            });
+            return null
+        }
     }
+
+    print() {
+        let p = []
+        for (let chart of this.state.charts) {
+            p.push(chart.print(chart.props.id))
+        }
+        return p
+    }
+
 
     render() {
         return (
@@ -289,7 +332,7 @@ class PhenologyAnalysisPackage extends React.Component {
                     <div className="chart-headers" >
                         <button className="submit-analysis-btn" onClick={this.submitAnalysis}>Get Phenology Forecast</button>
                     </div>
-                    {this.getCharts(this.state.data)}
+                    {this.state.charts}
                     <div className="chart-footers" >
                         <div className="anotations">
                             Phenology Forecasts data were provided by the <a href="https://www.usanpn.org">USA National Phenology Network</a>, data retrieved {new Date().toDateString()}

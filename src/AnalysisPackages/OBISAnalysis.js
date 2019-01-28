@@ -38,6 +38,12 @@ class OBISAnalysisPackage extends React.Component {
 
         this.getCharts = this.getCharts.bind(this)
         this.handelNoData = this.handelNoData.bind(this)
+        this.print = this.print.bind(this)
+
+    }
+
+    componentDidMount() {
+        this.props.onRef(this)
     }
 
     handelNoData() {
@@ -146,6 +152,15 @@ class OBISAnalysisPackage extends React.Component {
         return charts
     }
 
+    print() {
+        if (this.state.charts.speciesCountChart.data) {
+            return [
+                this.SpeciesCountChart.print(this.state.charts.speciesCountChart.id)
+            ]
+        }
+        return []
+    }
+
     render() {
         return (
             <div>
@@ -153,6 +168,7 @@ class OBISAnalysisPackage extends React.Component {
                 {this.props.getAnalysisLayers()}
                 <div className="chartsDiv">
                     <SpeciesCountChart
+                        onRef={ref => (this.SpeciesCountChart = ref)}
                         data={this.state.charts.speciesCountChart.data}
                         id={this.state.charts.speciesCountChart.id}
                         config={this.state.charts.speciesCountChart.config} />

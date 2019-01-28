@@ -6,11 +6,32 @@ import "./Chart.css"
 class HistogramChart extends React.Component {
     constructor(props) {
         super(props)
+        this.state = {
+            id: null,
+            config: null,
+            data: null,
+            bucketSize:null
+        }
         this.drawChart = this.drawChart.bind(this);
+        this.print = this.print.bind(this)
+    }
+
+    componentDidMount() {
+        this.props.onRef(this)
+
     }
 
     componentDidUpdate() {
-        this.drawChart(this.props.id, this.props.config, this.props.data, parseInt(this.props.bucketSize))
+        if (this.state.bucketSize !== parseInt(this.props.bucketSize) || this.state.data !== this.props.data) {
+            this.setState({
+                id: this.props.id,
+                config: this.props.config,
+                data: this.props.data,
+                bucketSize: parseInt(this.props.bucketSize)
+            }, () => {
+                this.drawChart(this.props.id, this.props.config, this.props.data, parseInt(this.props.bucketSize))
+            })
+        }
     }
 
     /**
@@ -38,8 +59,7 @@ class HistogramChart extends React.Component {
 
         // Remove older renderings
         chart.selectAll("text").remove()
-        chart.select(`#${id}Chart`).selectAll("div").remove()
-        chart.select(".svg-container-chart").remove()
+        chart.select(`#${id}Svg`).selectAll("g").remove()
 
         if (!id || !config || !data) return
 
@@ -88,10 +108,7 @@ class HistogramChart extends React.Component {
         const yAxis = d3.axisLeft(y)
 
         // Create a responsive svg element
-        const svg = chart.select(`#${id}Chart`)
-            .append("div")
-            .classed("svg-container-chart", true)
-            .append("svg")
+        const svg = chart.select(`#${id}Svg`)
             .attr("preserveAspectRatio", "xMinYMin meet")
             .attr("viewBox", "0 0 " + (width + config.margins.left + config.margins.right) + " " + (height + config.margins.top + config.margins.bottom))
             .classed("svg-content-responsive", true)
@@ -128,10 +145,8 @@ class HistogramChart extends React.Component {
             .attr("height", function (d) { return height - y(d.count); })
 
         // Add a div inside chart for tooltips
-        const tooltip = chart.select(`#${id}Chart`)
-            .append("div")
-            .attr("class", "chartTooltip")
-            .style("opacity", 0);
+        const tooltip = chart.select(`#${id}Chart`).select('.chartTooltip')
+
 
         // Add tooltip functionality on mouseOver
         bars.on("mouseover", function (d) {
@@ -256,6 +271,30 @@ class HistogramChart extends React.Component {
         }
 
     }
+
+    // returns a promise with a dataURI - i.e. base 64 encoded PNG
+    print(id) {
+        return new Promise((resolve, reject) => {
+            try {
+                const canvasContainer = d3.select(`#${id}ChartContainer`)
+                    .append('div')
+                    .attr("class", `${id}Class`)
+                    .html(`<canvas id="canvas${id}" width="800" height="800" style="position: fixed;"></canvas>`)
+
+                const canvas = document.getElementById(`canvas${id}`);
+                const image = new Image();
+                image.onload = () => {
+                    canvas.getContext("2d").drawImage(image, 0, 0, 800, 800);
+                    canvasContainer.remove()
+                    resolve(canvas.toDataURL())
+                }
+                const svg = "data:image/svg+xml," + d3.select(`#${id}ChartContainer .svg-container-chart`).html()
+                image.src = svg
+            }
+            catch (error) { reject(error) }
+        })
+    }
+
     render() {
         const divs = () => {
             if (this.props.data) {
@@ -269,7 +308,14 @@ class HistogramChart extends React.Component {
                             <div
                                 style={{ display: this.props.config.chart.subtitle ? "block" : "none" }}
                                 id={id + 'Subtitle'} className="subtitle"></div>
-                            <div id={id + 'Chart'} className="chart"></div>
+                            <div id={id + 'Chart'} className="chart">
+                                <div className='chartTooltip'></div>
+                                <div className="svg-container-chart">
+                                    <svg id={id + 'Svg'}
+                                        width={'100%'} height={'100%'}>
+                                    </svg>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 );
