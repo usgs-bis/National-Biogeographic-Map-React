@@ -54,7 +54,13 @@ class FirstLeafAnalysisPackage extends React.Component {
         this.submitAnalysis = this.submitAnalysis.bind(this)
         this.setBucketSize = this.setBucketSize.bind(this)
         this.clearCharts = this.clearCharts.bind(this)
+        this.print = this.print.bind(this)
+
     }
+
+    componentDidMount() {
+        this.props.onRef(this)
+      }
 
     toggleDropdown() {
         this.setState({
@@ -183,6 +189,17 @@ class FirstLeafAnalysisPackage extends React.Component {
             bucketSize: this.bucketSize
         })
     }
+    
+    print() {
+        if(this.state.charts.histogram.data){
+            return [
+                this.HistogramChart.print(this.state.charts.histogram.id),
+                this.RidgelinePlotChart.print(this.state.charts.ridgelinePlot.id),
+                this.BoxAndWhiskerChart.print(this.state.charts.boxAndWhisker.id)
+            ]
+        }
+        return []
+    }
 
     render() {
         return (
@@ -205,9 +222,9 @@ class FirstLeafAnalysisPackage extends React.Component {
                                 type="range" />
                         </div>
                     </div>
-                    <HistogramChart data={this.state.charts.histogram.data} id={this.state.charts.histogram.id} config={this.state.charts.histogram.config} bucketSize={this.state.bucketSize.value} />
-                    <RidgelinePlotChart data={this.state.charts.ridgelinePlot.data} id={this.state.charts.ridgelinePlot.id} config={this.state.charts.ridgelinePlot.config} bucketSize={this.state.bucketSize.value} />
-                    <BoxAndWhiskerChart data={this.state.charts.boxAndWhisker.data} id={this.state.charts.boxAndWhisker.id} config={this.state.charts.boxAndWhisker.config} />
+                    <HistogramChart onRef={ref => (this.HistogramChart = ref)} data={this.state.charts.histogram.data} id={this.state.charts.histogram.id} config={this.state.charts.histogram.config} bucketSize={this.state.bucketSize.value} />
+                    <RidgelinePlotChart onRef={ref => (this.RidgelinePlotChart = ref)} data={this.state.charts.ridgelinePlot.data} id={this.state.charts.ridgelinePlot.id} config={this.state.charts.ridgelinePlot.config} bucketSize={this.state.bucketSize.value} />
+                    <BoxAndWhiskerChart onRef={ref => (this.BoxAndWhiskerChart = ref)} data={this.state.charts.boxAndWhisker.data} id={this.state.charts.boxAndWhisker.id} config={this.state.charts.boxAndWhisker.config} />
                     <div className="chart-footers" >
                         <div className="anotations">
                             First Leaf Spring Index data was provided by the <a href="https://www.usanpn.org">USA National Phenology Network</a>, data retrieved {new Date().toDateString()}

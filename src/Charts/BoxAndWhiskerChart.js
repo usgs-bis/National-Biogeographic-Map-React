@@ -6,11 +6,31 @@ import "./Chart.css"
 class BoxAndWhiskerChart extends React.Component {
     constructor(props) {
         super(props)
+        this.state = {
+            id: null,
+            config: null,
+            data: null
+        }
         this.drawChart = this.drawChart.bind(this);
+        this.print = this.print.bind(this)
+    }
+
+    componentDidMount() {
+        this.props.onRef(this)
+
     }
 
     componentDidUpdate() {
-        this.drawChart(this.props.id, this.props.config, this.props.data)
+        if (this.state.data !== this.props.data) {
+            this.setState({
+                id: this.props.id,
+                config: this.props.config,
+                data: this.props.data,
+            }, () => {
+                this.drawChart(this.props.id, this.props.config, this.props.data)
+
+            })
+        }
     }
 
     /**
@@ -37,13 +57,11 @@ class BoxAndWhiskerChart extends React.Component {
 
         // Remove older renderings
         chart.selectAll("text").remove()
-        chart.select(`#${id}Chart`).selectAll("div").remove()
-        chart.select(".svg-container-chart").remove()
-
+        chart.select(`#${id}Svg`).selectAll("g").remove()
 
         if (!id || !config || !data) return
 
-       
+
         // Title
         chart.select(`#${id}Title`).append("text")
             .text(config.chart.title);
@@ -120,10 +138,11 @@ class BoxAndWhiskerChart extends React.Component {
         }
 
         // Create a responsive svg element
-        const svg = chart.select(`#${id}Chart`)
-            .append("div")
-            .classed("svg-container-chart", true)
-            .append("svg")
+        // const svg = chart.select(`#${id}Chart`)
+        //     .append("div")
+        //     .classed("svg-container-chart", true)
+        //     .append("svg")
+        const svg = chart.select(`#${id}Svg`)
             .attr("preserveAspectRatio", "xMinYMin meet")
             .attr("viewBox", "0 0 " + (width + config.margins.left + config.margins.right) + " " + (height + config.margins.top + config.margins.bottom))
             .classed("svg-content-responsive", true)
@@ -156,19 +175,16 @@ class BoxAndWhiskerChart extends React.Component {
             .data(boxPlotData)
             .enter()
             .append("line")
-            .attr("x1", function (datum) {return x(datum.key) + barWidth / 2;})
-            .attr("y1", function (datum) {let whisker = datum.whiskers[0];return y(whisker);})
-            .attr("x2", function (datum) {return x(datum.key) + barWidth / 2;})
-            .attr("y2", function (datum) {return y(datum.whiskers[1]);})
+            .attr("x1", function (datum) { return x(datum.key) + barWidth / 2; })
+            .attr("y1", function (datum) { let whisker = datum.whiskers[0]; return y(whisker); })
+            .attr("x2", function (datum) { return x(datum.key) + barWidth / 2; })
+            .attr("y2", function (datum) { return y(datum.whiskers[1]); })
             .attr("stroke", "#000")
             .attr("stroke-width", 1)
             .attr("fill", "none");
 
-        // Add a div inside chart for tooltips
-        const tooltip = chart.select(`#${id}Chart`)
-            .append("div")
-            .attr("class", "chartTooltip")
-            .style("opacity", 0);
+        // select the div inside chart for tooltips
+        const tooltip = chart.select(`#${id}Chart`).select('.chartTooltip')
 
         // Draw the boxes of the box plot on top of vertical lines
         const boxes = g.selectAll("rect")
@@ -181,9 +197,9 @@ class BoxAndWhiskerChart extends React.Component {
                 let height = y(quartiles[2]) - y(quartiles[0]);
                 return height;
             })
-            .attr("x", function (datum) {return x(datum.key);})
-            .attr("y", function (datum) {return y(datum.quartile[0]);})
-            .attr("fill", function (datum) {return datum.color;})
+            .attr("x", function (datum) { return x(datum.key); })
+            .attr("y", function (datum) { return y(datum.quartile[0]); })
+            .attr("fill", function (datum) { return datum.color; })
             .attr("fill", "rgb(56, 155, 198)")
             .attr("stroke", "#000")
             .attr("stroke-width", 1);
@@ -314,6 +330,30 @@ class BoxAndWhiskerChart extends React.Component {
         }
 
     }
+
+    // returns a promise with a dataURI - i.e. base 64 encoded PNG
+    print(id) {
+        return new Promise((resolve, reject) => {
+            try {
+                const canvasContainer = d3.select(`#${id}ChartContainer`)
+                    .append('div')
+                    .attr("class", `${id}Class`)
+                    .html(`<canvas id="canvas${id}" width="800" height="800" style="position: fixed;"></canvas>`)
+
+                const canvas = document.getElementById(`canvas${id}`);
+                const image = new Image();
+                image.onload = () => {
+                    canvas.getContext("2d").drawImage(image, 0, 0, 800, 800);
+                    canvasContainer.remove()
+                    resolve(canvas.toDataURL())
+                }
+                const svg = "data:image/svg+xml," + d3.select(`#${id}ChartContainer .svg-container-chart`).html()
+                image.src = svg
+            }
+            catch (error) { reject(error) }
+        })
+    }
+
     render() {
         const divs = () => {
             if (this.props.data) {
@@ -327,7 +367,14 @@ class BoxAndWhiskerChart extends React.Component {
                             <div
                                 style={{ display: this.props.config.chart.subtitle ? "block" : "none" }}
                                 id={id + 'Subtitle'} className="subtitle"></div>
-                            <div id={id + 'Chart'} className="chart"></div>
+                            <div id={id + 'Chart'} className="chart">
+                                <div className='chartTooltip'></div>
+                                <div className="svg-container-chart">
+                                    <svg id={id + 'Svg'}
+                                        width={'100%'} height={'100%'}>
+                                    </svg>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 );
