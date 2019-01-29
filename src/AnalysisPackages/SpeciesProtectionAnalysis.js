@@ -84,7 +84,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
 
     componentDidMount() {
         this.props.onRef(this)
-      }
+    }
 
     componentDidUpdate(prevProps) {
         if (this.props.feature &&
@@ -136,7 +136,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
             if (this.props.priorityBap !== this.props.bapId) {
                 let l = layers;
                 let that = this;
-                Object.keys(l).forEach(function(key) {
+                Object.keys(l).forEach(function (key) {
                     l[key].checked = false
                     if (that.inputRefs) {
                         that.inputRefs[key].checked = false
@@ -273,35 +273,35 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                 }
 
                 let chartTitle = `${tableType} in ${this.props.feature.properties.feature_name} (${preData.length})`
-                let chartData = [[<span>Species Name</span>, <span></span>, <span>Range</span>, <span>Habitat</span>]]
-                let protectedPercent = <span></span>
+                let chartData = [['Species Name', '', 'Range', 'Habitat']]
+                let protectedPercent = ''
 
                 if (this.state.gapRange !== 'ALL') {
                     preData = preData.filter((d) => { return d[this.state.gapStatus] === this.state.gapRange })
-                    if (this.state.gapStatus === 'status_1_2_group') chartTitle = `${preData.length} Species with ${this.state.gapRange}% within GAP Status 1 & 2 in ${this.props.feature.properties.feature_name}`
-                    if (this.state.gapStatus === 'status_1_2_3_group') chartTitle = `${preData.length} Species with ${this.state.gapRange}% within GAP Status 1, 2 & 3 in ${this.props.feature.properties.feature_name}`
-                    chartData = [[<span>Species Name</span>, <span>Protected</span>, <span>Range</span>, <span>Habitat</span>]]
+                    if (this.state.gapStatus === 'status_1_2_group') chartTitle = `${preData.length} ${tableType} with ${this.state.gapRange}% within GAP Status 1 & 2 in ${this.props.feature.properties.feature_name}`
+                    if (this.state.gapStatus === 'status_1_2_3_group') chartTitle = `${preData.length} ${tableType} with ${this.state.gapRange}% within GAP Status 1, 2 & 3 in ${this.props.feature.properties.feature_name}`
+                    chartData = [['Species Name', 'Protected', 'Range', 'Habitat']]
                 }
 
                 for (let row of preData) {
-                    const name = <span>{`${row.common_name} (${row.scientific_name})`}</span>
+                    const name = `${row.common_name} (${row.scientific_name})`
                     if (this.state.gapRange !== 'ALL') {
-                        if (this.state.gapStatus === 'status_1_2_group') protectedPercent = <span>{`${parseFloat(row.status_1_2).toFixed(2)}%`}</span>
-                        if (this.state.gapStatus === 'status_1_2_3_group') protectedPercent = <span>{`${parseFloat(row.status_1_2_3).toFixed(2)}%`}</span>
+                        if (this.state.gapStatus === 'status_1_2_group') protectedPercent = `${parseFloat(row.status_1_2).toFixed(2)}%`
+                        if (this.state.gapStatus === 'status_1_2_3_group') protectedPercent = `${parseFloat(row.status_1_2_3).toFixed(2)}%`
                     }
                     const radio1 = <input
                         id={`Range_${row.sppcode}`}
                         type="radio"
                         name={`sp_radio`}
-                        onChange={function(e) {that.changeFilter(e, "species_range")}}
+                        onChange={function (e) { that.changeFilter(e, "species_range") }}
                         value={`${row.common_name} (${row.scientific_name}) ${row.sppcode} v1`} />
                     const radio2 = <input
                         id={`Habitat_${row.sppcode}`}
                         type="radio"
                         name={`sp_radio`}
-                        onChange={function(e) {that.changeFilter(e, "habitat_map")}}
+                        onChange={function (e) { that.changeFilter(e, "habitat_map") }}
                         value={`${row.common_name} (${row.scientific_name}) ${row.sppcode} v1`} />
-                    chartData.push([name,protectedPercent, radio1, radio2,])
+                    chartData.push([name, protectedPercent, radio1, radio2,])
                 }
                 const chartConfig = {
                     margins: { left: 20, right: 20, top: 20, bottom: 125 },
@@ -353,60 +353,137 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
     }
 
     print() {
-        if(this.state.charts.gap12.data){
-            return [
-                this.PieChart.print(this.state.charts.gap12.id),
-                this.PieChart.print(this.state.charts.gap123.id)
-            ]
+        if (this.state.charts.gap12.data) {
+            let charts = []
+            charts.push(this.PieChart.print(this.state.charts.gap12.id))
+            charts.push(this.PieChart.print(this.state.charts.gap123.id))
+
+            return Promise.all(charts.flat()).then(contents => {
+                return [
+                    { text: sb_properties.title, style: 'analysisTitle', margin: [5, 2, 5, 20], pageBreak: 'before' },
+                    { text: `Protection Status of Species in ${this.props.feature ? this.props.feature.properties.feature_name : ''}`, style: 'chartTitle', margin: [5, 2, 5, 5] },
+                    {
+                        columns: [
+
+                            {
+                                width: 'auto',
+                                stack: [
+                                    { text: this.state.charts.gap12.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
+                                    { text: this.state.charts.gap12.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
+                                    { image: contents[0], alignment: 'center', width: 230, height: 330 },
+                                ]
+                            },
+
+                            {
+                                width: 'auto',
+                                stack: [
+                                    { text: this.state.charts.gap123.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
+                                    { text: this.state.charts.gap123.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
+                                    { image: contents[1], alignment: 'center', width: 230, height: 330 },
+                                ]
+                            }
+                        ]
+                    },
+                    { text: this.state.charts.gapTable.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 10] },
+                    {
+                        columns: [
+                            {
+                                width: 175,
+                                margin: [3, 0],
+                                stack: [
+                                    {
+                                        style: 'tableStyle',
+                                        table: {
+                                           // widths: ['*','auto'],
+                                            heights: 15,
+                                            body: this.state.charts.gapTable.data.slice(0, Math.floor(this.state.charts.gapTable.data.length / 3))
+                                            .map(elm => { return elm[1] ? [elm[0], elm[1]] : [elm[0]] })
+                                        }
+                                    },
+                                ]
+                            },
+                            {
+                                width: 175,
+                                margin: [3, 0],
+                                stack: [
+                                    {
+                                        style: 'tableStyle',
+                                        table: {
+                                           // widths: ['*','auto'],
+                                            heights: 15,
+                                            body: this.state.charts.gapTable.data.slice(Math.floor(this.state.charts.gapTable.data.length / 3), Math.floor((this.state.charts.gapTable.data.length / 3) * 2))
+                                            .map(elm => { return elm[1] ? [elm[0], elm[1]] : [elm[0]] })
+                                        }
+                                    },
+                                ]
+                            },
+                            {
+                                width: 175,
+                                margin: [3, 0],
+                                stack: [
+                                    {
+                                        style: 'tableStyle',
+                                        table: {
+                                            //widths: ['*','auto'],
+                                            heights: 15,
+                                            body: this.state.charts.gapTable.data.slice(Math.floor((this.state.charts.gapTable.data.length / 3) * 2), this.state.charts.gapTable.data.length)
+                                            .map(elm => { return elm[1] ? [elm[0], elm[1]] : [elm[0]] })
+                                        }
+                                    },
+                                ]
+                            },
+                        ]
+                    }
+                ]
+            })
         }
         return []
     }
 
-
     render() {
         return (
-                <div>
-                    <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
-                    {this.props.getAnalysisLayers()}
-                    <div
-                        style={{ display: (this.props.feature && this.props.feature.properties.feature_name) ? 'block' : 'none' }}
-                        className="chartsDiv">
-                        <div className="chart-titles">
-                            <div className="title">Protection Status of Species in {this.props.feature ? this.props.feature.properties.feature_name : ''}</div>
-                            <div className="subtitle">(Click on a slice to filter the table and see only species whose habitat falls in that percent of protection. Click on a radio button to see only species of that type.)</div>
-                            <div className="spp-radio-btn">
-                                <div><input type="radio" name="species" value={"ALL"} checked={this.state.taxaLetter === "ALL"} onChange={this.onSpeciesChanged} />All</div>
-                                <div><input type="radio" name="species" value={"A"} checked={this.state.taxaLetter === "A"} onChange={this.onSpeciesChanged} />Amphibians</div>
-                                <div><input type="radio" name="species" value={"B"} checked={this.state.taxaLetter === "B"} onChange={this.onSpeciesChanged} />Birds</div>
-                                <div><input type="radio" name="species" value={"M"} checked={this.state.taxaLetter === "M"} onChange={this.onSpeciesChanged} />Mammals</div>
-                                <div><input type="radio" name="species" value={"R"} checked={this.state.taxaLetter === "R"} onChange={this.onSpeciesChanged} />Reptiles</div>
-                            </div>
+            <div>
+                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
+                {this.props.getAnalysisLayers()}
+                <div
+                    style={{ display: (this.props.feature && this.props.feature.properties.feature_name) ? 'block' : 'none' }}
+                    className="chartsDiv">
+                    <div className="chart-titles">
+                        <div className="title">Protection Status of Species in {this.props.feature ? this.props.feature.properties.feature_name : ''}</div>
+                        <div className="subtitle">(Click on a slice to filter the table and see only species whose habitat falls in that percent of protection. Click on a radio button to see only species of that type.)</div>
+                        <div className="spp-radio-btn">
+                            <div><input type="radio" name="species" value={"ALL"} checked={this.state.taxaLetter === "ALL"} onChange={this.onSpeciesChanged} />All</div>
+                            <div><input type="radio" name="species" value={"A"} checked={this.state.taxaLetter === "A"} onChange={this.onSpeciesChanged} />Amphibians</div>
+                            <div><input type="radio" name="species" value={"B"} checked={this.state.taxaLetter === "B"} onChange={this.onSpeciesChanged} />Birds</div>
+                            <div><input type="radio" name="species" value={"M"} checked={this.state.taxaLetter === "M"} onChange={this.onSpeciesChanged} />Mammals</div>
+                            <div><input type="radio" name="species" value={"R"} checked={this.state.taxaLetter === "R"} onChange={this.onSpeciesChanged} />Reptiles</div>
                         </div>
-                        <div>
-                            <div className="half-chart">
-                                <PieChart
-                                    onRef={ref => (this.PieChart = ref)}
-                                    data={this.state.charts.gap12.data}
-                                    id={this.state.charts.gap12.id}
-                                    config={this.state.charts.gap12.config} />
-                            </div>
-                            <div className="half-chart">
-                                <PieChart
-                                    onRef={ref => (this.PieChart = ref)}
-                                    data={this.state.charts.gap123.data}
-                                    id={this.state.charts.gap123.id}
-                                    config={this.state.charts.gap123.config} />
-                            </div>
-                        </div>
-                        <div className="chart-headers">
-                            <button className="submit-analysis-btn" onClick={this.resetSppTable}>Clear Chart Selection</button>
-                        </div>
-                        <TableChart
-                            data={this.state.charts.gapTable.data}
-                            id={this.state.charts.gapTable.id}
-                            config={this.state.charts.gapTable.config} />
                     </div>
+                    <div>
+                        <div className="half-chart">
+                            <PieChart
+                                onRef={ref => (this.PieChart = ref)}
+                                data={this.state.charts.gap12.data}
+                                id={this.state.charts.gap12.id}
+                                config={this.state.charts.gap12.config} />
+                        </div>
+                        <div className="half-chart">
+                            <PieChart
+                                onRef={ref => (this.PieChart = ref)}
+                                data={this.state.charts.gap123.data}
+                                id={this.state.charts.gap123.id}
+                                config={this.state.charts.gap123.config} />
+                        </div>
+                    </div>
+                    <div className="chart-headers">
+                        <button className="submit-analysis-btn" onClick={this.resetSppTable}>Clear Chart Selection</button>
+                    </div>
+                    <TableChart
+                        data={this.state.charts.gapTable.data}
+                        id={this.state.charts.gapTable.id}
+                        config={this.state.charts.gapTable.config} />
                 </div>
+            </div>
         )
     }
 }

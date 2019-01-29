@@ -3,9 +3,8 @@ import "./LeftPanel.css";
 import { Button, Collapse, CardBody, Card, ButtonGroup } from "reactstrap";
 import { Glyphicon } from "react-bootstrap";
 import { RadioGroup } from "../CustomRadio/CustomRadio";
-import pdfMake from "pdfmake/build/pdfmake.js"
-import * as pdfFonts from 'pdfmake/build/vfs_fonts.js';
-import NFHPAnalysis from "../AnalysisPackages/NFHPAnalysis"
+import PDFReport from "../PDF/PdfReport";
+import NFHPAnalysis from "../AnalysisPackages/NFHPAnalysis";
 import FirstLeafAnalysis from "../AnalysisPackages/FirstLeafAnalysis";
 import FirstBloomAnalysis from "../AnalysisPackages/FirstBloomAnalysis";
 import FirstLeafBloomComparisonAnalysis from "../AnalysisPackages/FirstLeafBloomComparisonAnalysis";
@@ -14,7 +13,6 @@ import EcosystemProtectionAnalysis from "../AnalysisPackages/EcosystemProtection
 import PhenologyAnalysis from "../AnalysisPackages/PhenologyAnalysis";
 import OBISAnalysis from "../AnalysisPackages/OBISAnalysis";
 
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
 class LeftPanel extends React.Component {
     constructor(props) {
         super(props)
@@ -107,18 +105,7 @@ class LeftPanel extends React.Component {
         charts.push(this.SpeciesProtectionAnalysis.print())
         charts.push(this.PhenologyAnalysis.print())
         charts.push(this.OBISAnalysis.print())
-
-        Promise.all(charts.flat()).then(res => {
-            var docDefinition = {
-                content: []
-            }
-            for(let r of res){
-                docDefinition.content.push({ image: r, alignment: 'center', width: 500 })
-            }
-            pdfMake.createPdf(docDefinition).download(`${this.state.feature_name}.pdf`);
-        })
-
-
+        this.PDFReport.generateReport(this.state.feature_name,charts)
     }
 
     updateAnalysisLayers(enabledLayers, bapId) {
@@ -144,7 +131,9 @@ class LeftPanel extends React.Component {
                         </div>
                         <div className="panel-buttons">
                             <button className="submit-analysis-btn" onClick={this.share}>Share</button>
-                            <button className="submit-analysis-btn" onClick={this.report}>Report</button>
+                            <button className="submit-analysis-btn" onClick={this.report}>
+                                <PDFReport  onRef={ref => (this.PDFReport = ref)}></PDFReport>
+                            </button>
 
                         </div>
                     </div>

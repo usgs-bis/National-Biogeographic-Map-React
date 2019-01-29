@@ -36,7 +36,8 @@ class PhenologyAnalysisPackage extends React.Component {
             dates: [{ name: 'Current', date: new Date() }, { name: 'Six-Day', date: new Date(new Date().getTime() + 6 * 86400000) }],
             canSubmit: false,
             loading: false,
-            charts: []
+            charts: [],
+            refs: []
         }
 
         this.getCharts = this.getCharts.bind(this)
@@ -65,6 +66,8 @@ class PhenologyAnalysisPackage extends React.Component {
     clearCharts() {
         this.setState({
             data: null,
+            charts: [],
+            refs: []
         })
     }
 
@@ -292,7 +295,7 @@ class PhenologyAnalysisPackage extends React.Component {
                         }
                         charts.push(
                             <HorizontalBarChart
-                                onRef={ref => {(this.chartId = ref); refs.push(this.chartId)}}
+                                onRef={ref => { (this.chartId = ref); refs.push(this.chartId) }}
                                 key={chartId}
                                 data={chartDataFormatted}
                                 id={chartId}
@@ -303,7 +306,7 @@ class PhenologyAnalysisPackage extends React.Component {
             }
             this.setState({
                 charts: charts,
-                refs:refs
+                refs: refs
             })
 
         }
@@ -317,13 +320,42 @@ class PhenologyAnalysisPackage extends React.Component {
     }
 
     print() {
-        let p = []
-        console.log(this.state.charts)
-        console.log(this.state.refs)
-        for (let i =0; i< this.state.refs.length; i++) {
-            p.push(this.state.refs[i].print(this.state.charts[i].props.id))
+        if (this.state.refs.length) {
+            let charts = []
+            for (let i = 0; i < this.state.refs.length; i++) {
+                charts.push(this.state.refs[i].print(this.state.charts[i].props.id))
+            }
+
+            return Promise.all(charts.flat()).then(contents => {
+                let content = []
+                content.push({ text: sb_properties.title, style: 'analysisTitle', margin: [5, 2, 5, 10], pageBreak: 'before' })
+                for (let i = 0; i < this.state.refs.length; i += 2) {
+                    content.push({ text: this.state.charts[i].props.config.chart.title, style: 'chartTitle', margin: [5, 5, 5, 5] })
+                    content.push({
+                        columns: [
+                            {
+                                width: 'auto',
+                                stack: [
+                                    { image: contents[i], alignment: 'center', width: 250, height: 110 }
+                                ]
+                            },
+                            {
+                                width: 'auto',
+                                stack: [
+                                    { image: contents[i + 1], alignment: 'center', width: 250, height: 110 }
+                                ]
+                            }
+                        ]
+                    })
+                }
+                content.push({ text: 'Phenology Forecasts data were provided by the', style: 'annotation', margin: [5, 10, 5, 0] })
+                content.push({ text: 'USA National Phenology Network', style: 'annotationLink', margin: [5, 0, 5, 0], link: 'https://www.usanpn.org' })
+                content.push({ text: `data retrieved ${new Date().toDateString()}`, style: 'annotation', margin: [5, 0, 5, 0] })
+
+                return content
+            })
         }
-        return p
+        return []
     }
 
 

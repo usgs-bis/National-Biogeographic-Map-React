@@ -189,12 +189,46 @@ class FirstBloomAnalysisPackage extends React.Component {
     }
 
     print() {
-        if(this.state.charts.histogram.data){
-            return [
-                this.HistogramChart.print(this.state.charts.histogram.id),
-                this.RidgelinePlotChart.print(this.state.charts.ridgelinePlot.id),
-                this.BoxAndWhiskerChart.print(this.state.charts.boxAndWhisker.id)
-            ]
+        if (this.state.charts.histogram.data) {
+
+            let charts = []
+            charts.push(this.HistogramChart.print(this.state.charts.histogram.id))
+            charts.push(this.BoxAndWhiskerChart.print(this.state.charts.boxAndWhisker.id))
+            charts.push(this.RidgelinePlotChart.print(this.state.charts.ridgelinePlot.id))
+
+            return Promise.all(charts.flat()).then(contents => {
+                return [
+                    { text: sb_properties.title, style: 'analysisTitle', margin: [5, 2, 5, 20], pageBreak: 'before' },
+                    {
+                        columns: [
+
+                            {
+                                width: 'auto',
+                                stack: [
+                                    { text: this.HistogramChart.props.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
+                                    { text: this.HistogramChart.props.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
+                                    { image: contents[0], alignment: 'center', width: 250 },
+                                    { text: this.BoxAndWhiskerChart.props.config.chart.title, style: 'chartTitle', margin: [5, 20, 5, 2]},
+                                    { text: this.BoxAndWhiskerChart.props.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
+                                    { image: contents[1], alignment: 'center', width: 250 }
+                                ]
+                            },
+
+                            {
+                                width: 'auto',
+                                stack: [
+                                    { text: this.RidgelinePlotChart.props.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
+                                    { text: this.RidgelinePlotChart.props.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
+                                    { image: contents[2], alignment: 'center', width: 250 },
+                                    { text: 'First Bloom Spring Index data was provided by the', style: 'annotation', margin: [5, 10, 5, 0] },
+                                    { text: 'USA National Phenology Network', style: 'annotationLink', margin: [5, 0, 5, 0], link: 'https://www.usanpn.org' },
+                                    { text: `data retrieved ${new Date().toDateString()}`, style: 'annotation', margin: [5, 0, 5, 0] }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            })
         }
         return []
     }
