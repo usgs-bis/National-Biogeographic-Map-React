@@ -6,5 +6,18 @@
 
 .global-time-slider {
     position: relative;
-    top: calc(100% - 25px);
+    top: calc(100% - 65px);
+}
+
+.attribution {
+    position: absolute;
+    top: calc(100% - 45px);
+    left: calc(100% - 45px);
+    border: 1px solid gray;
+    background-color: rgba(255,255,255,.8);
+    width: 80px;
+    height: 80px;
+    border-radius: 40px;
+    z-index: 9999999;
+    cursor: pointer;
 }
