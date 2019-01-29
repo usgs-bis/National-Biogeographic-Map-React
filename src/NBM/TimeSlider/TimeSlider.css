@@ -1,23 +1,50 @@
+.range-values {
+    position: absolute;
+    color: white;
+    font-weight: bold;
+}
+
+.year-label {
+    padding-right: 5px;
+    font-weight: bold;
+}
+
+.range-input-values {
+    color: white;
+    text-align: left;
+    border-radius: 3px;
+    padding: 5px;
+    margin-top: 3px;
+    position: absolute;
+    height: 27px;
+    z-index: 99999;
+    margin-left: 5px;
+    background-color: rgba(10,10,15,.6);
+}
+
 section.range-slider {
-    top: 95%;
-    position: relative;
-    width: 100%;
-    height: 35px;
+    margin-top: 2px;
+    border-radius: 3px;
+    padding: 5px 0 5px 0;
+    position: absolute;
+    width: 90%;
+    height: 27px;
     text-align: center;
     z-index: 99999;
-    margin-left: auto;
-    margin-right: auto;
+    margin-left: 5px;
+    background-color: rgba(10,10,15,.6);
+    top: 31px;
 }
 
 section.range-slider input {
     pointer-events: none;
     position: absolute;
     overflow: hidden;
-    width: 95%;
+    width: calc(100% - 100px);
     outline: none;
     height: 18px;
     padding: 0;
-    margin-left: calc(2.5%);
+    margin-left: 50px;
 }
 
 section.range-slider input::-webkit-slider-thumb {

@@ -181,6 +181,8 @@ class NBM extends React.Component {
                         updateYearRange={this.updateYearRange}
                     />
                 </div>
+                <div className="attribution" onMouseOver={this.disableDragging} onMouseOut={this.enableDragging}>
+                </div>
             </Map>
         );
     }

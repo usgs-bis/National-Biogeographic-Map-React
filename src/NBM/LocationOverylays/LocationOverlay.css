@@ -1,17 +1,17 @@
 .location-overlay{
     position: absolute;
-    bottom: 35px;
-    left: 25px;
+    bottom: 65px;
+    left: 5px;
     z-index: 1000;
     display: flex;
     background-color: rgba(10, 10, 15, .6);
     color: #f3f3f3;
-    border-radius: 5px;
+    border-radius: 3px;
     font-size: 1em;
 }
 
 .location-overlay span{
-    padding: 3px;
+    padding: 5px;
     font-weight: 400;
 }
 
