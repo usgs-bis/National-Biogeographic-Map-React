@@ -165,6 +165,7 @@ class App extends React.Component {
                             yearMin={this.state.yearMin}
                             yearMax={this.state.yearMax}
                             updateAnalysisLayers={this.updateAnalysisLayers}
+                            map ={this.state.map}
                         />
                     </Resizable>
 

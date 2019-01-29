@@ -136,9 +136,9 @@ class NFHPAnalysisPackage extends React.Component {
                 this.HorizontalBarChart.print(this.state.charts.horizontalBarChart.id)
                     .then(img => {
                         return [
-                            { text: sb_properties.title, style: 'analysisTitle', margin: [5, 2, 5, 20], pageBreak: 'before' },
-                            { text: this.HorizontalBarChart.props.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
-                            { text: this.HorizontalBarChart.props.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
+                            { text: sb_properties.title, style: 'analysisTitle', pageBreak: 'before' },
+                            { text: this.HorizontalBarChart.props.config.chart.title, style: 'chartTitle' },
+                            { text: this.HorizontalBarChart.props.config.chart.subtitle, style: 'chartSubtitle' },
                             { image: img, alignment: 'center', width: 450 }
                         ]
                     })
