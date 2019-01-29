@@ -152,10 +152,26 @@ class OBISAnalysisPackage extends React.Component {
         return charts
     }
 
+    // print() {
+    //     if (this.state.charts.speciesCountChart.data) {
+    //         return [
+    //             this.SpeciesCountChart.print(this.state.charts.speciesCountChart.id)
+    //         ]
+    //     }
+    //     return []
+    // }
+
     print() {
         if (this.state.charts.speciesCountChart.data) {
             return [
                 this.SpeciesCountChart.print(this.state.charts.speciesCountChart.id)
+                    .then(img => {
+                        return [
+                            { text: sb_properties.title, style: 'analysisTitle', margin: [5, 2, 5, 20], pageBreak: 'before' },
+                            { text: this.state.charts.speciesCountChart.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
+                            { image: img, alignment: 'center', width: 450 }
+                        ]
+                    })
             ]
         }
         return []

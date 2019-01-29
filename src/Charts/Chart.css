@@ -73,8 +73,9 @@ text {
     border-collapse: collapse;
     padding: 0;
     background-color: rgba(30,30,35,.5);
+    width: 100%;
 }
-.analysis-chart-container th span, .analysis-chart-container td span {
+.analysis-chart-container th , .analysis-chart-container td  {
   padding: 5px;
 }
 

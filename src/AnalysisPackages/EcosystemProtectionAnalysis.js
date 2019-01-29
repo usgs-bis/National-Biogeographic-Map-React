@@ -396,31 +396,31 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                 let preData = dataTemplate.ecological_systems
                 let tableType = "All Ecological Systems"
                 let chartTitle = `${tableType} in ${this.props.feature.properties.feature_name} (${preData.length})`
-                let chartData = [[<span>Ecological System</span>, <span>{`Gap 1 & 2 Protection (%)`}</span>, <span>{`Gap 1, 2 & 3 Protection (%)`}</span>]]
-                let percentProtected = <span></span>
-                let acresProtected = <span></span>
+                let chartData = [['Ecological System', `Gap 1 & 2 Protection (%)`, `Gap 1, 2 & 3 Protection (%)`]]
+                let percentProtected = ''
+                let acresProtected = ''
 
                 if (this.state.gapRange !== 'ALL') {
                     preData = preData.filter((d) => { return d[this.state.gapStatus] === this.state.gapRange })
                     if (this.state.gapStatus === 'status_1_2_group') chartTitle = `${preData.length} Ecological Systems with ${this.state.gapRange}% within GAP Status 1 & 2 in ${this.props.feature.properties.feature_name}`
                     if (this.state.gapStatus === 'status_1_2_3_group') chartTitle = `${preData.length} Ecological Systems with ${this.state.gapRange}% within GAP Status 1, 2 & 3 in ${this.props.feature.properties.feature_name}`
-                    chartData = [[<span>Ecological System</span>, <span> Acres Protected</span>, <span>% Protected</span>]]
+                    chartData = [['Ecological System', 'Acres Protected', '% Protected']]
                 }
 
                 for (let row of preData) {
-                    const name = <span>{row.name}</span>
-                    acresProtected = <span>{`${parseFloat(row.status_1_2).toFixed(2)}%`}</span>
-                    percentProtected = <span>{`${parseFloat(row.status_1_2_3).toFixed(2)}%`}</span>
+                    const name = row.name
+                    acresProtected = `${parseFloat(row.status_1_2).toFixed(2)}%`
+                    percentProtected = `${parseFloat(row.status_1_2_3).toFixed(2)}%`
 
                     if (this.state.gapRange !== 'ALL') {
                         if (this.state.gapStatus === 'status_1_2_group') {
-                            percentProtected = <span>{`${parseFloat(row.status_1_2).toFixed(2)}%`}</span>
-                            acresProtected = <span>{`${numberWithCommas(parseFloat(row.acres).toFixed(0))}`}</span>
+                            percentProtected = `${parseFloat(row.status_1_2).toFixed(2)}%`
+                            acresProtected = `${numberWithCommas(parseFloat(row.acres).toFixed(0))}`
 
                         }
                         if (this.state.gapStatus === 'status_1_2_3_group') {
-                            percentProtected = <span>{`${parseFloat(row.status_1_2_3).toFixed(2)}%`}</span>
-                            acresProtected = <span>{`${numberWithCommas(parseFloat(row.acres).toFixed(0))}`}</span>
+                            percentProtected = `${parseFloat(row.status_1_2_3).toFixed(2)}%`
+                            acresProtected = `${numberWithCommas(parseFloat(row.acres).toFixed(0))}`
                         }
                     }
                     chartData.push([name, acresProtected, percentProtected])
@@ -478,14 +478,97 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
         })
     }
 
+
     print() {
         if (this.state.charts.protectionStatus.data) {
-            return [
-                this.HorizontalBarChart.print(this.state.charts.protectionStatus.id),
-                this.PieChart.print(this.state.charts.gap12.id),
-                this.PieChart.print(this.state.charts.gap123.id),
-                this.PieChart.print(this.state.charts.gapCoverage.id)
-            ]
+            let charts = []
+            charts.push(this.HorizontalBarChart.print(this.state.charts.protectionStatus.id))
+            charts.push(this.PieChart.print(this.state.charts.gap12.id))
+            charts.push(this.PieChart.print(this.state.charts.gap123.id))
+            charts.push(this.PieChart.print(this.state.charts.gapCoverage.id))
+
+
+            return Promise.all(charts.flat()).then(contents => {
+                return [
+                    { text: sb_properties.title, style: 'analysisTitle', margin: [5, 2, 5, 20], pageBreak: 'before' },
+                    { text: this.state.charts.protectionStatus.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
+                    { text: this.state.charts.protectionStatus.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
+                    { image: contents[0], alignment: 'center', width: 450, height: 300 },
+                    {
+                        pageBreak: 'before',
+                        columns: [
+
+                            {
+                                width: 'auto',
+                                stack: [
+                                    { text: this.state.charts.gap12.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
+                                    { text: this.state.charts.gap12.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
+                                    { image: contents[1], alignment: 'center', width: 230, height: 330 },
+                                ]
+                            },
+
+                            {
+                                width: 'auto',
+                                stack: [
+                                    { text: this.state.charts.gap123.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
+                                    { text: this.state.charts.gap123.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
+                                    { image: contents[2], alignment: 'center', width: 230, height: 330 },
+                                ]
+                            }
+                        ]
+                    },
+                    { text: this.state.charts.gapTable.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 10] },
+                    {
+                        columns: [
+                            {
+                                width: 175,
+                                margin: [3, 0],
+                                stack: [
+                                    {
+                                        style: 'tableStyle',
+                                        table: {
+                                            widths: ['40%', '30%', '30%'],
+                                            heights: 50,
+                                            body: this.state.charts.gapTable.data.slice(0, Math.floor(this.state.charts.gapTable.data.length / 3))
+                                        }
+                                    },
+                                ]
+                            },
+                            {
+                                width: 175,
+                                margin: [3, 0],
+                                stack: [
+                                    {
+                                        style: 'tableStyle',
+                                        table: {
+                                            widths: ['40%', '30%', '30%'],
+                                            heights: 50,
+                                            body: this.state.charts.gapTable.data.slice(Math.floor(this.state.charts.gapTable.data.length / 3), Math.floor((this.state.charts.gapTable.data.length / 3) * 2))
+                                        }
+                                    },
+                                ]
+                            },
+                            {
+                                width: 175,
+                                margin: [3, 0],
+                                stack: [
+                                    {
+                                        style: 'tableStyle',
+                                        table: {
+                                            widths: ['40%', '30%', '30%'],
+                                            heights: 50,
+                                            body: this.state.charts.gapTable.data.slice(Math.floor((this.state.charts.gapTable.data.length / 3) * 2), this.state.charts.gapTable.data.length)
+                                        }
+                                    },
+                                ]
+                            },
+                        ]
+                    },
+                    { text: this.state.charts.gapCoverage.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2], pageBreak: 'before' },
+                    { text: this.state.charts.gapCoverage.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
+                    { image: contents[3], alignment: 'center', width: 400, height: 450 },
+                ]
+            })
         }
         return []
     }

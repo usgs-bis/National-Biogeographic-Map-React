@@ -51,7 +51,7 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
         super(props)
         this.state = {
             charts: {
-                comparison: { id: "", config: {}, data: null },
+                ComparisonChart: { id: "", config: {}, data: null },
             },
             canSubmit: false,
             loading: false
@@ -66,7 +66,7 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
 
     componentDidMount() {
         this.props.onRef(this)
-      }
+    }
 
     clearCharts() {
         let charts = {}
@@ -111,7 +111,7 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
                     })
             Promise.all([firstLeafFetch, firstBloomFetch]).then(results => {
                 if (results && results.length === 2) {
-                    const charts = this.getCharts({ comparison: { leaf: results[0], bloom: results[1] } })
+                    const charts = this.getCharts({ ComparisonChart: { leaf: results[0], bloom: results[1] } })
                     this.setState({
                         charts: charts,
                         loading: false
@@ -145,7 +145,7 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
 
         for (let chart of Object.keys(this.state.charts)) {
 
-            if (chart.toString() === "comparison" && datas[chart]) {
+            if (chart.toString() === "ComparisonChart" && datas[chart]) {
                 const data = datas[chart]
                 const chartId = "FL_FB_Comparison"
                 const chartConfig = {
@@ -162,9 +162,20 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
     }
 
     print() {
-        if(this.state.charts.comparison.data){
+        if (this.state.charts.ComparisonChart.data) {
             return [
-                this.ComparisonChart.print(this.state.charts.comparison.id)
+                this.ComparisonChart.print(this.state.charts.ComparisonChart.id)
+                    .then(img => {
+                        return [
+                            { text: sb_properties.title, style: 'analysisTitle', margin: [5, 2, 5, 20], pageBreak: 'before' },
+                            { text: this.ComparisonChart.props.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
+                            { text: this.ComparisonChart.props.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
+                            { image: img, alignment: 'center', width: 450 },
+                            { text: 'First Leaf / First Bloom Spring Index Comparison data were provided by the', style: 'annotation', margin: [5, 10, 5, 0] },
+                            { text: 'USA National Phenology Network', style: 'annotationLink', margin: [5, 0, 5, 0], link: 'https://www.usanpn.org' },
+                            { text: `data retrieved ${new Date().toDateString()}`, style: 'annotation', margin: [5, 0, 5, 0] }
+                        ]
+                    })
             ]
         }
         return []
@@ -174,16 +185,16 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
     render() {
         return (
             <div>
-                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading}/>
+                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
                 {this.props.getAnalysisLayers()}
                 <div className="chartsDiv">
                     <div className="chart-headers" >
                         <button className="submit-analysis-btn" onClick={this.submitAnalysis}>Analyze Time Period: {this.props.yearMin} to  {this.props.yearMax}</button>
                     </div>
-                    <ComparisonChart onRef={ref => (this.ComparisonChart = ref)} data={this.state.charts.comparison.data} id={this.state.charts.comparison.id} config={this.state.charts.comparison.config} />
+                    <ComparisonChart onRef={ref => (this.ComparisonChart = ref)} data={this.state.charts.ComparisonChart.data} id={this.state.charts.ComparisonChart.id} config={this.state.charts.ComparisonChart.config} />
                     <div className="chart-footers" >
                         <div className="anotations">
-                            First Leaf / First Bloom Spring Index Comparison data were provided by  the <a href="https://www.usanpn.org">USA National Phenology Network</a>, data retrieved {new Date().toDateString()}
+                            First Leaf / First Bloom Spring Index Comparison data were provided by the <a href="https://www.usanpn.org">USA National Phenology Network</a>, data retrieved {new Date().toDateString()}
                             <br></br>
                             <br></br>
                             <a target={"_blank"} href={"https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&service=WMS&layers=average_leaf_prism,average_bloom_prism"}>https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=average_leaf_prism,average_bloom_prism</a>

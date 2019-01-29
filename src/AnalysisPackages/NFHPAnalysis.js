@@ -42,7 +42,7 @@ class NFHPAnalysisPackage extends React.Component {
 
     componentDidMount() {
         this.props.onRef(this)
-      }
+    }
 
     componentDidUpdate(prevProps) {
         if (this.props.feature &&
@@ -129,11 +129,19 @@ class NFHPAnalysisPackage extends React.Component {
         return charts
     }
 
-    
+
     print() {
-        if(this.state.charts.horizontalBarChart.data){
+        if (this.state.charts.horizontalBarChart.data) {
             return [
                 this.HorizontalBarChart.print(this.state.charts.horizontalBarChart.id)
+                    .then(img => {
+                        return [
+                            { text: sb_properties.title, style: 'analysisTitle', margin: [5, 2, 5, 20], pageBreak: 'before' },
+                            { text: this.HorizontalBarChart.props.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
+                            { text: this.HorizontalBarChart.props.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
+                            { image: img, alignment: 'center', width: 450 }
+                        ]
+                    })
             ]
         }
         return []

@@ -4,11 +4,24 @@ import "./Chart.css"
 class TableChart extends React.Component {
     constructor(props) {
         super(props)
+        this.state = {
+            data: null,
+            header: null,
+            body: null
+        }
         this.createTableBody = this.createTableBody.bind(this)
         this.createTableHeader = this.createTableHeader.bind(this)
     }
 
     componentDidUpdate() {
+        if (this.state.data !== this.props.data) {
+            this.setState({
+                data: this.props.data,
+            }, () => {
+                this.createTableHeader(this.props.data)
+                this.createTableBody(this.props.data)
+            })
+        }
     }
 
 
@@ -25,7 +38,9 @@ class TableChart extends React.Component {
             //Create the parent and add the children
             table.push(<tr key={`${i}_row`}>{children}</tr>)
         }
-        return <tbody>{table}</tbody>
+        this.setState({
+            body: <tbody>{table}</tbody>
+        })
     }
 
     createTableHeader(data) {
@@ -33,7 +48,9 @@ class TableChart extends React.Component {
         for (let i = 0; i < data[0].length; i++) {
             headers.push(<th key={`${i}_head`}>{data[0][i]}</th>)
         }
-        return <thead><tr>{headers}</tr></thead>
+        this.setState({
+            header: <thead><tr>{headers}</tr></thead>
+        })
     }
 
 
@@ -58,8 +75,8 @@ class TableChart extends React.Component {
                             <div id={id + 'Chart'} className="chart">
                                 <div className="analysis-chart-container">
                                     <table>
-                                        {this.createTableHeader(this.props.data)}
-                                        {this.createTableBody(this.props.data)}
+                                        {this.state.header}
+                                        {this.state.body}
                                     </table>
 
                                 </div>
