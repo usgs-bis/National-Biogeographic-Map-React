@@ -105,7 +105,7 @@ class LeftPanel extends React.Component {
         charts.push(this.SpeciesProtectionAnalysis.print())
         charts.push(this.PhenologyAnalysis.print())
         charts.push(this.OBISAnalysis.print())
-        this.PDFReport.generateReport(this.state.feature_name,charts)
+        this.PDFReport.generateReport(this.state.feature_name,this.state.feature_class,this.props.map,charts)
     }
 
     updateAnalysisLayers(enabledLayers, bapId) {
