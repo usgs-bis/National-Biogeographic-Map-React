@@ -13,6 +13,10 @@ class TableChart extends React.Component {
         this.createTableHeader = this.createTableHeader.bind(this)
     }
 
+    // componentDidMount() {
+    //     this.props.onRef(this)
+    // }
+
     componentDidUpdate() {
         if (this.state.data !== this.props.data) {
             this.setState({

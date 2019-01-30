@@ -70,10 +70,35 @@ class PDFReport extends React.Component {
     }
 
     getTitleMap(map) {
-        return html2canvas(map.container, { useCORS: true, logging: false }).then(function (canvas) {
+        map.leafletElement.zoomControl.getContainer().hidden = true
+        document.getElementsByClassName('global-time-slider')[0].hidden = true
+        document.getElementsByClassName('location-overlay')[0].hidden = true
+
+        return html2canvas(map.container, { useCORS: true, logging: false }).then((canvas) => {
+            map.leafletElement.eachLayer( (layer) => {
+                
+                // WORK IN PROGRESS
+
+                // if (layer.options.name === 'mapClickedMarker') {
+                //     let destCtx = canvas.getContext('2d');
+                //     let markerEl = layer.getElement();
+                //     const markerRect = markerEl.getBoundingClientRect()
+                //     const mapPaneRect = map.leafletElement.getPane('mapPane').getBoundingClientRect()
+                //     let x = markerRect.x - mapPaneRect.x - markerEl.width
+                //     let y = markerRect.y - mapPaneRect.y - markerEl.height                  
+                //     destCtx.drawImage(markerEl, x,y);
+                // }
+
+            });
+
+            map.leafletElement.zoomControl.getContainer().hidden = false
+            document.getElementsByClassName('global-time-slider')[0].hidden = false
+            document.getElementsByClassName('location-overlay')[0].hidden = false
             return canvas.toDataURL()
         });
     }
+
+
 
     getStyles() {
         return {
@@ -129,5 +154,6 @@ class PDFReport extends React.Component {
         return 'Report'
     }
 }
+
 
 export default PDFReport;
