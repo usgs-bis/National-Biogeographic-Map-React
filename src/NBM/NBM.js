@@ -9,24 +9,19 @@ let L = require('leaflet');
 const US_BOUNDS = [[21, -134], [51, -63]];
 const BUFFER = .5;
 
-class NBM extends React.Component {
+class NBM extends React.PureComponent {
     constructor(props) {
         super(props);
         this.state = {
             point: null,
-            parentClickHandler: props.parentClickHandler,
             feature: props.feature,
             bounds: US_BOUNDS,
             basemap: props.basemap,
-            clickable: true,
-            mapDisplay: null,
-            updateYearRange: props.updateYearRange,
-            setMap: props.setMap
-
         }
-
+        this.setMap = props.setMap
+        this.parentClickHandler = props.parentClickHandler
         this.key = 1;
-
+        this.clickable = true
         this.handleClick = this.handleClick.bind(this);
         this.handleMouseMove = this.handleMouseMove.bind(this);
         this.handleMouseOut = this.handleMouseOut.bind(this);
@@ -48,8 +43,8 @@ class NBM extends React.Component {
         })
     }
 
-    componentDidMount(){
-        this.state.setMap(this.refs.map)
+    componentDidMount() {
+        this.setMap(this.refs.map)
     }
 
     componentDidUpdate(prevProps) {
@@ -67,62 +62,43 @@ class NBM extends React.Component {
             currentLayers.forEach(function (item) {
                 if (oldLayers.indexOf(item) === -1) {
                     that.refs.map.leafletElement.addLayer(item.layer)
-                    if (item.timeEnabled) {
-                        item.layer.setParams(
-                            {
-                                time: `${that.state.mapDisplay}-01-01`
-                            }
-                        )
-                    }
                 }
             })
         }
     }
 
-    handleClick (e) {
-        if (!this.state.clickable) return
+    handleClick(e) {
+        if (!this.clickable) return
         this.setState({
             point: [e.latlng.lat, e.latlng.lng]
         });
 
-        this.state.parentClickHandler(e)
+        this.parentClickHandler(e)
     };
 
     handleMouseMove(e) {
-        this.setState({
-            mouseLocation: {
-                lat: e.latlng.lat,
-                lng: e.latlng.lng
-            }
-        });
+        this.LocationOverlay.setLocation(e.latlng.lat, e.latlng.lng)
     }
     handleMouseOut(e) {
-        this.setState({
-            mouseLocation: {
-                lat: null,
-                lng: null
-            }
-        });
+        this.LocationOverlay.setLocation(null, null)
     }
 
     disableDragging() {
-        this.setState({
-            clickable: false
-        })
+
+        this.clickable = false
+
         this.refs.map.leafletElement.dragging.disable();
     }
 
     enableDragging() {
-        this.setState({
-            clickable: true
-        })
+        this.clickable = true
         this.refs.map.leafletElement.dragging.enable();
     }
 
     updateMapDisplay(year) {
-        this.setState({
-            mapDisplay: year
-        });
+        // this.setState({
+        //     mapDisplay: year
+        // });
 
         if (this.props.analysisLayers) {
             this.props.analysisLayers.forEach(function (item) {
@@ -138,16 +114,17 @@ class NBM extends React.Component {
     }
 
     updateYearRange(years) {
-        this.state.updateYearRange(years);
+        this.props.updateYearRange(years);
     }
 
     render() {
+        console.log('render whole nbm')
         const geojson = () => {
-            if(this.state.feature) {
+            if (this.state.feature) {
                 return (
                     <div>
-                        <GeoJSON style={{color: "black", fill: false, weight: 4}} key={this.key++} data={this.state.feature} />
-                        <GeoJSON style={{color: "red", fill: false, weight: 2}} key={this.key++} data={this.state.feature} />
+                        <GeoJSON style={{ color: "black", fill: false, weight: 4 }} key={this.key++} data={this.state.feature} />
+                        <GeoJSON style={{ color: "red", fill: false, weight: 2 }} key={this.key++} data={this.state.feature} />
                     </div>
                 )
             }
@@ -167,13 +144,13 @@ class NBM extends React.Component {
         }
         return (
             <Map ref={"map"}
-                 onClick={this.handleClick}
-                 bounds={this.state.bounds}
-                 onMouseMove={this.handleMouseMove}
-                 onMouseOut={this.handleMouseOut} >
+                onClick={this.handleClick}
+                bounds={this.state.bounds}
+                onMouseMove={this.handleMouseMove}
+                onMouseOut={this.handleMouseOut} >
                 {basemap()}
-                <LocationOverlay mouseLocation={this.state.mouseLocation} />
-                <MapMarker point={this.state.point}/>
+                <LocationOverlay onRef={ref => (this.LocationOverlay = ref)} />
+                <MapMarker point={this.state.point} />
                 {geojson()}
                 <div className="global-time-slider" onMouseOver={this.disableDragging} onMouseOut={this.enableDragging}>
                     <TimeSlider
@@ -190,9 +167,9 @@ class NBM extends React.Component {
 
 function MapMarker(props) {
     if (props.point) {
-        return <Marker position={props.point}>
+        return <Marker position={props.point} name={'mapClickedMarker'}>
             <Popup>
-                A pretty CSS3 popup. <br /> Easily customizable.
+                Area of Interest.
             </Popup>
         </Marker>
     } else {

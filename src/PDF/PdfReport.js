@@ -70,10 +70,33 @@ class PDFReport extends React.Component {
     }
 
     getTitleMap(map) {
-        return html2canvas(map.container, { useCORS: true, logging: false }).then(function (canvas) {
+        map.leafletElement.zoomControl.getContainer().hidden = true
+        document.getElementsByClassName('global-time-slider')[0].hidden = true
+        document.getElementsByClassName('location-overlay')[0].hidden = true
+        // WORK IN PROGRESS
+
+        return html2canvas(map.container, { useCORS: true, logging: false }).then((canvas) => {
+            map.leafletElement.eachLayer(function (layer) {
+                if (layer.options.name === 'mapClickedMarker') {
+                    console.log(layer)
+                   // let mapPaneTransforms = getTransformXAndY(map.leafletElement.getPane('mapPane'));
+                    let destCtx = canvas.getContext('2d');
+                    let markerEl = layer.getElement();
+                    //let transformVals = getTransformXAndY(markerEl);
+                    //let x = (transformVals.x + mapPaneTransforms.x - markerEl.width / 2);
+                    //let y = (transformVals.y + mapPaneTransforms.y - markerEl.height);
+                    destCtx.drawImage(markerEl, layer._icon._leaflet_pos.x, layer._icon._leaflet_pos.y);
+                }
+            });
+
+            map.leafletElement.zoomControl.getContainer().hidden = false
+            document.getElementsByClassName('global-time-slider')[0].hidden = false
+            document.getElementsByClassName('location-overlay')[0].hidden = false
             return canvas.toDataURL()
         });
     }
+
+
 
     getStyles() {
         return {
@@ -129,5 +152,15 @@ class PDFReport extends React.Component {
         return 'Report'
     }
 }
+
+// function getTransformXAndY(el) {
+//     let val = { x: 0, y: 0 };
+//     if (el.style && el.style.transform) {
+//         let transforms = el.style.transform.split(",");
+//         val.x = parseFloat(transforms[0].split("(")[1].replace("px", ""));
+//         val.y = parseFloat(transforms[1].replace("px", ""));
+//     }
+//     return val;
+// }
 
 export default PDFReport;

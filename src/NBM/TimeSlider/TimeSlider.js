@@ -25,6 +25,7 @@ class TimeSlider extends React.Component {
         this.setMapDisplay = this.setMapDisplay.bind(this)
         this.setYearRange = this.setYearRange.bind(this)
         this.setIntermittentRange = this.setIntermittentRange.bind(this)
+        this.setIntermittentDisplay = this.setIntermittentDisplay.bind(this)
     }
 
     componentDidMount() {
@@ -37,12 +38,20 @@ class TimeSlider extends React.Component {
             range: [this.rangeVal0.value, this.rangeVal1.value].sort()
         })
     }
+    setIntermittentDisplay(){
+        this.setState({
+            mapDisplay: this.mapDisplay.value
+        })
+    }
 
     setYearRange() {
         this.state.updateYearRange([this.rangeVal0.value, this.rangeVal1.value].sort())
     }
 
     setMapDisplay() {
+        this.setState({
+            mapDisplay: this.mapDisplay.value
+        })
         this.state.updateMapDisplay(this.mapDisplay.value)
     }
 
@@ -50,7 +59,7 @@ class TimeSlider extends React.Component {
         return (
             <div>
                 <section className="range-input-values">
-                    <span className="year-label">Map Display:</span>{this.mapDisplay ? this.mapDisplay.value : 0},
+                    <span className="year-label">Map Display:</span>{this.state.mapDisplay ? this.state.mapDisplay : 0},
                     <span style={{marginLeft: "10px"}} className="year-label">Year Range:</span>
                     {this.state.range[0] + "-" + this.state.range[1]}
                 </section>
@@ -71,6 +80,7 @@ class TimeSlider extends React.Component {
                         ref={(input) => { this.mapDisplay = input; }}
                         onMouseUp={this.setMapDisplay}
                         onKeyUp={this.setMapDisplay}
+                        onChange={this.setIntermittentDisplay}
                         defaultValue={this.state.defaultDisplay}
                         min={this.state.defaultMin}
                         max={this.state.defaultMax}

@@ -152,15 +152,6 @@ class OBISAnalysisPackage extends React.Component {
         return charts
     }
 
-    // print() {
-    //     if (this.state.charts.speciesCountChart.data) {
-    //         return [
-    //             this.SpeciesCountChart.print(this.state.charts.speciesCountChart.id)
-    //         ]
-    //     }
-    //     return []
-    // }
-
     print() {
         if (this.state.charts.speciesCountChart.data) {
             return [

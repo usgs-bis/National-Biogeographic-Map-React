@@ -20,14 +20,16 @@ class LocationOverlay extends React.Component {
 
     }
 
-    componentWillReceiveProps(props) {
-        if (props.mouseLocation) {
-            this.setState({
-                lat: props.mouseLocation.lat ? parseFloat(props.mouseLocation.lat).toFixed(5).toString() : 'No Data',
-                lng: props.mouseLocation.lng ? parseFloat(props.mouseLocation.lng).toFixed(5).toString() : 'No Data'
-            })
-            this.setElevation()
-        }
+    componentDidMount() {
+        this.props.onRef(this)
+    }
+
+    setLocation(lat, lng) {
+        this.setState({
+            lat: lat ? parseFloat(lat).toFixed(5).toString() : 'No Data',
+            lng: lng ? parseFloat(lng).toFixed(5).toString() : 'No Data'
+        })
+        this.setElevation()
     }
 
     setElevation() {
