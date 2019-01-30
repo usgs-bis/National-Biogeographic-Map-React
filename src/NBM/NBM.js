@@ -6,20 +6,15 @@ import LocationOverlay from './LocationOverylays/LocationOverlay';
 import TimeSlider from "./TimeSlider/TimeSlider"
 
 let L = require('leaflet');
-const US_BOUNDS = [[21, -134], [51, -63]];
 const BUFFER = .5;
 
 class NBM extends React.PureComponent {
     constructor(props) {
         super(props);
         this.state = {
-            point: null,
-            feature: props.feature,
-            bounds: US_BOUNDS,
-            basemap: props.basemap,
+            point:null
         }
-        this.setMap = props.setMap
-        this.parentClickHandler = props.parentClickHandler
+        this.bounds = [[21, -134], [51, -63]];
         this.key = 1;
         this.clickable = true
         this.handleClick = this.handleClick.bind(this);
@@ -34,17 +29,14 @@ class NBM extends React.PureComponent {
     componentWillReceiveProps(props) {
         if (!props.feature) return;
         let b = L.geoJSON(props.feature).getBounds()
-        this.setState({
-            feature: props.feature,
-            bounds: [
-                [b._southWest.lat - BUFFER, b._southWest.lng - BUFFER],
-                [b._northEast.lat + BUFFER, b._northEast.lng + BUFFER]
-            ]
-        })
+        this.bounds = [
+            [b._southWest.lat - BUFFER, b._southWest.lng - BUFFER],
+            [b._northEast.lat + BUFFER, b._northEast.lng + BUFFER]
+        ]
     }
 
     componentDidMount() {
-        this.setMap(this.refs.map)
+        this.props.setMap(this.refs.map)
     }
 
     componentDidUpdate(prevProps) {
@@ -73,20 +65,23 @@ class NBM extends React.PureComponent {
             point: [e.latlng.lat, e.latlng.lng]
         });
 
-        this.parentClickHandler(e)
+        this.props.parentClickHandler(e)
     };
 
     handleMouseMove(e) {
-        this.LocationOverlay.setLocation(e.latlng.lat, e.latlng.lng)
+        if (!this.clickable) {
+            this.LocationOverlay.setLocation(null, null)
+        }
+        else {
+            this.LocationOverlay.setLocation(e.latlng.lat, e.latlng.lng)
+        }
     }
     handleMouseOut(e) {
         this.LocationOverlay.setLocation(null, null)
     }
 
     disableDragging() {
-
         this.clickable = false
-
         this.refs.map.leafletElement.dragging.disable();
     }
 
@@ -96,10 +91,6 @@ class NBM extends React.PureComponent {
     }
 
     updateMapDisplay(year) {
-        // this.setState({
-        //     mapDisplay: year
-        // });
-
         if (this.props.analysisLayers) {
             this.props.analysisLayers.forEach(function (item) {
                 if (item.timeEnabled) {
@@ -118,13 +109,12 @@ class NBM extends React.PureComponent {
     }
 
     render() {
-        console.log('render whole nbm')
         const geojson = () => {
-            if (this.state.feature) {
+            if (this.props.feature) {
                 return (
                     <div>
-                        <GeoJSON style={{ color: "black", fill: false, weight: 4 }} key={this.key++} data={this.state.feature} />
-                        <GeoJSON style={{ color: "red", fill: false, weight: 2 }} key={this.key++} data={this.state.feature} />
+                        <GeoJSON style={{ color: "black", fill: false, weight: 4 }} key={this.key++} data={this.props.feature} />
+                        <GeoJSON style={{ color: "red", fill: false, weight: 2 }} key={this.key++} data={this.props.feature} />
                     </div>
                 )
             }
@@ -145,7 +135,7 @@ class NBM extends React.PureComponent {
         return (
             <Map ref={"map"}
                 onClick={this.handleClick}
-                bounds={this.state.bounds}
+                bounds={this.bounds}
                 onMouseMove={this.handleMouseMove}
                 onMouseOut={this.handleMouseOut} >
                 {basemap()}
