@@ -99,7 +99,6 @@ class PDFReport extends React.Component {
     }
 
 
-
     getStyles() {
         return {
             analysisTitle: {
