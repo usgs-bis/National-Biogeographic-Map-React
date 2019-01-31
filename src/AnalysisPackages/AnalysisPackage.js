@@ -189,6 +189,8 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                     </span>
                     <Collapse className="settings-dropdown" isOpen={this.state.isOpen && this.state.isEnabled}>
                         <AnalysisPackage
+                            { ...this.props }
+                            { ...this.state }
                             setOpacity={this.setOpacity}
                             toggleLayerDropdown={this.toggleLayerDropdown}
                             updateBapLayers={this.updateAnalysisLayers}
@@ -197,8 +199,6 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                             isEnabled={this.updateEnabled}
                             canOpen={this.canOpen}
                             inputRefs={this.inputRefs}
-                            { ...this.props }
-                            { ...this.state }
                         />
                     </Collapse>
                 </div>
