@@ -197,7 +197,8 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                             isEnabled={this.updateEnabled}
                             canOpen={this.canOpen}
                             inputRefs={this.inputRefs}
-                            {...this.props}
+                            { ...this.props }
+                            { ...this.state }
                         />
                     </Collapse>
                 </div>
