@@ -2,6 +2,8 @@ import React from "react";
 import "./LeftPanel.css";
 import { Button, Collapse, CardBody, Card, ButtonGroup } from "reactstrap";
 import { Glyphicon } from "react-bootstrap";
+
+import Legend from "../Legend/Legend";
 import { RadioGroup } from "../CustomRadio/CustomRadio";
 import PDFReport from "../PDF/PdfReport";
 import NFHPAnalysis from "../AnalysisPackages/NFHPAnalysis";
@@ -24,7 +26,8 @@ class LeftPanel extends React.Component {
             basemapsOpen: false,
             bioscape: props.bioscape,
             updateAnalysisLayers: props.updateAnalysisLayers,
-            priorityBap: "bap1"
+            priorityBap: "bap1",
+            enabledLayers: []
 
         }
         this.handleKeyUp = this.handleKeyUp.bind(this);
@@ -110,7 +113,8 @@ class LeftPanel extends React.Component {
 
     updateAnalysisLayers(enabledLayers, bapId) {
         this.setState({
-            priorityBap: bapId
+            priorityBap: bapId,
+            enabledLayers: enabledLayers
         })
 
         this.state.updateAnalysisLayers(enabledLayers)
@@ -150,7 +154,9 @@ class LeftPanel extends React.Component {
                             </Button>
                         </div>
                         <div className="nbm-flex-column">
-                            <Button className='placeholder-button' />
+                            <Legend
+                                enabledLayers={this.state.enabledLayers}
+                            />
                         </div>
                         <div className="nbm-flex-column-big">
                             <input ref={(input) => { this.textInput = input; }} onClick={this.onFocus} onBlur={this.onBlur} onKeyUp={this.handleKeyUp}

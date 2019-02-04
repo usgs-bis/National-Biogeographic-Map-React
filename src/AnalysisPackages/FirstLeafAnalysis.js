@@ -28,6 +28,9 @@ const layers = {
                 transparent: true
             }
         ),
+        legend: {
+            url: "https://geoserver.usanpn.org/geoserver/si-x/wms??service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=average_leaf_prism"
+        },
         timeEnabled: true,
         checked: false
     }
