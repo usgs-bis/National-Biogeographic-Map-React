@@ -194,81 +194,51 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
 
 
         getSBItemForPrint() {
-            //console.log(this.state.sb_properties.body)
             var body = document.createElement("div");
             body.innerHTML = this.state.sb_properties.body
             let contents = this.htmlToPDFMake([], body)
-            //console.log(contents)
 
             let pdfDoc = []
+            let text = []
             pdfDoc.push({ text: this.state.sb_properties.title, style: 'analysisTitle', margin: [5, 2, 5, 20], pageBreak: 'before' })
 
             for (let content of contents) {
-                if (content.nodeName === '#text') {
-                    switch (content.parentElement.nodeName) {
-                        case 'H1':
-                        case 'H2':
-                        case 'H3':
-                        case 'H4':
-                            pdfDoc.push([{ text: content.textContent, style: 'sbPropertiesTitle' }])
-                            break;
-                        case 'UL':
-                            pdfDoc.push({ text: content.textContent, style: 'sbProperties', decoration: 'underline', bold: true, margin: [10, 0, 0, 0] })
-                            break;
-                        case 'LI':
-                            pdfDoc.push({ text: '•  ' + content.textContent, style: 'sbProperties', margin: [20, 0, 0, 0] })
-                            break;
-                        case 'A':
-                            pdfDoc.push({ text: content.textContent, style: 'annotationLink', margin: [15, 10, 5, 0], link: content.textContent })
-                            break;
-                        default:
-                            pdfDoc.push({ text: content.textContent, style: 'sbProperties', })
+                if (content.nodeName === '#text' && content.textContent) {
 
+                    let definition = { text: content.textContent, style: 'sbProperties', margin: [10, 2, 0, 2] }
+                    let parent = content.parentElement.nodeName
+                    let grandparent = content.parentElement.parentElement ? content.parentElement.parentElement.nodeName : null
+
+                    if (parent === 'H1' || parent === 'H2' || parent === 'H3' || parent === 'H4') {
+                        definition.style = 'sbPropertiesTitle'
+                        definition.margin = [5, 5, 0, 5]
+                        definition.text = content.textContent + '\n'
                     }
-
-                    //WIP 
-                    // let definition = { text: content.textContent,margin: [20, 0, 0, 0]}
-                    // let parent = content.parentElement.nodeName
-                    // let grandparent = content.parentElement.parentElement.nodeName
-
-                    // if(parent === 'H1' || parent === 'H2' || parent === 'H3' || parent === 'H4' ){
-                    //     definition.style='sbPropertiesTitle'
-                    // }
-                    // if(parent === 'UL' || grandparent === 'UL' ){
-                    //     definition.decoration= 'underline'
-                    // }
-                    // if(parent === 'UL'){
-                    //     definition.decoration= 'underline'
-                    // }
-                    // if(grandparent === 'UL' ){
-                    //     definition.decoration= 'underline'
-                    // }
-                    
-                    // switch (content.parentElement.nodeName) {
-                    //     case 'H1':
-                    //     case 'H2':
-                    //     case 'H3':
-                    //     case 'H4':
-                    //         pdfDoc.push([{ text: content.textContent, style: 'sbPropertiesTitle' }])
-                    //         break;
-                    //     case 'UL':
-                    //         pdfDoc.push({ text: content.textContent, style: 'sbProperties', decoration: 'underline', bold: true, margin: [10, 0, 0, 0] })
-                    //         break;
-                    //     case 'LI':
-                    //         pdfDoc.push({ text: '•  ' + content.textContent, style: 'sbProperties', margin: [20, 0, 0, 0] })
-                    //         break;
-                    //     case 'A':
-                    //         pdfDoc.push({ text: content.textContent, style: 'annotationLink', margin: [15, 10, 5, 0], link: content.textContent })
-                    //         break;
-                    //     default:
-                    //         pdfDoc.push({ text: content.textContent, style: 'sbProperties', })
-
-                    // }
-                    
-                    // pdfDoc.push(definition)
-
+                    if (parent === 'U' || grandparent === 'U') {
+                        definition.decoration = 'underline'
+                        definition.bold = true
+                        definition.text = content.textContent + ' '
+                    }
+                    if (parent === 'LI' ) {
+                        definition.margin[0] += 10
+                        definition.text = '     •   ' +content.textContent
+                        definition.preserveLeadingSpaces= true
+                    }
+                    if (parent === 'A') {
+                        definition.style = 'annotationLink'
+                        definition.link = content.textContent
+                        definition.text = content.textContent
+                    }
+                    if (parent === 'EM') {
+                        definition.italics = true
+                    }
+                    text.push(definition)
+                }
+                else {
+                    text.push({ text: '\n' })
                 }
             }
+            pdfDoc.push({ text: text })
             pdfDoc.push({ text: 'ScienceBase Item', style: 'sbPropertiesTitle' })
             pdfDoc.push({ text: this.state.sb_properties.link.url, style: 'annotationLink', margin: [15, 10, 5, 0], link: this.state.sb_properties.link.url })
             pdfDoc.push({ text: '', pageBreak: 'after' })
@@ -276,50 +246,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             return pdfDoc
 
         }
-        // try {
-        //     let stack = []
-        //     stack.push({ text: this.state.sb_properties.title, style: 'analysisTitle', margin: [5, 2, 5, 20], pageBreak: 'before' })
-        //     let sections = this.state.sb_properties.body.split(/<h[1-9]>/g)
-        //     sections = sections.map(s => s.split(/<\/h[1-9]>/g))
-        //     for (let section of sections) {
-        //         if (section.length === 2) {
-        //             stack.push({ text: section[0], style: 'sbPropertiesTitle' })
-        //             section[1] = section[1].replace(/<li>/g, '     • ')
-        //             section[1] = section[1].replace(/<[^>]*>/g, '')
-        //             section[1] = section[1].replace(/&nbsp;/g, '')
-        //             // section[1] = section[1].replace(/<p>/g, '')
-        //             // section[1] = section[1].replace(/<\/p>/g, '')
-        //             if (section[1].includes('<u>')) {
-        //                 let s = section[1].split('<u>')
-        //                 s = s.map(t => t.split('</u>'))
-        //                 for (let u of s) {
-        //                     if (u.length === 2) {
-        //                         stack.push({ text: u[0], style: 'sbProperties', decoration: 'underline', bold: true, margin: [10, 0, 0, 0] })
-        //                         stack.push({ text: u[1], style: 'sbProperties' })
-        //                     }
-        //                     else {
-        //                         stack.push({ text: u[0], style: 'sbProperties' })
-        //                     }
-        //                 }
-        //             }
-        //             else {
-        //                 stack.push({ text: section[1], style: 'sbProperties', })
-        //             }
-        //         }
-        //         else if (section.length === 1){
-        //             stack.push({ text: 'Summary', style: 'sbPropertiesTitle' })
-        //             stack.push({ text: section[0], style: 'sbProperties', })
-        //         }
-        //     }
-        //     stack.push({ text: 'ScienceBase Item', style: 'sbPropertiesTitle' })
-        //     stack.push({ text: this.state.sb_properties.link.url, style: 'annotationLink', margin: [15, 10, 5, 0], link: this.state.sb_properties.link.url })
-        //     stack.push({ text: '', pageBreak: 'after' })
-        //     return stack
-        // }
-        // catch (e) {
-        //     return []
-        // }
-        //}
+
 
         render() {
             return (
