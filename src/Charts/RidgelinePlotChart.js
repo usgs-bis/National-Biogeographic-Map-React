@@ -177,23 +177,23 @@ class RidgelinePlotChart extends React.Component {
             .attr("x2", x(365 / bucketSize)).attr("y2", 0)
             .selectAll("stop")
             .data([
-                { offset: "0.000000000%", color: "#cc4c03" }, // Jan 1
-                { offset: "4.166666700%", color: "#ec6f14" },
-                { offset: "8.333333400%", color: "#f8982b" }, // Feb 1
-                { offset: "12.50000010%", color: "#fac450" },
-                { offset: "16.66666680%", color: "#fce490" }, // Mar 1
-                { offset: "20.83333350%", color: "#fdf7bc" },
-                { offset: "25.00000020%", color: "#edf8b2" }, // Apr 1
-                { offset: "29.16666690%", color: "#d9f0a3" },
-                { offset: "33.33333360%", color: "#addd8e" }, // May 1
-                { offset: "37.50000030%", color: "#78c678" },
-                { offset: "41.66666700%", color: "#41ab5d" }, // Jun 1
-                { offset: "45.83333370%", color: "#7accc4" },
-                { offset: "50.00000040%", color: "#41b6c5" }, // Jly 1
-                { offset: "54.16666710%", color: "#3090c0" },
-                { offset: "58.33333380%", color: "#225ea8" }, // Aug 1
-                { offset: "62.50000050%", color: "#253494" },
-                { offset: "66.66666720%", color: "#091e58" }  // Sep 1
+                { offset: "0.000000000%", color: "rgb(204, 76, 3)" }, // Jan 1
+                { offset: "4.166666700%", color: "rgb(236, 111, 20)" },
+                { offset: "8.333333400%", color: "rgb(248, 152, 43)" }, // Feb 1
+                { offset: "12.50000010%", color: "rgb(250, 196, 80)" },
+                { offset: "16.66666680%", color: "rgb(252, 228, 144)" }, // Mar 1
+                { offset: "20.83333350%", color: "rgb(253, 247, 188)" },
+                { offset: "25.00000020%", color: "rgb(237, 248, 178)" }, // Apr 1
+                { offset: "29.16666690%", color: "rgb(217, 240, 163)" },
+                { offset: "33.33333360%", color: "rgb(173, 221, 142)" }, // May 1
+                { offset: "37.50000030%", color: "rgb(120, 198, 120)" },
+                { offset: "41.66666700%", color: "rgb(65, 171, 93)" }, // Jun 1
+                { offset: "45.83333370%", color: "rgb(122, 204, 196)" },
+                { offset: "50.00000040%", color: "rgb(65, 182, 197)" }, // Jly 1
+                { offset: "54.16666710%", color: "rgb(48, 144, 192)" },
+                { offset: "58.33333380%", color: "rgb(34, 94, 168)" }, // Aug 1
+                { offset: "62.50000050%", color: "rgb(37, 52, 148)" },
+                { offset: "66.66666720%", color: "rgb(9, 30, 88)" }  // Sep 1
             ])
             .enter().append("stop")
             .attr("offset", function (d) { return d.offset; })
@@ -271,10 +271,10 @@ class RidgelinePlotChart extends React.Component {
 
         function toolTipLabel(d, bucketSize) {
             return "Year: <b>" + d.key + "</b><br>" +
-                "Mean: <b>" + dateFromDay(2018, dataSummary[d.key].mean, d.key) + "</b><br>" +
-                "Median: <b>" + dateFromDay(2018, dataSummary[d.key].median, d.key) + "</b><br>" +
-                "Minimum: <b>" + dateFromDay(2018, dataSummary[d.key].minimum, d.key) + "</b><br>" +
-                "Maximum: <b>" + dateFromDay(2018, dataSummary[d.key].maximum, d.key) + "</b><br>"
+                "Mean: <b>" + dateFromDay(d.key, dataSummary[d.key].mean) + "</b><br>" +
+                "Median: <b>" + dateFromDay(d.key, dataSummary[d.key].median) + "</b><br>" +
+                "Minimum: <b>" + dateFromDay(d.key, dataSummary[d.key].minimum) + "</b><br>" +
+                "Maximum: <b>" + dateFromDay(d.key, dataSummary[d.key].maximum) + "</b><br>"
         }
 
 

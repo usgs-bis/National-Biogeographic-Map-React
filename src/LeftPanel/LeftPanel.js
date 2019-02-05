@@ -12,6 +12,7 @@ import SpeciesProtectionAnalysis from "../AnalysisPackages/SpeciesProtectionAnal
 import EcosystemProtectionAnalysis from "../AnalysisPackages/EcosystemProtectionAnalysis";
 import PhenologyAnalysis from "../AnalysisPackages/PhenologyAnalysis";
 import OBISAnalysis from "../AnalysisPackages/OBISAnalysis";
+import { BarLoader } from "react-spinners"
 
 class LeftPanel extends React.Component {
     constructor(props) {
@@ -24,7 +25,8 @@ class LeftPanel extends React.Component {
             basemapsOpen: false,
             bioscape: props.bioscape,
             updateAnalysisLayers: props.updateAnalysisLayers,
-            priorityBap: "bap1"
+            priorityBap: "bap1",
+            loading: false
 
         }
         this.handleKeyUp = this.handleKeyUp.bind(this);
@@ -37,6 +39,7 @@ class LeftPanel extends React.Component {
         this.share = this.share.bind(this);
         this.report = this.report.bind(this);
         this.updateAnalysisLayers = this.updateAnalysisLayers.bind(this)
+        this.loaderRef = React.createRef();
     }
 
     componentWillReceiveProps(props) {
@@ -79,12 +82,11 @@ class LeftPanel extends React.Component {
     }
 
     onBlur() {
-        let that = this
-        setTimeout(function () {
-            that.setState({
+        setTimeout(() => {
+            this.setState({
                 focused: false
             });
-            that.textInput.value = ""
+            this.textInput.value = ""
         }, 150)
     }
 
@@ -95,6 +97,9 @@ class LeftPanel extends React.Component {
     share() { }
 
     report() {
+        this.setState({
+            loading: true
+        })
 
         let charts = []
         charts.push(this.FirstLeafAnalysis.print())
@@ -105,7 +110,14 @@ class LeftPanel extends React.Component {
         charts.push(this.SpeciesProtectionAnalysis.print())
         charts.push(this.PhenologyAnalysis.print())
         charts.push(this.OBISAnalysis.print())
-        this.PDFReport.generateReport(this.state.feature_name,this.state.feature_class,this.props.map,charts)
+        this.PDFReport.generateReport(this.state.feature_name, this.state.feature_class, this.props.map, charts)
+            .then(() => {
+                setTimeout(() => {
+                    this.setState({
+                        loading: false
+                    })
+                }, 3000);
+            })
     }
 
     updateAnalysisLayers(enabledLayers, bapId) {
@@ -132,10 +144,10 @@ class LeftPanel extends React.Component {
                         <div className="panel-buttons">
                             <button className="submit-analysis-btn" onClick={this.share}>Share</button>
                             <button className="submit-analysis-btn" onClick={this.report}>
-                                <PDFReport  onRef={ref => (this.PDFReport = ref)}></PDFReport>
+                                <PDFReport onRef={ref => (this.PDFReport = ref)}></PDFReport>
                             </button>
-
                         </div>
+                        <BarLoader ref={this.loaderRef} width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
                     </div>
                 )
             }

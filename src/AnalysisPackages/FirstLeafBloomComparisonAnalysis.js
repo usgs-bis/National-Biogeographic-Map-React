@@ -167,13 +167,13 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
                 this.ComparisonChart.print(this.state.charts.ComparisonChart.id)
                     .then(img => {
                         return [
-                            { text: sb_properties.title, style: 'analysisTitle', margin: [5, 2, 5, 20], pageBreak: 'before' },
+                            { stack: this.props.getSBItemForPrint()},
                             { text: this.ComparisonChart.props.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
                             { text: this.ComparisonChart.props.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
                             { image: img, alignment: 'center', width: 450 },
                             { text: 'First Leaf / First Bloom Spring Index Comparison data were provided by the', style: 'annotation', margin: [5, 10, 5, 0] },
                             { text: 'USA National Phenology Network', style: 'annotationLink', margin: [5, 0, 5, 0], link: 'https://www.usanpn.org' },
-                            { text: `data retrieved ${new Date().toDateString()}`, style: 'annotation', margin: [5, 0, 5, 0] }
+                            { text: `Data retrieved ${new Date().toDateString()}`, style: 'annotation', margin: [5, 0, 5, 0] }
                         ]
                     })
             ]

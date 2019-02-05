@@ -83,9 +83,7 @@ class HorizontalBarChart extends React.Component {
         const width = config.width ? config.width : 480,
             height = config.height ? config.height : 400,
             opacityHover = 1,
-            otherOpacityOnHover = .8,
-            legendRectSize = 12,
-            legendSpacing = 4;
+            otherOpacityOnHover = .8;
 
         // Define x and y type and scales
         const x = d3.scaleLinear().range([0, width]);
@@ -167,6 +165,7 @@ class HorizontalBarChart extends React.Component {
                 .attr("height", y.bandwidth())
                 .style("stroke", "rgb(204, 204, 204)")
                 .style("stroke-width", "0.5")
+
             if (config.legend) {
 
 
@@ -176,19 +175,20 @@ class HorizontalBarChart extends React.Component {
                     .append('g')
                     .attr('class', 'legend')
                     .attr('transform', function (d, i) {
-                        return 'translate(' + 0 + ',' + (height + 40 + (25 * i)) + ')';
+                        return 'translate(' + (config.legend.leftOffset) + ',' + (height + 40 + ((config.legend.verticalSpacing ? config.legend.verticalSpacing : 15) * i)) + ')';
                     });
 
                 legend.append('rect')
-                    .attr('width', legendRectSize)
-                    .attr('height', legendRectSize)
+                    .attr('width', config.legend.rectSize)
+                    .attr('height', config.legend.rectSize)
                     .style('fill', z)
                     .style("stroke", "rgb(204, 204, 204)")
                     .style("stroke-width", "0.5")
 
                 legend.append('text')
-                    .attr('x', legendRectSize + legendSpacing)
-                    .attr('y', legendRectSize - legendSpacing)
+                    .attr('x', config.legend.rectSize + config.legend.spacing + 2)
+                    .attr('y', config.legend.rectSize - config.legend.spacing + 2)
+                    .style('font-size', config.legend.fontSize)
                     .text(function (d) { return d; });
             }
         }
@@ -252,12 +252,12 @@ class HorizontalBarChart extends React.Component {
                 .append('g')
                 .attr('class', 'legend')
                 .attr('transform', function (d, i) {
-                    return 'translate(' + 0 + ',' + (height + 40 + (25 * i)) + ')';
+                    return 'translate(' + (config.legend.leftOffset) + ',' + (height + 20 + ((config.legend.verticalSpacing ? config.legend.verticalSpacing : 15) * i)) + ')';
                 });
 
             legend.append('rect')
-                .attr('width', legendRectSize)
-                .attr('height', legendRectSize)
+                .attr('width', config.legend.rectSize)
+                .attr('height', config.legend.rectSize)
                 .style('fill', function (d, i) {
                     return d.color
                 })
@@ -265,9 +265,9 @@ class HorizontalBarChart extends React.Component {
                 .style("stroke-width", "1px");
 
             legend.append('text')
-                .attr('x', legendRectSize + legendSpacing)
-                .attr('y', legendRectSize - legendSpacing)
-                .attr('font-size', 'smaller')
+                .attr('x', config.legend.rectSize + config.legend.spacing + 2)
+                .attr('y', config.legend.rectSize - config.legend.spacing + 2)
+                .style('font-size', config.legend.fontSize)
                 .text(function (d) { return d[config.yAxis.key]; });
         }
     }

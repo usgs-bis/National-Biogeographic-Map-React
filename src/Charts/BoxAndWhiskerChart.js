@@ -124,24 +124,34 @@ class BoxAndWhiskerChart extends React.Component {
         // Prepare the data for the box plots
         let boxPlotData = [];
         for (let [key, groupCount] of Object.entries(data)) {
+            const median = groupCount.length % 2 === 0 ? ((groupCount[(groupCount.length / 2) - 1] + groupCount[groupCount.length / 2]) / 2) : groupCount[Math.floor(groupCount.length / 2)]
 
-            let record = {};
-            let localMin = d3.min(groupCount);
-            let localMax = d3.max(groupCount);
+            let medianIndexLT = groupCount.length % 2 === 0 ? groupCount.length / 2 : Math.floor(groupCount.length / 2)
+            let q1_temp = groupCount.filter((g, i) => { return i > medianIndexLT })
+            const q1 = q1_temp.length % 2 === 0 ? ((q1_temp[(q1_temp.length / 2) - 1] + q1_temp[q1_temp.length / 2]) / 2) : q1_temp[Math.floor(q1_temp.length / 2)]
 
-            record["key"] = key;
-            record["counts"] = groupCount;
-            record["quartile"] = boxQuartiles(groupCount);
-            record["whiskers"] = [localMin, localMax];
+            let medianIndexGT = groupCount.length % 2 === 0 ? (groupCount.length / 2 - 1) : Math.floor(groupCount.length / 2)
+            let q3_temp = groupCount.filter((g, i) => { return i < medianIndexGT })
+            const q3 = q3_temp.length % 2 === 0 ? ((q3_temp[(q3_temp.length / 2) - 1] + q3_temp[q3_temp.length / 2]) / 2) : q3_temp[Math.floor(q3_temp.length / 2)]
 
+            const iqr = q3 - q1
+            const cleanData = groupCount.filter(g => { return g > q1 - (1.5 * iqr) && g < q3 + (1.5 * iqr) })
+            let outliers = groupCount.filter(g => { return g < q1 - (1.5 * iqr) || g > q3 + (1.5 * iqr) })
+            outliers = outliers.map((o) => { return { key: key, value: o } })
+
+            let record = {
+                key: key,
+                counts: groupCount,
+                median: median,
+                q1: q1,
+                q3: q3,
+                min: d3.min(cleanData),
+                max: d3.max(cleanData),
+                outliers: outliers
+            }
             boxPlotData.push(record);
         }
 
-        // Create a responsive svg element
-        // const svg = chart.select(`#${id}Chart`)
-        //     .append("div")
-        //     .classed("svg-container-chart", true)
-        //     .append("svg")
         const svg = chart.select(`#${id}Svg`)
             .attr("preserveAspectRatio", "xMinYMin meet")
             .attr("viewBox", "0 0 " + (width + config.margins.left + config.margins.right) + " " + (height + config.margins.top + config.margins.bottom))
@@ -176,10 +186,10 @@ class BoxAndWhiskerChart extends React.Component {
             .enter()
             .append("line")
             .attr("x1", function (datum) { return x(datum.key) + barWidth / 2; })
-            .attr("y1", function (datum) { let whisker = datum.whiskers[0]; return y(whisker); })
+            .attr("y1", function (datum) { return y(datum.min); })
             .attr("x2", function (datum) { return x(datum.key) + barWidth / 2; })
-            .attr("y2", function (datum) { return y(datum.whiskers[1]); })
-            .attr("stroke", "#000")
+            .attr("y2", function (datum) { return y(datum.max); })
+            .attr("stroke", "rgb(0,0,0)")
             .attr("stroke-width", 1)
             .attr("fill", "none");
 
@@ -193,15 +203,13 @@ class BoxAndWhiskerChart extends React.Component {
             .append("rect")
             .attr("width", barWidth)
             .attr("height", function (datum) {
-                let quartiles = datum.quartile;
-                let height = y(quartiles[2]) - y(quartiles[0]);
-                return height;
+                return y(datum.q1) - y(datum.q3);
             })
             .attr("x", function (datum) { return x(datum.key); })
-            .attr("y", function (datum) { return y(datum.quartile[0]); })
+            .attr("y", function (datum) { return y(datum.q3); })
             .attr("fill", function (datum) { return datum.color; })
             .attr("fill", "rgb(56, 155, 198)")
-            .attr("stroke", "#000")
+            .attr("stroke", "rgb(0,0,0)")
             .attr("stroke-width", 1);
 
         // Add tooltip functionality on mouseOver
@@ -254,18 +262,18 @@ class BoxAndWhiskerChart extends React.Component {
         const horizontalLineConfigs = [
             // Top whisker
             {
-                x1: function (datum) { return x(datum.key) },
-                y1: function (datum) { return y(datum.whiskers[0]) },
-                x2: function (datum) { return x(datum.key) + barWidth },
-                y2: function (datum) { return y(datum.whiskers[0]) }
+                x1: (datum) => { return x(datum.key) },
+                y1: (datum) => { return y(datum.min) },
+                x2: (datum) => { return x(datum.key) + barWidth },
+                y2: (datum) => { return y(datum.min) }
             },
 
             // Bottom whisker
             {
-                x1: function (datum) { return x(datum.key) },
-                y1: function (datum) { return y(datum.whiskers[1]) },
-                x2: function (datum) { return x(datum.key) + barWidth },
-                y2: function (datum) { return y(datum.whiskers[1]) }
+                x1: (datum) => { return x(datum.key) },
+                y1: (datum) => { return y(datum.max) },
+                x2: (datum) => { return x(datum.key) + barWidth },
+                y2: (datum) => { return y(datum.max) }
             }
         ];
 
@@ -281,18 +289,35 @@ class BoxAndWhiskerChart extends React.Component {
                 .attr("y1", lineConfig.y1)
                 .attr("x2", lineConfig.x2)
                 .attr("y2", lineConfig.y2)
-                .attr("stroke", "#000")
+                .attr("stroke", "rgb(0,0,0)")
                 .attr("stroke-width", 1)
                 .attr("fill", "none");
         }
 
+        g.selectAll(".whiskers")
+            .data(boxPlotData)
+            .enter()
+            .append('g')
+            .selectAll('circle')
+            .data((d) => { return d.outliers; })
+            .enter()
+            .append("circle")
+            .classed("outliers", true)
+            .attr("r", 2)
+            .attr("cx", (d) => {
+                return x(d.key) + barWidth / 2
+            })
+            .attr("cy", (d) => {
+                return y(d.value);
+            });
+
         // draw median line separate in red
         const median =
         {
-            x1: function (datum) { return x(datum.key) },
-            y1: function (datum) { return y(datum.quartile[1]) },
-            x2: function (datum) { return x(datum.key) + barWidth },
-            y2: function (datum) { return y(datum.quartile[1]) }
+            x1: (datum) => { return x(datum.key) },
+            y1: (datum) => { return y(datum.median) },
+            x2: (datum) => { return x(datum.key) + barWidth },
+            y2: (datum) => { return y(datum.median) }
         }
         g.selectAll(".whiskers")
             .data(boxPlotData)
@@ -302,25 +327,18 @@ class BoxAndWhiskerChart extends React.Component {
             .attr("y1", median.y1)
             .attr("x2", median.x2)
             .attr("y2", median.y2)
-            .attr("stroke", "#FF0000")
+            .attr("stroke", "rgb(255,0,0)")
             .attr("stroke-width", 1)
             .attr("fill", "rgb(255, 0, 0)")
             .attr("class", " boxAndWhiskerMedianLine");
 
-        function boxQuartiles(d) {
-            return [
-                d3.quantile(d, .25),
-                d3.quantile(d, .5),
-                d3.quantile(d, .75)
-            ];
-        }
 
         function toolTipLabel(d) {
             return "Year: <b>" + d.key + "</b><br>" +
-                "Mean: <b>" + dateFromDay(2018, dataSummary[d.key].mean, d.key) + "</b><br>" +
-                "Median: <b>" + dateFromDay(2018, dataSummary[d.key].median, d.key) + "</b><br>" +
-                "Minimum: <b>" + dateFromDay(2018, dataSummary[d.key].minimum, d.key) + "</b><br>" +
-                "Maximum: <b>" + dateFromDay(2018, dataSummary[d.key].maximum, d.key) + "</b><br>"
+                "Mean: <b>" + dateFromDay(d.key, dataSummary[d.key].mean) + "</b><br>" +
+                "Median: <b>" + dateFromDay(d.key, dataSummary[d.key].median) + "</b><br>" +
+                "Minimum: <b>" + dateFromDay(d.key, dataSummary[d.key].minimum) + "</b><br>" +
+                "Maximum: <b>" + dateFromDay(d.key, dataSummary[d.key].maximum) + "</b><br>"
         }
 
         function dateFromDay(year, day) {

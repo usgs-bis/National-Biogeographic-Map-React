@@ -192,45 +192,6 @@ class FirstLeafAnalysisPackage extends React.Component {
 
     print() {
 
-        /*
-        *
-        * If we decide we want only 1 chart per page
-        **/
-
-        // if (this.state.charts.histogram.data) {
-        //     return [
-        //         { text: sb_properties.title, style: 'analysisTitle', margin: [5, 2, 5, 20], pageBreak: 'before' },
-        //         this.HistogramChart.print(this.state.charts.histogram.id)
-        //             .then(img => {
-        //                 return [
-        //                     { text: this.HistogramChart.props.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
-        //                     { text: this.HistogramChart.props.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
-        //                     { image: img, alignment: 'center', width: 400 }
-        //                 ]
-        //             }),
-        //         this.RidgelinePlotChart.print(this.state.charts.ridgelinePlot.id)
-        //             .then(img => {
-        //                 return [
-        //                     { text: this.RidgelinePlotChart.props.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2], pageBreak: 'before' },
-        //                     { text: this.RidgelinePlotChart.props.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
-        //                     { image: img, alignment: 'center', width: 400 }
-        //                 ]
-        //             }),
-        //         this.BoxAndWhiskerChart.print(this.state.charts.boxAndWhisker.id)
-        //             .then(img => {
-        //                 return [
-        //                     { text: this.BoxAndWhiskerChart.props.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2], pageBreak: 'before' },
-        //                     { text: this.BoxAndWhiskerChart.props.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
-        //                     { image: img, alignment: 'center', width: 400 }
-        //                 ]
-        //             }),
-        //         { text: 'First Leaf Spring Index data was provided by the', style: 'annotation', margin: [5, 10, 5, 0] },
-        //         { text: 'USA National Phenology Network', style: 'annotationLink', margin: [5, 0, 5, 0], link: 'https://www.usanpn.org' },
-        //         { text: `data retrieved ${new Date().toDateString()}`, style: 'annotation', margin: [5, 0, 5, 0] }
-        //     ]
-        // }
-        // return []
-
         if (this.state.charts.histogram.data) {
 
             let charts = []
@@ -240,7 +201,7 @@ class FirstLeafAnalysisPackage extends React.Component {
 
             return Promise.all(charts.flat()).then(contents => {
                 return [
-                    { text: sb_properties.title, style: 'analysisTitle', margin: [5, 2, 5, 20], pageBreak: 'before' },
+                    { stack: this.props.getSBItemForPrint()},
                     {
                         columns: [
 
@@ -250,7 +211,7 @@ class FirstLeafAnalysisPackage extends React.Component {
                                     { text: this.HistogramChart.props.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
                                     { text: this.HistogramChart.props.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
                                     { image: contents[0], alignment: 'center', width: 250 },
-                                    { text: this.BoxAndWhiskerChart.props.config.chart.title, style: 'chartTitle', margin: [5, 20, 5, 2]},
+                                    { text: this.BoxAndWhiskerChart.props.config.chart.title, style: 'chartTitle', margin: [5, 20, 5, 2] },
                                     { text: this.BoxAndWhiskerChart.props.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
                                     { image: contents[1], alignment: 'center', width: 250 }
                                 ]
@@ -264,7 +225,7 @@ class FirstLeafAnalysisPackage extends React.Component {
                                     { image: contents[2], alignment: 'center', width: 250 },
                                     { text: 'First Leaf Spring Index data was provided by the', style: 'annotation', margin: [5, 10, 5, 0] },
                                     { text: 'USA National Phenology Network', style: 'annotationLink', margin: [5, 0, 5, 0], link: 'https://www.usanpn.org' },
-                                    { text: `data retrieved ${new Date().toDateString()}`, style: 'annotation', margin: [5, 0, 5, 0] }
+                                    { text: `Data retrieved ${new Date().toDateString()}`, style: 'annotation', margin: [5, 0, 5, 0] }
                                 ]
                             }
                         ]

@@ -1,62 +1,96 @@
 import React from "react";
 import "./Chart.css"
 
+const numberWithCommas = (x) => {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 class TableChart extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            data: null,
             header: null,
             body: null
         }
-        this.createTableBody = this.createTableBody.bind(this)
+        this.data = null
+
+        this.createTable = this.createTable.bind(this)
         this.createTableHeader = this.createTableHeader.bind(this)
+        this.sortTable = this.sortTable.bind(this)
     }
 
-    // componentDidMount() {
-    //     this.props.onRef(this)
-    // }
+    componentDidMount() {
+
+        this.data = this.props.data
+    }
 
     componentDidUpdate() {
-        if (this.state.data !== this.props.data) {
-            this.setState({
-                data: this.props.data,
-            }, () => {
-                this.createTableHeader(this.props.data)
-                this.createTableBody(this.props.data)
-            })
+        if (this.data !== this.props.data) {
+            this.data = this.props.data
+            this.createTable(this.data[0], this.data.slice(1))
         }
+
     }
 
-
-    createTableBody(data) {
+    createTable(head, body) {
         let table = []
 
         // Outer loop to create parent
-        for (let i = 1; i < data.length; i++) {
+        for (let i = 0; i < body.length; i++) {
             let children = []
             //Inner loop to create children
-            for (let j = 0; j < data[0].length; j++) {
-                children.push(<td key={`${i}_${j}`}>{data[i][j]}</td>)
+            for (let j = 0; j < body[0].length; j++) {
+                children.push(<td key={`${i}_${j}`}>{body[i][j]}</td>)
             }
             //Create the parent and add the children
             table.push(<tr key={`${i}_row`}>{children}</tr>)
         }
         this.setState({
+            header: <thead><tr>{this.createTableHeader(head)}</tr></thead>,
             body: <tbody>{table}</tbody>
         })
     }
 
-    createTableHeader(data) {
+    createTableHeader(head) {
         let headers = []
-        for (let i = 0; i < data[0].length; i++) {
-            headers.push(<th key={`${i}_head`}>{data[0][i]}</th>)
+        for (let i = 0; i < head.length; i++) {
+            headers.push(<th key={`${i}_head`} onClick={() => { this.sortTable(i) }} >{head[i]}</th>)
         }
-        this.setState({
-            header: <thead><tr>{headers}</tr></thead>
-        })
+        return headers
     }
 
+    sortTable(i) {
+        this.ascending = !this.ascending
+        let body = this.data.slice(1)
+
+        // if we detect numbers are formatted with commas 
+        // we remove the commas and convert to float before sorting
+        // then replace the commas after sorting
+        let commaFormatted = false
+        body.map((b) => {
+            if (parseFloat(b[i]) && b[i].includes(',')) {
+                commaFormatted = true
+                b[i] = parseFloat(b[i].replace(',', ''))
+                return b
+            }
+            return b
+        })
+        if (this.ascending) {
+            body = body.sort((a, b) => (a[i] < b[i]) ? 1 : ((b[i] < a[i]) ? -1 : 0));
+        }
+        else {
+            body = body.sort((a, b) => (a[i] > b[i]) ? 1 : ((b[i] > a[i]) ? -1 : 0));
+        }
+
+        // replacing the commas
+        if (commaFormatted) {
+            body.map((b) => {
+                b[i] = numberWithCommas(b[i])
+                return b
+            })
+        }
+        this.createTable(this.data[0], body)
+    }
 
 
     render() {

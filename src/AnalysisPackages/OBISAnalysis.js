@@ -158,7 +158,7 @@ class OBISAnalysisPackage extends React.Component {
                 this.SpeciesCountChart.print(this.state.charts.speciesCountChart.id)
                     .then(img => {
                         return [
-                            { text: sb_properties.title, style: 'analysisTitle', margin: [5, 2, 5, 20], pageBreak: 'before' },
+                            { stack: this.props.getSBItemForPrint()},
                             { text: this.state.charts.speciesCountChart.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
                             { image: img, alignment: 'center', width: 450 }
                         ]

@@ -198,7 +198,7 @@ class FirstBloomAnalysisPackage extends React.Component {
 
             return Promise.all(charts.flat()).then(contents => {
                 return [
-                    { text: sb_properties.title, style: 'analysisTitle', margin: [5, 2, 5, 20], pageBreak: 'before' },
+                    { stack: this.props.getSBItemForPrint()},
                     {
                         columns: [
 
@@ -222,7 +222,7 @@ class FirstBloomAnalysisPackage extends React.Component {
                                     { image: contents[2], alignment: 'center', width: 250 },
                                     { text: 'First Bloom Spring Index data was provided by the', style: 'annotation', margin: [5, 10, 5, 0] },
                                     { text: 'USA National Phenology Network', style: 'annotationLink', margin: [5, 0, 5, 0], link: 'https://www.usanpn.org' },
-                                    { text: `data retrieved ${new Date().toDateString()}`, style: 'annotation', margin: [5, 0, 5, 0] }
+                                    { text: `Data retrieved ${new Date().toDateString()}`, style: 'annotation', margin: [5, 0, 5, 0] }
                                 ]
                             }
                         ]

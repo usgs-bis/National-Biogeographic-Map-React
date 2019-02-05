@@ -232,10 +232,12 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
             if (chart.toString() === "gap12" && data) {
                 const chartId = "SP_GAP12"
                 const chartConfig = {
-                    margins: { left: 20, right: 20, top: 20, bottom: 125 },
+                    margins: { left: 0, right: 0, top: 20, bottom: 125 },
                     chart: { title: `GAP Status 1 & 2`, subtitle: `` },
                     tooltip: { label: (d) => { return `<p><div>${d.data.name}</div><div>${d.data.count} species</div></p>` } },
-                    legend: { rectSize: 12, spacing: 4, leftOffset: 6, fontSize: 'smaller' },
+                    legend: { rectSize: 16, spacing: 4, leftOffset: 6, verticalSpacing: 20, fontSize: '13px' },
+                    width:225,
+                    height:225,
                     onClick: (d) => { this.filterTableData(d) }
                 }
                 const chartData = dataTemplate.status_1_2
@@ -244,10 +246,12 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
             else if (chart.toString() === "gap123" && data) {
                 const chartId = "SP_GAP123"
                 const chartConfig = {
-                    margins: { left: 20, right: 20, top: 20, bottom: 125 },
+                    margins: { left: 0, right: 0, top: 20, bottom: 125 },
                     chart: { title: `GAP Status 1, 2 & 3`, subtitle: `` },
                     tooltip: { label: (d) => { return `<p><div>${d.data.name}</div><div>${d.data.count} species</div></p>` } },
-                    legend: { rectSize: 12, spacing: 4, leftOffset: 6, fontSize: 'smaller' },
+                    legend: { rectSize: 16, spacing: 4, leftOffset: 6, verticalSpacing: 20, fontSize: '13px' },
+                    width:225,
+                    height:225,
                     onClick: (d) => { this.filterTableData(d) }
 
                 }
@@ -284,7 +288,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                 }
 
                 for (let row of preData) {
-                    const name = `${row.common_name} (${row.scientific_name})`
+                    const name = `${row.common_name} ${row.common_name ? '(' + row.scientific_name : 'No common name recorded (' + row.scientific_name })`
                     if (this.state.gapRange !== 'ALL') {
                         if (this.state.gapStatus === 'status_1_2_group') protectedPercent = `${parseFloat(row.status_1_2).toFixed(2)}%`
                         if (this.state.gapStatus === 'status_1_2_3_group') protectedPercent = `${parseFloat(row.status_1_2_3).toFixed(2)}%`
@@ -360,7 +364,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
 
             return Promise.all(charts.flat()).then(contents => {
                 return [
-                    { text: sb_properties.title, style: 'analysisTitle', margin: [5, 2, 5, 20], pageBreak: 'before' },
+                    { stack: this.props.getSBItemForPrint()},
                     { text: `Protection Status of Species in ${this.props.feature ? this.props.feature.properties.feature_name : ''}`, style: 'chartTitle', margin: [5, 2, 5, 5] },
                     {
                         columns: [
@@ -370,7 +374,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                                 stack: [
                                     { text: this.state.charts.gap12.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
                                     { text: this.state.charts.gap12.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
-                                    { image: contents[0], alignment: 'center', width: 230, height: 330 },
+                                    { image: contents[0], alignment: 'center', width: 230, height: 370 },
                                 ]
                             },
 
@@ -379,7 +383,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                                 stack: [
                                     { text: this.state.charts.gap123.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
                                     { text: this.state.charts.gap123.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
-                                    { image: contents[1], alignment: 'center', width: 230, height: 330 },
+                                    { image: contents[1], alignment: 'center', width: 230, height: 370 },
                                 ]
                             }
                         ]

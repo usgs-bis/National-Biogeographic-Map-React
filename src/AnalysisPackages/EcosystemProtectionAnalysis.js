@@ -339,7 +339,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                             return 'black'
                         }
                     },
-                    legend: true,
+                    legend: { rectSize: 18, spacing: 4, leftOffset: 0, verticalSpacing: 24, fontSize: '15px' },
                     stacked: true
                 }
                 let chartData = [
@@ -370,10 +370,12 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
             else if (chart.toString() === "gap12" && data) {
                 const chartId = "EP_GAP12"
                 const chartConfig = {
-                    margins: { left: 20, right: 20, top: 20, bottom: 125 },
+                    margins: { left: 0, right: 0, top: 20, bottom: 125 },
                     chart: { title: `GAP Status 1 & 2`, subtitle: `` },
                     tooltip: { label: (d) => { return `<p><div>${d.data.name}</div><div>${d.data.count} ecosystem</div></p>` } },
-                    legend: { rectSize: 12, spacing: 4, leftOffset: 6, fontSize: 'smaller' },
+                    legend: { rectSize: 16, spacing: 4, leftOffset: 6, verticalSpacing: 20, fontSize: '13px' },
+                    width: 225,
+                    height: 225,
                     onClick: (d) => { this.filterTableData(d) }
                 }
                 const chartData = dataTemplate.gap1_2
@@ -382,10 +384,12 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
             else if (chart.toString() === "gap123" && data) {
                 const chartId = "EP_GAP123"
                 const chartConfig = {
-                    margins: { left: 20, right: 20, top: 20, bottom: 125 },
+                    margins: { left: 0, right: 0, top: 20, bottom: 125 },
                     chart: { title: `GAP Status 1, 2 & 3`, subtitle: `` },
                     tooltip: { label: (d) => { return `<p><div>${d.data.name}</div><div>${d.data.count} ecosystem</div></p>` } },
-                    legend: { rectSize: 12, spacing: 4, leftOffset: 6, fontSize: 'smaller' },
+                    legend: { rectSize: 16, spacing: 4, leftOffset: 6, verticalSpacing: 20, fontSize: '13px' },
+                    width: 225,
+                    height: 225,
                     onClick: (d) => { this.filterTableData(d) }
                 }
                 const chartData = dataTemplate.gap1_2_3
@@ -435,10 +439,13 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
             if (chart.toString() === "gapCoverage" && data) {
                 const chartId = "EP_gapCoverage"
                 const chartConfig = {
-                    margins: { left: 75, right: 75, top: 20, bottom: 175 },
+                    margins: { left: 75, right: 75, top: 80, bottom: 225 },
                     chart: { title: `Percent Coverage by National Vegetation Classification Class`, subtitle: `` },
                     tooltip: { label: (d) => { return `<p><div>${d.data.name}</div><div>${parseFloat(d.data.percent).toFixed(2)}%</div></p>` } },
-                    legend: { rectSize: 9, spacing: 2, leftOffset: 1.3, fontSize: 'x-small' },
+                    legend: { rectSize: 12, spacing: 2, leftOffset: 1.3, verticalSpacing: 16, fontSize: '11px' },
+                    lables: { fontSize: '8px' },
+                    width: 200,
+                    height: 200,
                     onClick: (d) => { return null }
                 }
                 const chartData = dataTemplate.ecosystem_coverage
@@ -490,7 +497,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
 
             return Promise.all(charts.flat()).then(contents => {
                 return [
-                    { text: sb_properties.title, style: 'analysisTitle', margin: [5, 2, 5, 20], pageBreak: 'before' },
+                    { stack: this.props.getSBItemForPrint()},
                     { text: this.state.charts.protectionStatus.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
                     { text: this.state.charts.protectionStatus.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
                     { image: contents[0], alignment: 'center', width: 450, height: 300 },
@@ -503,7 +510,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                                 stack: [
                                     { text: this.state.charts.gap12.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
                                     { text: this.state.charts.gap12.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
-                                    { image: contents[1], alignment: 'center', width: 230, height: 330 },
+                                    { image: contents[1], alignment: 'center', width: 230, height: 370 },
                                 ]
                             },
 
@@ -512,7 +519,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                                 stack: [
                                     { text: this.state.charts.gap123.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
                                     { text: this.state.charts.gap123.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
-                                    { image: contents[2], alignment: 'center', width: 230, height: 330 },
+                                    { image: contents[2], alignment: 'center', width: 230, height: 370 },
                                 ]
                             }
                         ]
@@ -566,7 +573,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                     },
                     { text: this.state.charts.gapCoverage.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2], pageBreak: 'before' },
                     { text: this.state.charts.gapCoverage.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
-                    { image: contents[3], alignment: 'center', width: 400, height: 450 },
+                    { image: contents[3], alignment: 'center', width: 400, height:560 },
                 ]
             })
         }

@@ -328,7 +328,8 @@ class PhenologyAnalysisPackage extends React.Component {
 
             return Promise.all(charts.flat()).then(contents => {
                 let content = []
-                content.push({ text: sb_properties.title, style: 'analysisTitle', margin: [5, 2, 5, 10], pageBreak: 'before' })
+                content.push({ stack: this.props.getSBItemForPrint()})
+
                 for (let i = 0; i < this.state.refs.length; i += 2) {
                     content.push({ text: this.state.charts[i].props.config.chart.title, style: 'chartTitle', margin: [5, 5, 5, 5] })
                     content.push({
@@ -350,7 +351,7 @@ class PhenologyAnalysisPackage extends React.Component {
                 }
                 content.push({ text: 'Phenology Forecasts data were provided by the', style: 'annotation', margin: [5, 10, 5, 0] })
                 content.push({ text: 'USA National Phenology Network', style: 'annotationLink', margin: [5, 0, 5, 0], link: 'https://www.usanpn.org' })
-                content.push({ text: `data retrieved ${new Date().toDateString()}`, style: 'annotation', margin: [5, 0, 5, 0] })
+                content.push({ text: `Data retrieved ${new Date().toDateString()}`, style: 'annotation', margin: [5, 0, 5, 0] })
 
                 return content
             })

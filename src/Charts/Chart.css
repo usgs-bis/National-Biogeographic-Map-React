@@ -29,7 +29,7 @@ text {
     display: block;
     position: relative;
     width: 100%;
-    padding: 2%;
+    padding: 1%;
 
 }
 .svg-content-responsive {
@@ -51,6 +51,7 @@ text {
     background: rgb(255, 255, 255);
     color: black;
     z-index: 9999;
+    opacity: 0;
 }
 
 .chart-container .chartTooltip label {
@@ -92,6 +93,7 @@ text {
     color: lightblue;
     padding: 5px;
 }
-.legend text{
-    font-size: 12px;
+
+.outliers{
+    fill:rgb(204, 204, 204);
 }
