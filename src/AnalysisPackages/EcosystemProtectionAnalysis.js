@@ -111,7 +111,6 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                             })
                             this.props.isEnabled(false)
                             this.props.canOpen(false)
-                            this.props.resetAnalysisLayers()
                         }
                     },
                     (error) => {

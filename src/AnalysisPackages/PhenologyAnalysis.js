@@ -147,7 +147,6 @@ class PhenologyAnalysisPackage extends React.Component {
                 } else {
                     this.props.isEnabled(false)
                     this.props.canOpen(false)
-                    this.props.resetAnalysisLayers()
                 }
             }, (error) => {
                 this.setState({

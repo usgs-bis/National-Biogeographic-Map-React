@@ -68,8 +68,7 @@ class NFHPAnalysisPackage extends React.Component {
                             this.setState({
                                 charts: {
                                     horizontalBarChart: { id: "", config: {}, data: null }
-                                },
-                                layers: this.props.resetAnalysisLayers()
+                                }
                             })
                             this.props.isEnabled(false)
                             this.props.canOpen(false)

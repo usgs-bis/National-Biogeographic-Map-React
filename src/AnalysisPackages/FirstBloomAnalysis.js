@@ -112,8 +112,7 @@ class FirstBloomAnalysisPackage extends React.Component {
                             this.props.canOpen(true)
                         } else {
                             this.setState({
-                                loading: false,
-                                layers: this.props.resetAnalysisLayers()
+                                loading: false
                             })
                             this.props.isEnabled(false)
                             this.props.canOpen(false)

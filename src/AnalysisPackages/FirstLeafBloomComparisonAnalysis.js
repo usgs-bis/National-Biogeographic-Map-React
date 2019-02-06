@@ -128,8 +128,7 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
                     this.props.isEnabled(false)
                     this.props.canOpen(false)
                     this.setState({
-                        loading: false,
-                        layers: this.resetAnalysisLayers()
+                        loading: false
                     })
                 }
             })

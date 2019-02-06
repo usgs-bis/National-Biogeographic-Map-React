@@ -89,14 +89,19 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
 
         initilize(props) {
             if (props.priorityBap === props.bapId && props.initLayerTitle) {
+                let layers = []
                 Object.keys(this.state.layers).forEach((key) => {
+                    let layer = this.state.layers[key]
                     if (this.state.layers[key].title === props.initLayerTitle) {
-
-                        // should turn on this layer. i think that will trigger the priority bap to change and 
-                        // wont try and turn on layer again. 
-                        console.log('should turn on this layer', props.bapId, this.state.layers[key])
+                        layer.checked = true
+                        this.inputRefs[key].checked = true
                     }
+                    layers.push(layer)
                 })
+                this.setState({
+                    layers: layers
+                })
+                this.updateAnalysisLayers()
             }
             this.initilized = true
         }

@@ -50,8 +50,7 @@ class OBISAnalysisPackage extends React.Component {
         this.setState({
             charts: {
                 speciesCountChart: { id: "", config: {}, data: null }
-            },
-            layers: this.props.resetAnalysisLayers()
+            }
         })
         this.props.isEnabled(false)
         this.props.canOpen(false)
