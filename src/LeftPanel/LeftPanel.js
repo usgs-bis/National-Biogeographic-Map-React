@@ -97,7 +97,9 @@ class LeftPanel extends React.Component {
         this.state.submitHandler(e)
     }
 
-    share() { }
+    share() {
+        this.props.shareState()
+    }
 
     report() {
         this.setState({
@@ -147,6 +149,7 @@ class LeftPanel extends React.Component {
                         </div>
                         <div className="panel-buttons">
                             <button className="submit-analysis-btn" onClick={this.share}>Share</button>
+                            <input className="share-url-input" type="text"></input>
                             <button className="submit-analysis-btn" onClick={this.report}>
                                 <PDFReport onRef={ref => (this.PDFReport = ref)}></PDFReport>
                             </button>

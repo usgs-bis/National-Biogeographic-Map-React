@@ -91,17 +91,7 @@ class NBM extends React.PureComponent {
     }
 
     updateMapDisplay(year) {
-        if (this.props.analysisLayers) {
-            this.props.analysisLayers.forEach(function (item) {
-                if (item.timeEnabled) {
-                    item.layer.setParams(
-                        {
-                            time: `${year}-01-01`
-                        }
-                    )
-                }
-            })
-        }
+        this.props.updateMapDisplay(year);
     }
 
     updateYearRange(years) {
@@ -146,6 +136,9 @@ class NBM extends React.PureComponent {
                     <TimeSlider
                         updateMapDisplay={this.updateMapDisplay}
                         updateYearRange={this.updateYearRange}
+                        yearMax={this.props.yearMax}
+                        yearMin={this.props.yearMin}
+                        layerYear={this.props.layerYear}
                     />
                 </div>
                 <div className="attribution" onMouseOver={this.disableDragging} onMouseOut={this.enableDragging}>

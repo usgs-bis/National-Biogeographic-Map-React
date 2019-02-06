@@ -37,6 +37,15 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             this.htmlToPDFMake = this.htmlToPDFMake.bind(this)
         }
 
+        // this should stop baps from rendering untill the timeslider moves
+        // or the feature is changed
+        shouldComponentUpdate(nextProps, nextState) {
+            if(nextProps.feature && nextProps.feature.properties.feature_id !== this.state.feature_id) return true
+            if(nextProps.yearMax !== this.props.yearMax || nextProps.yearMin !== this.props.yearMin) return true
+            return false
+          }
+    
+
         componentDidMount() {
             fetch(sb_url)
                 .then(res => res.json())
@@ -117,14 +126,14 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             if (this.state.layers) {
                 return (
                     <div className="analysis-layers">
-                        <span onClick={that.toggleLayerDropdown} className="analysis-layers-dropdown">
+                        <div onClick={that.toggleLayerDropdown} className="analysis-layers-dropdown">
                             {"Analysis Layers"}
                             <Glyphicon
                                 className="analysis-dropdown-glyph"
                                 glyph={that.state.layersOpen ? "menu-down" : "menu-right"}
                             />
-                        </span>
-                        <Collapse isOpen={that.state.layersOpen}>
+                        </div>
+                        <Collapse className='analysis-dropdown-content' isOpen={that.state.layersOpen}>
                             {Object.keys(this.state.layers).map(function (key) {
                                 let layer = that.state.layers[key]
                                 return (

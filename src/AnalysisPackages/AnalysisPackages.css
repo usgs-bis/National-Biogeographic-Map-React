@@ -99,9 +99,11 @@ padding-top: 15px;
 
 .analysis-layers-dropdown {
     padding-left: 5px;
-    margin-left: 1%;
-    font-size: 12px;
     cursor: pointer;
+    background-color: rgba(10, 10, 15, .2);
+    font-size: 14px;
+    color: white;
+    padding-top: 10px;
 }
 
 .analysis-layers-dropdown:hover {
@@ -111,4 +113,11 @@ padding-top: 15px;
 .analysis-dropdown-glyph {
     font-size: 12px;
     margin-left: 5px;
+}
+
+.analysis-dropdown-content{
+    border-bottom: 3px solid #555;
+    padding: 10px;
+    background-color: rgba(10, 10, 15, .2);
+    color: white;
 }

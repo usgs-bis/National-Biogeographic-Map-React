@@ -171,7 +171,7 @@ class OBISAnalysisPackage extends React.Component {
     render() {
         return (
             <div>
-                <BarLoader color={"white"} loading={this.state.loading} />
+                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading}/>
                 {this.props.getAnalysisLayers()}
                 <div className="chartsDiv">
                     <SpeciesCountChart
