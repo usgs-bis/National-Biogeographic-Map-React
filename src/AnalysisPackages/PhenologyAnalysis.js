@@ -1,7 +1,8 @@
 import React from "react";
-import { DynamicMapLayer } from "esri-leaflet"
+import L from "leaflet"
 import { BarLoader } from "react-spinners"
 
+import {RadioButton} from "../CustomRadio/CustomRadio"
 import HorizontalBarChart from "../Charts/HorizontalBarChart";
 import "./AnalysisPackages.css";
 
@@ -17,14 +18,24 @@ let sb_properties = {
     "title": "Phenology Forecasts"
 }
 
-const layers = {
-    nfhp_service: {
-        title: "Risk to Fish Habitat Degradation",
-        layer: new DynamicMapLayer({
-            url: "https://gis1.usgs.gov/arcgis/rest/services/nfhp2015/HCI_Dissolved_NFHP2015_v20160907/MapServer",
-            opacity: .5
-        }),
-        checked: false
+let baseLegendUrl = "https://geoserver.usanpn.org/geoserver/gdd/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng"
+
+let layers = {
+    phenology_service: {
+        title: "Phenocasts",
+        layer: L.tileLayer.wms(
+            "https://geoserver.usanpn.org/geoserver/gdd/wms",
+            {
+                format: "image/png",
+                opacity: .5,
+                transparent: true
+            }
+        ),
+        legend: {
+            url: ""
+        },
+        checked: true,
+        hideCheckbox: true
     }
 }
 
@@ -37,8 +48,10 @@ class PhenologyAnalysisPackage extends React.Component {
             canSubmit: false,
             loading: false,
             charts: [],
-            refs: []
+            refs: [],
+            selectedIndex: 0
         }
+
 
         this.getCharts = this.getCharts.bind(this)
         this.getFetchForDate = this.getFetchForDate.bind(this)
@@ -46,6 +59,24 @@ class PhenologyAnalysisPackage extends React.Component {
         this.clearCharts = this.clearCharts.bind(this)
         this.print = this.print.bind(this)
         this.getFormattedDate = this.getFormattedDate.bind(this)
+        this.toggleRadioBtn = this.toggleRadioBtn.bind(this)
+        this.turnOnLayer = this.turnOnLayer.bind(this)
+    }
+
+    turnOnLayer(value) {
+        layers["phenology_service"]["legend"]["url"] = baseLegendUrl + `&layer=${value[0]}&style=${value[1]}`
+        this.props.inputRefs["phenology_service"].checked = true;
+        this.props.updateBapLayers()
+
+        layers["phenology_service"]["layer"].setParams({
+            layers: value[0],
+            styles: value[1],
+            time: this.getFormattedDate(value[2])
+        })
+    }
+
+    toggleRadioBtn(index){
+        this.getCharts(this.state.data, index)
     }
 
     componentDidMount() {
@@ -132,9 +163,11 @@ class PhenologyAnalysisPackage extends React.Component {
      * Create the chart id, data, and config as documented in the chart type.
      * @param {Object {}} data
      */
-    getCharts(data) {
-
+    getCharts(data, idx) {
         if (!data) return
+
+        let selectedIndex = idx;
+        if (!selectedIndex) selectedIndex = 0;
 
         try {
 
@@ -150,18 +183,18 @@ class PhenologyAnalysisPackage extends React.Component {
             }
 
             let rawData = {
-                "agdd_50": {
+                "agdd_50f": {
                     "Current": data[1][`${this.getFormattedDate(this.state.dates[0].date)}`],
                     "Six-Day": data[3][`${this.getFormattedDate(this.state.dates[1].date)}`]
                 },
-                "agdd_32": {
+                "agdd": {
                     "Current": data[0][`${this.getFormattedDate(this.state.dates[0].date)}`],
                     "Six-Day": data[2][`${this.getFormattedDate(this.state.dates[1].date)}`]
                 }
             }
 
             let chartData = {
-                "agdd_50": {
+                "agdd_50f": {
                     "Apple Maggot": {
                         "Not Approaching Treatment Window": {
                             "range": [0, 650],
@@ -231,7 +264,7 @@ class PhenologyAnalysisPackage extends React.Component {
                         },
                     }
                 },
-                "agdd_32": {
+                "agdd": {
                     "Hemlock Woolly Adelgid": {
                         "Not Approaching Treatment Window": {
                             "range": [0, 25],
@@ -271,6 +304,7 @@ class PhenologyAnalysisPackage extends React.Component {
             }
             let charts = []
             let refs = []
+            let i = 0;
             for (let layer of Object.keys(rawData)) {
                 for (let pestName of Object.keys(chartData[layer])) {
                     for (let time of Object.keys(rawData[layer])) {
@@ -279,7 +313,7 @@ class PhenologyAnalysisPackage extends React.Component {
                         const chartConfig = {
                             width: 400,
                             height: 150,
-                            margins: { left: 50, right: 20, top: 20, bottom: timeIndex ? 75 : 30 },
+                            margins: { left: 50, right: 20, top: 20, bottom:  30 },
                             chart: { title: timeIndex ? '' : `${pestName}`, subtitle: `` },
                             xAxis: { key: 'acres', label: "Approximate Acreage", ticks: 5, tickFormat: (d) => { return `${numberWithCommas(parseInt(d))}` } },
                             yAxis: { key: 'name', label: `${time}  ${this.getFormattedDate(this.state.dates[timeIndex].date)}`, ticks: 5, tickFormat: (d) => { '' } },
@@ -293,14 +327,33 @@ class PhenologyAnalysisPackage extends React.Component {
                                 chartDataFormatted.push({ "name": window, "acres": timeIndex ? chartData[layer][pestName][window]['Current'] : chartData[layer][pestName][window]['Six-Day'], "color": chartData[layer][pestName][window].color })
                             }
                         }
+
+                        let style = pestName.toLowerCase().replace(/\s/g, '_')
+                        let d = this.state.dates[timeIndex].date
                         charts.push(
-                            <HorizontalBarChart
-                                onRef={ref => { (this.chartId = ref); refs.push(this.chartId) }}
-                                key={chartId}
-                                data={chartDataFormatted}
-                                id={chartId}
-                                config={chartConfig} />
+                            <div key={chartId} className="nbm-flex-row-no-padding" style={{borderBottom: "1px solid gray"}}>
+                                <div style={{justifyContent: "center"}} className="nbm-flex-column-big">
+                                    <HorizontalBarChart
+                                        onRef={ref => { (this.chartId = ref); refs.push(this.chartId) }}
+                                        key={chartId}
+                                        data={chartDataFormatted}
+                                        id={chartId}
+                                        config={chartConfig} />
+                                </div>
+                                <div style={{justifyContent: "center", paddingRight: "5px"}} className="nbm-flex-column">
+                                    <RadioButton
+                                        isChecked={(selectedIndex === i)}
+                                        value={[layer, style, d]}
+                                        index={i}
+                                        handler={this.toggleRadioBtn.bind(this)}
+                                    />
+                                </div>
+                            </div>
                         )
+                        if (i === selectedIndex) {
+                            this.turnOnLayer([layer, style, d])
+                        }
+                        i++
                     }
                 }
             }

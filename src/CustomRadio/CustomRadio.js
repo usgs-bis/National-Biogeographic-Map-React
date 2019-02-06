@@ -3,21 +3,36 @@ import { Glyphicon } from "react-bootstrap";
 
 import "./CustomRadio.css"
 
-class Radio extends React.Component{
 
+class RadioButton extends React.Component {
     handleClick(){
-        this.props.handler(this.props.index);
+        this.props.handler(this.props.index, this.props.value);
     }
 
     render() {
         return (
             <div onClick={this.handleClick.bind(this)}>
+                <Glyphicon
+                    style={{textAlign: "right", justifyContent: "center"}}
+                    className="nbm-flex-column"
+                    glyph={this.props.isChecked ? "check" : "unchecked"}
+                />
+            </div>
+        )
+    }
+}
+
+class Radio extends React.Component{
+
+    render() {
+        return (
+            <div>
                 <div className="nbm-flex-row-no-padding radio-option">
                     <span className="nbm-flex-column-big">{this.props.text}</span>
-                    <Glyphicon
-                        style={{textAlign: "right"}}
-                        className="nbm-flex-column"
-                        glyph={this.props.isChecked ? "check" : "unchecked"}
+                    <RadioButton
+                        handler={this.props.handler}
+                        isChecked={this.props.isChecked}
+                        index={this.props.index}
                     />
                 </div>
             </div>
@@ -58,7 +73,6 @@ class RadioGroup extends React.Component{
                         value={option.title}
                         index={i}
                         handler={this.toggleRadioBtn.bind(this)} />
-                    {/*<br/>*/}
                 </div>
             )
         });
@@ -71,5 +85,6 @@ class RadioGroup extends React.Component{
 
 export {
     RadioGroup,
-    Radio
+    Radio,
+    RadioButton
 }
