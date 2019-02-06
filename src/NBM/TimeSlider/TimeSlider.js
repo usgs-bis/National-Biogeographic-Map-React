@@ -22,8 +22,23 @@ class TimeSlider extends React.Component {
     }
 
     componentDidMount() {
-        this.setMapDisplay()
-        this.setYearRange()
+
+    }
+
+    componentWillReceiveProps(props) {
+        if (this.state.range[0] !== props.yearMin || this.state.range[1] !== props.yearMax || this.state.mapDisplay !== props.mapDisplay) {
+            this.setState({
+                mapDisplay: props.layerYear ? props.layerYear : this.state.mapDisplay,
+                range: [props.yearMin ? props.yearMin : this.state.range[0], props.yearMax ? props.yearMax : this.state.range[1]]
+            }, () => {
+                this.setMapDisplay()
+                this.setYearRange()
+            })
+        }
+        else {
+            this.setMapDisplay()
+            this.setYearRange()
+        }
     }
 
     setIntermittentRange() {
@@ -60,7 +75,7 @@ class TimeSlider extends React.Component {
                         onMouseUp={this.setYearRange}
                         onKeyUp={this.setYearRange}
                         onChange={this.setIntermittentRange}
-                        defaultValue={this.state.range[0]}
+                        value={this.state.range[0]}
                         min={this.state.min}
                         max={this.state.max}
                         step="1"
@@ -71,7 +86,7 @@ class TimeSlider extends React.Component {
                         onMouseUp={this.setMapDisplay}
                         onKeyUp={this.setMapDisplay}
                         onChange={this.setIntermittentDisplay}
-                        defaultValue={this.state.mapDisplay}
+                        value={this.state.mapDisplay}
                         min={this.state.min}
                         max={this.state.max}
                         step="1"
@@ -81,7 +96,7 @@ class TimeSlider extends React.Component {
                         onMouseUp={this.setYearRange}
                         onKeyUp={this.setYearRange}
                         onChange={this.setIntermittentRange}
-                        defaultValue={this.state.range[1]}
+                        value={this.state.range[1]}
                         min={this.state.min}
                         max={this.state.max}
                         step="1"

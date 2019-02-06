@@ -29,21 +29,64 @@ class App extends React.Component {
             feature: null,
             yearMin: null,
             yearMax: null,
-            map: null
+            layerYear: null,
+            map: null,
+            analysisLayers: null
         }
 
-        this.parseBioscape = this.parseBioscape.bind(this);
+        this.parseBioscape = this.parseBioscape.bind(this)
         this.handleSearchBox = this.handleSearchBox.bind(this)
-        this.submitHandler = this.submitHandler.bind(this);
-        this.handleMapClick = this.handleMapClick.bind(this);
-        this.basemapChanged = this.basemapChanged.bind(this);
-        this.updateYearRange = this.updateYearRange.bind(this);
+        this.submitHandler = this.submitHandler.bind(this)
+        this.handleMapClick = this.handleMapClick.bind(this)
+        this.basemapChanged = this.basemapChanged.bind(this)
+        this.updateYearRange = this.updateYearRange.bind(this)
+        this.updateMapDisplay = this.updateMapDisplay.bind(this)
         this.updateAnalysisLayers = this.updateAnalysisLayers.bind(this)
         this.setMap = this.setMap.bind(this)
+        this.shareState = this.shareState.bind(this)
+        this.loadState = this.loadState.bind(this)
     }
 
     componentDidMount() {
         this.parseBioscape()
+        this.loadState()
+    }
+
+    shareState() {
+
+        let state = {
+            feature: { id: this.state.feature.properties.feature_id },
+            basemap: this.state.basemap,
+            timeSlider: { yearMin: this.state.yearMin, yearMax: this.state.yearMax, layerYear: this.state.layerYear },
+            //analysisLayers: { title: this.state.analysisLayers }
+        }
+        let objJsonB64 = Buffer.from(JSON.stringify(state)).toString("base64");
+        let copyText = document.getElementsByClassName('share-url-input')[0]
+        copyText.style.display = 'inline-block'
+        copyText.value = window.location.href.split('#')[0] + '#' + objJsonB64
+        copyText.select()
+        document.execCommand("copy")
+        copyText.style.display = 'none'
+    }
+
+    loadState() {
+        try {
+            let loc = window.location.href
+            let split = loc.split('#')
+            if (split.length === 2) {
+                window.location.hash = ''
+                let state = JSON.parse(atob(split[1]))
+                this.submitHandler(state.feature)
+                this.basemapChanged(state.basemap)
+                this.updateYearRange([state.timeSlider.yearMin,state.timeSlider.yearMax])
+                this.updateMapDisplay(state.timeSlider.layerYear)
+                //this.updateAnalysisLayers(state.analysisLayers)
+
+            }
+        }
+        catch (e) {
+
+        }
     }
 
     basemapChanged(e) {
@@ -133,6 +176,23 @@ class App extends React.Component {
         })
     }
 
+    updateMapDisplay(year) {
+        this.setState({
+            layerYear: year
+        })
+        if (this.state.analysisLayers) {
+            this.state.analysisLayers.forEach((item) => {
+                if (item.timeEnabled) {
+                    item.layer.setParams(
+                        {
+                            time: `${year}-01-01`
+                        }
+                    )
+                }
+            })
+        }
+    }
+
     updateAnalysisLayers(layers) {
         this.setState({
             analysisLayers: layers
@@ -152,7 +212,7 @@ class App extends React.Component {
                         defaultSize={{ width: 500 }}
                         minWidth={250}
                         maxWidth={1000}
-                        onResizeStop={()=>{this.state.map.leafletElement.invalidateSize()}}
+                        onResizeStop={() => { this.state.map.leafletElement.invalidateSize() }}
                     >
                         <LeftPanel
                             basemapChanged={this.basemapChanged}
@@ -165,7 +225,8 @@ class App extends React.Component {
                             yearMin={this.state.yearMin}
                             yearMax={this.state.yearMax}
                             updateAnalysisLayers={this.updateAnalysisLayers}
-                            map ={this.state.map}
+                            shareState={this.shareState}
+                            map={this.state.map}
                         />
                     </Resizable>
 
@@ -176,8 +237,12 @@ class App extends React.Component {
                             feature={this.state.feature}
                             parentClickHandler={this.handleMapClick}
                             updateYearRange={this.updateYearRange}
+                            updateMapDisplay={this.updateMapDisplay}
                             analysisLayers={this.state.analysisLayers}
                             setMap={this.setMap}
+                            yearMin={this.state.yearMin}
+                            yearMax={this.state.yearMax}
+                            layerYear={this.state.layerYear}
 
                         />
                     </div>

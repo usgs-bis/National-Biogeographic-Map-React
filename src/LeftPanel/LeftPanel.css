@@ -136,3 +136,7 @@
 .analysis-package-container{
     padding: 2%;
 }
+
+.share-url-input{
+    display: none;
+}
