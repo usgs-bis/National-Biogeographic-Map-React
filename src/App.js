@@ -47,6 +47,7 @@ class App extends React.Component {
         this.setMap = this.setMap.bind(this)
         this.shareState = this.shareState.bind(this)
         this.loadState = this.loadState.bind(this)
+        this.handelDrawnPolygon = this.handelDrawnPolygon.bind(this)
     }
 
     componentDidMount() {
@@ -114,6 +115,11 @@ class App extends React.Component {
         this.setState({
             basemap: basemap
         })
+    }
+
+    handelDrawnPolygon(geom){
+        console.log('a user drawn polygon has been created')
+        console.log(geom)
     }
 
     submitHandler(e) {
@@ -244,6 +250,7 @@ class App extends React.Component {
                             basemap={this.state.basemap}
                             feature={this.state.feature}
                             parentClickHandler={this.handleMapClick}
+                            parentDrawHandler={this.handelDrawnPolygon}
                             updateYearRange={this.updateYearRange}
                             updateMapDisplay={this.updateMapDisplay}
                             analysisLayers={this.state.analysisLayers}
