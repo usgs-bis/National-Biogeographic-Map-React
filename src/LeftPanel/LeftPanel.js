@@ -27,11 +27,12 @@ class LeftPanel extends React.Component {
             basemapsOpen: false,
             bioscape: props.bioscape,
             updateAnalysisLayers: props.updateAnalysisLayers,
-            priorityBap: "bap1",
+            priorityBap: null,
             loading: false,
             enabledLayers: []
 
         }
+        this.initilized = false
         this.handleKeyUp = this.handleKeyUp.bind(this);
         this.toggleSfrDropdown = this.toggleSfrDropdown.bind(this)
         this.onFocus = this.onFocus.bind(this)
@@ -59,6 +60,12 @@ class LeftPanel extends React.Component {
             this.textInput.focus();
             this.setState({
                 focused: true
+            })
+        }
+        if( !this.initilized &&  props.initBap){
+            this.initilized = true
+            this.setState({
+                priorityBap : props.initBap.priorityBap
             })
         }
     }
@@ -131,7 +138,7 @@ class LeftPanel extends React.Component {
             enabledLayers: enabledLayers
         })
 
-        this.state.updateAnalysisLayers(enabledLayers)
+        this.state.updateAnalysisLayers(enabledLayers,bapId)
     }
 
     render() {
@@ -218,6 +225,7 @@ class LeftPanel extends React.Component {
                             yearMax={this.props.yearMax}
                             priorityBap={this.state.priorityBap}
                             bapId={`bap${counter++}`}
+                            initLayerTitle={this.props.initBap.initLayerTitle}
                         />
                     </div>
                     <div className="nbm-flex-row-no-padding">
@@ -229,6 +237,7 @@ class LeftPanel extends React.Component {
                             yearMax={this.props.yearMax}
                             priorityBap={this.state.priorityBap}
                             bapId={`bap${counter++}`}
+                            initLayerTitle={this.props.initBap.initLayerTitle}
                         />
                     </div>
                     <div className="nbm-flex-row-no-padding">
@@ -240,6 +249,7 @@ class LeftPanel extends React.Component {
                             yearMax={this.props.yearMax}
                             priorityBap={this.state.priorityBap}
                             bapId={`bap${counter++}`}
+                            initLayerTitle={this.props.initBap.initLayerTitle}
                         />
                     </div>
                     <div className="nbm-flex-row-no-padding">
@@ -249,7 +259,7 @@ class LeftPanel extends React.Component {
                             feature={this.state.feature}
                             priorityBap={this.state.priorityBap}
                             bapId={`bap${counter++}`}
-
+                            initLayerTitle={this.props.initBap.initLayerTitle}
                         />
                     </div>
                     <div className="nbm-flex-row-no-padding">
@@ -259,6 +269,7 @@ class LeftPanel extends React.Component {
                             feature={this.state.feature}
                             priorityBap={this.state.priorityBap}
                             bapId={`bap${counter++}`}
+                            initLayerTitle={this.props.initBap.initLayerTitle}
                         />
                     </div>
                     <div className="nbm-flex-row-no-padding">
@@ -268,6 +279,7 @@ class LeftPanel extends React.Component {
                             feature={this.state.feature}
                             priorityBap={this.state.priorityBap}
                             bapId={`bap${counter++}`}
+                            initLayerTitle={this.props.initBap.initLayerTitle}
                         />
                     </div>
                     <div className="nbm-flex-row-no-padding">
@@ -277,6 +289,7 @@ class LeftPanel extends React.Component {
                             feature={this.state.feature}
                             priorityBap={this.state.priorityBap}
                             bapId={`bap${counter++}`}
+                            initLayerTitle={this.props.initBap.initLayerTitle}
                         />
                     </div>
                     <div className="nbm-flex-row-no-padding">
@@ -286,6 +299,7 @@ class LeftPanel extends React.Component {
                             feature={this.state.feature}
                             priorityBap={this.state.priorityBap}
                             bapId={`bap${counter++}`}
+                            initLayerTitle={this.props.initBap.initLayerTitle}
                         />
                     </div>
                 </div>

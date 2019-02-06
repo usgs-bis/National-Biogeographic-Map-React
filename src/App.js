@@ -31,7 +31,9 @@ class App extends React.Component {
             yearMax: null,
             layerYear: null,
             map: null,
-            analysisLayers: null
+            analysisLayers: null,
+            initBap : {}
+          
         }
 
         this.parseBioscape = this.parseBioscape.bind(this)
@@ -58,7 +60,7 @@ class App extends React.Component {
             feature: { id: this.state.feature.properties.feature_id },
             basemap: this.state.basemap,
             timeSlider: { yearMin: this.state.yearMin, yearMax: this.state.yearMax, layerYear: this.state.layerYear },
-            //analysisLayers: { title: this.state.analysisLayers }
+            bap: { analysisLayer: this.state.analysisLayers.length ? this.state.analysisLayers[0].title : '', priorityBap : this.state.priorityBap }
         }
         let objJsonB64 = Buffer.from(JSON.stringify(state)).toString("base64");
         let copyText = document.getElementsByClassName('share-url-input')[0]
@@ -78,10 +80,14 @@ class App extends React.Component {
                 let state = JSON.parse(atob(split[1]))
                 this.submitHandler(state.feature)
                 this.basemapChanged(state.basemap)
-                this.updateYearRange([state.timeSlider.yearMin,state.timeSlider.yearMax])
+                this.updateYearRange([state.timeSlider.yearMin, state.timeSlider.yearMax])
                 this.updateMapDisplay(state.timeSlider.layerYear)
-                //this.updateAnalysisLayers(state.analysisLayers)
-
+                this.setState({
+                    initBap : {
+                        priorityBap: state.bap.priorityBap,
+                        initLayerTitle: state.bap.analysisLayer
+                    }
+                })
             }
         }
         catch (e) {
@@ -193,9 +199,10 @@ class App extends React.Component {
         }
     }
 
-    updateAnalysisLayers(layers) {
+    updateAnalysisLayers(layers, bapId) {
         this.setState({
-            analysisLayers: layers
+            analysisLayers: layers,
+            priorityBap: bapId
         })
     }
 
@@ -227,6 +234,7 @@ class App extends React.Component {
                             updateAnalysisLayers={this.updateAnalysisLayers}
                             shareState={this.shareState}
                             map={this.state.map}
+                            initBap={this.state.initBap}
                         />
                     </Resizable>
 

@@ -24,6 +24,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 bapId: props.bapId,
                 isEnabled: true,
             }
+            this.initilized = false
             this.toggleDropdown = this.toggleDropdown.bind(this)
             this.toggleLayerDropdown = this.toggleLayerDropdown.bind(this)
             this.updateAnalysisLayers = this.updateAnalysisLayers.bind(this)
@@ -35,16 +36,22 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             this.inputRefs = {}
             this.getSBItemForPrint = this.getSBItemForPrint.bind(this)
             this.htmlToPDFMake = this.htmlToPDFMake.bind(this)
+            this.initilize = this.initilize.bind(this)
         }
 
         // this should stop baps from rendering untill the timeslider moves
         // or the feature is changed
         shouldComponentUpdate(nextProps, nextState) {
-            if(nextProps.feature && nextProps.feature.properties.feature_id !== this.state.feature_id) return true
-            if(nextProps.yearMax !== this.props.yearMax || nextProps.yearMin !== this.props.yearMin) return true
+            if (nextProps.feature && nextProps.feature.properties.feature_id !== this.state.feature_id) return true
+            if (nextProps.yearMax !== this.props.yearMax || nextProps.yearMin !== this.props.yearMin) return true
             return false
-          }
-    
+        }
+
+
+        componentWillReceiveProps(props) {
+            if (this.initilized === false) this.initilize(props)
+        }
+
 
         componentDidMount() {
             fetch(sb_url)
@@ -78,6 +85,20 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                     })
                 }
             }
+        }
+
+        initilize(props) {
+            if (props.priorityBap === props.bapId && props.initLayerTitle) {
+                Object.keys(this.state.layers).forEach((key) => {
+                    if (this.state.layers[key].title === props.initLayerTitle) {
+
+                        // should turn on this layer. i think that will trigger the priority bap to change and 
+                        // wont try and turn on layer again. 
+                        console.log('should turn on this layer', props.bapId, this.state.layers[key])
+                    }
+                })
+            }
+            this.initilized = true
         }
 
         resetAnalysisLayers() {
@@ -228,10 +249,10 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                         definition.bold = true
                         definition.text = content.textContent + ' '
                     }
-                    if (parent === 'LI' ) {
+                    if (parent === 'LI') {
                         definition.margin[0] += 10
-                        definition.text = '     •   ' +content.textContent
-                        definition.preserveLeadingSpaces= true
+                        definition.text = '     •   ' + content.textContent
+                        definition.preserveLeadingSpaces = true
                     }
                     if (parent === 'A') {
                         definition.style = 'annotationLink'
