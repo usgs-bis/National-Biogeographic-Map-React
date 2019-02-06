@@ -1,30 +1,35 @@
 import React from 'react'
-import { Map, TileLayer, WMSTileLayer, Marker, Popup, GeoJSON } from 'react-leaflet'
-
+import { Map, TileLayer, WMSTileLayer, Marker, Popup, GeoJSON, FeatureGroup } from 'react-leaflet'
 import './NBM.css'
 import LocationOverlay from './LocationOverylays/LocationOverlay';
 import TimeSlider from "./TimeSlider/TimeSlider"
+import { EditControl } from "react-leaflet-draw"
+import L from 'leaflet';
 
-let L = require('leaflet');
+
 const BUFFER = .5;
 
 class NBM extends React.PureComponent {
     constructor(props) {
         super(props);
         this.state = {
-            point:null
+            point: null,
         }
+        this.drawnpolygon = null
         this.bounds = [[21, -134], [51, -63]];
         this.key = 1;
         this.clickable = true
-        this.handleClick = this.handleClick.bind(this);
-        this.handleMouseMove = this.handleMouseMove.bind(this);
-        this.handleMouseOut = this.handleMouseOut.bind(this);
-        this.disableDragging = this.disableDragging.bind(this);
-        this.enableDragging = this.enableDragging.bind(this);
-        this.updateMapDisplay = this.updateMapDisplay.bind(this);
-        this.updateYearRange = this.updateYearRange.bind(this);
+        this.handleClick = this.handleClick.bind(this)
+        this.handleMouseMove = this.handleMouseMove.bind(this)
+        this.handleMouseOut = this.handleMouseOut.bind(this)
+        this.disableDragging = this.disableDragging.bind(this)
+        this.enableDragging = this.enableDragging.bind(this)
+        this.updateMapDisplay = this.updateMapDisplay.bind(this)
+        this.updateYearRange = this.updateYearRange.bind(this)
+        this.userDrawnPolygonStop = this.userDrawnPolygonStop.bind(this)
+        this.userDrawnPolygonStart = this.userDrawnPolygonStart.bind(this)
     }
+
 
     componentWillReceiveProps(props) {
         if (!props.feature) return;
@@ -98,6 +103,21 @@ class NBM extends React.PureComponent {
         this.props.updateYearRange(years);
     }
 
+    userDrawnPolygonStop(e) {
+        this.drawnpolygon = e.layer
+        let geom = this.drawnpolygon.toGeoJSON().geometry
+        geom.crs = { type: "name", properties: { name: "EPSG:4326" } }
+        this.props.parentDrawHandler(geom)
+    }
+
+    userDrawnPolygonStart(e){
+        if(this.drawnpolygon){
+            this.refs.map.leafletElement.removeLayer(this.drawnpolygon)
+        } 
+        this.drawnpolygon = null
+        this.disableDragging()
+    }
+
     render() {
         const geojson = () => {
             if (this.props.feature) {
@@ -143,6 +163,28 @@ class NBM extends React.PureComponent {
                 </div>
                 <div className="attribution" onMouseOver={this.disableDragging} onMouseOut={this.enableDragging}>
                 </div>
+                <FeatureGroup>
+                    <EditControl
+                        position='topright'
+                        onDeleted={this._onDeleted}
+                        onDrawStart={this.userDrawnPolygonStart}
+                        // onEditStart={this.disableDragging}
+                        // onEdited={this.userDrawnPolygon}
+                        onDeleteStart={this.userDrawnPolygonStart}
+                        onDrawStop={this.enableDragging}
+                        onEditStop={this.enableDragging}
+                        onDeleteStop={this.enableDragging}
+                        onCreated={this.userDrawnPolygonStop}
+                        edit={{edit:false}}
+                        draw={{
+                            rectangle: false,
+                            marker: false,
+                            circlemarker: false,
+                            polyline: false,
+                            circle: false
+                        }}
+                    />
+                </FeatureGroup>
             </Map>
         );
     }
