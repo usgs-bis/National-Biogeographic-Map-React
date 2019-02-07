@@ -23,6 +23,10 @@ const layers = {
             url: "https://gis1.usgs.gov/arcgis/rest/services/PADUS1_4/GAP_Status_Code/MapServer",
             opacity: .5
         }),
+        legend: {
+            arcgisUrl: "https://gis1.usgs.gov/arcgis/rest/services/PADUS1_4/GAP_Status_Code/MapServer/legend?f=pjson",
+            layers: [0]
+        },
         checked: false
     },
     species_range: {
@@ -35,6 +39,11 @@ const layers = {
                 transparent: true
             }
         ),
+        legend: {
+            baseLegendUrl: "https://www.sciencebase.gov/geoserver/CONUS_Range_2001/wms?" +
+            "service=wms&request=GetLegendGraphic&format=image%2Fpng",
+            imageUrl: ""
+        },
         checked: false,
         hideCheckbox: true
     },
@@ -48,6 +57,11 @@ const layers = {
                 transparent: true
             }
         ),
+        legend: {
+            baseLegendUrl: "https://www.sciencebase.gov/geoserver/CONUS_HabMap_2001/wms?" +
+            "service=wms&request=GetLegendGraphic&format=image%2Fpng",
+            imageUrl: ""
+        },
         checked: false,
         hideCheckbox: true
     }
@@ -156,6 +170,9 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
 
     changeFilter(e, layerKey) {
         let otherKey = layerKey === "species_range" ? "habitat_map" : "species_range"
+        layers[layerKey]["legend"]["imageUrl"] = layers[layerKey]["legend"]["baseLegendUrl"] +
+            `&layer=${e.currentTarget.value}`
+
         let layer = this.state.layers[layerKey]
         layer.layer.setParams({
             layers: e.currentTarget.value

@@ -28,7 +28,7 @@ const layers = {
             }
         ),
         legend: {
-            url: "https://geoserver.usanpn.org/geoserver/si-x/wms??service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=average_leaf_prism"
+            imageUrl: "https://geoserver.usanpn.org/geoserver/si-x/wms??service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=average_leaf_prism"
         },
         timeEnabled: true,
         checked: false
@@ -45,7 +45,7 @@ const layers = {
             }
         ),
         legend: {
-            url: "https://geoserver.usanpn.org/geoserver/si-x/wms??service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=average_bloom_prism"
+            imageUrl: "https://geoserver.usanpn.org/geoserver/si-x/wms??service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=average_bloom_prism"
         },
         timeEnabled: true,
         checked: false

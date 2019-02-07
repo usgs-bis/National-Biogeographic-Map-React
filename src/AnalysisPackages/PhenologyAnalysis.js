@@ -32,7 +32,7 @@ let layers = {
             }
         ),
         legend: {
-            url: ""
+            imageUrl: ""
         },
         checked: true,
         hideCheckbox: true
@@ -64,7 +64,7 @@ class PhenologyAnalysisPackage extends React.Component {
     }
 
     turnOnLayer(value) {
-        layers["phenology_service"]["legend"]["url"] = baseLegendUrl + `&layer=${value[0]}&style=${value[1]}`
+        layers["phenology_service"]["legend"]["imageUrl"] = baseLegendUrl + `&layer=${value[0]}&style=${value[1]}`
         this.props.inputRefs["phenology_service"].checked = true;
         this.props.updateBapLayers()
 
