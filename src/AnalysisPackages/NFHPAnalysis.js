@@ -46,42 +46,48 @@ class NFHPAnalysisPackage extends React.Component {
 
     componentDidUpdate(prevProps) {
         if (this.props.feature &&
-            this.props.feature.properties.feature_id &&
             (!prevProps.feature || this.props.feature.properties.feature_id !== prevProps.feature.properties.feature_id)) {
-            this.setState({
-                loading: true
-            })
-            fetch(NFHP_URL + this.props.feature.properties.feature_id)
-                .then(res => res.json())
-                .then(
-                    (result) => {
-                        if (result && result.hits.hits[0]) {
-                            const charts = this.getCharts({ horizontalBarChart: result.hits.hits[0]._source.properties })
-                            this.setState({
-                                charts: charts,
-                                loading: false
-                            })
-                            this.props.isEnabled(true)
-                            this.props.canOpen(true)
+            if (this.props.feature.properties.userDefined) {
+                this.props.isEnabled(false)
+                this.props.canOpen(false)
+            }
+            else {
+                this.setState({
+                    loading: true
+                })
+                fetch(NFHP_URL + this.props.feature.properties.feature_id)
+                    .then(res => res.json())
+                    .then(
+                        (result) => {
+                            if (result && result.hits.hits[0]) {
+                                const charts = this.getCharts({ horizontalBarChart: result.hits.hits[0]._source.properties })
+                                this.setState({
+                                    charts: charts,
+                                    loading: false
+                                })
+                                this.props.isEnabled(true)
+                                this.props.canOpen(true)
 
-                        } else {
+                            } else {
+                                this.setState({
+                                    charts: {
+                                        horizontalBarChart: { id: "", config: {}, data: null }
+                                    }
+                                })
+                                this.props.isEnabled(false)
+                                this.props.canOpen(false)
+                            }
+                        },
+                        (error) => {
                             this.setState({
-                                charts: {
-                                    horizontalBarChart: { id: "", config: {}, data: null }
-                                }
-                            })
-                            this.props.isEnabled(false)
-                            this.props.canOpen(false)
+                                error,
+                                loading: false
+                            });
                         }
-                    },
-                    (error) => {
-                        this.setState({
-                            error,
-                            loading: false
-                        });
-                    }
-                )
+                    )
+            }
         }
+
     }
 
     /**
@@ -135,7 +141,7 @@ class NFHPAnalysisPackage extends React.Component {
                 this.HorizontalBarChart.print(this.state.charts.horizontalBarChart.id)
                     .then(img => {
                         return [
-                            { stack: this.props.getSBItemForPrint()},
+                            { stack: this.props.getSBItemForPrint() },
                             { text: this.HorizontalBarChart.props.config.chart.title, style: 'chartTitle' },
                             { text: this.HorizontalBarChart.props.config.chart.subtitle, style: 'chartSubtitle' },
                             { image: img, alignment: 'center', width: 450 }
@@ -149,7 +155,7 @@ class NFHPAnalysisPackage extends React.Component {
     render() {
         return (
             <div>
-                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading}/>
+                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
                 {this.props.getAnalysisLayers()}
                 <div className="chartsDiv">
                     <HorizontalBarChart

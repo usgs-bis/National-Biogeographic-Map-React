@@ -106,6 +106,7 @@ class NBM extends React.PureComponent {
     }
 
     userDrawnPolygonStart(e) {
+        this.props.parentDrawHandler(null)
         if (this.drawnpolygon) {
             this.refs.map.leafletElement.removeLayer(this.drawnpolygon)
             this.drawnpolygon = null

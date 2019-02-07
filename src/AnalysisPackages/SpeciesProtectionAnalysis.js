@@ -88,47 +88,52 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
 
     componentDidUpdate(prevProps) {
         if (this.props.feature &&
-            this.props.feature.properties.feature_id &&
             (!prevProps.feature || this.props.feature.properties.feature_id !== prevProps.feature.properties.feature_id)) {
-            this.setState({
-                loading: true
-            })
-            fetch(SPECIES_URL + this.props.feature.properties.feature_id)
-                .then(res => res.json())
-                .then(
-                    (result) => {
-                        if (result && result.success) {
-                            const charts = this.getCharts(result.result)
+            if (this.props.feature.properties.userDefined) {
+                this.props.isEnabled(false)
+                this.props.canOpen(false)
+            }
+            else {
+                this.setState({
+                    loading: true
+                })
+                fetch(SPECIES_URL + this.props.feature.properties.feature_id)
+                    .then(res => res.json())
+                    .then(
+                        (result) => {
+                            if (result && result.success) {
+                                const charts = this.getCharts(result.result)
+                                this.setState({
+                                    charts: charts,
+                                    data: result.result,
+                                    loading: false,
+                                })
+                                this.props.isEnabled(true)
+                                this.props.canOpen(true)
+                            } else {
+                                this.setState({
+                                    charts: {
+                                        gap12: { id: "", config: {}, data: null },
+                                        gap123: { id: "", config: {}, data: null },
+                                        gapTable: { id: "", config: {}, data: null }
+                                    },
+                                    enabledLayers: {
+                                        nfhp_service: false,
+                                        loading: false
+                                    },
+                                })
+                                this.props.isEnabled(false)
+                                this.props.canOpen(false)
+                            }
+                        },
+                        (error) => {
                             this.setState({
-                                charts: charts,
-                                data: result.result,
-                                loading: false,
-                            })
-                            this.props.isEnabled(true)
-                            this.props.canOpen(true)
-                        } else {
-                            this.setState({
-                                charts: {
-                                    gap12: { id: "", config: {}, data: null },
-                                    gap123: { id: "", config: {}, data: null },
-                                    gapTable: { id: "", config: {}, data: null }
-                                },
-                                enabledLayers: {
-                                    nfhp_service: false,
-                                    loading: false
-                                },
-                            })
-                            this.props.isEnabled(false)
-                            this.props.canOpen(false)
+                                error,
+                                loading: false
+                            });
                         }
-                    },
-                    (error) => {
-                        this.setState({
-                            error,
-                            loading: false
-                        });
-                    }
-                )
+                    )
+            }
         }
 
         if (prevProps.priorityBap !== this.props.priorityBap) {
@@ -235,8 +240,8 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                     chart: { title: `GAP Status 1 & 2`, subtitle: `` },
                     tooltip: { label: (d) => { return `<p><div>${d.data.name}</div><div>${d.data.count} species</div></p>` } },
                     legend: { rectSize: 16, spacing: 4, leftOffset: 6, verticalSpacing: 20, fontSize: '13px' },
-                    width:225,
-                    height:225,
+                    width: 225,
+                    height: 225,
                     onClick: (d) => { this.filterTableData(d) }
                 }
                 const chartData = dataTemplate.status_1_2
@@ -249,8 +254,8 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                     chart: { title: `GAP Status 1, 2 & 3`, subtitle: `` },
                     tooltip: { label: (d) => { return `<p><div>${d.data.name}</div><div>${d.data.count} species</div></p>` } },
                     legend: { rectSize: 16, spacing: 4, leftOffset: 6, verticalSpacing: 20, fontSize: '13px' },
-                    width:225,
-                    height:225,
+                    width: 225,
+                    height: 225,
                     onClick: (d) => { this.filterTableData(d) }
 
                 }
@@ -287,7 +292,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                 }
 
                 for (let row of preData) {
-                    const name = `${row.common_name} ${row.common_name ? '(' + row.scientific_name : 'No common name recorded (' + row.scientific_name })`
+                    const name = `${row.common_name} ${row.common_name ? '(' + row.scientific_name : 'No common name recorded (' + row.scientific_name})`
                     if (this.state.gapRange !== 'ALL') {
                         if (this.state.gapStatus === 'status_1_2_group') protectedPercent = `${parseFloat(row.status_1_2).toFixed(2)}%`
                         if (this.state.gapStatus === 'status_1_2_3_group') protectedPercent = `${parseFloat(row.status_1_2_3).toFixed(2)}%`
@@ -363,7 +368,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
 
             return Promise.all(charts.flat()).then(contents => {
                 return [
-                    { stack: this.props.getSBItemForPrint()},
+                    { stack: this.props.getSBItemForPrint() },
                     { text: `Protection Status of Species in ${this.props.feature ? this.props.feature.properties.feature_name : ''}`, style: 'chartTitle', margin: [5, 2, 5, 5] },
                     {
                         columns: [
@@ -397,10 +402,10 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                                     {
                                         style: 'tableStyle',
                                         table: {
-                                           // widths: ['*','auto'],
+                                            // widths: ['*','auto'],
                                             heights: 15,
                                             body: this.state.charts.gapTable.data.slice(0, Math.floor(this.state.charts.gapTable.data.length / 3))
-                                            .map(elm => { return elm[1] ? [elm[0], elm[1]] : [elm[0]] })
+                                                .map(elm => { return elm[1] ? [elm[0], elm[1]] : [elm[0]] })
                                         }
                                     },
                                 ]
@@ -412,10 +417,10 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                                     {
                                         style: 'tableStyle',
                                         table: {
-                                           // widths: ['*','auto'],
+                                            // widths: ['*','auto'],
                                             heights: 15,
                                             body: this.state.charts.gapTable.data.slice(Math.floor(this.state.charts.gapTable.data.length / 3), Math.floor((this.state.charts.gapTable.data.length / 3) * 2))
-                                            .map(elm => { return elm[1] ? [elm[0], elm[1]] : [elm[0]] })
+                                                .map(elm => { return elm[1] ? [elm[0], elm[1]] : [elm[0]] })
                                         }
                                     },
                                 ]
@@ -430,7 +435,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                                             //widths: ['*','auto'],
                                             heights: 15,
                                             body: this.state.charts.gapTable.data.slice(Math.floor((this.state.charts.gapTable.data.length / 3) * 2), this.state.charts.gapTable.data.length)
-                                            .map(elm => { return elm[1] ? [elm[0], elm[1]] : [elm[0]] })
+                                                .map(elm => { return elm[1] ? [elm[0], elm[1]] : [elm[0]] })
                                         }
                                     },
                                 ]

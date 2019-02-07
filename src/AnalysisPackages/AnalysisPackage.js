@@ -16,7 +16,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 sb_properties: sb_properties,
                 submitted: false,
                 canOpen: false,
-                isOpen: false,
+                isOpen: props.priorityBap === props.bapId,
                 glyph: "menu-right",
                 value: [],
                 layers: layers,
@@ -47,7 +47,6 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
 
 
         componentWillReceiveProps(props) {
-            if (this.initilized === false) this.initilize(props)
         }
 
 
@@ -66,6 +65,8 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                         });
                     }
                 )
+            this.initilize(this.props)
+
         }
 
         componentDidUpdate(prevProps) {
@@ -101,6 +102,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 })
                 this.updateAnalysisLayers()
             }
+
             this.initilized = true
         }
 

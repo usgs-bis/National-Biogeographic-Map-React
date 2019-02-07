@@ -48,7 +48,6 @@ class FirstLeafAnalysisPackage extends React.Component {
             layers: layers,
             loading: false,
             bucketSize: { value: 3 },
-            feature_id: null,
             canSubmit: false
         }
 

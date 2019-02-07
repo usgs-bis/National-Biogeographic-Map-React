@@ -73,53 +73,64 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
         this.props.onRef(this)
     }
 
+    componentWillReceiveProps(props) {
+
+    }
     componentDidUpdate(prevProps) {
         if (this.props.feature &&
-            this.props.feature.properties.feature_id &&
             (!prevProps.feature || this.props.feature.properties.feature_id !== prevProps.feature.properties.feature_id)) {
-            this.setState({
-                loading: true
-            })
-            fetch(ECOSYSTEM_URL + this.props.feature.properties.feature_id)
-                .then(res => res.json())
-                .then(
-                    (result) => {
-                        if (result && result.success) {
-                            const charts = this.getCharts(result.result)
-                            this.setState({
-                                charts: charts,
-                                data: result.result,
-                                submitted: true,
-                                loading: false
-                            })
-                            this.props.isEnabled(true)
-                            this.props.canOpen(true)
-                        } else {
-                            this.setState({
-                                charts: {
-                                    protectionStatus: { id: "", config: {}, data: null },
-                                    gap12: { id: "", config: {}, data: null },
-                                    gap123: { id: "", config: {}, data: null },
-                                    gapTable: { id: "", config: {}, data: null },
-                                    gapCoverage: { id: "", config: {}, data: null }
-                                },
-                                submitted: true,
-                                enabledLayers: {
-                                    nfhp_service: false,
+            if (this.props.feature.properties.userDefined) {
+                this.props.isEnabled(false)
+                this.props.canOpen(false)
+            }
+            else {
+                this.setState({
+                    loading: true
+                })
+                fetch(ECOSYSTEM_URL + this.props.feature.properties.feature_id)
+                    .then(res => res.json())
+                    .then(
+                        (result) => {
+                            if (result && result.success) {
+                                const charts = this.getCharts(result.result)
+                                this.setState({
+                                    charts: charts,
+                                    data: result.result,
+                                    submitted: true,
                                     loading: false
-                                }
-                            })
-                            this.props.isEnabled(false)
-                            this.props.canOpen(false)
+                                })
+                                this.props.isEnabled(true)
+                                this.props.canOpen(true)
+                            } else {
+                                this.setState({
+                                    charts: {
+                                        protectionStatus: { id: "", config: {}, data: null },
+                                        gap12: { id: "", config: {}, data: null },
+                                        gap123: { id: "", config: {}, data: null },
+                                        gapTable: { id: "", config: {}, data: null },
+                                        gapCoverage: { id: "", config: {}, data: null }
+                                    },
+                                    submitted: true,
+                                    enabledLayers: {
+                                        nfhp_service: false,
+                                        loading: false
+                                    }
+                                })
+                                this.props.isEnabled(false)
+                                this.props.canOpen(false)
+                            }
+                        },
+                        (error) => {
+                            this.setState({
+                                error,
+                                loading: false
+                            });
                         }
-                    },
-                    (error) => {
-                        this.setState({
-                            error,
-                            loading: false
-                        });
-                    }
-                )
+                    )
+            }
+        }
+        else {
+
         }
     }
 
@@ -496,7 +507,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
 
             return Promise.all(charts.flat()).then(contents => {
                 return [
-                    { stack: this.props.getSBItemForPrint()},
+                    { stack: this.props.getSBItemForPrint() },
                     { text: this.state.charts.protectionStatus.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
                     { text: this.state.charts.protectionStatus.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
                     { image: contents[0], alignment: 'center', width: 450, height: 300 },
@@ -572,7 +583,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                     },
                     { text: this.state.charts.gapCoverage.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2], pageBreak: 'before' },
                     { text: this.state.charts.gapCoverage.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
-                    { image: contents[3], alignment: 'center', width: 400, height:560 },
+                    { image: contents[3], alignment: 'center', width: 400, height: 560 },
                 ]
             })
         }
