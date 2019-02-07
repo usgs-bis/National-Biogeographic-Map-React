@@ -27,32 +27,36 @@ class App extends React.Component {
             bioscape: bioscapeMap[props.bioscape],
             results: [],
             feature: null,
-            yearMin: null,
-            yearMax: null,
-            layerYear: null,
+            rangeYearMin: 2000,
+            rangeYearMax: 2010,
+            mapDisplayYear: 2005,
             map: null,
             analysisLayers: null,
-            initBap : {}
-          
-        }
+            activeLayerTitle: '',
+            priorityBap: null,
 
+        }
+        this.initFeatureId = null;
+        this.initLayerTitle = null
         this.parseBioscape = this.parseBioscape.bind(this)
         this.handleSearchBox = this.handleSearchBox.bind(this)
         this.submitHandler = this.submitHandler.bind(this)
         this.handleMapClick = this.handleMapClick.bind(this)
         this.basemapChanged = this.basemapChanged.bind(this)
-        this.updateYearRange = this.updateYearRange.bind(this)
-        this.updateMapDisplay = this.updateMapDisplay.bind(this)
+        this.setYearRange = this.setYearRange.bind(this)
+        this.setMapDisplayYear = this.setMapDisplayYear.bind(this)
         this.updateAnalysisLayers = this.updateAnalysisLayers.bind(this)
         this.setMap = this.setMap.bind(this)
         this.shareState = this.shareState.bind(this)
         this.loadState = this.loadState.bind(this)
         this.handelDrawnPolygon = this.handelDrawnPolygon.bind(this)
+        this.state = this.loadState(this.state)
+
     }
 
     componentDidMount() {
         this.parseBioscape()
-        this.loadState()
+        if(this.initFeatureId ) this.submitHandler(this.initFeatureId)
     }
 
     shareState() {
@@ -60,8 +64,8 @@ class App extends React.Component {
         let state = {
             feature: { id: this.state.feature.properties.feature_id },
             basemap: this.state.basemap,
-            timeSlider: { yearMin: this.state.yearMin, yearMax: this.state.yearMax, layerYear: this.state.layerYear },
-            bap: { analysisLayer: this.state.analysisLayers.length ? this.state.analysisLayers[0].title : '', priorityBap : this.state.priorityBap }
+            timeSlider: { rangeYearMin: this.state.rangeYearMin, rangeYearMax: this.state.rangeYearMax, mapDisplayYear: this.state.mapDisplayYear },
+            bap: { activeLayerTitle: this.state.analysisLayers && this.state.analysisLayers.length ? this.state.analysisLayers[0].title : '', priorityBap: this.state.priorityBap }
         }
         let objJsonB64 = Buffer.from(JSON.stringify(state)).toString("base64");
         let copyText = document.getElementsByClassName('share-url-input')[0]
@@ -72,29 +76,26 @@ class App extends React.Component {
         copyText.style.display = 'none'
     }
 
-    loadState() {
-        try {
-            let loc = window.location.href
-            let split = loc.split('#')
-            if (split.length === 2) {
-                window.location.hash = ''
-                let state = JSON.parse(atob(split[1]))
-                this.submitHandler(state.feature)
-                this.basemapChanged(state.basemap)
-                this.updateYearRange([state.timeSlider.yearMin, state.timeSlider.yearMax])
-                this.updateMapDisplay(state.timeSlider.layerYear)
-                this.setState({
-                    initBap : {
-                        priorityBap: state.bap.priorityBap,
-                        initLayerTitle: state.bap.analysisLayer
-                    }
-                })
-            }
-        }
-        catch (e) {
+    loadState(s) {
 
+        let loc = window.location.href
+        let split = loc.split('#')
+        if (split.length === 2 && split[1]) {
+            window.location.hash = ''
+            let initState = JSON.parse(atob(split[1]))
+            this.initFeatureId =  initState.feature
+            this.initLayerTitle = initState.bap.activeLayerTitle
+            s.basemap = initState.basemap
+            s.rangeYearMin = initState.timeSlider.rangeYearMin
+            s.rangeYearMax = initState.timeSlider.rangeYearMax
+            s.mapDisplayYear = initState.timeSlider.mapDisplayYear
+            s.priorityBap = initState.bap.priorityBap
+            return s
         }
+        return s
     }
+
+
 
     basemapChanged(e) {
         this.setState({
@@ -117,7 +118,7 @@ class App extends React.Component {
         })
     }
 
-    handelDrawnPolygon(geom){
+    handelDrawnPolygon(geom) {
         console.log('a user drawn polygon has been created')
         console.log(geom)
     }
@@ -181,16 +182,16 @@ class App extends React.Component {
             )
     }
 
-    updateYearRange(years) {
+    setYearRange(years) {
         this.setState({
-            yearMin: years[0],
-            yearMax: years[1]
+            rangeYearMin: years[0],
+            rangeYearMax: years[1]
         })
     }
 
-    updateMapDisplay(year) {
+    setMapDisplayYear(year) {
         this.setState({
-            layerYear: year
+            mapDisplayYear: year
         })
         if (this.state.analysisLayers) {
             this.state.analysisLayers.forEach((item) => {
@@ -235,12 +236,14 @@ class App extends React.Component {
                             submitHandler={this.submitHandler}
                             feature={this.state.feature}
                             mapClicked={this.state.mapClicked}
-                            yearMin={this.state.yearMin}
-                            yearMax={this.state.yearMax}
+                            rangeYearMin={this.state.rangeYearMin}
+                            rangeYearMax={this.state.rangeYearMax}
                             updateAnalysisLayers={this.updateAnalysisLayers}
                             shareState={this.shareState}
                             map={this.state.map}
-                            initBap={this.state.initBap}
+                            initLayerTitle={this.initLayerTitle}
+                            priorityBap={this.state.priorityBap}
+
                         />
                     </Resizable>
 
@@ -251,13 +254,13 @@ class App extends React.Component {
                             feature={this.state.feature}
                             parentClickHandler={this.handleMapClick}
                             parentDrawHandler={this.handelDrawnPolygon}
-                            updateYearRange={this.updateYearRange}
-                            updateMapDisplay={this.updateMapDisplay}
+                            setYearRange={this.setYearRange}
+                            setMapDisplayYear={this.setMapDisplayYear}
                             analysisLayers={this.state.analysisLayers}
                             setMap={this.setMap}
-                            yearMin={this.state.yearMin}
-                            yearMax={this.state.yearMax}
-                            layerYear={this.state.layerYear}
+                            rangeYearMax={this.state.rangeYearMax}
+                            rangeYearMin={this.state.rangeYearMin}
+                            mapDisplayYear={this.state.mapDisplayYear}
 
                         />
                     </div>
