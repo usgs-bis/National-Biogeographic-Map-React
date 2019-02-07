@@ -18,10 +18,8 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 canOpen: false,
                 isOpen: false,
                 glyph: "menu-right",
-                updateAnalysisLayers: props.updateAnalysisLayers,
                 value: [],
                 layers: layers,
-                bapId: props.bapId,
                 isEnabled: true,
             }
             this.initilized = false
@@ -72,7 +70,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
 
         componentDidUpdate(prevProps) {
             if (prevProps.priorityBap !== this.props.priorityBap) {
-                if (this.props.priorityBap !== this.state.bapId) {
+                if (this.props.priorityBap !== this.props.bapId) {
                     let l = layers;
                     let that = this;
                     Object.keys(l).forEach(function (key) {
@@ -136,7 +134,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 }
             })
 
-            this.state.updateAnalysisLayers(enabledLayers, this.state.bapId)
+            this.props.updateAnalysisLayers(enabledLayers, this.props.bapId)
         }
 
         toggleLayerDropdown() {

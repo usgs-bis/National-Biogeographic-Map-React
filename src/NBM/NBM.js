@@ -1,38 +1,42 @@
 import React from 'react'
-import { Map, TileLayer, WMSTileLayer, Marker, Popup, GeoJSON } from 'react-leaflet'
-
+import { Map, TileLayer, WMSTileLayer, Marker, Popup, GeoJSON, FeatureGroup } from 'react-leaflet'
 import './NBM.css'
 import LocationOverlay from './LocationOverylays/LocationOverlay';
 import TimeSlider from "./TimeSlider/TimeSlider"
+import { EditControl } from "react-leaflet-draw"
+import L from 'leaflet';
 
-let L = require('leaflet');
+
 const BUFFER = .5;
 
 class NBM extends React.PureComponent {
     constructor(props) {
         super(props);
         this.state = {
-            point:null
+            point: null,
         }
+        this.drawnpolygon = null
         this.bounds = [[21, -134], [51, -63]];
         this.key = 1;
         this.clickable = true
-        this.handleClick = this.handleClick.bind(this);
-        this.handleMouseMove = this.handleMouseMove.bind(this);
-        this.handleMouseOut = this.handleMouseOut.bind(this);
-        this.disableDragging = this.disableDragging.bind(this);
-        this.enableDragging = this.enableDragging.bind(this);
-        this.updateMapDisplay = this.updateMapDisplay.bind(this);
-        this.updateYearRange = this.updateYearRange.bind(this);
+        this.handleClick = this.handleClick.bind(this)
+        this.handleMouseMove = this.handleMouseMove.bind(this)
+        this.handleMouseOut = this.handleMouseOut.bind(this)
+        this.disableDragging = this.disableDragging.bind(this)
+        this.enableDragging = this.enableDragging.bind(this)
+        this.userDrawnPolygonStop = this.userDrawnPolygonStop.bind(this)
+        this.userDrawnPolygonStart = this.userDrawnPolygonStart.bind(this)
     }
 
+
     componentWillReceiveProps(props) {
-        if (!props.feature) return;
-        let b = L.geoJSON(props.feature).getBounds()
-        this.bounds = [
-            [b._southWest.lat - BUFFER, b._southWest.lng - BUFFER],
-            [b._northEast.lat + BUFFER, b._northEast.lng + BUFFER]
-        ]
+        if (props.feature && props.feature.properties) {
+            let b = L.geoJSON(props.feature).getBounds()
+            this.bounds = [
+                [b._southWest.lat - BUFFER, b._southWest.lng - BUFFER],
+                [b._northEast.lat + BUFFER, b._northEast.lng + BUFFER]
+            ]
+        }
     }
 
     componentDidMount() {
@@ -65,6 +69,10 @@ class NBM extends React.PureComponent {
             point: [e.latlng.lat, e.latlng.lng]
         });
 
+        if (this.drawnpolygon) {
+            this.refs.map.leafletElement.removeLayer(this.drawnpolygon)
+            this.drawnpolygon = null
+        }
         this.props.parentClickHandler(e)
     };
 
@@ -90,12 +98,19 @@ class NBM extends React.PureComponent {
         this.refs.map.leafletElement.dragging.enable();
     }
 
-    updateMapDisplay(year) {
-        this.props.updateMapDisplay(year);
+    userDrawnPolygonStop(e) {
+        this.drawnpolygon = e.layer
+        let geom = this.drawnpolygon.toGeoJSON().geometry
+        geom.crs = { type: "name", properties: { name: "EPSG:4326" } }
+        this.props.parentDrawHandler(geom)
     }
 
-    updateYearRange(years) {
-        this.props.updateYearRange(years);
+    userDrawnPolygonStart(e) {
+        if (this.drawnpolygon) {
+            this.refs.map.leafletElement.removeLayer(this.drawnpolygon)
+            this.drawnpolygon = null
+        }
+        this.disableDragging()
     }
 
     render() {
@@ -134,15 +149,37 @@ class NBM extends React.PureComponent {
                 {geojson()}
                 <div className="global-time-slider" onMouseOver={this.disableDragging} onMouseOut={this.enableDragging}>
                     <TimeSlider
-                        updateMapDisplay={this.updateMapDisplay}
-                        updateYearRange={this.updateYearRange}
-                        yearMax={this.props.yearMax}
-                        yearMin={this.props.yearMin}
-                        layerYear={this.props.layerYear}
+                        setMapDisplayYear={this.props.setMapDisplayYear}
+                        setYearRange={this.props.setYearRange}
+                        rangeYearMax={this.props.rangeYearMax}
+                        rangeYearMin={this.props.rangeYearMin}
+                        mapDisplayYear={this.props.mapDisplayYear}
                     />
                 </div>
                 <div className="attribution" onMouseOver={this.disableDragging} onMouseOut={this.enableDragging}>
                 </div>
+                <FeatureGroup>
+                    <EditControl
+                        position='topright'
+                        onDeleted={this._onDeleted}
+                        onDrawStart={this.userDrawnPolygonStart}
+                        // onEditStart={this.disableDragging}
+                        // onEdited={this.userDrawnPolygon}
+                        onDeleteStart={this.userDrawnPolygonStart}
+                        onDrawStop={this.enableDragging}
+                        onEditStop={this.enableDragging}
+                        onDeleteStop={this.enableDragging}
+                        onCreated={this.userDrawnPolygonStop}
+                        edit={{ edit: false }}
+                        draw={{
+                            rectangle: false,
+                            marker: false,
+                            circlemarker: false,
+                            polyline: false,
+                            circle: false
+                        }}
+                    />
+                </FeatureGroup>
             </Map>
         );
     }

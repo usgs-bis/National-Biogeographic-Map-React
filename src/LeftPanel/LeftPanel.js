@@ -27,7 +27,6 @@ class LeftPanel extends React.Component {
             basemapsOpen: false,
             bioscape: props.bioscape,
             updateAnalysisLayers: props.updateAnalysisLayers,
-            priorityBap: null,
             loading: false,
             enabledLayers: [],
             settingsOpen: false
@@ -48,7 +47,7 @@ class LeftPanel extends React.Component {
     }
 
     componentWillReceiveProps(props) {
-        if (props.feature) {
+        if (props.feature && props.feature.properties) {
             this.setState({
                 feature: props.feature,
                 feature_id: props.feature.properties.feature_id,
@@ -63,12 +62,12 @@ class LeftPanel extends React.Component {
                 focused: true
             })
         }
-        if( !this.initilized &&  props.initBap){
-            this.initilized = true
-            this.setState({
-                priorityBap : props.initBap.priorityBap
-            })
-        }
+        // if( !this.initilized &&  props.initBap){
+        //     this.initilized = true
+        //     this.setState({
+        //         priorityBap : props.initBap.priorityBap
+        //     })
+        // }
     }
 
     basemapChanged(e) {
@@ -135,7 +134,6 @@ class LeftPanel extends React.Component {
 
     updateAnalysisLayers(enabledLayers, bapId) {
         this.setState({
-            priorityBap: bapId,
             enabledLayers: enabledLayers
         })
 
@@ -231,11 +229,11 @@ class LeftPanel extends React.Component {
                             onRef={ref => (this.FirstLeafAnalysis = ref)}
                             updateAnalysisLayers={this.updateAnalysisLayers}
                             feature={this.state.feature}
-                            yearMin={this.props.yearMin}
-                            yearMax={this.props.yearMax}
-                            priorityBap={this.state.priorityBap}
+                            yearMin={this.props.rangeYearMin}
+                            yearMax={this.props.rangeYearMax}
+                            priorityBap={this.props.priorityBap}
                             bapId={`bap${counter++}`}
-                            initLayerTitle={this.props.initBap.initLayerTitle}
+                            initLayerTitle={this.props.initLayerTitle}
                         />
                     </div>
                     <div className="nbm-flex-row-no-padding">
@@ -243,11 +241,11 @@ class LeftPanel extends React.Component {
                             onRef={ref => (this.FirstBloomAnalysis = ref)}
                             updateAnalysisLayers={this.updateAnalysisLayers}
                             feature={this.state.feature}
-                            yearMin={this.props.yearMin}
-                            yearMax={this.props.yearMax}
-                            priorityBap={this.state.priorityBap}
+                            yearMin={this.props.rangeYearMin}
+                            yearMax={this.props.rangeYearMax}
+                            priorityBap={this.props.priorityBap}
                             bapId={`bap${counter++}`}
-                            initLayerTitle={this.props.initBap.initLayerTitle}
+                            initLayerTitle={this.props.initLayerTitle}
                         />
                     </div>
                     <div className="nbm-flex-row-no-padding">
@@ -255,11 +253,11 @@ class LeftPanel extends React.Component {
                             onRef={ref => (this.FirstLeafBloomComparisonAnalysis = ref)}
                             updateAnalysisLayers={this.updateAnalysisLayers}
                             feature={this.state.feature}
-                            yearMin={this.props.yearMin}
-                            yearMax={this.props.yearMax}
-                            priorityBap={this.state.priorityBap}
+                            yearMin={this.props.rangeYearMin}
+                            yearMax={this.props.rangeYearMax}
+                            priorityBap={this.props.priorityBap}
                             bapId={`bap${counter++}`}
-                            initLayerTitle={this.props.initBap.initLayerTitle}
+                            initLayerTitle={this.props.initLayerTitle}
                         />
                     </div>
                     <div className="nbm-flex-row-no-padding">
@@ -267,9 +265,9 @@ class LeftPanel extends React.Component {
                             onRef={ref => (this.NFHPAnalysis = ref)}
                             updateAnalysisLayers={this.updateAnalysisLayers}
                             feature={this.state.feature}
-                            priorityBap={this.state.priorityBap}
+                            priorityBap={this.props.priorityBap}
                             bapId={`bap${counter++}`}
-                            initLayerTitle={this.props.initBap.initLayerTitle}
+                            initLayerTitle={this.props.initLayerTitle}
                         />
                     </div>
                     <div className="nbm-flex-row-no-padding">
@@ -277,9 +275,9 @@ class LeftPanel extends React.Component {
                             onRef={ref => (this.EcosystemProtectionAnalysis = ref)}
                             updateAnalysisLayers={this.updateAnalysisLayers}
                             feature={this.state.feature}
-                            priorityBap={this.state.priorityBap}
+                            priorityBap={this.props.priorityBap}
                             bapId={`bap${counter++}`}
-                            initLayerTitle={this.props.initBap.initLayerTitle}
+                            initLayerTitle={this.props.initLayerTitle}
                         />
                     </div>
                     <div className="nbm-flex-row-no-padding">
@@ -287,9 +285,9 @@ class LeftPanel extends React.Component {
                             onRef={ref => (this.SpeciesProtectionAnalysis = ref)}
                             updateAnalysisLayers={this.updateAnalysisLayers}
                             feature={this.state.feature}
-                            priorityBap={this.state.priorityBap}
+                            priorityBap={this.props.priorityBap}
                             bapId={`bap${counter++}`}
-                            initLayerTitle={this.props.initBap.initLayerTitle}
+                            initLayerTitle={this.props.initLayerTitle}
                         />
                     </div>
                     <div className="nbm-flex-row-no-padding">
@@ -297,9 +295,9 @@ class LeftPanel extends React.Component {
                             onRef={ref => (this.PhenologyAnalysis = ref)}
                             updateAnalysisLayers={this.updateAnalysisLayers}
                             feature={this.state.feature}
-                            priorityBap={this.state.priorityBap}
+                            priorityBap={this.props.priorityBap}
                             bapId={`bap${counter++}`}
-                            initLayerTitle={this.props.initBap.initLayerTitle}
+                            initLayerTitle={this.props.initLayerTitle}
                         />
                     </div>
                     <div className="nbm-flex-row-no-padding">
@@ -307,9 +305,9 @@ class LeftPanel extends React.Component {
                             onRef={ref => (this.OBISAnalysis = ref)}
                             updateAnalysisLayers={this.updateAnalysisLayers}
                             feature={this.state.feature}
-                            priorityBap={this.state.priorityBap}
+                            priorityBap={this.props.priorityBap}
                             bapId={`bap${counter++}`}
-                            initLayerTitle={this.props.initBap.initLayerTitle}
+                            initLayerTitle={this.props.initLayerTitle}
                         />
                     </div>
                 </div>
