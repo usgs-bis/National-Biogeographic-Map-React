@@ -24,6 +24,10 @@ const layers = {
             url: "https://gis1.usgs.gov/arcgis/rest/services/PADUS1_4/GAP_Status_Code/MapServer",
             opacity: .5
         }),
+        legend: {
+            arcgisUrl: "https://gis1.usgs.gov/arcgis/rest/services/PADUS1_4/GAP_Status_Code/MapServer/legend?f=pjson",
+            layers: [0]
+        },
         checked: false
     },
     ecological_systems: {
@@ -37,6 +41,10 @@ const layers = {
                 layers: "ecological_system"
             }
         ),
+        legend: {
+            imageUrl: "https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic" +
+            "&format=image%2Fpng&layer=ecological_system"
+        },
         checked: false
     }
 }

@@ -1,6 +1,6 @@
 import React from "react";
 import "./LeftPanel.css";
-import { Button, Collapse, CardBody, Card, ButtonGroup } from "reactstrap";
+import { Button, Collapse, CardBody, Card, ButtonGroup, Tooltip } from "reactstrap";
 import { Glyphicon } from "react-bootstrap";
 
 import Legend from "../Legend/Legend";
@@ -29,7 +29,8 @@ class LeftPanel extends React.Component {
             updateAnalysisLayers: props.updateAnalysisLayers,
             priorityBap: null,
             loading: false,
-            enabledLayers: []
+            enabledLayers: [],
+            settingsOpen: false
 
         }
         this.initilized = false
@@ -141,6 +142,10 @@ class LeftPanel extends React.Component {
         this.state.updateAnalysisLayers(enabledLayers,bapId)
     }
 
+    toggleSettingsTooltip = () => this.setState({
+        settingsOpen: !this.state.settingsOpen
+    });
+
     render() {
         let that = this;
         let counter = 1;
@@ -171,9 +176,14 @@ class LeftPanel extends React.Component {
                 <div className="left-panel-header">
                     <div className="nbm-flex-row">
                         <div className="nbm-flex-column">
-                            <Button onClick={this.toggleBasemapDropdown} title={"Settings"} className='placeholder-button' >
+                            <Button id={"SettingsTooltip"} onClick={this.toggleBasemapDropdown} className='placeholder-button' >
                                 <Glyphicon className="inner-glyph" glyph="menu-hamburger" />
                             </Button>
+                            <Tooltip
+                                placement="top" style={{fontSize: "14px"}} isOpen={this.state.settingsOpen}
+                                target="SettingsTooltip" toggle={this.toggleSettingsTooltip} delay={0}>
+                                Settings
+                            </Tooltip>
                         </div>
                         <div className="nbm-flex-column">
                             <Legend
