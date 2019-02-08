@@ -113,7 +113,6 @@ class App extends React.Component {
 
     setMap(map) {
         map.leafletElement.createPane('summarizationPane');
-        //put the summarization layer pane just above the overlay pane
         map.leafletElement.getPane('summarizationPane').style.zIndex = 402;
         map.leafletElement.getPane('overlayPane').style.zIndex = 403;
         this.setState({
