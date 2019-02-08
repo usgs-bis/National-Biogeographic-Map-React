@@ -41,7 +41,7 @@ const layers = {
         ),
         legend: {
             baseLegendUrl: "https://www.sciencebase.gov/geoserver/CONUS_Range_2001/wms?" +
-            "service=wms&request=GetLegendGraphic&format=image%2Fpng",
+                "service=wms&request=GetLegendGraphic&format=image%2Fpng",
             imageUrl: ""
         },
         checked: false,
@@ -59,7 +59,7 @@ const layers = {
         ),
         legend: {
             baseLegendUrl: "https://www.sciencebase.gov/geoserver/CONUS_HabMap_2001/wms?" +
-            "service=wms&request=GetLegendGraphic&format=image%2Fpng",
+                "service=wms&request=GetLegendGraphic&format=image%2Fpng",
             imageUrl: ""
         },
         checked: false,
@@ -93,80 +93,80 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
         this.filterTableData = this.filterTableData.bind(this)
         this.changeFilter = this.changeFilter.bind(this)
         this.print = this.print.bind(this)
-
+        this.featureChange = this.featureChange.bind(this)
+        this.fetch = this.fetch.bind(this)
     }
 
     componentDidMount() {
         this.props.onRef(this)
+        this.featureChange()
     }
 
     componentDidUpdate(prevProps) {
-        if (this.props.feature &&
-            (!prevProps.feature || this.props.feature.properties.feature_id !== prevProps.feature.properties.feature_id)) {
+        if (prevProps.feature !== this.props.feature) {
+            this.featureChange()
+        }
+    }
+
+    featureChange() {
+        if (this.props.feature) {
             if (this.props.feature.properties.userDefined) {
                 this.props.isEnabled(false)
                 this.props.canOpen(false)
             }
             else {
-                this.setState({
-                    loading: true
-                })
-                fetch(SPECIES_URL + this.props.feature.properties.feature_id)
-                    .then(res => res.json())
-                    .then(
-                        (result) => {
-                            if (result && result.success) {
-                                const charts = this.getCharts(result.result)
-                                this.setState({
-                                    charts: charts,
-                                    data: result.result,
-                                    loading: false,
-                                })
-                                this.props.isEnabled(true)
-                                this.props.canOpen(true)
-                            } else {
-                                this.setState({
-                                    charts: {
-                                        gap12: { id: "", config: {}, data: null },
-                                        gap123: { id: "", config: {}, data: null },
-                                        gapTable: { id: "", config: {}, data: null }
-                                    },
-                                    enabledLayers: {
-                                        nfhp_service: false,
-                                        loading: false
-                                    },
-                                })
-                                this.props.isEnabled(false)
-                                this.props.canOpen(false)
-                            }
-                        },
-                        (error) => {
-                            this.setState({
-                                error,
-                                loading: false
-                            });
-                        }
-                    )
+                this.fetch()
             }
         }
-
-        if (prevProps.priorityBap !== this.props.priorityBap) {
-            if (this.props.priorityBap !== this.props.bapId) {
-                let l = layers;
-                let that = this;
-                Object.keys(l).forEach(function (key) {
-                    l[key].checked = false
-                    if (that.inputRefs) {
-                        that.inputRefs[key].checked = false
-                    }
-                })
-
-                this.setState({
-                    layers: l
-                })
-            }
+        else {
+            this.props.canOpen(false)
+            this.props.isEnabled(true)
         }
+
     }
+
+    fetch() {
+        this.setState({
+            loading: true
+        })
+        fetch(SPECIES_URL + this.props.feature.properties.feature_id)
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    if (result && result.success) {
+                        const charts = this.getCharts(result.result)
+                        this.setState({
+                            charts: charts,
+                            data: result.result,
+                            loading: false,
+                        })
+                        this.props.isEnabled(true)
+                        this.props.canOpen(true)
+                    } else {
+                        this.setState({
+                            charts: {
+                                gap12: { id: "", config: {}, data: null },
+                                gap123: { id: "", config: {}, data: null },
+                                gapTable: { id: "", config: {}, data: null }
+                            },
+                            enabledLayers: {
+                                nfhp_service: false,
+                                loading: false
+                            },
+                        })
+                        this.props.isEnabled(false)
+                        this.props.canOpen(false)
+                    }
+                },
+                (error) => {
+                    this.setState({
+                        error,
+                        loading: false
+                    });
+                }
+            )
+    }
+
 
     changeFilter(e, layerKey) {
         let otherKey = layerKey === "species_range" ? "habitat_map" : "species_range"

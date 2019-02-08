@@ -61,6 +61,53 @@ class PhenologyAnalysisPackage extends React.Component {
         this.getFormattedDate = this.getFormattedDate.bind(this)
         this.toggleRadioBtn = this.toggleRadioBtn.bind(this)
         this.turnOnLayer = this.turnOnLayer.bind(this)
+        this.featureChange = this.featureChange.bind(this)
+    }
+
+    componentDidMount() {
+        this.props.onRef(this)
+        this.featureChange()
+    }
+
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.feature !== this.props.feature) {
+            this.clearCharts()
+            this.featureChange()
+        }
+    }
+
+    featureChange() {
+        if (this.props.feature) {
+            if (this.props.feature.properties.userDefined) {
+                this.props.isEnabled(true)
+                this.props.canOpen(true)
+                this.setState({
+                    canSubmit: true
+                })
+            }
+            else {
+                this.props.isEnabled(true)
+                this.props.canOpen(true)
+                this.setState({
+                    canSubmit: true
+                })
+            }
+        }
+        else {
+            this.props.canOpen(false)
+            this.props.isEnabled(true)
+        }
+
+    }
+   
+
+    clearCharts() {
+        this.setState({
+            data: null,
+            charts: [],
+            refs: []
+        })
     }
 
     turnOnLayer(value) {
@@ -77,29 +124,6 @@ class PhenologyAnalysisPackage extends React.Component {
 
     toggleRadioBtn(index){
         this.getCharts(this.state.data, index)
-    }
-
-    componentDidMount() {
-        this.props.onRef(this)
-    }
-
-    componentWillReceiveProps(props) {
-        if (props.feature && props.feature.properties.feature_id !== this.state.feature_id) {
-            this.clearCharts()
-            this.setState({
-                canSubmit: true,
-                feature_id: props.feature.properties.feature_id
-            })
-            this.props.canOpen(true)
-        }
-    }
-
-    clearCharts() {
-        this.setState({
-            data: null,
-            charts: [],
-            refs: []
-        })
     }
 
     getFormattedDate(date) {
@@ -121,10 +145,8 @@ class PhenologyAnalysisPackage extends React.Component {
                 })
     }
 
-    submitAnalysis(prevProps) {
-        if (this.props.feature &&
-            this.props.feature.properties.feature_id &&
-            (!prevProps.feature || this.props.feature.properties.feature_id !== prevProps.feature.properties.feature_id)) {
+    submitAnalysis() {
+        if (this.props.feature && !this.props.feature.properties.userDefined) {
             this.setState({
                 loading: true
             })
@@ -153,6 +175,15 @@ class PhenologyAnalysisPackage extends React.Component {
                     error,
                     loading: false
                 });
+            })
+        }
+        else if (this.props.feature) {
+            // hit with drawn polygon
+            this.setState({
+                loading: true
+            })
+            this.setState({
+                loading: false
             })
         }
     }

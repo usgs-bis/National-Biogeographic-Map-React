@@ -42,57 +42,75 @@ class NFHPAnalysisPackage extends React.Component {
 
         this.getCharts = this.getCharts.bind(this)
         this.print = this.print.bind(this)
+        this.featureChange = this.featureChange.bind(this)
+        this.fetch = this.fetch.bind(this)
     }
 
     componentDidMount() {
         this.props.onRef(this)
+        this.featureChange()
     }
 
     componentDidUpdate(prevProps) {
-        if (this.props.feature &&
-            (!prevProps.feature || this.props.feature.properties.feature_id !== prevProps.feature.properties.feature_id)) {
+        if (prevProps.feature !== this.props.feature) {
+            this.featureChange()
+        }
+    }
+
+    featureChange() {
+        if (this.props.feature) {
             if (this.props.feature.properties.userDefined) {
                 this.props.isEnabled(false)
                 this.props.canOpen(false)
             }
             else {
-                this.setState({
-                    loading: true
-                })
-                fetch(NFHP_URL + this.props.feature.properties.feature_id)
-                    .then(res => res.json())
-                    .then(
-                        (result) => {
-                            if (result && result.hits.hits[0]) {
-                                const charts = this.getCharts({ horizontalBarChart: result.hits.hits[0]._source.properties })
-                                this.setState({
-                                    charts: charts,
-                                    loading: false
-                                })
-                                this.props.isEnabled(true)
-                                this.props.canOpen(true)
-
-                            } else {
-                                this.setState({
-                                    charts: {
-                                        horizontalBarChart: { id: "", config: {}, data: null }
-                                    }
-                                })
-                                this.props.isEnabled(false)
-                                this.props.canOpen(false)
-                            }
-                        },
-                        (error) => {
-                            this.setState({
-                                error,
-                                loading: false
-                            });
-                        }
-                    )
+                this.fetch()
             }
+        }
+        else {
+            this.props.canOpen(false)
+            this.props.isEnabled(true)
         }
 
     }
+
+    fetch() {
+        this.setState({
+            loading: true
+        })
+        fetch(NFHP_URL + this.props.feature.properties.feature_id)
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    if (result && result.hits.hits[0]) {
+                        const charts = this.getCharts({ horizontalBarChart: result.hits.hits[0]._source.properties })
+                        this.setState({
+                            charts: charts,
+                            loading: false
+                        })
+                        this.props.isEnabled(true)
+                        this.props.canOpen(true)
+
+                    } else {
+                        this.setState({
+                            charts: {
+                                horizontalBarChart: { id: "", config: {}, data: null }
+                            }
+                        })
+                        this.props.isEnabled(false)
+                        this.props.canOpen(false)
+                    }
+                },
+                (error) => {
+                    this.setState({
+                        error,
+                        loading: false
+                    });
+                }
+            )
+    }
+
+
 
     /**
      * Loop through the charts defined in the state and look for a data object in datas that matches.

@@ -106,6 +106,9 @@ class NBM extends React.PureComponent {
     }
 
     userDrawnPolygonStart(e) {
+        this.setState({
+            point: null
+        });
         this.props.parentDrawHandler(null)
         if (this.drawnpolygon) {
             this.refs.map.leafletElement.removeLayer(this.drawnpolygon)
@@ -162,13 +165,14 @@ class NBM extends React.PureComponent {
                 <FeatureGroup>
                     <EditControl
                         position='topright'
-                        onDeleted={this._onDeleted}
+                        onDeleted={()=>{this.props.parentDrawHandler(null)}}
                         onDrawStart={this.userDrawnPolygonStart}
                         // onEditStart={this.disableDragging}
                         // onEdited={this.userDrawnPolygon}
+                        //onEditStop={this.enableDragging}
+
                         onDeleteStart={this.userDrawnPolygonStart}
                         onDrawStop={this.enableDragging}
-                        onEditStop={this.enableDragging}
                         onDeleteStop={this.enableDragging}
                         onCreated={this.userDrawnPolygonStop}
                         edit={{ edit: false }}

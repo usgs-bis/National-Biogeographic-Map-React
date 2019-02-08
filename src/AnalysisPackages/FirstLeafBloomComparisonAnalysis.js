@@ -67,11 +67,12 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
         this.submitAnalysis = this.submitAnalysis.bind(this)
         this.clearCharts = this.clearCharts.bind(this)
         this.print = this.print.bind(this)
-
+        this.featureChange = this.featureChange.bind(this)
     }
 
     componentDidMount() {
         this.props.onRef(this)
+        this.featureChange()
     }
 
     clearCharts() {
@@ -84,19 +85,40 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
         })
     }
 
-    componentWillReceiveProps(props) {
-        if (props.feature && props.feature.properties.feature_id !== this.state.feature_id) {
+    componentDidUpdate(prevProps) {
+        if (prevProps.feature !== this.props.feature) {
             this.clearCharts()
-            this.setState({
-                canSubmit: true,
-                feature_id: props.feature.properties.feature_id
-            })
-            this.props.canOpen(true)
+            this.featureChange()
         }
     }
 
+    featureChange() {
+        if (this.props.feature) {
+            if (this.props.feature.properties.userDefined) {
+                this.props.isEnabled(true)
+                this.props.canOpen(true)
+                this.setState({
+                    canSubmit: true
+                })
+            }
+            else {
+                this.props.isEnabled(true)
+                this.props.canOpen(true)
+                this.setState({
+                    canSubmit: true
+                })
+            }
+        }
+        else {
+            this.props.canOpen(false)
+            this.props.isEnabled(true)
+        }
+
+    }
+
+
     submitAnalysis() {
-        if (this.props.feature && this.props.feature.properties.feature_id) {
+        if (this.props.feature && !this.props.feature.properties.userDefined) {
             this.setState({
                 loading: true
             })
@@ -135,7 +157,12 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
 
         }
         else if (this.props.feature) {
-            // hit with drawn polygon
+            this.setState({
+                loading: true
+            })
+            this.setState({
+                loading: false
+            })
         }
     }
 

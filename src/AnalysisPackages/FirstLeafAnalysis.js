@@ -30,7 +30,7 @@ const layers = {
         ),
         legend: {
             imageUrl: "https://geoserver.usanpn.org/geoserver/si-x/wms??service=wms&request=GetLegendGraphic&" +
-            "format=image%2Fpng&layer=average_leaf_prism"
+                "format=image%2Fpng&layer=average_leaf_prism"
         },
         timeEnabled: true,
         checked: false
@@ -58,11 +58,12 @@ class FirstLeafAnalysisPackage extends React.Component {
         this.setBucketSize = this.setBucketSize.bind(this)
         this.clearCharts = this.clearCharts.bind(this)
         this.print = this.print.bind(this)
-
+        this.featureChange = this.featureChange.bind(this)
     }
 
     componentDidMount() {
         this.props.onRef(this)
+        this.featureChange()
     }
 
     toggleDropdown() {
@@ -82,20 +83,43 @@ class FirstLeafAnalysisPackage extends React.Component {
         })
     }
 
-    componentWillReceiveProps(props) {
-        if (props.feature && props.feature.properties.feature_id !== this.state.feature_id) {
+    
 
+    componentDidUpdate(prevProps) {
+        if (prevProps.feature !== this.props.feature) {
             this.clearCharts()
-            this.setState({
-                canSubmit: true,
-                feature_id: props.feature.properties.feature_id
-            })
-            this.props.canOpen(true)
+            this.featureChange()
         }
     }
 
+    featureChange() {
+        if (this.props.feature) {
+            if (this.props.feature.properties.userDefined) {
+                this.props.isEnabled(true)
+                this.props.canOpen(true)
+                this.setState({
+                    canSubmit: true
+                })
+            }
+            else {
+                this.props.isEnabled(true)
+                this.props.canOpen(true)
+                this.setState({
+                    canSubmit: true
+                })
+            }
+        }
+        else {
+            this.props.canOpen(false)
+            this.props.isEnabled(true)
+        }
+
+    }
+
+
+
     submitAnalysis() {
-        if (this.props.feature && this.props.feature.properties.feature_id) {
+        if (this.props.feature && !this.props.feature.properties.userDefined) {
             this.setState({
                 loading: true
             })
@@ -130,6 +154,12 @@ class FirstLeafAnalysisPackage extends React.Component {
         }
         else if (this.props.feature) {
             // hit with drawn polygon
+            this.setState({
+                loading: true
+            })
+            this.setState({
+                loading: false
+            })
         }
     }
 
@@ -203,7 +233,7 @@ class FirstLeafAnalysisPackage extends React.Component {
 
             return Promise.all(charts.flat()).then(contents => {
                 return [
-                    { stack: this.props.getSBItemForPrint()},
+                    { stack: this.props.getSBItemForPrint() },
                     {
                         columns: [
 

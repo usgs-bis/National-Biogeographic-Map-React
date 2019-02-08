@@ -43,7 +43,7 @@ const layers = {
         ),
         legend: {
             imageUrl: "https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic" +
-            "&format=image%2Fpng&layer=ecological_system"
+                "&format=image%2Fpng&layer=ecological_system"
         },
         checked: false
     }
@@ -75,71 +75,83 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
         this.getColorFromName = this.getColorFromName.bind(this)
         this.resetEcoTable = this.resetEcoTable.bind(this)
         this.print = this.print.bind(this)
+        this.featureChange = this.featureChange.bind(this)
+        this.fetch = this.fetch.bind(this)
     }
 
     componentDidMount() {
         this.props.onRef(this)
+        this.featureChange()
     }
 
-    componentWillReceiveProps(props) {
 
-    }
     componentDidUpdate(prevProps) {
-        if (this.props.feature &&
-            (!prevProps.feature || this.props.feature.properties.feature_id !== prevProps.feature.properties.feature_id)) {
+        if (prevProps.feature !== this.props.feature) {
+            this.featureChange()
+        }
+    }
+
+    featureChange() {
+        if (this.props.feature) {
             if (this.props.feature.properties.userDefined) {
                 this.props.isEnabled(false)
                 this.props.canOpen(false)
             }
             else {
-                this.setState({
-                    loading: true
-                })
-                fetch(ECOSYSTEM_URL + this.props.feature.properties.feature_id)
-                    .then(res => res.json())
-                    .then(
-                        (result) => {
-                            if (result && result.success) {
-                                const charts = this.getCharts(result.result)
-                                this.setState({
-                                    charts: charts,
-                                    data: result.result,
-                                    submitted: true,
-                                    loading: false
-                                })
-                                this.props.isEnabled(true)
-                                this.props.canOpen(true)
-                            } else {
-                                this.setState({
-                                    charts: {
-                                        protectionStatus: { id: "", config: {}, data: null },
-                                        gap12: { id: "", config: {}, data: null },
-                                        gap123: { id: "", config: {}, data: null },
-                                        gapTable: { id: "", config: {}, data: null },
-                                        gapCoverage: { id: "", config: {}, data: null }
-                                    },
-                                    submitted: true,
-                                    enabledLayers: {
-                                        nfhp_service: false,
-                                        loading: false
-                                    }
-                                })
-                                this.props.isEnabled(false)
-                                this.props.canOpen(false)
-                            }
-                        },
-                        (error) => {
-                            this.setState({
-                                error,
-                                loading: false
-                            });
-                        }
-                    )
+                this.fetch()
             }
         }
         else {
-
+            this.props.canOpen(false)
+            this.props.isEnabled(true)
         }
+
+    }
+
+    fetch() {
+        this.setState({
+            loading: true
+        })
+        fetch(ECOSYSTEM_URL + this.props.feature.properties.feature_id)
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    if (result && result.success) {
+                        const charts = this.getCharts(result.result)
+                        this.setState({
+                            charts: charts,
+                            data: result.result,
+                            submitted: true,
+                            loading: false
+                        })
+                        this.props.isEnabled(true)
+                        this.props.canOpen(true)
+                    } else {
+                        this.setState({
+                            charts: {
+                                protectionStatus: { id: "", config: {}, data: null },
+                                gap12: { id: "", config: {}, data: null },
+                                gap123: { id: "", config: {}, data: null },
+                                gapTable: { id: "", config: {}, data: null },
+                                gapCoverage: { id: "", config: {}, data: null }
+                            },
+                            submitted: true,
+                            enabledLayers: {
+                                nfhp_service: false,
+                                loading: false
+                            }
+                        })
+                        this.props.isEnabled(false)
+                        this.props.canOpen(false)
+                    }
+                },
+                (error) => {
+                    this.setState({
+                        error,
+                        loading: false
+                    });
+                }
+            )
     }
 
     getColorFromName(name) {
