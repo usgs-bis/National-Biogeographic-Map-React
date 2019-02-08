@@ -10,6 +10,7 @@ import "./AnalysisPackages.css";
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/5abd5fede4b081f61abfc472?format=json"
 const FIRSTBLOOM_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenology/place/firstbloom"
+const FIRSTBLOOM_POLY_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenology/polygon/firstbloom"
 const PUBLIC_TOKEN = process.env.REACT_APP_PUBLIC_TOKEN
 
 let sb_properties = {
@@ -150,9 +151,34 @@ class FirstBloomAnalysisPackage extends React.Component {
             this.setState({
                 loading: true
             })
-            this.setState({
-                loading: false
-            })
+            this.clearCharts()
+            fetch(FIRSTBLOOM_POLY_URL + `?year_min=${this.props.yearMin}&year_max=${this.props.yearMax}&geojson=${JSON.stringify(this.props.feature.geometry)}&token=${PUBLIC_TOKEN}`)
+                .then(res => res.json())
+                .then(
+                    (result) => {
+                        if (result) {
+                            const charts = this.getCharts({ histogram: result, ridgelinePlot: result, boxAndWhisker: result })
+                            this.setState({
+                                charts: charts,
+                                loading: false
+                            })
+                            this.props.isEnabled(true)
+                            this.props.canOpen(true)
+                        } else {
+                            this.setState({
+                                loading: false
+                            })
+                            this.props.isEnabled(false)
+                            this.props.canOpen(false)
+                        }
+                    },
+                    (error) => {
+                        this.setState({
+                            error,
+                            loading: false
+                        });
+                    }
+                )
         }
     }
 

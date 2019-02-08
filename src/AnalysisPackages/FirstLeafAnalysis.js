@@ -10,6 +10,7 @@ import "./AnalysisPackages.css";
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/58bf0b61e4b014cc3a3a9c10?format=json"
 const FIRSTLEAF_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenology/place/firstleaf"
+const FIRSTLEAF_POLY_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenology/polygon/firstleaf"
 const PUBLIC_TOKEN = process.env.REACT_APP_PUBLIC_TOKEN
 
 let sb_properties = {
@@ -83,8 +84,6 @@ class FirstLeafAnalysisPackage extends React.Component {
         })
     }
 
-    
-
     componentDidUpdate(prevProps) {
         if (prevProps.feature !== this.props.feature) {
             this.clearCharts()
@@ -157,9 +156,33 @@ class FirstLeafAnalysisPackage extends React.Component {
             this.setState({
                 loading: true
             })
-            this.setState({
-                loading: false
-            })
+            fetch(FIRSTLEAF_POLY_URL + `?year_min=${this.props.yearMin}&year_max=${this.props.yearMax}&geojson=${JSON.stringify(this.props.feature.geometry)}&token=${PUBLIC_TOKEN}`)
+                .then(res => res.json())
+                .then(
+                    (result) => {
+                        if (result) {
+                            const charts = this.getCharts({ histogram: result, ridgelinePlot: result, boxAndWhisker: result })
+                            this.setState({
+                                charts: charts,
+                                loading: false
+                            })
+                            this.props.isEnabled(true)
+                            this.props.canOpen(true)
+                        } else {
+                            this.setState({
+                                loading: false
+                            })
+                            this.props.isEnabled(false)
+                            this.props.canOpen(false)
+                        }
+                    },
+                    (error) => {
+                        this.setState({
+                            error,
+                            loading: false
+                        });
+                    }
+                )
         }
     }
 

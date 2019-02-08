@@ -119,7 +119,7 @@ class App extends React.Component {
     }
 
     handelDrawnPolygon(geom) {
-        if (geom) {
+        if (geom) { 
             this.setState({
                 feature: {
                     geometry: geom,
@@ -129,15 +129,14 @@ class App extends React.Component {
                         gid: null,
                         feature_name: "User Defined Polygon",
                         feature_code: null,
-                        feature_id:  Math.random().toString(36).substring(7),
-                        feature_description: 'User Defined Polygon'
+                        feature_id: Math.random().toString(36).substring(7),
+                        feature_description: 'User Defined Polygon',
                     },
                     type: "Feature"
                 }
             })
         }
         else {
-            console.log('setting null feature')
             this.setState({
                 feature: null
             })

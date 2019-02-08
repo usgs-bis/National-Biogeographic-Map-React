@@ -15,6 +15,11 @@ import EcosystemProtectionAnalysis from "../AnalysisPackages/EcosystemProtection
 import PhenologyAnalysis from "../AnalysisPackages/PhenologyAnalysis";
 import OBISAnalysis from "../AnalysisPackages/OBISAnalysis";
 import { BarLoader } from "react-spinners"
+import * as turf from '@turf/turf'
+
+const numberWithCommas = (x) => {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 
 class LeftPanel extends React.Component {
     constructor(props) {
@@ -48,11 +53,24 @@ class LeftPanel extends React.Component {
 
     componentWillReceiveProps(props) {
         if (props.feature && props.feature.properties) {
+            
+           let approxArea = 0
+            if (props.feature.properties.userDefined){
+                approxArea= numberWithCommas(parseInt(turf.convertArea(turf.area(turf.polygon(props.feature.geometry.coordinates)),'meters','acres')))
+            }
+            else{
+                let areaSqMeters = JSON.parse(props.feature.properties.source_data.value)[0].areasqkm
+                approxArea= numberWithCommas(parseInt(turf.convertArea(areaSqMeters,'kilometres','acres')))
+            }
+
+
             this.setState({
                 feature: props.feature,
                 feature_id: props.feature.properties.feature_id,
                 feature_name: props.feature.properties.feature_name,
-                feature_class: props.feature.properties.feature_class
+                feature_class: props.feature.properties.feature_class,
+                feature_area: approxArea
+
             })
         }
 
@@ -62,12 +80,6 @@ class LeftPanel extends React.Component {
                 focused: true
             })
         }
-        // if( !this.initilized &&  props.initBap){
-        //     this.initilized = true
-        //     this.setState({
-        //         priorityBap : props.initBap.priorityBap
-        //     })
-        // }
     }
 
     basemapChanged(e) {
@@ -155,7 +167,8 @@ class LeftPanel extends React.Component {
                             <span >{this.state.feature_name}</span>
                         </div>
                         <div className="panel-subtitle">
-                            <span className="category-text">Category:</span><span className="feature-text">  {this.state.feature_class}</span>
+                            <div className="category-text">Category: <span className="feature-text">  {this.state.feature_class}</span></div>
+                            <div className="category-text">Approximate Area: <span className="feature-text">  {this.state.feature_area} acres</span></div>
                         </div>
                         <div className="panel-buttons">
                             <button className="submit-analysis-btn" onClick={this.share}>Share</button>
