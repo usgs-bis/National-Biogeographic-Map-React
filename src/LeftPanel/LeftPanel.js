@@ -24,7 +24,7 @@ class LeftPanel extends React.Component {
             textSearchHandler: props.textSearchHandler,
             basemapChanged: props.basemapChanged,
             submitHandler: props.submitHandler,
-            basemapsOpen: false,
+            layersDropdownOpen: false,
             bioscape: props.bioscape,
             updateAnalysisLayers: props.updateAnalysisLayers,
             loading: false,
@@ -75,7 +75,7 @@ class LeftPanel extends React.Component {
     }
 
     toggleBasemapDropdown() {
-        this.setState({ basemapsOpen: !this.state.basemapsOpen });
+        this.setState({ layersDropdownOpen: !this.state.layersDropdownOpen });
     }
 
     handleKeyUp(e) {
@@ -190,7 +190,7 @@ class LeftPanel extends React.Component {
                         </div>
                         <div className="nbm-flex-column-big">
                             <input ref={(input) => { this.textInput = input; }} onClick={this.onFocus} onBlur={this.onBlur} onKeyUp={this.handleKeyUp}
-                                className="input-box" type={"text"} />
+                                   className="input-box" type={"text"} />
                         </div>
                     </div>
                     <div className="nbm-flex-row" >
@@ -199,26 +199,39 @@ class LeftPanel extends React.Component {
                                 {this.props.results.map(function (d, idx) {
                                     return (
                                         <Button className="sfr-button" style={{ whiteSpace: 'normal' }}
-                                            onClick={function () { that.submit(this) }}
-                                            id={d.feature_id}
-                                            key={d.feature_id}>
+                                                onClick={function () { that.submit(this) }}
+                                                id={d.feature_id}
+                                                key={d.feature_id}>
                                             {d.feature_name} ({d.feature_class})
-                                    </Button>)
+                                        </Button>)
                                 })}
                             </ButtonGroup> : null}
                         </div>
                     </div>
                     <div className="nbm-flex-row-no-padding">
-                        <Collapse className="settings-dropdown" isOpen={this.state.basemapsOpen}>
+                        <Collapse className="settings-dropdown" isOpen={this.state.layersDropdownOpen}>
                             <Card>
                                 <span className="header">Basemaps</span>
                                 <CardBody>
                                     <RadioGroup style={{ width: "100%" }}
-                                        options={this.state.bioscape.basemaps}
-                                        onChange={this.basemapChanged}
+                                                options={this.state.bioscape.basemaps}
+                                                onChange={this.basemapChanged}
+                                                canDeselect={true}
                                     />
                                 </CardBody>
                             </Card>
+                            {this.state.bioscape.overlays &&
+                            <Card>
+                                <span className="header">Overlays</span>
+                                <CardBody>
+                                    <RadioGroup style={{ width: "100%" }}
+                                                options={this.state.bioscape.overlays}
+                                                onChange={this.props.overlayChanged}
+                                                canDeselect={true}
+                                    />
+                                </CardBody>
+                            </Card>
+                            }
                         </Collapse>
                     </div>
                     {featureText()}
