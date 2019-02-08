@@ -61,6 +61,14 @@ class NBM extends React.PureComponent {
                 }
             })
         }
+        if (prevProps.overlay !== this.props.overlay) {
+            if (prevProps.overlay) {
+                this.refs.map.leafletElement.removeLayer(prevProps.overlay.layer)
+            }
+            if (this.props.overlay) {
+                this.refs.map.leafletElement.addLayer(this.props.overlay.layer)
+            }
+        }
     }
 
     handleClick(e) {
@@ -141,6 +149,7 @@ class NBM extends React.PureComponent {
                 }
             }
         }
+
         return (
             <Map ref={"map"}
                 onClick={this.handleClick}

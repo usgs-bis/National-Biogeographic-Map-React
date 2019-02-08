@@ -5,6 +5,7 @@ import LeftPanel from "./LeftPanel/LeftPanel";
 import nbmBioscape from "./Bioscapes/biogeography"
 import nvcsBioscape from "./Bioscapes/terrestrial-ecosystems-2011"
 import Resizable from 're-resizable';
+import L from "leaflet";
 import "./App.css";
 
 const bioscapeMap = {
@@ -50,6 +51,7 @@ class App extends React.Component {
         this.shareState = this.shareState.bind(this)
         this.loadState = this.loadState.bind(this)
         this.handelDrawnPolygon = this.handelDrawnPolygon.bind(this)
+        this.overlayChanged = this.overlayChanged.bind(this)
         this.state = this.loadState(this.state)
 
     }
@@ -102,7 +104,17 @@ class App extends React.Component {
             basemap: e
         })
     }
+
+    overlayChanged(e) {
+        this.setState({
+            overlay: e
+        })
+    }
+
     setMap(map) {
+        map.leafletElement.createPane('summarizationPane');
+        map.leafletElement.getPane('summarizationPane').style.zIndex = 402;
+        map.leafletElement.getPane('overlayPane').style.zIndex = 403;
         this.setState({
             map: map
         })
@@ -113,9 +125,29 @@ class App extends React.Component {
             return obj.selected === true;
         })
 
+        let overlays = null
+        let overlay = null
+        if (this.state.bioscape.overlays) {
+            overlays = []
+            for (let i = 0; i < this.state.bioscape.overlays.length; i++) {
+                let overlay = this.state.bioscape.overlays[i]
+                overlay["layer"] = L.tileLayer.wms(
+                    this.state.bioscape.overlays[i]["serviceUrl"],
+                    this.state.bioscape.overlays[i]["leafletProperties"]
+                )
+            }
+
+            overlay = this.state.bioscape.overlays.find(function (obj) {
+                return obj.selected === true;
+            })
+        }
+
         this.setState({
-            basemap: basemap
+            basemap: basemap,
+            overlays: overlays,
+            overlay: overlay
         })
+
     }
 
     handelDrawnPolygon(geom) {
@@ -249,6 +281,7 @@ class App extends React.Component {
                         onResizeStop={() => { this.state.map.leafletElement.invalidateSize() }}
                     >
                         <LeftPanel
+                            overlayChanged={this.overlayChanged}
                             basemapChanged={this.basemapChanged}
                             bioscape={this.state.bioscape}
                             results={this.state.results}
@@ -271,6 +304,7 @@ class App extends React.Component {
                         <NBM
                             className="relative-map"
                             basemap={this.state.basemap}
+                            overlay={this.state.overlay}
                             feature={this.state.feature}
                             parentClickHandler={this.handleMapClick}
                             parentDrawHandler={this.handelDrawnPolygon}

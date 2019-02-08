@@ -47,17 +47,27 @@ class RadioGroup extends React.Component{
         this.state = {
             selectedIndex: 0,
             selectedValue: null,
-            options: props.options
+            options: props.options,
+            canDeselect: props.canDeselect
         };
     }
 
     toggleRadioBtn(index){
-        this.setState({
-            selectedIndex: index,
-            selectedValue: this.state.options[index],
-            options: this.state.options
-        });
-        this.props.onChange(this.state.options[index])
+        if (this.state.selectedIndex === index && this.state.canDeselect) {
+            this.setState({
+                selectedIndex: null,
+                selectedValue: null,
+                options: this.state.options
+            });
+            this.props.onChange(null)
+        } else {
+            this.setState({
+                selectedIndex: index,
+                selectedValue: this.state.options[index],
+                options: this.state.options
+            });
+            this.props.onChange(this.state.options[index])
+        }
     }
 
     render() {
