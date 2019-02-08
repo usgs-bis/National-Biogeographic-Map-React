@@ -8,7 +8,10 @@ import "./AnalysisPackages.css";
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/5b685d1ce4b006a11f75b0a8?format=json"
 const FIRSTLEAF_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenology/place/firstleaf"
+const FIRSTLEAF_POLY_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenology/polygon/firstleaf"
 const FIRSTBLOOM_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenology/place/firstbloom"
+const FIRSTBLOOM_POLY_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenology/polygon/firstbloom"
+
 const PUBLIC_TOKEN = process.env.REACT_APP_PUBLIC_TOKEN
 
 let sb_properties = {
@@ -160,8 +163,37 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
             this.setState({
                 loading: true
             })
-            this.setState({
-                loading: false
+            this.clearCharts()
+            let firstLeafFetch = fetch(FIRSTLEAF_POLY_URL + `?year_min=${this.props.yearMin}&year_max=${this.props.yearMax}&geojson=${JSON.stringify(this.props.feature.geometry)}&token=${PUBLIC_TOKEN}`)
+                .then(res => { return res.json() },
+                    (error) => {
+                        this.setState({
+                            error
+                        });
+                    })
+            let firstBloomFetch = fetch(FIRSTBLOOM_POLY_URL + `?year_min=${this.props.yearMin}&year_max=${this.props.yearMax}&geojson=${JSON.stringify(this.props.feature.geometry)}&token=${PUBLIC_TOKEN}`)
+                .then(res => { return res.json() },
+                    (error) => {
+                        this.setState({
+                            error
+                        });
+                    })
+            Promise.all([firstLeafFetch, firstBloomFetch]).then(results => {
+                if (results && results.length === 2) {
+                    const charts = this.getCharts({ ComparisonChart: { leaf: results[0], bloom: results[1] } })
+                    this.setState({
+                        charts: charts,
+                        loading: false
+                    })
+                    this.props.isEnabled(true)
+                    this.props.canOpen(true)
+                } else {
+                    this.props.isEnabled(false)
+                    this.props.canOpen(false)
+                    this.setState({
+                        loading: false
+                    })
+                }
             })
         }
     }

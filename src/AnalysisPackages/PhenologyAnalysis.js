@@ -10,7 +10,9 @@ import withSharedAnalysisCharacteristics from "./AnalysisPackage"
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/5b96d589e4b0702d0e82700a?format=json"
 const PHENO32_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenocast/place/agdd_32";
+const PHENO32_POLY_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenocast/polygon/agdd_32";
 const PHENO50_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenocast/place/agdd_50";
+const PHENO50_POLY_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenocast/polygon/agdd_50";
 const PUBLIC_TOKEN = process.env.REACT_APP_PUBLIC_TOKEN
 
 
@@ -182,8 +184,31 @@ class PhenologyAnalysisPackage extends React.Component {
             this.setState({
                 loading: true
             })
-            this.setState({
-                loading: false
+            let fetches = []
+            for (let date of this.state.dates) {
+                fetches.push(this.getFetchForDate(`${PHENO32_POLY_URL}?geojson=${JSON.stringify(this.props.feature.geometry)}&token=${PUBLIC_TOKEN}`, date.date))
+                fetches.push(this.getFetchForDate(`${PHENO50_POLY_URL}?geojson=${JSON.stringify(this.props.feature.geometry)}&token=${PUBLIC_TOKEN}`, date.date))
+            }
+            Promise.all(fetches).then(results => {
+                if (results) {
+                    this.setState({
+                        data: results,
+                        loading: false
+                    }, () => {
+                        this.getCharts(this.state.data)
+                    })
+                    this.props.isEnabled(true)
+                    this.props.canOpen(true)
+
+                } else {
+                    this.props.isEnabled(false)
+                    this.props.canOpen(false)
+                }
+            }, (error) => {
+                this.setState({
+                    error,
+                    loading: false
+                });
             })
         }
     }
@@ -343,7 +368,7 @@ class PhenologyAnalysisPackage extends React.Component {
                         const chartConfig = {
                             width: 400,
                             height: 150,
-                            margins: { left: 50, right: 20, top: 20, bottom:  30 },
+                            margins: { left: 50, right: 20, top: 20, bottom:  40 },
                             chart: { title: timeIndex ? '' : `${pestName}`, subtitle: `` },
                             xAxis: { key: 'acres', label: "Approximate Acreage", ticks: 5, tickFormat: (d) => { return `${numberWithCommas(parseInt(d))}` } },
                             yAxis: { key: 'name', label: `${time}  ${this.getFormattedDate(this.state.dates[timeIndex].date)}`, ticks: 5, tickFormat: (d) => { '' } },
