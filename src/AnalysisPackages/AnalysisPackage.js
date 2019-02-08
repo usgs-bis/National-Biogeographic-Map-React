@@ -16,7 +16,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 sb_properties: sb_properties,
                 submitted: false,
                 canOpen: false,
-                isOpen: false,
+                isOpen: props.priorityBap === props.bapId,
                 glyph: "menu-right",
                 value: [],
                 layers: layers,
@@ -37,17 +37,8 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             this.initilize = this.initilize.bind(this)
         }
 
-        // this should stop baps from rendering untill the timeslider moves
-        // or the feature is changed
-        shouldComponentUpdate(nextProps, nextState) {
-            if (nextProps.feature && nextProps.feature.properties.feature_id !== this.state.feature_id) return true
-            if (nextProps.yearMax !== this.props.yearMax || nextProps.yearMin !== this.props.yearMin) return true
-            return false
-        }
-
 
         componentWillReceiveProps(props) {
-            if (this.initilized === false) this.initilize(props)
         }
 
 
@@ -66,6 +57,8 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                         });
                     }
                 )
+            this.initilize(this.props)
+
         }
 
         componentDidUpdate(prevProps) {
@@ -101,6 +94,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 })
                 this.updateAnalysisLayers()
             }
+
             this.initilized = true
         }
 
@@ -197,6 +191,9 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
         }
 
         canOpen(canOpen) {
+            if (!canOpen && this.state.isOpen) {
+                this.toggleDropdown()
+            }
             this.setState({
                 canOpen: canOpen
             })
@@ -285,7 +282,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             return (
                 <div
                     style={{ display: this.state.isEnabled ? 'block' : 'none' }}
-                    className="nbm-flex-row-no-padding">
+                    className="nbm-flex-row-no-padding small-padding">
                     <span onClick={this.toggleDropdown} className="bapTitle">
                         {this.state.sb_properties.title}
                         <Glyphicon style={{ display: this.state.canOpen ? "inline-block" : "none" }}

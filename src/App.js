@@ -56,7 +56,7 @@ class App extends React.Component {
 
     componentDidMount() {
         this.parseBioscape()
-        if(this.initFeatureId ) this.submitHandler(this.initFeatureId)
+        if (this.initFeatureId) this.submitHandler(this.initFeatureId)
     }
 
     shareState() {
@@ -83,7 +83,7 @@ class App extends React.Component {
         if (split.length === 2 && split[1]) {
             window.location.hash = ''
             let initState = JSON.parse(atob(split[1]))
-            this.initFeatureId =  initState.feature
+            this.initFeatureId = initState.feature
             this.initLayerTitle = initState.bap.activeLayerTitle
             s.basemap = initState.basemap
             s.rangeYearMin = initState.timeSlider.rangeYearMin
@@ -119,8 +119,29 @@ class App extends React.Component {
     }
 
     handelDrawnPolygon(geom) {
-        console.log('a user drawn polygon has been created')
-        console.log(geom)
+        if (geom) {
+            this.setState({
+                feature: {
+                    geometry: geom,
+                    properties: {
+                        userDefined: true,
+                        feature_class: "Polygon",
+                        gid: null,
+                        feature_name: "User Defined Polygon",
+                        feature_code: null,
+                        feature_id:  Math.random().toString(36).substring(7),
+                        feature_description: 'User Defined Polygon'
+                    },
+                    type: "Feature"
+                }
+            })
+        }
+        else {
+            console.log('setting null feature')
+            this.setState({
+                feature: null
+            })
+        }
     }
 
     submitHandler(e) {

@@ -39,11 +39,36 @@ class OBISAnalysisPackage extends React.Component {
         this.getCharts = this.getCharts.bind(this)
         this.handelNoData = this.handelNoData.bind(this)
         this.print = this.print.bind(this)
-
+        this.featureChange = this.featureChange.bind(this)
+        this.fetch = this.fetch.bind(this)
     }
 
     componentDidMount() {
         this.props.onRef(this)
+        this.featureChange()
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.feature !== this.props.feature) {
+            this.featureChange()
+        }
+    }
+
+    featureChange() {
+        if (this.props.feature) {
+            if (this.props.feature.properties.feature_id.includes('OBIS_Areas:')) {
+                this.fetch()
+            }
+            else {
+                this.props.isEnabled(false)
+                this.props.canOpen(false)
+            }
+        }
+        else {
+            this.props.canOpen(false)
+            this.props.isEnabled(true)
+        }
+
     }
 
     handelNoData() {
@@ -56,48 +81,36 @@ class OBISAnalysisPackage extends React.Component {
         this.props.canOpen(false)
     }
 
-    componentDidUpdate(prevProps) {
-        if (this.props.feature &&
-            this.props.feature.properties.feature_id &&
-            (!prevProps.feature || this.props.feature.properties.feature_id !== prevProps.feature.properties.feature_id)) {
-            if (this.props.feature.properties.feature_id.includes('OBIS_Areas:')) {
-                this.setState({
-                    loading: true
-                })
-                fetch(OBIS_URL + this.props.feature.properties.feature_id.split(':')[1])
-                    .then(res => res.json())
-                    .then(
-                        (result) => {
-                            console.log(result)
-                            if (result) {
-                                const charts = this.getCharts(result)
-                                this.setState({
-                                    charts: charts,
-                                    loading: false
-                                })
-                                this.props.isEnabled(true)
-                                this.props.canOpen(true)
+    fetch() {
+        this.setState({
+            loading: true
+        })
+        fetch(OBIS_URL + this.props.feature.properties.feature_id.split(':')[1])
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    if (result) {
+                        const charts = this.getCharts(result)
+                        this.setState({
+                            charts: charts,
+                            loading: false
+                        })
+                        this.props.isEnabled(true)
+                        this.props.canOpen(true)
 
-                            } else {
-                                this.handelNoData()
-                            }
-                        },
-                        (error) => {
-                            this.setState({
-                                error,
-                                loading: false
-                            });
-                        }
-                    )
-            }
-            else {
-                this.handelNoData()
-            }
-        }
-        else {
-
-        }
+                    } else {
+                        this.handelNoData()
+                    }
+                },
+                (error) => {
+                    this.setState({
+                        error,
+                        loading: false
+                    });
+                }
+            )
     }
+
 
     /**
      * Loop through the charts defined in the state and look for a data object in datas that matches.
@@ -157,7 +170,7 @@ class OBISAnalysisPackage extends React.Component {
                 this.SpeciesCountChart.print(this.state.charts.speciesCountChart.id)
                     .then(img => {
                         return [
-                            { stack: this.props.getSBItemForPrint()},
+                            { stack: this.props.getSBItemForPrint() },
                             { text: this.state.charts.speciesCountChart.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
                             { image: img, alignment: 'center', width: 450 }
                         ]
@@ -170,7 +183,7 @@ class OBISAnalysisPackage extends React.Component {
     render() {
         return (
             <div>
-                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading}/>
+                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
                 {this.props.getAnalysisLayers()}
                 <div className="chartsDiv">
                     <SpeciesCountChart
