@@ -330,6 +330,7 @@ class App extends React.Component {
                             initLayerTitle={this.initLayerTitle}
                             priorityBap={this.state.priorityBap}
                             bioscapeName={this.state.bioscapeName}
+                            point={{lat: this.state.lat, lng: this.state.lng}}
                         />
                     </Resizable>
 

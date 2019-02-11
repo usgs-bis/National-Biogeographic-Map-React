@@ -1,8 +1,7 @@
 import React from "react";
 import "../LeftPanel/LeftPanel.css";
-import NFHPAnalysis from "../AnalysisPackages/NFHPAnalysis";
-import SpeciesProtectionAnalysis from "../AnalysisPackages/SpeciesProtectionAnalysis";
-import EcosystemProtectionAnalysis from "../AnalysisPackages/EcosystemProtectionAnalysis";
+import NVCSHierarchyByPixel from "../AnalysisPackages/NVCSHierarchyByPixel";
+import NVCSSummaryByRegion from "../AnalysisPackages/NVCSSummaryByRegion";
 
 class TerrestrialEcosystems2011 extends React.Component {
     constructor(props) {
@@ -23,7 +22,6 @@ class TerrestrialEcosystems2011 extends React.Component {
         this.submit = this.submit.bind(this)
         this.share = this.share.bind(this);
         this.report = this.report.bind(this);
-        // this.updateAnalysisLayers = this.updateAnalysisLayers.bind(this)
         this.loaderRef = React.createRef();
     }
 
@@ -41,14 +39,8 @@ class TerrestrialEcosystems2011 extends React.Component {
         })
 
         let charts = []
-        charts.push(this.FirstLeafAnalysis.print())
-        charts.push(this.FirstBloomAnalysis.print())
-        charts.push(this.FirstLeafBloomComparisonAnalysis.print())
-        charts.push(this.NFHPAnalysis.print())
-        charts.push(this.EcosystemProtectionAnalysis.print())
-        charts.push(this.SpeciesProtectionAnalysis.print())
-        charts.push(this.PhenologyAnalysis.print())
-        charts.push(this.OBISAnalysis.print())
+        charts.push(this.NVCSHierarchyByPixel.print())
+        charts.push(this.NVCSSummaryByRegion.print())
         this.PDFReport.generateReport(this.state.feature_name, this.state.feature_class, this.props.map, charts)
             .then(() => {
                 setTimeout(() => {
@@ -64,28 +56,17 @@ class TerrestrialEcosystems2011 extends React.Component {
         return (
             <div>
                 <div className="nbm-flex-row-no-padding">
-                    <NFHPAnalysis
-                        onRef={ref => (this.NFHPAnalysis = ref)}
+                    <NVCSHierarchyByPixel
+                        onRef={ref => (this.NVCSHierarchyByPixel = ref)}
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
                         bapId={`bap${counter++}`}
                         initLayerTitle={this.props.initLayerTitle}
+                        point={this.props.point}
                     />
-                </div>
-                <div className="nbm-flex-row-no-padding">
-                    <EcosystemProtectionAnalysis
-                        onRef={ref => (this.EcosystemProtectionAnalysis = ref)}
-                        updateAnalysisLayers={this.props.updateAnalysisLayers}
-                        feature={this.props.feature}
-                        priorityBap={this.props.priorityBap}
-                        bapId={`bap${counter++}`}
-                        initLayerTitle={this.props.initLayerTitle}
-                    />
-                </div>
-                <div className="nbm-flex-row-no-padding">
-                    <SpeciesProtectionAnalysis
-                        onRef={ref => (this.SpeciesProtectionAnalysis = ref)}
+                    <NVCSSummaryByRegion
+                        onRef={ref => (this.NVCSSummaryByRegion = ref)}
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
