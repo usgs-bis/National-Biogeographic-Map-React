@@ -215,8 +215,11 @@ class LeftPanel extends React.Component {
                             />
                         </div>
                         <div className="nbm-flex-column-big">
-                            <input ref={(input) => { this.textInput = input; }} onClick={this.onFocus} onBlur={this.onBlur} onKeyUp={this.handleKeyUp}
-                                className="input-box" type={"text"} />
+                            {
+                                !this.state.bioscape.overlays &&
+                                <input ref={(input) => { this.textInput = input; }} onClick={this.onFocus} onBlur={this.onBlur} onKeyUp={this.handleKeyUp}
+                                       className="input-box" type={"text"} />
+                            }
                         </div>
                     </div>
                     <div className="nbm-flex-row" >

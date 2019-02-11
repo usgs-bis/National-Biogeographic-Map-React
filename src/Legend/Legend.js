@@ -18,9 +18,16 @@ class Legend extends React.Component {
         }
     }
 
-    openDialog = () => this.setState({ isDialogOpen: true });
+    toggleDialog = () => this.setState({ isDialogOpen: !this.state.isDialogOpen });
 
-    handleClose = () => this.setState({ isDialogOpen: false });
+    // openDialog = () => this.setState({ isDialogOpen: true });
+
+    handleClose = () => {
+        this.setState({
+            toolTipOpen: false,
+            isDialogOpen: false
+        });
+    }
 
     toggleLegendTooltip = () => this.setState({
         toolTipOpen: !this.state.toolTipOpen
@@ -39,7 +46,7 @@ class Legend extends React.Component {
         }
         return (
             <div>
-                <Button id={"LegendTooltip"} className='placeholder-button' onClick={this.openDialog} >
+                <Button id={"LegendTooltip"} className='placeholder-button' onClick={this.toggleDialog} >
                     <Glyphicon className="inner-glyph" glyph="th-list" />
                 </Button>
                 <Tooltip
