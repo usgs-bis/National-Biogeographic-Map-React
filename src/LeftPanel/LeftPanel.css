@@ -68,14 +68,24 @@
     width: 100%;
     max-height: 100%;
     overflow-y: auto;
+    scrollbar-width: none;
 }
 
 .panel-header{
     padding: 5px;
     padding-top: 0px;
     padding-bottom: 10px;
+}
+
+.left-panel-header{
+    /* height: fit-content;
+    position: absolute;
+    background-color: #555;
+    width: 100%;
+    z-index: 999999; */
     border-bottom: 2px solid #424243;
 }
+
 .panel-title {
     font-size: 28px;
     font-weight: bold;

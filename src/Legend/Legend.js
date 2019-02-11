@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "reactstrap";
+import { Button, Tooltip } from "reactstrap";
 import { Glyphicon } from "react-bootstrap";
 
 import CustomDialog from "../CustomDialog/CustomDialog";
@@ -13,6 +13,7 @@ class Legend extends React.Component {
         super(props)
         this.state = {
             isDialogOpen: false,
+            toolTipOpen:false,
             enabledLayers: props.enabledLayers
         }
     }
@@ -21,21 +22,31 @@ class Legend extends React.Component {
 
     handleClose = () => this.setState({ isDialogOpen: false });
 
+    toggleLegendTooltip = () => this.setState({
+        toolTipOpen: !this.state.toolTipOpen
+    });
+
+
     render() {
         const legend = (legend) => {
             if (legend.imageUrl) {
-                return <WmsLegend imageUrl={legend.imageUrl}/>
+                return <WmsLegend imageUrl={legend.imageUrl} />
             } else if (legend.arcgisUrl) {
-                return <ArcgisLegend layers={legend.layers} jsonUrl={legend.arcgisUrl}/>
+                return <ArcgisLegend layers={legend.layers} jsonUrl={legend.arcgisUrl} />
             } else {
                 return <div></div>
             }
         }
         return (
             <div>
-                <Button className='placeholder-button' onClick={this.openDialog} >
-                    <Glyphicon className="inner-glyph" glyph="menu-hamburger" />
+                <Button id={"LegendTooltip"} className='placeholder-button' onClick={this.openDialog} >
+                    <Glyphicon className="inner-glyph" glyph="th-list" />
                 </Button>
+                <Tooltip
+                    style={{ fontSize: "14px" }} isOpen={this.state.toolTipOpen && !this.state.isDialogOpen}
+                    target="LegendTooltip" toggle={this.toggleLegendTooltip} delay={0}>
+                    Legend
+                </Tooltip>
                 {
                     this.state.isDialogOpen &&
                     <CustomDialog

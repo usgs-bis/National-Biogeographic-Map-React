@@ -34,7 +34,7 @@ class LeftPanel extends React.Component {
             updateAnalysisLayers: props.updateAnalysisLayers,
             loading: false,
             enabledLayers: [],
-            settingsOpen: false
+            basemapTooltipOpen: false
 
         }
         this.initilized = false
@@ -53,16 +53,29 @@ class LeftPanel extends React.Component {
 
     componentWillReceiveProps(props) {
         if (props.feature && props.feature.properties) {
-            
-           let approxArea = 0
-            if (props.feature.properties.userDefined){
-                approxArea= numberWithCommas(parseInt(turf.convertArea(turf.area(turf.polygon(props.feature.geometry.coordinates)),'meters','acres')))
-            }
-            else{
-                let areaSqMeters = JSON.parse(props.feature.properties.source_data.value)[0].areasqkm
-                approxArea= numberWithCommas(parseInt(turf.convertArea(areaSqMeters,'kilometres','acres')))
-            }
 
+            let approxArea = 'Unknown'
+            try {
+                if (props.feature.properties.source_data && props.feature.properties.source_data.value && JSON.parse(props.feature.properties.source_data.value)[0].areasqkm) {
+                    let areaSqMeters = JSON.parse(props.feature.properties.source_data.value)[0].areasqkm
+                    approxArea = numberWithCommas(parseInt(turf.convertArea(areaSqMeters, 'kilometres', 'acres')))
+                }
+                else {
+                    let area = 0
+                    if (props.feature.geometry.type === 'MultiPolygon') {
+                        for (let poly of props.feature.geometry.coordinates) {
+                            area += turf.area(turf.polygon(poly))
+                        }
+                    }
+                    else {
+                        area = turf.area(turf.polygon(props.feature.geometry.coordinates))
+                    }
+                    approxArea = numberWithCommas(parseInt(turf.convertArea(area)))
+                }
+            }
+            catch (e) {
+
+            }
 
             this.setState({
                 feature: props.feature,
@@ -149,11 +162,11 @@ class LeftPanel extends React.Component {
             enabledLayers: enabledLayers
         })
 
-        this.state.updateAnalysisLayers(enabledLayers,bapId)
+        this.state.updateAnalysisLayers(enabledLayers, bapId)
     }
 
     toggleSettingsTooltip = () => this.setState({
-        settingsOpen: !this.state.settingsOpen
+        basemapTooltipOpen: !this.state.basemapTooltipOpen
     });
 
     render() {
@@ -184,14 +197,14 @@ class LeftPanel extends React.Component {
         }
         return (
             <div className="left-panel">
-                <div className="left-panel-header">
+                <div id='left-panel-header' className="left-panel-header">
                     <div className="nbm-flex-row">
                         <div className="nbm-flex-column">
                             <Button id={"SettingsTooltip"} onClick={this.toggleBasemapDropdown} className='placeholder-button' >
                                 <Glyphicon className="inner-glyph" glyph="menu-hamburger" />
                             </Button>
                             <Tooltip
-                                placement="top" style={{fontSize: "14px"}} isOpen={this.state.settingsOpen}
+                                style={{ fontSize: "14px" }} isOpen={this.state.basemapTooltipOpen && !this.state.layersDropdownOpen}
                                 target="SettingsTooltip" toggle={this.toggleSettingsTooltip} delay={0}>
                                 Settings
                             </Tooltip>
@@ -203,7 +216,7 @@ class LeftPanel extends React.Component {
                         </div>
                         <div className="nbm-flex-column-big">
                             <input ref={(input) => { this.textInput = input; }} onClick={this.onFocus} onBlur={this.onBlur} onKeyUp={this.handleKeyUp}
-                                   className="input-box" type={"text"} />
+                                className="input-box" type={"text"} />
                         </div>
                     </div>
                     <div className="nbm-flex-row" >
@@ -212,9 +225,9 @@ class LeftPanel extends React.Component {
                                 {this.props.results.map(function (d, idx) {
                                     return (
                                         <Button className="sfr-button" style={{ whiteSpace: 'normal' }}
-                                                onClick={function () { that.submit(this) }}
-                                                id={d.feature_id}
-                                                key={d.feature_id}>
+                                            onClick={function () { that.submit(this) }}
+                                            id={d.feature_id}
+                                            key={d.feature_id}>
                                             {d.feature_name} ({d.feature_class})
                                         </Button>)
                                 })}
@@ -227,29 +240,29 @@ class LeftPanel extends React.Component {
                                 <span className="header">Basemaps</span>
                                 <CardBody>
                                     <RadioGroup style={{ width: "100%" }}
-                                                options={this.state.bioscape.basemaps}
-                                                onChange={this.basemapChanged}
-                                                canDeselect={true}
+                                        options={this.state.bioscape.basemaps}
+                                        onChange={this.basemapChanged}
+                                        canDeselect={true}
                                     />
                                 </CardBody>
                             </Card>
                             {this.state.bioscape.overlays &&
-                            <Card>
-                                <span className="header">Overlays</span>
-                                <CardBody>
-                                    <RadioGroup style={{ width: "100%" }}
-                                                options={this.state.bioscape.overlays}
-                                                onChange={this.props.overlayChanged}
-                                                canDeselect={true}
-                                    />
-                                </CardBody>
-                            </Card>
+                                <Card>
+                                    <span className="header">Overlays</span>
+                                    <CardBody>
+                                        <RadioGroup style={{ width: "100%" }}
+                                            options={this.state.bioscape.overlays}
+                                            onChange={this.props.overlayChanged}
+                                            canDeselect={true}
+                                        />
+                                    </CardBody>
+                                </Card>
                             }
                         </Collapse>
                     </div>
                     {featureText()}
                 </div>
-                <div className="analysis-package-container">
+                <div id='analysis-package-container' className="analysis-package-container" >
                     <div className="nbm-flex-row-no-padding">
                         <FirstLeafAnalysis
                             onRef={ref => (this.FirstLeafAnalysis = ref)}
