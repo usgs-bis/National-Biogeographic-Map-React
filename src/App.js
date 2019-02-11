@@ -26,6 +26,7 @@ class App extends React.Component {
 
         this.state = {
             bioscape: bioscapeMap[props.bioscape],
+            bioscapeName: props.bioscape,
             results: [],
             feature: null,
             rangeYearMin: 2000,
@@ -328,7 +329,7 @@ class App extends React.Component {
                             map={this.state.map}
                             initLayerTitle={this.initLayerTitle}
                             priorityBap={this.state.priorityBap}
-
+                            bioscapeName={this.state.bioscapeName}
                         />
                     </Resizable>
 

@@ -6,16 +6,10 @@ import { Glyphicon } from "react-bootstrap";
 import Legend from "../Legend/Legend";
 import { RadioGroup } from "../CustomRadio/CustomRadio";
 import PDFReport from "../PDF/PdfReport";
-import NFHPAnalysis from "../AnalysisPackages/NFHPAnalysis";
-import FirstLeafAnalysis from "../AnalysisPackages/FirstLeafAnalysis";
-import FirstBloomAnalysis from "../AnalysisPackages/FirstBloomAnalysis";
-import FirstLeafBloomComparisonAnalysis from "../AnalysisPackages/FirstLeafBloomComparisonAnalysis";
-import SpeciesProtectionAnalysis from "../AnalysisPackages/SpeciesProtectionAnalysis";
-import EcosystemProtectionAnalysis from "../AnalysisPackages/EcosystemProtectionAnalysis";
-import PhenologyAnalysis from "../AnalysisPackages/PhenologyAnalysis";
-import OBISAnalysis from "../AnalysisPackages/OBISAnalysis";
 import { BarLoader } from "react-spinners"
 import * as turf from '@turf/turf'
+import Biogeography from "../Bioscapes/Biogeography";
+import TerrestrialEcosystems2011 from "../Bioscapes/TerrestrialEcosystems2011";
 
 const numberWithCommas = (x) => {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -37,7 +31,7 @@ class LeftPanel extends React.Component {
             basemapTooltipOpen: false
 
         }
-        this.initilized = false
+
         this.handleKeyUp = this.handleKeyUp.bind(this);
         this.toggleSfrDropdown = this.toggleSfrDropdown.bind(this)
         this.onFocus = this.onFocus.bind(this)
@@ -171,7 +165,7 @@ class LeftPanel extends React.Component {
 
     render() {
         let that = this;
-        let counter = 1;
+
         const featureText = () => {
             if (this.state.feature_name) {
                 return (
@@ -228,9 +222,9 @@ class LeftPanel extends React.Component {
                                 {this.props.results.map(function (d, idx) {
                                     return (
                                         <Button className="sfr-button" style={{ whiteSpace: 'normal' }}
-                                            onClick={function () { that.submit(this) }}
-                                            id={d.feature_id}
-                                            key={d.feature_id}>
+                                                onClick={function () { that.submit(this) }}
+                                                id={d.feature_id}
+                                                key={d.feature_id}>
                                             {d.feature_name} ({d.feature_class})
                                         </Button>)
                                 })}
@@ -243,115 +237,43 @@ class LeftPanel extends React.Component {
                                 <span className="header">Basemaps</span>
                                 <CardBody>
                                     <RadioGroup style={{ width: "100%" }}
-                                        options={this.state.bioscape.basemaps}
-                                        onChange={this.basemapChanged}
-                                        canDeselect={true}
+                                                options={this.state.bioscape.basemaps}
+                                                onChange={this.basemapChanged}
+                                                canDeselect={true}
                                     />
                                 </CardBody>
                             </Card>
                             {this.state.bioscape.overlays &&
-                                <Card>
-                                    <span className="header">Overlays</span>
-                                    <CardBody>
-                                        <RadioGroup style={{ width: "100%" }}
-                                            options={this.state.bioscape.overlays}
-                                            onChange={this.props.overlayChanged}
-                                            canDeselect={true}
-                                        />
-                                    </CardBody>
-                                </Card>
+                            <Card>
+                                <span className="header">Overlays</span>
+                                <CardBody>
+                                    <RadioGroup style={{ width: "100%" }}
+                                                options={this.state.bioscape.overlays}
+                                                onChange={this.props.overlayChanged}
+                                                canDeselect={true}
+                                    />
+                                </CardBody>
+                            </Card>
                             }
                         </Collapse>
                     </div>
                     {featureText()}
                 </div>
                 <div id='analysis-package-container' className="analysis-package-container" >
-                    <div className="nbm-flex-row-no-padding">
-                        <FirstLeafAnalysis
-                            onRef={ref => (this.FirstLeafAnalysis = ref)}
-                            updateAnalysisLayers={this.updateAnalysisLayers}
-                            feature={this.props.feature}
-                            yearMin={this.props.rangeYearMin}
-                            yearMax={this.props.rangeYearMax}
-                            priorityBap={this.props.priorityBap}
-                            bapId={`bap${counter++}`}
-                            initLayerTitle={this.props.initLayerTitle}
-                        />
-                    </div>
-                    <div className="nbm-flex-row-no-padding">
-                        <FirstBloomAnalysis
-                            onRef={ref => (this.FirstBloomAnalysis = ref)}
-                            updateAnalysisLayers={this.updateAnalysisLayers}
-                            feature={this.props.feature}
-                            yearMin={this.props.rangeYearMin}
-                            yearMax={this.props.rangeYearMax}
-                            priorityBap={this.props.priorityBap}
-                            bapId={`bap${counter++}`}
-                            initLayerTitle={this.props.initLayerTitle}
-                        />
-                    </div>
-                    <div className="nbm-flex-row-no-padding">
-                        <FirstLeafBloomComparisonAnalysis
-                            onRef={ref => (this.FirstLeafBloomComparisonAnalysis = ref)}
-                            updateAnalysisLayers={this.updateAnalysisLayers}
-                            feature={this.props.feature}
-                            yearMin={this.props.rangeYearMin}
-                            yearMax={this.props.rangeYearMax}
-                            priorityBap={this.props.priorityBap}
-                            bapId={`bap${counter++}`}
-                            initLayerTitle={this.props.initLayerTitle}
-                        />
-                    </div>
-                    <div className="nbm-flex-row-no-padding">
-                        <NFHPAnalysis
-                            onRef={ref => (this.NFHPAnalysis = ref)}
-                            updateAnalysisLayers={this.updateAnalysisLayers}
-                            feature={this.props.feature}
-                            priorityBap={this.props.priorityBap}
-                            bapId={`bap${counter++}`}
-                            initLayerTitle={this.props.initLayerTitle}
-                        />
-                    </div>
-                    <div className="nbm-flex-row-no-padding">
-                        <EcosystemProtectionAnalysis
-                            onRef={ref => (this.EcosystemProtectionAnalysis = ref)}
-                            updateAnalysisLayers={this.updateAnalysisLayers}
-                            feature={this.props.feature}
-                            priorityBap={this.props.priorityBap}
-                            bapId={`bap${counter++}`}
-                            initLayerTitle={this.props.initLayerTitle}
-                        />
-                    </div>
-                    <div className="nbm-flex-row-no-padding">
-                        <SpeciesProtectionAnalysis
-                            onRef={ref => (this.SpeciesProtectionAnalysis = ref)}
-                            updateAnalysisLayers={this.updateAnalysisLayers}
-                            feature={this.props.feature}
-                            priorityBap={this.props.priorityBap}
-                            bapId={`bap${counter++}`}
-                            initLayerTitle={this.props.initLayerTitle}
-                        />
-                    </div>
-                    <div className="nbm-flex-row-no-padding">
-                        <PhenologyAnalysis
-                            onRef={ref => (this.PhenologyAnalysis = ref)}
-                            updateAnalysisLayers={this.updateAnalysisLayers}
-                            feature={this.props.feature}
-                            priorityBap={this.props.priorityBap}
-                            bapId={`bap${counter++}`}
-                            initLayerTitle={this.props.initLayerTitle}
-                        />
-                    </div>
-                    <div className="nbm-flex-row-no-padding">
-                        <OBISAnalysis
-                            onRef={ref => (this.OBISAnalysis = ref)}
-                            updateAnalysisLayers={this.updateAnalysisLayers}
-                            feature={this.props.feature}
-                            priorityBap={this.props.priorityBap}
-                            bapId={`bap${counter++}`}
-                            initLayerTitle={this.props.initLayerTitle}
-                        />
-                    </div>
+                    {
+                        this.props.bioscapeName === "terrestrial-ecosystems-2011" ?
+                            <TerrestrialEcosystems2011
+                                {...this.props}
+                                {...this.state}
+                                updateAnalysisLayers={this.updateAnalysisLayers}
+                            />
+                            :
+                            <Biogeography
+                                {...this.props}
+                                {...this.state}
+                                updateAnalysisLayers={this.updateAnalysisLayers}
+                            />
+                    }
                 </div>
 
             </div>
