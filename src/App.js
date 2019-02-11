@@ -26,6 +26,7 @@ class App extends React.Component {
 
         this.state = {
             bioscape: bioscapeMap[props.bioscape],
+            bioscapeName: props.bioscape,
             results: [],
             feature: null,
             rangeYearMin: 2000,
@@ -109,6 +110,15 @@ class App extends React.Component {
         this.setState({
             overlay: e
         })
+
+        if (this.state.lat && this.state.lng) {
+            this.handleMapClick({
+                latlng: {
+                    lat: this.state.lat,
+                    lng: this.state.lng
+                }
+            })
+        }
     }
 
     setMap(map) {
@@ -125,10 +135,8 @@ class App extends React.Component {
             return obj.selected === true;
         })
 
-        let overlays = null
         let overlay = null
         if (this.state.bioscape.overlays) {
-            overlays = []
             for (let i = 0; i < this.state.bioscape.overlays.length; i++) {
                 let overlay = this.state.bioscape.overlays[i]
                 overlay["layer"] = L.tileLayer.wms(
@@ -144,7 +152,6 @@ class App extends React.Component {
 
         this.setState({
             basemap: basemap,
-            overlays: overlays,
             overlay: overlay
         })
 
@@ -193,15 +200,41 @@ class App extends React.Component {
             )
     }
 
+    sendFeatureRequestFromOverlay(results) {
+        let overlay = this.state.overlay;
+        if (!overlay) {
+            overlay = this.state.bioscape.overlays[0]
+        }
+        for (let i = 0; i < results.length; i++) {
+            let feature = results[i]
+            if (feature["feature_class"] === overlay.featureClass) {
+                i = results.length
+                this.submitHandler({
+                    id: feature.feature_id
+                })
+            }
+        }
+    }
+
     handleMapClick(e) {
         fetch(POINT_SEARCH_API + `lat=${e.latlng.lat}&lng=${e.latlng.lng}`)
             .then(res => res.json())
             .then(
                 (result) => {
-                    this.setState({
-                        results: result.hits.hits.map(a => a["_source"]["properties"]),
-                        mapClicked: true
-                    })
+                    if (this.state.bioscape.overlays) {
+                        this.sendFeatureRequestFromOverlay(result.hits.hits.map(a => a["_source"]["properties"]))
+                        this.setState({
+                            lat: e.latlng.lat,
+                            lng: e.latlng.lng
+                        })
+                    } else {
+                        this.setState({
+                            lat: e.latlng.lat,
+                            lng: e.latlng.lng,
+                            results: result.hits.hits.map(a => a["_source"]["properties"]),
+                            mapClicked: true
+                        })
+                    }
                 },
                 (error) => {
                     this.setState({
@@ -296,7 +329,8 @@ class App extends React.Component {
                             map={this.state.map}
                             initLayerTitle={this.initLayerTitle}
                             priorityBap={this.state.priorityBap}
-
+                            bioscapeName={this.state.bioscapeName}
+                            point={{lat: this.state.lat, lng: this.state.lng}}
                         />
                     </Resizable>
 
