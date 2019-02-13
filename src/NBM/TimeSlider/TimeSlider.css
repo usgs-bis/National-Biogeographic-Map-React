@@ -122,40 +122,41 @@ input.map-display-slider[type='range']::-webkit-slider-thumb {
     left: 50px;
   }
 
-  output { 
+  .range-slider-container {
+    width: calc(100% - 100px);
+    position: absolute;
+    left: 50px;
+    height: 18px;
+  }
+
+  .range-handle{
     position: absolute;
     text-align: center;
     color: #ffffff;
     border-radius: 10px;
     display: inline-block;
-    bottom: 27px;
+    top: -24px;
     left: 0;
-    padding: 2px;
     padding-left: 6px;
     padding-right: 6px;
     font-size: 12px;
     background-color: rgba(10, 10, 15, .6);
     min-width: 38px;
     white-space: nowrap;
-
- }
-  output:after { 
-    content: "";
-    position: absolute;
-    width: 0;
-    height: 0;
-    border-top: 10px solid white;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    top: 100%;
-    left: 50%;
-    margin-left: -5px;
-    margin-top: 0px;
   }
 
-  .range-slider-container {
-    width: calc(100% - 100px);
+.handel-overlap{
+    top: -42px;
+  }
+
+  .global-time-slider .inner-glyph{
+    -webkit-transform:  rotate(225deg);
+    transform:  rotate(225deg);
     position: absolute;
-    left: 50px;
-    height: 18px;
+    top: 22px;
+    font-size: 24px;
+    z-index: 9999;
+    pointer-events: none;
+    left: 8px;
+    color: white;
   }
