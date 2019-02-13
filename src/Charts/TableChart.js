@@ -25,7 +25,7 @@ class TableChart extends React.Component {
     }
 
     componentDidUpdate() {
-        if (this.data !== this.props.data) {
+        if (this.data !== this.props.data && this.props.data.length) {
             this.data = this.props.data
             this.createTable(this.data[0], this.data.slice(1))
         }
@@ -33,6 +33,7 @@ class TableChart extends React.Component {
     }
 
     createTable(head, body) {
+        if(!head || !body) return
         let table = []
 
         // Outer loop to create parent

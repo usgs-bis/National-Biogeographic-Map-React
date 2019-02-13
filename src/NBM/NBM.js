@@ -40,7 +40,13 @@ class NBM extends React.PureComponent {
     }
 
     componentDidMount() {
+        setTimeout(()=>{
+            this.refs.map.leafletElement.invalidateSize()
+            this.refs.map.leafletElement.fitBounds(this.bounds)
+        },100)
+    
         this.props.setMap(this.refs.map)
+
     }
 
     componentDidUpdate(prevProps) {
