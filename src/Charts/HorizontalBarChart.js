@@ -164,7 +164,7 @@ class HorizontalBarChart extends React.Component {
                 .attr("width", function (d) { return x(d[1]) - x(d[0]); })
                 .attr("height", y.bandwidth())
                 .style("stroke", "rgb(204, 204, 204)")
-                .style("stroke-width", "0.5")
+                .style("stroke-width", "20")
 
             if (config.legend) {
 

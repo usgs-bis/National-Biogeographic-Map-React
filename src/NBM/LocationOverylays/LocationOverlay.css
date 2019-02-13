@@ -1,6 +1,6 @@
 .location-overlay{
     position: absolute;
-    bottom: 65px;
+    bottom: 60px;
     left: 5px;
     z-index: 1000;
     display: flex;

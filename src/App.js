@@ -311,7 +311,7 @@ class App extends React.Component {
                         defaultSize={{ width: 500 }}
                         minWidth={250}
                         maxWidth={1000}
-                        onResizeStop={() => { this.state.map.leafletElement.invalidateSize() }}
+                        onResizeStop={() => { this.state.map.leafletElement.invalidateSize(); this.setMapDisplayYear(this.state.mapDisplayYear + 1); this.setMapDisplayYear(this.state.mapDisplayYear -1) }}
                     >
                         <LeftPanel
                             overlayChanged={this.overlayChanged}
