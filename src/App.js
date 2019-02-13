@@ -2,8 +2,8 @@ import React from "react";
 import NBM from "./NBM/NBM";
 import Header from "./Header/Header";
 import LeftPanel from "./LeftPanel/LeftPanel";
-import nbmBioscape from "./Bioscapes/biogeography"
-import nvcsBioscape from "./Bioscapes/terrestrial-ecosystems-2011"
+import nbmBioscape from "./Bioscapes/biogeography.json"
+import nvcsBioscape from "./Bioscapes/terrestrial-ecosystems-2011.json"
 import Resizable from 're-resizable';
 import L from "leaflet";
 import "./App.css";
