@@ -18,7 +18,6 @@ class HistogramChart extends React.Component {
 
     componentDidMount() {
         this.props.onRef(this)
-
     }
 
     componentDidUpdate() {
@@ -145,7 +144,8 @@ class HistogramChart extends React.Component {
             .attr("height", function (d) { return height - y(d.count); })
 
         // Add a div inside chart for tooltips
-        const tooltip = chart.select(`#${id}Chart`).select('.chartTooltip')
+        const tooltip = d3.select('#d3chartTooltip')
+
 
 
         // Add tooltip functionality on mouseOver
@@ -309,7 +309,6 @@ class HistogramChart extends React.Component {
                                 style={{ display: this.props.config.chart.subtitle ? "block" : "none" }}
                                 id={id + 'Subtitle'} className="subtitle"></div>
                             <div id={id + 'Chart'} className="chart">
-                                <div className='chartTooltip'></div>
                                 <div className="svg-container-chart">
                                     <svg id={id + 'Svg'}
                                         width={'100%'} height={'100%'}>

@@ -150,3 +150,26 @@
 .share-url-input{
     display: none;
 }
+
+.chartTooltip {
+    position: fixed;
+    text-align: center;
+    max-width: 175px;
+    padding: 2px;
+    font: 12px sans-serif;
+    border: 0px;
+    border-radius: 8px;
+    pointer-events: none;
+    background: rgb(255, 255, 255);
+    color: black;
+    z-index: 9999;
+    opacity: 0;
+}
+
+.chart-container .chartTooltip label {
+    font-weight: 700;
+}
+
+.chart-container .chartTooltip p{
+    margin: 5px;
+}

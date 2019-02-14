@@ -71,6 +71,7 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
         this.clearCharts = this.clearCharts.bind(this)
         this.print = this.print.bind(this)
         this.featureChange = this.featureChange.bind(this)
+        this.createUniqueBapContents = this.createUniqueBapContents.bind(this)
     }
 
     componentDidMount() {
@@ -231,7 +232,7 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
                 this.ComparisonChart.print(this.state.charts.ComparisonChart.id)
                     .then(img => {
                         return [
-                            { stack: this.props.getSBItemForPrint()},
+                            { stack: this.props.getSBItemForPrint() },
                             { text: this.ComparisonChart.props.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
                             { text: this.ComparisonChart.props.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
                             { image: img, alignment: 'center', width: 450 },
@@ -245,11 +246,9 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
         return []
     }
 
-
-    render() {
+    createUniqueBapContents() {
         return (
             <div>
-                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
                 {this.props.getAnalysisLayers()}
                 <div className="chartsDiv">
                     <div className="chart-headers" >
@@ -268,6 +267,18 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
             </div>
         )
     }
+
+    render() {
+        return (
+            <div>
+                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
+                {this.props.getBapContents(this.createUniqueBapContents)}
+            </div>
+
+        )
+    }
+
+
 }
 const FirstLeafBloomComparisonAnalysis = withSharedAnalysisCharacteristics(FirstLeafBloomComparisonAnalysisPackage,
     layers,

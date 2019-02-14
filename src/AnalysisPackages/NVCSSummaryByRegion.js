@@ -144,6 +144,7 @@ class NVCSSummaryByRegionPackage extends React.Component {
 
         this.print = this.print.bind(this)
         this.fetch = this.fetch.bind(this)
+        this.createUniqueBapContents = this.createUniqueBapContents.bind(this)
     }
 
     componentDidMount() {
@@ -175,11 +176,9 @@ class NVCSSummaryByRegionPackage extends React.Component {
     print() {
         return []
     }
-
-    render() {
+    createUniqueBapContents() {
         return (
             <div>
-                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
                 {this.props.getAnalysisLayers()}
                 <div className="chartsDiv">
                     Feature ID: {this.props.feature ? this.props.feature.properties.feature_id : "Nothing"}
@@ -189,6 +188,18 @@ class NVCSSummaryByRegionPackage extends React.Component {
             </div>
         )
     }
+
+    render() {
+        return (
+            <div>
+                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
+                {this.props.getBapContents(this.createUniqueBapContents)}
+            </div>
+
+        )
+    }
+
+  
 }
 const NVCSSummaryByRegion = withSharedAnalysisCharacteristics(NVCSSummaryByRegionPackage, layers, sb_properties, SB_URL);
 

@@ -106,7 +106,7 @@
 }
 
 .ui-dialog {
-    z-index: 99999999;
+    z-index: 999;
     color: white;
     background-color: rgba(10, 10, 15, .6);
 }
@@ -133,7 +133,7 @@
     box-sizing: border-box;
     cursor: se-resize;
     color: white;
-    z-index: 9999999999;
+    z-index: 999;
 }
 
 .ui-dialog .ui-dialog-content {
@@ -142,7 +142,7 @@
     width: 100%;
     height: calc(100% - 35px);
     top: 35px;
-    padding: 10px;
+    padding: 0px;
 }
 
 .ui-dialog.box.react-draggable.react-resizable {

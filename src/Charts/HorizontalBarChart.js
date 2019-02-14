@@ -164,7 +164,7 @@ class HorizontalBarChart extends React.Component {
                 .attr("width", function (d) { return x(d[1]) - x(d[0]); })
                 .attr("height", y.bandwidth())
                 .style("stroke", "rgb(204, 204, 204)")
-                .style("stroke-width", "20")
+                .style("stroke-width", "0.5")
 
             if (config.legend) {
 
@@ -194,10 +194,8 @@ class HorizontalBarChart extends React.Component {
         }
 
         // Add a div inside chart for tooltips
-        const tooltip = chart.select(`#${id}Chart`)
-            .append("div")
-            .attr("class", "chartTooltip")
-            .style("opacity", 0);
+        const tooltip = d3.select('#d3chartTooltip')
+
 
         // Add tooltip functionality on mouseOver
         bars.on("mouseover", function (d) {

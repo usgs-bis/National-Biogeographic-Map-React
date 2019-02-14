@@ -273,7 +273,9 @@ class LeftPanel extends React.Component {
                                 {...this.state}
                                 updateAnalysisLayers={this.updateAnalysisLayers}
                             />
+                           
                     }
+                     <div id="d3chartTooltip" className='chartTooltip'></div>
                 </div>
 
             </div>

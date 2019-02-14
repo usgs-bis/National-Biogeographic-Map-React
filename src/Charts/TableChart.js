@@ -25,7 +25,7 @@ class TableChart extends React.Component {
     }
 
     componentDidUpdate() {
-        if (this.data !== this.props.data && this.props.data.length) {
+        if ((this.data !== this.props.data || !this.state.header) && this.props.data) {
             this.data = this.props.data
             this.createTable(this.data[0], this.data.slice(1))
         }
