@@ -125,3 +125,15 @@ padding-top: 15px;
 .small-padding{
     padding: 5px 0 5px 0;
 }
+
+.bap-window-button{
+    float: right;
+    margin-right: 5px;
+    margin-top: 5px;
+}
+
+.bap-popout-window{
+    z-index: 999;
+    background-color: #555;
+    opacity: 1;
+}

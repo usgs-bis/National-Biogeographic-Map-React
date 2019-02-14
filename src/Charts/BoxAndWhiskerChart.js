@@ -195,7 +195,7 @@ class BoxAndWhiskerChart extends React.Component {
             .attr("fill", "none");
 
         // select the div inside chart for tooltips
-        const tooltip = chart.select(`#${id}Chart`).select('.chartTooltip')
+        const tooltip = d3.select('#d3chartTooltip')
 
         // Draw the boxes of the box plot on top of vertical lines
         const boxes = g.selectAll("rect")
@@ -387,7 +387,6 @@ class BoxAndWhiskerChart extends React.Component {
                                 style={{ display: this.props.config.chart.subtitle ? "block" : "none" }}
                                 id={id + 'Subtitle'} className="subtitle"></div>
                             <div id={id + 'Chart'} className="chart">
-                                <div className='chartTooltip'></div>
                                 <div className="svg-container-chart">
                                     <svg id={id + 'Svg'}
                                         width={'100%'} height={'100%'}>

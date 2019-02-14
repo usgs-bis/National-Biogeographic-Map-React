@@ -1,7 +1,8 @@
 import React from "react";
-import { Collapse } from "reactstrap"
+import { Collapse, Button, Tooltip } from "reactstrap"
 import { Glyphicon } from "react-bootstrap";
 import { FormGroup, Label } from 'reactstrap';
+import CustomDialog from "../CustomDialog/CustomDialog";
 
 import "./AnalysisPackages.css"
 
@@ -21,6 +22,8 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 value: [],
                 layers: layers,
                 isEnabled: true,
+                bapWindowOpen: false,
+                bapWindowToolTip: false,
             }
             this.initilized = false
             this.toggleDropdown = this.toggleDropdown.bind(this)
@@ -28,6 +31,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             this.updateAnalysisLayers = this.updateAnalysisLayers.bind(this)
             this.setOpacity = this.setOpacity.bind(this)
             this.getAnalysisLayers = this.getAnalysisLayers.bind(this)
+            this.getBapContents = this.getBapContents.bind(this)
             this.resetAnalysisLayers = this.resetAnalysisLayers.bind(this)
             this.updateEnabled = this.updateEnabled.bind(this)
             this.canOpen = this.canOpen.bind(this)
@@ -37,9 +41,6 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             this.initilize = this.initilize.bind(this)
         }
 
-
-        componentWillReceiveProps(props) {
-        }
 
 
         componentDidMount() {
@@ -61,7 +62,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
 
         }
 
-        componentDidUpdate(prevProps) {
+        componentDidUpdate(prevProps,prevState) {
             if (prevProps.priorityBap !== this.props.priorityBap) {
                 if (this.props.priorityBap !== this.props.bapId) {
                     let l = layers;
@@ -75,6 +76,14 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                         layers: l
                     })
                 }
+            }
+            // forcing a rerender so the bapwindow will populate
+            // not sure why calling this.render() doesnt work
+            // will try to find a better way. 
+            else if(prevState.bapWindowOpen !== this.state.bapWindowOpen){
+                this.setState({
+                    random: Math.random()
+                })
             }
         }
 
@@ -151,6 +160,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                                 glyph={that.state.layersOpen ? "menu-down" : "menu-right"}
                             />
                         </div>
+
                         <Collapse className='analysis-dropdown-content' isOpen={that.state.layersOpen}>
                             {Object.keys(this.state.layers).map(function (key) {
                                 let layer = that.state.layers[key]
@@ -182,6 +192,44 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                     </div>
                 )
             }
+        }
+
+        getBapContents(bapContent) {
+            return (
+                <div>
+                    <Button id={"openBapWindow"} className='bap-window-button' style={{ display: this.state.bapWindowOpen ? "none" : "inline-block" }}
+                        onClick={() => this.setState({ bapWindowOpen: !this.state.bapWindowOpen })} >
+                        <Glyphicon className="inner-glyph" glyph="resize-full"
+                        />
+                    </Button>
+                    <Tooltip
+                        style={{ fontSize: "14px" }} isOpen={this.state.bapWindowToolTip && !this.state.bapWindowOpen}
+                        target="openBapWindow" toggle={() => this.setState({
+                            bapWindowToolTip: !this.state.bapWindowToolTip
+                        })} delay={0}>
+                        View Bap in new window
+                    </Tooltip>
+                    {
+                        this.state.bapWindowOpen &&
+                        <CustomDialog
+                        className="bap-popout-window"
+                            isResizable={true}
+                            isDraggable={true}
+                            title={this.state.sb_properties.title}
+                            modal={false}
+                            onClose={() => {
+                                this.setState({
+                                    bapWindowToolTip: false,
+                                    bapWindowOpen: false
+                                })
+                            }
+                            }
+                            body={bapContent()}
+                        />
+                    }
+                    {!this.state.bapWindowOpen && bapContent()}
+                </div>
+            )
         }
 
         updateEnabled(enabled) {
@@ -280,7 +328,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
 
         render() {
             return (
-                <div
+                <div id={this.props.bapId}
                     style={{ display: this.state.isEnabled ? 'block' : 'none' }}
                     className="nbm-flex-row-no-padding small-padding">
                     <span onClick={this.toggleDropdown} className="bapTitle">
@@ -298,6 +346,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                             updateBapLayers={this.updateAnalysisLayers}
                             resetAnalysisLayers={this.resetAnalysisLayers}
                             getAnalysisLayers={this.getAnalysisLayers}
+                            getBapContents={this.getBapContents}
                             getSBItemForPrint={this.getSBItemForPrint}
                             isEnabled={this.updateEnabled}
                             canOpen={this.canOpen}

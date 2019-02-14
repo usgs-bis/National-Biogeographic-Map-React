@@ -44,6 +44,7 @@ class NFHPAnalysisPackage extends React.Component {
         this.print = this.print.bind(this)
         this.featureChange = this.featureChange.bind(this)
         this.fetch = this.fetch.bind(this)
+        this.createUniqueBapContents = this.createUniqueBapContents.bind(this)
     }
 
     componentDidMount() {
@@ -174,10 +175,9 @@ class NFHPAnalysisPackage extends React.Component {
         return []
     }
 
-    render() {
+    createUniqueBapContents() {
         return (
             <div>
-                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
                 {this.props.getAnalysisLayers()}
                 <div className="chartsDiv">
                     <HorizontalBarChart
@@ -190,7 +190,19 @@ class NFHPAnalysisPackage extends React.Component {
             </div>
         )
     }
+
+    render() {
+        return (
+            <div>
+                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
+                {this.props.getBapContents(this.createUniqueBapContents)}
+            </div>
+
+        )
+    }
 }
+
+
 const NFHPAnalysis = withSharedAnalysisCharacteristics(NFHPAnalysisPackage, layers, sb_properties, SB_URL);
 
 export default NFHPAnalysis;

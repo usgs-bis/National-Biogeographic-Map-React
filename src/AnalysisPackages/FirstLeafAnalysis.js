@@ -60,6 +60,7 @@ class FirstLeafAnalysisPackage extends React.Component {
         this.clearCharts = this.clearCharts.bind(this)
         this.print = this.print.bind(this)
         this.featureChange = this.featureChange.bind(this)
+        this.createUniqueBapContents = this.createUniqueBapContents.bind(this)
     }
 
     componentDidMount() {
@@ -291,14 +292,12 @@ class FirstLeafAnalysisPackage extends React.Component {
         return []
     }
 
-    render() {
+    createUniqueBapContents() {
         return (
             <div>
-                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
                 {this.props.getAnalysisLayers()}
-                <div className="chartsDiv">
+                <div className="chartsDiv" >
                     <div className="chart-headers" >
-
                         <button className="submit-analysis-btn" onClick={this.submitAnalysis}>Analyze Time Period: {this.props.yearMin} to  {this.props.yearMax}</button>
                         <div className="bucket-size-div" style={{ display: this.state.charts.histogram.data ? "block" : "none" }}>
                             <span>Binwidth: {this.state.bucketSize.value}</span>
@@ -327,7 +326,17 @@ class FirstLeafAnalysisPackage extends React.Component {
             </div>
         )
     }
-}
-const FirstLeafAnalysis = withSharedAnalysisCharacteristics(FirstLeafAnalysisPackage, layers, sb_properties, SB_URL);
 
+    render() {
+        return (
+            <div>
+                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
+                {this.props.getBapContents(this.createUniqueBapContents)}
+            </div>
+
+        )
+    }
+}
+
+const FirstLeafAnalysis = withSharedAnalysisCharacteristics(FirstLeafAnalysisPackage, layers, sb_properties, SB_URL);
 export default FirstLeafAnalysis;

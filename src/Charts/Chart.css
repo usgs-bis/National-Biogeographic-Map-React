@@ -39,7 +39,7 @@ text {
     position: relative;
 }
 
-.chart-container .chartTooltip {
+/* .chart-container .chartTooltip {
     position: absolute;
     text-align: center;
     max-width: 175px;
@@ -60,7 +60,7 @@ text {
 
 .chart-container .chartTooltip p{
     margin: 5px;
-}
+} */
 
 .analysis-chart-container{
     max-height: 600px;

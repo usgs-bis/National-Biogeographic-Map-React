@@ -179,10 +179,8 @@ class ComparisonChart extends React.Component {
             .attr("fill", "yellow")
 
         // Add a div inside chart for tooltips
-        const tooltip = chart.select(`#${id}Chart`)
-            .append("div")
-            .attr("class", "chartTooltip")
-            .style("opacity", 0);
+        const tooltip = d3.select('#d3chartTooltip')
+
 
         // Add tooltip functionality on mouseOver
         leaf.on("mouseover", function (d) {
@@ -196,7 +194,7 @@ class ComparisonChart extends React.Component {
             tooltip.html(toolTipLabel(d, 'LEAF'))
                 .style("left", (d3.event.pageX) + "px")
                 .style("top", (d3.event.pageY - 28) + "px")
-                .style("border", `3px solid ${d.color}`);
+                .style("border", `3px solid green`);
         });
 
         // Add tooltip functionality on mouseOut
@@ -223,7 +221,7 @@ class ComparisonChart extends React.Component {
             tooltip.html(toolTipLabel(d, 'BLOOM'))
                 .style("left", (d3.event.pageX) + "px")
                 .style("top", (d3.event.pageY - 28) + "px")
-                .style("border", `3px solid ${d.color}`);
+                .style("border", `3px solid yellow`);
         });
 
         // Add tooltip functionality on mouseOut

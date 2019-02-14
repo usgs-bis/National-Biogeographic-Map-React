@@ -77,6 +77,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
         this.print = this.print.bind(this)
         this.featureChange = this.featureChange.bind(this)
         this.fetch = this.fetch.bind(this)
+        this.createUniqueBapContents = this.createUniqueBapContents.bind(this)
     }
 
     componentDidMount() {
@@ -610,10 +611,9 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
         return []
     }
 
-    render() {
+    createUniqueBapContents() {
         return (
             <div>
-                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
                 {this.props.getAnalysisLayers()}
                 <div
                     style={{ display: (this.props.feature && this.props.feature.properties.feature_name) ? 'block' : 'none' }}
@@ -662,7 +662,19 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
             </div>
         )
     }
+
+    render() {
+        return (
+            <div>
+                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
+                {this.props.getBapContents(this.createUniqueBapContents)}
+            </div>
+
+        )
+    }
+
 }
+
 const EcosystemProtectionAnalysis = withSharedAnalysisCharacteristics(EcosystemProtectionAnalysisPackage,
     layers,
     sb_properties,

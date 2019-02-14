@@ -2,7 +2,7 @@ import React from "react";
 import L from "leaflet"
 import { BarLoader } from "react-spinners"
 
-import {RadioButton} from "../CustomRadio/CustomRadio"
+import { RadioButton } from "../CustomRadio/CustomRadio"
 import HorizontalBarChart from "../Charts/HorizontalBarChart";
 import "./AnalysisPackages.css";
 
@@ -64,6 +64,7 @@ class PhenologyAnalysisPackage extends React.Component {
         this.toggleRadioBtn = this.toggleRadioBtn.bind(this)
         this.turnOnLayer = this.turnOnLayer.bind(this)
         this.featureChange = this.featureChange.bind(this)
+        this.createUniqueBapContents = this.createUniqueBapContents.bind(this)
     }
 
     componentDidMount() {
@@ -102,7 +103,7 @@ class PhenologyAnalysisPackage extends React.Component {
         }
 
     }
-   
+
 
     clearCharts() {
         this.setState({
@@ -124,7 +125,7 @@ class PhenologyAnalysisPackage extends React.Component {
         })
     }
 
-    toggleRadioBtn(index){
+    toggleRadioBtn(index) {
         this.getCharts(this.state.data, index)
     }
 
@@ -368,7 +369,7 @@ class PhenologyAnalysisPackage extends React.Component {
                         const chartConfig = {
                             width: 400,
                             height: 150,
-                            margins: { left: 50, right: 20, top: 20, bottom:  40 },
+                            margins: { left: 50, right: 20, top: 20, bottom: 40 },
                             chart: { title: timeIndex ? '' : `${pestName}`, subtitle: `` },
                             xAxis: { key: 'acres', label: "Approximate Acreage", ticks: 5, tickFormat: (d) => { return `${numberWithCommas(parseInt(d))}` } },
                             yAxis: { key: 'name', label: `${time}  ${this.getFormattedDate(this.state.dates[timeIndex].date)}`, ticks: 5, tickFormat: (d) => { '' } },
@@ -386,8 +387,8 @@ class PhenologyAnalysisPackage extends React.Component {
                         let style = pestName.toLowerCase().replace(/\s/g, '_')
                         let d = this.state.dates[timeIndex].date
                         charts.push(
-                            <div key={chartId} className="nbm-flex-row-no-padding" style={{borderBottom: "1px solid gray"}}>
-                                <div style={{justifyContent: "center"}} className="nbm-flex-column-big">
+                            <div key={chartId} className="nbm-flex-row-no-padding" style={{ borderBottom: "1px solid gray" }}>
+                                <div style={{ justifyContent: "center" }} className="nbm-flex-column-big">
                                     <HorizontalBarChart
                                         onRef={ref => { (this.chartId = ref); refs.push(this.chartId) }}
                                         key={chartId}
@@ -395,7 +396,7 @@ class PhenologyAnalysisPackage extends React.Component {
                                         id={chartId}
                                         config={chartConfig} />
                                 </div>
-                                <div style={{justifyContent: "center", paddingRight: "5px"}} className="nbm-flex-column">
+                                <div style={{ justifyContent: "center", paddingRight: "5px" }} className="nbm-flex-column">
                                     <RadioButton
                                         isChecked={(selectedIndex === i)}
                                         value={[layer, style, d]}
@@ -436,7 +437,7 @@ class PhenologyAnalysisPackage extends React.Component {
 
             return Promise.all(charts.flat()).then(contents => {
                 let content = []
-                content.push({ stack: this.props.getSBItemForPrint()})
+                content.push({ stack: this.props.getSBItemForPrint() })
 
                 for (let i = 0; i < this.state.refs.length; i += 2) {
                     content.push({ text: this.state.charts[i].props.config.chart.title, style: 'chartTitle', margin: [5, 5, 5, 5] })
@@ -467,11 +468,9 @@ class PhenologyAnalysisPackage extends React.Component {
         return []
     }
 
-
-    render() {
+    createUniqueBapContents() {
         return (
             <div>
-                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
                 {this.props.getAnalysisLayers()}
                 <div className="chartsDiv">
                     <div className="chart-headers" >
@@ -490,6 +489,18 @@ class PhenologyAnalysisPackage extends React.Component {
             </div>
         )
     }
+
+    render() {
+        return (
+            <div>
+                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
+                {this.props.getBapContents(this.createUniqueBapContents)}
+            </div>
+
+        )
+    }
+
+
 }
 const PhenologyAnalysis = withSharedAnalysisCharacteristics(
     PhenologyAnalysisPackage,

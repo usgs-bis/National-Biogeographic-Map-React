@@ -142,10 +142,8 @@ class SpeciesCountChart extends React.Component {
             .attr("fill", "red")
 
         // Add a div inside chart for tooltips
-        const tooltip = chart.select(`#${id}Chart`)
-            .append("div")
-            .attr("class", "chartTooltip")
-            .style("opacity", 0);
+        const tooltip = d3.select('#d3chartTooltip')
+
 
         // Add tooltip functionality on mouseOver
         circle.on("mouseover", function (d) {

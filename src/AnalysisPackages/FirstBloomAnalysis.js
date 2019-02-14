@@ -59,6 +59,7 @@ class FirstBloomAnalysisPackage extends React.Component {
         this.clearCharts = this.clearCharts.bind(this)
         this.print = this.print.bind(this)
         this.featureChange = this.featureChange.bind(this)
+        this.createUniqueBapContents = this.createUniqueBapContents.bind(this)
     }
 
     componentDidMount() {
@@ -251,7 +252,7 @@ class FirstBloomAnalysisPackage extends React.Component {
 
             return Promise.all(charts.flat()).then(contents => {
                 return [
-                    { stack: this.props.getSBItemForPrint()},
+                    { stack: this.props.getSBItemForPrint() },
                     {
                         columns: [
 
@@ -261,7 +262,7 @@ class FirstBloomAnalysisPackage extends React.Component {
                                     { text: this.HistogramChart.props.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
                                     { text: this.HistogramChart.props.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
                                     { image: contents[0], alignment: 'center', width: 250 },
-                                    { text: this.BoxAndWhiskerChart.props.config.chart.title, style: 'chartTitle', margin: [5, 20, 5, 2]},
+                                    { text: this.BoxAndWhiskerChart.props.config.chart.title, style: 'chartTitle', margin: [5, 20, 5, 2] },
                                     { text: this.BoxAndWhiskerChart.props.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
                                     { image: contents[1], alignment: 'center', width: 250 }
                                 ]
@@ -286,10 +287,9 @@ class FirstBloomAnalysisPackage extends React.Component {
         return []
     }
 
-    render() {
+    createUniqueBapContents() {
         return (
             <div>
-                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading}/>
                 {this.props.getAnalysisLayers()}
                 <div className="chartsDiv">
                     <div className="chart-headers" >
@@ -322,6 +322,18 @@ class FirstBloomAnalysisPackage extends React.Component {
             </div>
         )
     }
+
+    render() {
+        return (
+            <div>
+                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
+                {this.props.getBapContents(this.createUniqueBapContents)}
+            </div>
+
+        )
+    }
+
+
 }
 const FirstBloomAnalysis = withSharedAnalysisCharacteristics(FirstBloomAnalysisPackage, layers, sb_properties, SB_URL);
 

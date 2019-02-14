@@ -145,6 +145,8 @@ class NVCSHierarchyByPixelPackage extends React.Component {
 
         this.print = this.print.bind(this)
         this.fetch = this.fetch.bind(this)
+        this.createUniqueBapContents = this.createUniqueBapContents.bind(this)
+
     }
 
     componentDidMount() {
@@ -213,10 +215,9 @@ class NVCSHierarchyByPixelPackage extends React.Component {
         return []
     }
 
-    render() {
+    createUniqueBapContents() {
         return (
             <div>
-                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
                 {this.props.getAnalysisLayers()}
                 <div className="chartsDiv">
                     Pixel Value: {this.state.pixelValue}
@@ -226,6 +227,17 @@ class NVCSHierarchyByPixelPackage extends React.Component {
             </div>
         )
     }
+
+    render() {
+        return (
+            <div>
+                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
+                {this.props.getBapContents(this.createUniqueBapContents)}
+            </div>
+
+        )
+    }
+
 }
 const NVCSHierarchyByPixel = withSharedAnalysisCharacteristics(NVCSHierarchyByPixelPackage, layers, sb_properties, SB_URL);
 
