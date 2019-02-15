@@ -97,3 +97,22 @@ text {
 .outliers{
     fill:rgb(204, 204, 204);
 }
+
+.accordion-header{
+    font-size: 14px;
+    padding: 4px;
+}
+.accordion-header-highlight{
+    font-size: 14px;
+    padding: 4px;
+    color:yellow;
+}
+
+.accordion-card{
+    font-size: 14px;
+    color: white;
+    padding: 5px;
+    border-radius: 4px;
+    background-color: rgba(30,30,30,.5);
+    border: none;
+}

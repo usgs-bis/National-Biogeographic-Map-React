@@ -1,0 +1,157 @@
+import React from "react";
+import "./searchBar.css";
+import { Button, ButtonGroup, Tooltip } from "reactstrap";
+import { Glyphicon } from "react-bootstrap";
+import Legend from "../../Legend/Legend";
+import { RadioGroup } from "../../CustomRadio/CustomRadio";
+import { Collapse, CardBody, Card } from "reactstrap";
+
+
+
+class SearchBar extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            focused: false,
+            basemapTooltipOpen: false,
+            layersDropdownOpen: false
+
+        }
+
+        this.handleKeyUp = this.handleKeyUp.bind(this);
+        this.onFocus = this.onFocus.bind(this)
+        this.onBlur = this.onBlur.bind(this)
+        this.submit = this.submit.bind(this)
+        this.toggleBasemapDropdown = this.toggleBasemapDropdown.bind(this)
+        this.toggleSettingsTooltip = this.toggleSettingsTooltip.bind(this)
+        this.basemapChanged = this.basemapChanged.bind(this)
+        this.textInput = ""
+    }
+
+    componentDidMount() {
+    }
+
+    componentWillReceiveProps(props) {
+        if (props.mapClicked) {
+            this.textInput.focus();
+            this.setState({
+                focused: true
+            })
+        }
+    }
+
+
+    handleKeyUp(e) {
+        this.props.textSearchHandler(e.target.value)
+    }
+
+
+    onFocus() {
+        this.setState({
+            focused: true
+        })
+    }
+
+    onBlur() {
+        setTimeout(() => {
+            this.setState({
+                focused: false
+            });
+            this.textInput.value = ""
+        }, 150)
+    }
+
+    submit(e) {
+        this.props.submitHandler(e)
+    }
+
+    toggleSettingsTooltip() {
+        this.setState({
+            basemapTooltipOpen: !this.state.basemapTooltipOpen
+        })
+    };
+
+    toggleBasemapDropdown() {
+        this.setState({ layersDropdownOpen: !this.state.layersDropdownOpen });
+    }
+
+    basemapChanged(e) {
+        this.props.basemapChanged(e)
+    }
+
+    render() {
+        let that = this;
+        return (
+            <div>
+                <div className="nbm-flex-row">
+                    <div className="nbm-flex-column">
+                        <Button id={"SettingsTooltip"} onClick={this.toggleBasemapDropdown} className='placeholder-button' >
+                            <Glyphicon className="inner-glyph" glyph="menu-hamburger" />
+                        </Button>
+                        <Tooltip
+                            style={{ fontSize: "14px" }} isOpen={this.state.basemapTooltipOpen && !this.state.layersDropdownOpen}
+                            target="SettingsTooltip" toggle={this.toggleSettingsTooltip} delay={0}>
+                            Settings
+                </Tooltip>
+                    </div>
+                    <div className="nbm-flex-column">
+                        <Legend
+                            enabledLayers={this.props.enabledLayers}
+                        />
+                    </div>
+                    <div className="nbm-flex-column-big">
+                        {
+
+                            <input ref={(input) => { this.textInput = input; }} onClick={this.onFocus} onBlur={this.onBlur} onKeyUp={this.handleKeyUp}
+                                className="input-box" type={"text"} />
+                        }
+                    </div>
+                </div>
+                <div className="nbm-flex-row" >
+                    <div className="button-group">
+                        {(this.props.results.length > 0 && this.state.focused) ? <ButtonGroup vertical>
+                            {this.props.results.map(function (d, idx) {
+                                return (
+                                    <Button className="sfr-button" style={{ whiteSpace: 'normal' }}
+                                        onClick={function () { that.submit(this) }}
+                                        id={d.feature_id}
+                                        key={d.feature_id}>
+                                        {d.feature_name} ({d.feature_class})
+                            </Button>)
+                            })}
+                        </ButtonGroup> : null}
+                    </div>
+                </div>
+                <div className="nbm-flex-row-no-padding">
+                    <Collapse className="settings-dropdown" isOpen={this.state.layersDropdownOpen}>
+                        <Card>
+                            <span className="header">Basemaps</span>
+                            <CardBody>
+                                <RadioGroup style={{ width: "100%" }}
+                                    options={this.props.bioscape.basemaps}
+                                    onChange={this.basemapChanged}
+                                    canDeselect={true}
+                                />
+                            </CardBody>
+                        </Card>
+                        {this.props.bioscape.overlays &&
+                            <Card>
+                                <span className="header">Overlays</span>
+                                <CardBody>
+                                    <RadioGroup style={{ width: "100%" }}
+                                        options={this.props.bioscape.overlays}
+                                        onChange={this.props.overlayChanged}
+                                        canDeselect={true}
+                                    />
+                                </CardBody>
+                            </Card>
+                        }
+                    </Collapse>
+                </div>
+            </div>
+        )
+    }
+
+}
+export default SearchBar;

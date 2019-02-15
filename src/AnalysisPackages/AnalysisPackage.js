@@ -351,6 +351,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                             isEnabled={this.updateEnabled}
                             canOpen={this.canOpen}
                             inputRefs={this.inputRefs}
+                            layers={this.state.layers}
                         />
                     </Collapse>
                 </div>
