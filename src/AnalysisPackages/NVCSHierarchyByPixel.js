@@ -1,9 +1,8 @@
 import React from "react";
 import { BarLoader } from "react-spinners"
 import L from "leaflet";
-
+import AccordionChart from "../Charts/AccordionChart"
 import "./AnalysisPackages.css";
-
 import withSharedAnalysisCharacteristics from "./AnalysisPackage"
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/582a1819e4b01fad8726554a?format=json"
@@ -13,9 +12,12 @@ let sb_properties = {
     "title": "NVCS Hierarchy by Pixel"
 }
 
+// will need to change to flask api
+let HBP_URL = "https://my-beta.usgs.gov/bcb/elastic/search/nvcs/nvcs_unit_hierarchy?q="
+
 const layers = {
     class_service: {
-        title: "Class",
+        title: "GAP Landcover 2011 Class",
         layer: L.tileLayer.wms(
             "https://www.sciencebase.gov/geoserver/nvcs/wms",
             {
@@ -32,7 +34,7 @@ const layers = {
         checked: false
     },
     subclass_service: {
-        title: "Subclass",
+        title: "GAP Landcover 2011 Subclass",
         layer: L.tileLayer.wms(
             "https://www.sciencebase.gov/geoserver/nvcs/wms",
             {
@@ -49,7 +51,7 @@ const layers = {
         checked: false
     },
     formation_service: {
-        title: "Formation",
+        title: "GAP Landcover 2011 Formation",
         layer: L.tileLayer.wms(
             "https://www.sciencebase.gov/geoserver/nvcs/wms",
             {
@@ -66,7 +68,7 @@ const layers = {
         checked: false
     },
     division_service: {
-        title: "Division",
+        title: "GAP Landcover 2011 Division",
         layer: L.tileLayer.wms(
             "https://www.sciencebase.gov/geoserver/nvcs/wms",
             {
@@ -83,7 +85,7 @@ const layers = {
         checked: false
     },
     macrogroup_service: {
-        title: "Macrogroup",
+        title: "GAP Landcover 2011 Macrogroup",
         layer: L.tileLayer.wms(
             "https://www.sciencebase.gov/geoserver/nvcs/wms",
             {
@@ -100,7 +102,7 @@ const layers = {
         checked: false
     },
     nvc_group_service: {
-        title: "Group",
+        title: "GAP Landcover 2011 Group",
         layer: L.tileLayer.wms(
             "https://www.sciencebase.gov/geoserver/nvcs/wms",
             {
@@ -117,7 +119,7 @@ const layers = {
         checked: false
     },
     ecosys_lu_service: {
-        title: "Ecological System",
+        title: "GAP Landcover 2011 Ecological System",
         layer: L.tileLayer.wms(
             "https://www.sciencebase.gov/geoserver/nvcs/wms",
             {
@@ -135,17 +137,23 @@ const layers = {
     },
 
 }
-
 class NVCSHierarchyByPixelPackage extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            layersOpen: false
+            layersOpen: false,
+            pixelValue: null,
+            charts: {
+                pixelHierarchy: { id: "", config: {}, data: null }
+            },
+            enabledLayer: null
         }
 
         this.print = this.print.bind(this)
         this.fetch = this.fetch.bind(this)
         this.createUniqueBapContents = this.createUniqueBapContents.bind(this)
+        this.getHBPData = this.getHBPData.bind()
+        this.getCharts = this.getCharts.bind(this)
 
     }
 
@@ -159,6 +167,33 @@ class NVCSHierarchyByPixelPackage extends React.Component {
             this.fetch()
         }
     }
+
+    componentWillReceiveProps(props) {
+        if (props.layers) {
+            let enabledLayer = Object.keys(props.layers).find((key) => {
+                return props.layers[key].checked
+            })
+            if (enabledLayer && this.state.charts.pixelHierarchy.data) {
+                let temp = props.layers[enabledLayer].title.split(" ")
+                let matchHighlight = temp.length ? temp[temp.length - 1] : ""
+
+                let match = this.state.charts.pixelHierarchy.data.find((d) => {
+                    return Object.keys(d)[0].includes(matchHighlight)
+                })
+                if (match) {
+                    this.setState({
+                        enabledLayer: Object.keys(match)[0]
+                    })
+                }
+            }
+            else{
+                this.setState({
+                    enabledLayer: null
+                })
+            }
+        }
+    }
+
 
     fetch() {
         if (!this.props.point.lat || !this.props.point.lng) return
@@ -182,7 +217,7 @@ class NVCSHierarchyByPixelPackage extends React.Component {
             x: 50,
             y: 50,
             bbox: (this.props.point.lng - buffer) + ',' + (this.props.point.lat - buffer) + ',' +
-            (this.props.point.lng + buffer) + ',' + (this.props.point.lat + buffer)
+                (this.props.point.lng + buffer) + ',' + (this.props.point.lat + buffer)
         }
         var url = new URL(PIXEL_URL)
         Object.keys(parameters).forEach(key => url.searchParams.append(key, parameters[key]))
@@ -194,12 +229,7 @@ class NVCSHierarchyByPixelPackage extends React.Component {
                     if (result["features"]) {
                         pixelValue = result["features"][0]["properties"]["pixel_value"]
                     }
-                    this.setState({
-                        loading: false,
-                        pixelValue: pixelValue
-                    })
-                    this.props.isEnabled(true)
-                    this.props.canOpen(true)
+                    this.getHBPData(pixelValue, this)
                 },
                 (error) => {
                     this.setState({
@@ -208,6 +238,79 @@ class NVCSHierarchyByPixelPackage extends React.Component {
                     });
                 }
             )
+    }
+
+    getHBPData(pixelValue, that) {
+        const query = { "query": { "term": { "properties.gid": pixelValue } } }
+        fetch(HBP_URL + encodeURI(JSON.stringify(query)))
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    if (result && result.success.hits.hits.length) {
+                        const hbpData = result.success.hits.hits[0]["_source"]["properties"]
+                        const charts = that.getCharts({ pixelHierarchy: hbpData })
+                        that.setState({
+                            pixelValue: pixelValue,
+                            loading: false,
+                            charts: charts
+                        })
+                        that.props.isEnabled(true)
+                        that.props.canOpen(true)
+
+                    } else {
+                        that.setState({
+                            pixelValue: null,
+                            loading: false,
+                            charts: {
+                                pixelHierarchy: { id: "", config: {}, data: null }
+                            }
+                        })
+                        that.props.isEnabled(false)
+                        that.props.canOpen(false)
+                    }
+                },
+                (error) => {
+                    that.setState({
+                        error,
+                        loading: false
+                    });
+                }
+            )
+    }
+
+    getCharts(datas) {
+        if (!datas || !datas.pixelHierarchy) return { pixelHierarchy: { id: "", config: {}, data: null } }
+        datas = datas.pixelHierarchy
+        const chartId = 'HBPAccordian'
+        const chartTitle = `NVCS Hierarchy by Pixel`
+        const chartConfig = {
+            margins: { left: 20, right: 20, top: 20, bottom: 125 },
+            chart: { title: chartTitle, subtitle: `` },
+        }
+        let data = []
+        const prefixes = [
+            "ecosystem_",
+            "group_",
+            "macrogroup_",
+            "division_",
+            "formation_",
+            "subclass_",
+            "class_"
+        ];
+
+        for (let prefix of prefixes) {
+            let title = `${datas[`${prefix}type`]} ${datas[`${prefix}code`]} ${datas[`${prefix}title`]}`
+            let content = datas[`${prefix}description`]
+            let obj = {}
+            obj[title] = content
+            data.push(obj)
+
+        }
+        data.reverse()
+        return {
+            pixelHierarchy: { id: chartId, config: chartConfig, data: data }
+        }
+
     }
 
 
@@ -220,7 +323,14 @@ class NVCSHierarchyByPixelPackage extends React.Component {
             <div>
                 {this.props.getAnalysisLayers()}
                 <div className="chartsDiv">
-                    Pixel Value: {this.state.pixelValue}
+                    <AccordionChart
+                        onRef={ref => (this.AccordionChart = ref)}
+                        data={this.state.charts.pixelHierarchy.data}
+                        id={this.state.charts.pixelHierarchy.id}
+                        config={this.state.charts.pixelHierarchy.config}
+                        highlight={this.state.enabledLayer}
+                    />
+
                     <br></br>
                     This BAP still gets value from the old API, that data needs to move to the new flask API
                 </div>

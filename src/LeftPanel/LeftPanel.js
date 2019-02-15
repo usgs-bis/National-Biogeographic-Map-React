@@ -1,10 +1,6 @@
 import React from "react";
 import "./LeftPanel.css";
-import { Button, Collapse, CardBody, Card, ButtonGroup, Tooltip } from "reactstrap";
-import { Glyphicon } from "react-bootstrap";
-
-import Legend from "../Legend/Legend";
-import { RadioGroup } from "../CustomRadio/CustomRadio";
+import SearchBar from "./searchBar/searchBar.js"
 import PDFReport from "../PDF/PdfReport";
 import { BarLoader } from "react-spinners"
 import * as turf from '@turf/turf'
@@ -20,25 +16,12 @@ class LeftPanel extends React.Component {
         super(props)
         this.state = {
             results: props.results,
-            textSearchHandler: props.textSearchHandler,
-            basemapChanged: props.basemapChanged,
-            submitHandler: props.submitHandler,
-            layersDropdownOpen: false,
             bioscape: props.bioscape,
             updateAnalysisLayers: props.updateAnalysisLayers,
             loading: false,
             enabledLayers: [],
-            basemapTooltipOpen: false
-
         }
 
-        this.handleKeyUp = this.handleKeyUp.bind(this);
-        this.toggleSfrDropdown = this.toggleSfrDropdown.bind(this)
-        this.onFocus = this.onFocus.bind(this)
-        this.onBlur = this.onBlur.bind(this)
-        this.submit = this.submit.bind(this)
-        this.toggleBasemapDropdown = this.toggleBasemapDropdown.bind(this)
-        this.basemapChanged = this.basemapChanged.bind(this);
         this.share = this.share.bind(this);
         this.report = this.report.bind(this);
         this.updateAnalysisLayers = this.updateAnalysisLayers.bind(this)
@@ -81,47 +64,8 @@ class LeftPanel extends React.Component {
             })
         }
 
-        if (props.mapClicked) {
-            this.textInput.focus();
-            this.setState({
-                focused: true
-            })
-        }
     }
 
-    basemapChanged(e) {
-        this.state.basemapChanged(e)
-    }
-
-    toggleBasemapDropdown() {
-        this.setState({ layersDropdownOpen: !this.state.layersDropdownOpen });
-    }
-
-    handleKeyUp(e) {
-        this.state.textSearchHandler(e.target.value)
-    }
-
-    toggleSfrDropdown() {
-    }
-
-    onFocus() {
-        this.setState({
-            focused: true
-        })
-    }
-
-    onBlur() {
-        setTimeout(() => {
-            this.setState({
-                focused: false
-            });
-            this.textInput.value = ""
-        }, 150)
-    }
-
-    submit(e) {
-        this.state.submitHandler(e)
-    }
 
     share() {
         this.props.shareState()
@@ -159,12 +103,8 @@ class LeftPanel extends React.Component {
         this.state.updateAnalysisLayers(enabledLayers, bapId)
     }
 
-    toggleSettingsTooltip = () => this.setState({
-        basemapTooltipOpen: !this.state.basemapTooltipOpen
-    });
 
     render() {
-        let that = this;
 
         const featureText = () => {
             if (this.state.feature_name) {
@@ -192,71 +132,15 @@ class LeftPanel extends React.Component {
         return (
             <div className="left-panel">
                 <div id='left-panel-header' className="left-panel-header">
-                    <div className="nbm-flex-row">
-                        <div className="nbm-flex-column">
-                            <Button id={"SettingsTooltip"} onClick={this.toggleBasemapDropdown} className='placeholder-button' >
-                                <Glyphicon className="inner-glyph" glyph="menu-hamburger" />
-                            </Button>
-                            <Tooltip
-                                style={{ fontSize: "14px" }} isOpen={this.state.basemapTooltipOpen && !this.state.layersDropdownOpen}
-                                target="SettingsTooltip" toggle={this.toggleSettingsTooltip} delay={0}>
-                                Settings
-                            </Tooltip>
-                        </div>
-                        <div className="nbm-flex-column">
-                            <Legend
-                                enabledLayers={this.state.enabledLayers}
-                            />
-                        </div>
-                        <div className="nbm-flex-column-big">
-                            {
-                                !this.state.bioscape.overlays &&
-                                <input ref={(input) => { this.textInput = input; }} onClick={this.onFocus} onBlur={this.onBlur} onKeyUp={this.handleKeyUp}
-                                       className="input-box" type={"text"} />
-                            }
-                        </div>
-                    </div>
-                    <div className="nbm-flex-row" >
-                        <div className="button-group">
-                            {(this.props.results.length > 0 && this.state.focused) ? <ButtonGroup vertical>
-                                {this.props.results.map(function (d, idx) {
-                                    return (
-                                        <Button className="sfr-button" style={{ whiteSpace: 'normal' }}
-                                                onClick={function () { that.submit(this) }}
-                                                id={d.feature_id}
-                                                key={d.feature_id}>
-                                            {d.feature_name} ({d.feature_class})
-                                        </Button>)
-                                })}
-                            </ButtonGroup> : null}
-                        </div>
-                    </div>
-                    <div className="nbm-flex-row-no-padding">
-                        <Collapse className="settings-dropdown" isOpen={this.state.layersDropdownOpen}>
-                            <Card>
-                                <span className="header">Basemaps</span>
-                                <CardBody>
-                                    <RadioGroup style={{ width: "100%" }}
-                                                options={this.state.bioscape.basemaps}
-                                                onChange={this.basemapChanged}
-                                                canDeselect={true}
-                                    />
-                                </CardBody>
-                            </Card>
-                            {this.state.bioscape.overlays &&
-                            <Card>
-                                <span className="header">Overlays</span>
-                                <CardBody>
-                                    <RadioGroup style={{ width: "100%" }}
-                                                options={this.state.bioscape.overlays}
-                                                onChange={this.props.overlayChanged}
-                                                canDeselect={true}
-                                    />
-                                </CardBody>
-                            </Card>
-                            }
-                        </Collapse>
-                    </div>
+
+                    <SearchBar results={this.props.results}
+                        textSearchHandler={this.props.textSearchHandler}
+                        submitHandler={this.props.submitHandler}
+                        mapClicked={this.props.mapClicked}
+                        enabledLayers={this.state.enabledLayers}
+                        bioscape={this.state.bioscape}
+                        overlayChanged={this.props.overlayChanged}
+                        basemapChanged={this.props.basemapChanged}></SearchBar>
                     {featureText()}
                 </div>
                 <div id='analysis-package-container' className="analysis-package-container" >
@@ -273,9 +157,9 @@ class LeftPanel extends React.Component {
                                 {...this.state}
                                 updateAnalysisLayers={this.updateAnalysisLayers}
                             />
-                           
+
                     }
-                     <div id="d3chartTooltip" className='chartTooltip'></div>
+                    <div id="d3chartTooltip" className='chartTooltip'></div>
                 </div>
 
             </div>
