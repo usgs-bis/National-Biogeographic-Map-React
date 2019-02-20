@@ -26,7 +26,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 bapWindowToolTip: false,
                 pBapToolTipOpen: false,
                 sbInfoPopUp: false,
-                sbInfoPopUpToolTip: false
+                sbInfoPopUpToolTip: false,
             }
             this.allowPriority = true
             this.initilized = false
@@ -44,7 +44,6 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             this.htmlToPDFMake = this.htmlToPDFMake.bind(this)
             this.initilize = this.initilize.bind(this)
             this.setPriorityBap = this.setPriorityBap.bind(this)
-            this.showInfoPopup = this.showInfoPopup.bind(this)
             this.getSbContactInfo = this.getSbContactInfo.bind(this)
             this.getSbWebLinkInfo = this.getSbWebLinkInfo.bind(this)
         }
@@ -304,13 +303,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             return content
         }
 
-        togglePbapTooltip = () => this.setState({
-            pBapToolTipOpen: !this.state.pBapToolTipOpen
-        });
 
-        showInfoPopup = () => this.setState({
-            sbInfoPopUp: !this.state.sbInfoPopUp
-        });
 
         getSBItemForPrint() {
             var body = document.createElement("div");
@@ -367,7 +360,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
         }
         getSbContactInfo() {
             if (!this.state.sb_properties || !this.state.sb_properties.contacts) return []
-            let r = [<br></br>,<h4>Contacts:</h4>]
+            let r = [<br></br>, <h4>Contacts:</h4>]
             let c = this.state.sb_properties.contacts
             for (let i of c) {
                 r.push(<div>
@@ -380,7 +373,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
 
         getSbWebLinkInfo() {
             if (!this.state.sb_properties || !this.state.sb_properties.webLinks) return []
-            let r = [<br></br>,<h4>Web Links:</h4>]
+            let r = [<br></br>, <h4>Web Links:</h4>]
             let c = this.state.sb_properties.webLinks
             for (let i of c) {
                 if (i.type === 'citation') {
@@ -408,8 +401,17 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                     <div className="bap-title-content" style={{ width: 'calc(100% - 40px)' }}>
                         <span className="bapTitle">
                             <span onClick={this.toggleDropdown}>{this.state.sb_properties.title}</span>
-                            <span onClick={this.showInfoPopup} className="title-info-icon">
+                            <span id={`sbInfoToolTip${this.props.bapId}`}
+                                onClick={() => this.setState({ sbInfoPopUp: !this.state.sbInfoPopUp })}
+                                className="title-info-icon">
                                 <Glyphicon glyph="info-sign" />
+                                <Tooltip
+                                    style={{ fontSize: "14px" }} isOpen={this.state.sbInfoPopUpToolTip}
+                                    target={`sbInfoToolTip${this.props.bapId}`}
+                                    toggle={() => this.setState({ sbInfoPopUpToolTip: !this.state.sbInfoPopUpToolTip })}
+                                    delay={0}>
+                                    Information
+                                </Tooltip>
                             </span>
                         </span>
                     </div>
@@ -417,7 +419,9 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                         <input id={`pBapToolTip${this.props.bapId}`} className="priority-bap-raido" style={{ display: this.state.canOpen ? 'block' : 'none' }} type='radio' readOnly={true} checked={this.props.bapId === this.props.priorityBap && this.allowPriority} onClick={this.setPriorityBap} ></input>
                         <Tooltip
                             style={{ fontSize: "14px" }} isOpen={this.state.pBapToolTipOpen}
-                            target={`pBapToolTip${this.props.bapId}`} toggle={this.togglePbapTooltip} delay={0}>
+                            target={`pBapToolTip${this.props.bapId}`}
+                            toggle={() => this.setState({ pBapToolTipOpen: !this.state.pBapToolTipOpen })}
+                            delay={0}>
                             {this.props.bapId === this.props.priorityBap && this.allowPriority ? "Deselect Priority Bap" : "Select Priority Bap"}
                         </Tooltip>
                     </div>
