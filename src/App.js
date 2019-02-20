@@ -331,6 +331,7 @@ class App extends React.Component {
                             priorityBap={this.state.priorityBap}
                             bioscapeName={this.state.bioscapeName}
                             point={{lat: this.state.lat, lng: this.state.lng}}
+                            overlay={this.state.overlay}
                         />
                     </Resizable>
 

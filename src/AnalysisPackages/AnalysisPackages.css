@@ -18,7 +18,7 @@
 
 .dropdown-glyph {
     font-size: 18px;
-    margin-left: 5px;
+    margin-right: 5px;
 }
 
 .chartsDiv {
@@ -136,4 +136,14 @@ padding-top: 15px;
     z-index: 999;
     background-color: #555;
     opacity: 1;
+}
+
+.priority-bap-raido{
+    float: right;
+    width: 18px;
+    height: 18px;
+}
+
+.bap-title-content{
+display: inline-flex;
 }

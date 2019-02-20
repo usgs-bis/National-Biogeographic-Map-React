@@ -46,7 +46,7 @@ class Legend extends React.Component {
         }
         return (
             <div>
-                <Button id={"LegendTooltip"} className='placeholder-button' onClick={this.toggleDialog} >
+                <Button id={"LegendTooltip"} className='submit-analysis-btn placeholder-button' onClick={this.toggleDialog} >
                     <Glyphicon className="inner-glyph" glyph="th-list" />
                 </Button>
                 <Tooltip

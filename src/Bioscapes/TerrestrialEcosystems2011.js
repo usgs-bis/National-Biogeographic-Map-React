@@ -64,6 +64,7 @@ class TerrestrialEcosystems2011 extends React.Component {
                         bapId={`bap${counter++}`}
                         initLayerTitle={this.props.initLayerTitle}
                         point={this.props.point}
+                        overlay={this.props.overlay}
                     />
                     <NVCSSummaryByRegion
                         onRef={ref => (this.NVCSSummaryByRegion = ref)}
@@ -72,6 +73,7 @@ class TerrestrialEcosystems2011 extends React.Component {
                         priorityBap={this.props.priorityBap}
                         bapId={`bap${counter++}`}
                         initLayerTitle={this.props.initLayerTitle}
+                        overlay={this.props.overlay}
                     />
                 </div>
             </div>

@@ -85,8 +85,8 @@ class SearchBar extends React.Component {
         return (
             <div>
                 <div className="nbm-flex-row">
-                    <div className="nbm-flex-column">
-                        <Button id={"SettingsTooltip"} onClick={this.toggleBasemapDropdown} className='placeholder-button' >
+                    <div className="settings-btn-group nbm-flex-column">
+                        <Button id={"SettingsTooltip"} onClick={this.toggleBasemapDropdown} className='submit-analysis-btn placeholder-button' >
                             <Glyphicon className="inner-glyph" glyph="menu-hamburger" />
                         </Button>
                         <Tooltip
@@ -95,18 +95,20 @@ class SearchBar extends React.Component {
                             Settings
                 </Tooltip>
                     </div>
-                    <div className="nbm-flex-column">
+                    <div className="settings-btn-group nbm-flex-column">
                         <Legend
                             enabledLayers={this.props.enabledLayers}
                         />
                     </div>
-                    <div className="nbm-flex-column-big">
-                        {
+                    {!this.props.bioscape.overlays &&
+                        <div className="nbm-flex-column-big">
+                            {
 
-                            <input ref={(input) => { this.textInput = input; }} onClick={this.onFocus} onBlur={this.onBlur} onKeyUp={this.handleKeyUp}
-                                className="input-box" type={"text"} />
-                        }
-                    </div>
+                                <input ref={(input) => { this.textInput = input; }} onClick={this.onFocus} onBlur={this.onBlur} onKeyUp={this.handleKeyUp}
+                                    className="input-box" type={"text"} />
+                            }
+                        </div>
+                    }
                 </div>
                 <div className="nbm-flex-row" >
                     <div className="button-group">
