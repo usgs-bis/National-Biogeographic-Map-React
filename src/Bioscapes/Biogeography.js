@@ -32,6 +32,10 @@ class Biogeography extends React.Component {
         this.loaderRef = React.createRef();
     }
 
+    componentDidMount() {
+        this.props.onRef(this)
+    }
+
     submit(e) {
         this.state.submitHandler(e)
     }
@@ -41,9 +45,6 @@ class Biogeography extends React.Component {
     }
 
     report() {
-        this.setState({
-            loading: true
-        })
 
         let charts = []
         charts.push(this.FirstLeafAnalysis.print())
@@ -54,14 +55,8 @@ class Biogeography extends React.Component {
         charts.push(this.SpeciesProtectionAnalysis.print())
         charts.push(this.PhenologyAnalysis.print())
         charts.push(this.OBISAnalysis.print())
-        this.PDFReport.generateReport(this.state.feature_name, this.state.feature_class, this.props.map, charts)
-            .then(() => {
-                setTimeout(() => {
-                    this.setState({
-                        loading: false
-                    })
-                }, 3000);
-            })
+        
+        return charts
     }
 
     // updateAnalysisLayers(enabledLayers, bapId) {

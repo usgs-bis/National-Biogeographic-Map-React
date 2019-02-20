@@ -127,9 +127,10 @@ padding-top: 15px;
 }
 
 .bap-window-button{
-    float: right;
-    margin-right: 5px;
-    margin-top: 5px;
+    display: inline-block;
+    margin-left: 90%;
+    margin-top: -30px;
+    border-radius: 5PX;
 }
 
 .bap-popout-window{
@@ -146,4 +147,25 @@ padding-top: 15px;
 
 .bap-title-content{
 display: inline-flex;
+}
+
+.title-info-icon{
+    margin-left: 5px;
+    font-size: 14px;
+}
+
+.sbinfo-popout-window{
+    z-index: 999;
+    opacity: 1;
+    background-color: white;
+    color: black;
+    padding: 16px;
+    font-size: 12px;
+}
+
+.sbinfo-popout-window h4{
+    font-size: 20px;
+}
+.sbinfo-popout-window h3{
+    font-size: 18px;
 }

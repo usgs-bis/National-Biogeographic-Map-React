@@ -24,7 +24,9 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 isEnabled: true,
                 bapWindowOpen: false,
                 bapWindowToolTip: false,
-                pBapToolTipOpen:false
+                pBapToolTipOpen: false,
+                sbInfoPopUp: false,
+                sbInfoPopUpToolTip: false,
             }
             this.allowPriority = true
             this.initilized = false
@@ -42,6 +44,8 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             this.htmlToPDFMake = this.htmlToPDFMake.bind(this)
             this.initilize = this.initilize.bind(this)
             this.setPriorityBap = this.setPriorityBap.bind(this)
+            this.getSbContactInfo = this.getSbContactInfo.bind(this)
+            this.getSbWebLinkInfo = this.getSbWebLinkInfo.bind(this)
         }
 
 
@@ -66,6 +70,11 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
         }
 
         componentDidUpdate(prevProps, prevState) {
+
+            if (prevProps.feature !== this.props.feature) {
+                this.updateAnalysisLayers({})
+            }
+
             if (prevProps.priorityBap !== this.props.priorityBap) {
                 if (this.props.priorityBap !== this.props.bapId) {
                     let l = layers;
@@ -182,6 +191,11 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                                 className="analysis-dropdown-glyph"
                                 glyph={that.state.layersOpen ? "menu-down" : "menu-right"}
                             />
+                            <Button id={`openBapWindow${this.props.bapId}`} className='bap-window-button' style={{ display: this.state.bapWindowOpen ? "none" : "inline-block" }}
+                                onClick={() => this.setState({ bapWindowOpen: !this.state.bapWindowOpen })} >
+                                <Glyphicon className="inner-glyph" glyph="resize-full"
+                                />
+                            </Button>
                         </div>
 
                         <Collapse className='analysis-dropdown-content' isOpen={that.state.layersOpen}>
@@ -220,11 +234,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
         getBapContents(bapContent) {
             return (
                 <div>
-                    <Button id={`openBapWindow${this.props.bapId}`} className='submit-analysis-btn bap-window-button' style={{ display: this.state.bapWindowOpen ? "none" : "inline-block" }}
-                        onClick={() => this.setState({ bapWindowOpen: !this.state.bapWindowOpen })} >
-                        <Glyphicon className="inner-glyph" glyph="resize-full"
-                        />
-                    </Button>
+
                     <Tooltip
                         style={{ fontSize: "14px" }} isOpen={this.state.bapWindowToolTip && !this.state.bapWindowOpen}
                         target={`openBapWindow${this.props.bapId}`} toggle={() => this.setState({
@@ -294,6 +304,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
         }
 
 
+
         getSBItemForPrint() {
             var body = document.createElement("div");
             body.innerHTML = this.state.sb_properties.body
@@ -330,7 +341,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                         definition.link = content.textContent
                         definition.text = content.textContent
                     }
-                    if (parent === 'EM') {
+                    if (parent === 'EM' || parent === 'i') {
                         definition.italics = true
                     }
                     text.push(definition)
@@ -342,16 +353,37 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             pdfDoc.push({ text: text })
             pdfDoc.push({ text: 'ScienceBase Item', style: 'sbPropertiesTitle' })
             pdfDoc.push({ text: this.state.sb_properties.link.url, style: 'annotationLink', margin: [15, 10, 5, 0], link: this.state.sb_properties.link.url })
-            pdfDoc.push({ text: '', pageBreak: 'after' })
+            // pdfDoc.push({ text: '', pageBreak: 'after' })
 
             return pdfDoc
 
         }
+        getSbContactInfo() {
+            if (!this.state.sb_properties || !this.state.sb_properties.contacts) return []
+            let r = [<br></br>, <h4>Contacts:</h4>]
+            let c = this.state.sb_properties.contacts
+            for (let i of c) {
+                r.push(<div>
+                    <div>{`Name: ${i.firstName + ' ' + i.lastName}`}</div>
+                    <div>{`Email: ${i.email}`}</div>
+                </div>)
+            }
+            return r
+        }
 
-        togglePbapTooltip = () => this.setState({
-            pBapToolTipOpen: !this.state.pBapToolTipOpen
-        });
-
+        getSbWebLinkInfo() {
+            if (!this.state.sb_properties || !this.state.sb_properties.webLinks) return []
+            let r = [<br></br>, <h4>Web Links:</h4>]
+            let c = this.state.sb_properties.webLinks
+            for (let i of c) {
+                if (i.type === 'citation') {
+                    r.push(<div>
+                        <div><a href={i.uri}>{i.title}</a></div>
+                    </div>)
+                }
+            }
+            return r
+        }
 
         render() {
             return (
@@ -367,15 +399,31 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                         </span>
                     </div>
                     <div className="bap-title-content" style={{ width: 'calc(100% - 40px)' }}>
-                        <span onClick={this.toggleDropdown} className="bapTitle">{this.state.sb_properties.title}</span>
+                        <span className="bapTitle">
+                            <span onClick={this.toggleDropdown}>{this.state.sb_properties.title}</span>
+                            <span id={`sbInfoToolTip${this.props.bapId}`}
+                                onClick={() => this.setState({ sbInfoPopUp: !this.state.sbInfoPopUp })}
+                                className="title-info-icon">
+                                <Glyphicon glyph="info-sign" />
+                                <Tooltip
+                                    style={{ fontSize: "14px" }} isOpen={this.state.sbInfoPopUpToolTip}
+                                    target={`sbInfoToolTip${this.props.bapId}`}
+                                    toggle={() => this.setState({ sbInfoPopUpToolTip: !this.state.sbInfoPopUpToolTip })}
+                                    delay={0}>
+                                    Information
+                                </Tooltip>
+                            </span>
+                        </span>
                     </div>
                     <div className="bap-title-content" style={{ width: '20px' }}>
                         <input id={`pBapToolTip${this.props.bapId}`} className="priority-bap-raido" style={{ display: this.state.canOpen ? 'block' : 'none' }} type='radio' readOnly={true} checked={this.props.bapId === this.props.priorityBap && this.allowPriority} onClick={this.setPriorityBap} ></input>
                         <Tooltip
                             style={{ fontSize: "14px" }} isOpen={this.state.pBapToolTipOpen}
-                            target={`pBapToolTip${this.props.bapId}`} toggle={this.togglePbapTooltip} delay={0}>
-                            { this.props.bapId === this.props.priorityBap && this.allowPriority ? "Deselect Priority Bap" : "Select Priority Bap"}
-                         </Tooltip>
+                            target={`pBapToolTip${this.props.bapId}`}
+                            toggle={() => this.setState({ pBapToolTipOpen: !this.state.pBapToolTipOpen })}
+                            delay={0}>
+                            {this.props.bapId === this.props.priorityBap && this.allowPriority ? "Deselect Priority Bap" : "Select Priority Bap"}
+                        </Tooltip>
                     </div>
                     <Collapse className="settings-dropdown" isOpen={this.state.isOpen && this.state.isEnabled}>
                         <AnalysisPackage
@@ -394,6 +442,30 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                             layers={this.state.layers}
                         />
                     </Collapse>
+                    {
+                        this.state.sbInfoPopUp &&
+                        <CustomDialog
+                            className="sbinfo-popout-window"
+                            isResizable={true}
+                            isDraggable={true}
+                            title={this.state.sb_properties.title}
+                            modal={false}
+                            onClose={() => {
+                                this.setState({
+                                    sbInfoPopUpToolTip: false,
+                                    sbInfoPopUp: false
+                                })
+                            }
+                            }
+                            body={
+                                <div>
+                                    <div dangerouslySetInnerHTML={{ __html: this.state.sb_properties.body }}></div>
+                                    {this.getSbContactInfo()}
+                                    {this.getSbWebLinkInfo()}
+                                </div>
+                            }
+                        />
+                    }
                 </div>
             );
         }

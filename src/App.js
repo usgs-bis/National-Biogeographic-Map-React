@@ -158,7 +158,7 @@ class App extends React.Component {
     }
 
     handelDrawnPolygon(geom) {
-        if (geom) { 
+        if (geom) {
             this.setState({
                 feature: {
                     geometry: geom,
@@ -311,7 +311,7 @@ class App extends React.Component {
                         defaultSize={{ width: 500 }}
                         minWidth={250}
                         maxWidth={1000}
-                        onResizeStop={() => { this.state.map.leafletElement.invalidateSize(); this.setMapDisplayYear(this.state.mapDisplayYear + 1); this.setMapDisplayYear(this.state.mapDisplayYear -1) }}
+                        onResizeStop={() => { this.state.map.leafletElement.invalidateSize(); this.setMapDisplayYear(this.state.mapDisplayYear + 1); this.setMapDisplayYear(this.state.mapDisplayYear - 1) }}
                     >
                         <LeftPanel
                             overlayChanged={this.overlayChanged}
@@ -330,7 +330,7 @@ class App extends React.Component {
                             initLayerTitle={this.initLayerTitle}
                             priorityBap={this.state.priorityBap}
                             bioscapeName={this.state.bioscapeName}
-                            point={{lat: this.state.lat, lng: this.state.lng}}
+                            point={{ lat: this.state.lat, lng: this.state.lng }}
                             overlay={this.state.overlay}
                         />
                     </Resizable>

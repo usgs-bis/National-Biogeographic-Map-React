@@ -77,14 +77,13 @@ class LeftPanel extends React.Component {
         })
 
         let charts = []
-        charts.push(this.FirstLeafAnalysis.print())
-        charts.push(this.FirstBloomAnalysis.print())
-        charts.push(this.FirstLeafBloomComparisonAnalysis.print())
-        charts.push(this.NFHPAnalysis.print())
-        charts.push(this.EcosystemProtectionAnalysis.print())
-        charts.push(this.SpeciesProtectionAnalysis.print())
-        charts.push(this.PhenologyAnalysis.print())
-        charts.push(this.OBISAnalysis.print())
+        if (this.props.bioscapeName === "terrestrial-ecosystems-2011") {
+            charts = this.TerrestrialEcosystems2011.report()
+        }
+        else {
+            charts = this.Biogeography.report()
+        }
+
         this.PDFReport.generateReport(this.state.feature_name, this.state.feature_class, this.props.map, charts)
             .then(() => {
                 setTimeout(() => {
@@ -147,12 +146,14 @@ class LeftPanel extends React.Component {
                     {
                         this.props.bioscapeName === "terrestrial-ecosystems-2011" ?
                             <TerrestrialEcosystems2011
+                                onRef={ref => (this.TerrestrialEcosystems2011 = ref)}
                                 {...this.props}
                                 {...this.state}
                                 updateAnalysisLayers={this.updateAnalysisLayers}
                             />
                             :
                             <Biogeography
+                                onRef={ref => (this.Biogeography = ref)}
                                 {...this.props}
                                 {...this.state}
                                 updateAnalysisLayers={this.updateAnalysisLayers}

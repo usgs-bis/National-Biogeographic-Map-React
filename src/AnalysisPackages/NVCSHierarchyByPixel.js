@@ -181,7 +181,7 @@ class NVCSHierarchyByPixelPackage extends React.Component {
                 return props.layers[key].checked
             })
             if (enabledLayer && this.state.charts.pixelHierarchy.data) {
-             
+
                 let match = this.state.charts.pixelHierarchy.data.find((d) => {
                     return Object.keys(d)[0].includes(props.layers[enabledLayer].title)
                 })
@@ -191,7 +191,7 @@ class NVCSHierarchyByPixelPackage extends React.Component {
                     })
                 }
             }
-            else{
+            else {
                 this.setState({
                     enabledLayer: null
                 })
@@ -319,7 +319,20 @@ class NVCSHierarchyByPixelPackage extends React.Component {
 
 
     print() {
-        return []
+        if (this.state.charts.pixelHierarchy.data) {
+            let content = []
+            for (let entry of this.state.charts.pixelHierarchy.data) {
+                let key = Object.keys(entry)[0]
+                content.push({ text: key, style: 'sbPropertiesTitle', margin: [5, 5, 0, 5] })
+                content.push({ text: entry[key], style: 'sbProperties', margin: [10, 5, 0, 5] })
+            }
+            let report = [
+                { stack: this.props.getSBItemForPrint() },
+                { text: this.state.charts.pixelHierarchy.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 10] },
+                { stack: content }
+            ]
+            return report
+        }
     }
 
     createUniqueBapContents() {
