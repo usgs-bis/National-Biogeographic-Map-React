@@ -1,5 +1,6 @@
 {
   "title": "National Biogeographic Map",
+  "description" : "The National Biogeographic Map is a prototype application designed to bring together USGS biogeographic data and information for analysis and synthesis. Some of the software and data found in the National Biogeographic Map is considered provisional and subject to revision until it has been fully vetted through the USGS release process. They are provided here to meet the need for timely best science.",
   "basemaps": [
     {
       "title": "USGS Topographic",

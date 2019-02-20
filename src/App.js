@@ -302,7 +302,7 @@ class App extends React.Component {
         return (
             <div className="vwrapper">
                 <div id="header-area">
-                    <Header title={this.state.bioscape.title} />
+                    <Header title={this.state.bioscape.title} description={this.state.bioscape.description} />
                 </div>
                 <div id="content-area">
                     <Resizable
