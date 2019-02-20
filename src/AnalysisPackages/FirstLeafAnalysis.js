@@ -88,7 +88,7 @@ class FirstLeafAnalysisPackage extends React.Component {
     componentDidUpdate(prevProps) {
         if (prevProps.feature !== this.props.feature) {
             this.clearCharts()
-            this.featureChange()
+            this.featureChange()            
         }
     }
 

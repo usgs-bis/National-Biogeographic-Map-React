@@ -295,13 +295,75 @@ class NVCSSummaryByRegionPackage extends React.Component {
 
 
     print() {
-        return []
+        if (this.state.charts.nvcsSummTable.data) {
+
+            return [
+                { stack: this.props.getSBItemForPrint() },
+
+                { text: this.state.charts.nvcsSummTable.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 10] },
+                {
+                    columns: [
+                        {
+                            width: 175,
+                            margin: [3, 0],
+                            stack: [
+                                {
+                                    style: 'tableStyle',
+                                    table: {
+                                        widths: ['40%', '30%', '30%'],
+                                        heights: 50,
+                                        body: this.state.charts.nvcsSummTable.data.slice(0, Math.floor(this.state.charts.nvcsSummTable.data.length / 3))
+                                    }
+                                },
+                            ]
+                        },
+                        {
+                            width: 175,
+                            margin: [3, 0],
+                            stack: [
+                                {
+                                    style: 'tableStyle',
+                                    table: {
+                                        widths: ['40%', '30%', '30%'],
+                                        heights: 50,
+                                        body: this.state.charts.nvcsSummTable.data.slice(Math.floor(this.state.charts.nvcsSummTable.data.length / 3), Math.floor((this.state.charts.nvcsSummTable.data.length / 3) * 2))
+                                    }
+                                },
+                            ]
+                        },
+                        {
+                            width: 175,
+                            margin: [3, 0],
+                            stack: [
+                                {
+                                    style: 'tableStyle',
+                                    table: {
+                                        widths: ['40%', '30%', '30%'],
+                                        heights: 50,
+                                        body: this.state.charts.nvcsSummTable.data.slice(Math.floor((this.state.charts.nvcsSummTable.data.length / 3) * 2), this.state.charts.nvcsSummTable.data.length)
+                                    }
+                                },
+                            ]
+                        },
+                    ]
+                },
+            ]
+        }
+
     }
+
+
     createUniqueBapContents() {
         return (
             <div>
                 {this.props.getAnalysisLayers()}
                 <div className="chartsDiv">
+                <div style={{padding:'10px'}}>
+
+                {`The data displayed in this summary table is based on the NVCS ${this.enabledLayer ? this.enabledLayer.title: 'Class'}
+                 hierarchy level, as selected in the Bioscape.`}
+
+                </div>
                     <TableChart
                         onRef={ref => (this.TableChart = ref)}
                         data={this.state.charts.nvcsSummTable.data}

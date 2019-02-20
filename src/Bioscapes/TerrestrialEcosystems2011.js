@@ -24,6 +24,9 @@ class TerrestrialEcosystems2011 extends React.Component {
         this.report = this.report.bind(this);
         this.loaderRef = React.createRef();
     }
+    componentDidMount() {
+        this.props.onRef(this)
+    }
 
     submit(e) {
         this.state.submitHandler(e)
@@ -34,21 +37,12 @@ class TerrestrialEcosystems2011 extends React.Component {
     }
 
     report() {
-        this.setState({
-            loading: true
-        })
 
         let charts = []
         charts.push(this.NVCSHierarchyByPixel.print())
         charts.push(this.NVCSSummaryByRegion.print())
-        this.PDFReport.generateReport(this.state.feature_name, this.state.feature_class, this.props.map, charts)
-            .then(() => {
-                setTimeout(() => {
-                    this.setState({
-                        loading: false
-                    })
-                }, 3000);
-            })
+        
+        return charts
     }
 
     render() {
