@@ -2,3 +2,21 @@
     margin-left: 5px;
     font-size: 15px;
 }
+.main-title-desc{
+    font-size: 14px;
+    max-width: 50%;
+    margin: auto;
+    line-height: 18px;
+    background-color: black;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 500;
+    padding-bottom: 12px;
+}
+
+.usgs-Logo{
+    background-image: url("../images/usgs-logo-transparent.png");
+    background-size: cover;
+    width: 150px;
+    height: 55px;
+    float: left;
+}

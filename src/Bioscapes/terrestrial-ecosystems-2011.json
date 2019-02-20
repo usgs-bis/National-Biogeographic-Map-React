@@ -1,5 +1,6 @@
 {
-  "title": "Terrestrial Ecosystems 2011",
+  "title": "GAP/LANDFIRE National Terrestrial Ecosystems 2011",
+  "description" : "The GAP/LANDFIRE National Terrestrial Ecosystems represents a highly thematically detailed land cover map of the U.S.  The GAP/LANDFIRE National Terrestrial Ecosystems dataset is produced by the U.S. Geological Survey in collaboration with the LANDFIRE Program. The GAP produces data and tools that help meet critical national challenges such as biodiversity conservation, renewable energy development, climate change adaptation, and infrastructure investment. Learn more about GAP and other GAP data (including protected areas and species habitat maps) at https://gapanalysis.usgs.gov.",
   "basemaps": [
     {
       "title": "USGS Topographic",
