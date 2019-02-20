@@ -24,7 +24,9 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 isEnabled: true,
                 bapWindowOpen: false,
                 bapWindowToolTip: false,
+                pBapToolTipOpen:false
             }
+            this.allowPriority = true
             this.initilized = false
             this.toggleDropdown = this.toggleDropdown.bind(this)
             this.toggleLayerDropdown = this.toggleLayerDropdown.bind(this)
@@ -39,6 +41,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             this.getSBItemForPrint = this.getSBItemForPrint.bind(this)
             this.htmlToPDFMake = this.htmlToPDFMake.bind(this)
             this.initilize = this.initilize.bind(this)
+            this.setPriorityBap = this.setPriorityBap.bind(this)
         }
 
 
@@ -62,7 +65,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
 
         }
 
-        componentDidUpdate(prevProps,prevState) {
+        componentDidUpdate(prevProps, prevState) {
             if (prevProps.priorityBap !== this.props.priorityBap) {
                 if (this.props.priorityBap !== this.props.bapId) {
                     let l = layers;
@@ -80,7 +83,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             // forcing a rerender so the bapwindow will populate
             // not sure why calling this.render() doesnt work
             // will try to find a better way. 
-            else if(prevState.bapWindowOpen !== this.state.bapWindowOpen){
+            else if (prevState.bapWindowOpen !== this.state.bapWindowOpen) {
                 this.setState({
                     random: Math.random()
                 })
@@ -117,27 +120,47 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             return l
         }
 
-        updateAnalysisLayers() {
-            let that = this
+        updateAnalysisLayers(layer) {
+            let newLayers = {}
             let enabledLayers = []
-            Object.keys(this.state.layers).forEach(function (key) {
-                if (that[key].checked) {
-                    let obj = that.state
-                    let l = obj.layers
-                    l[key].checked = true
-                    obj.layers = l
-                    that.setState(obj)
-                    enabledLayers.push(that.state.layers[key])
-                } else {
-                    let obj = that.state
-                    let l = obj.layers
-                    l[key].checked = false
-                    obj.layers = l
-                    that.setState(obj)
+            Object.keys(this.state.layers).forEach((key) => {
+                newLayers[key] = this.state.layers[key]
+                if (newLayers[key].title !== layer.title) {
+                    newLayers[key].checked = false
+                }
+                else {
+                    newLayers[key].checked = !newLayers[key].checked
+                    if (newLayers[key].checked) {
+                        enabledLayers.push(newLayers[key])
+                    }
                 }
             })
-
+            this.setState({
+                layers: newLayers
+            })
             this.props.updateAnalysisLayers(enabledLayers, this.props.bapId)
+        }
+
+        setPriorityBap() {
+            if (this.state.canOpen) {
+                if (this.props.priorityBap === this.props.bapId) {
+                    this.allowPriority = !this.allowPriority
+                }
+                if (this.allowPriority) {
+                    let avaiableLayers = Object.keys(this.state.layers)
+                    if (avaiableLayers.length) {
+                        this.updateAnalysisLayers(this.state.layers[avaiableLayers[0]])
+                    }
+                    this.setState({
+                        isOpen: true,
+                        glyph: "menu-down",
+                    })
+                }
+                else {
+                    this.updateAnalysisLayers({})
+
+                }
+            }
         }
 
         toggleLayerDropdown() {
@@ -170,10 +193,10 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                                             <input
                                                 style={{ display: layer.hideCheckbox ? "none" : "inline-block" }}
                                                 ref={(input) => { that[key] = input; that["inputRefs"][key] = input }}
-                                                onChange={function () { that.updateAnalysisLayers() }}
+                                                onChange={function () { that.updateAnalysisLayers(that.state.layers[key]) }}
                                                 checked={that.state.layers[key].checked}
                                                 type="checkbox" />
-                                            {' ' + layer.title}
+                                            {' ' + (layer.titlePrefix ? layer.titlePrefix : "") + layer.title}
                                         </Label>
                                         <input style={{ width: "50%" }}
                                             ref={(input) => { that[key + "Opacity"] = input; }}
@@ -197,14 +220,14 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
         getBapContents(bapContent) {
             return (
                 <div>
-                    <Button id={"openBapWindow"} className='bap-window-button' style={{ display: this.state.bapWindowOpen ? "none" : "inline-block" }}
+                    <Button id={`openBapWindow${this.props.bapId}`} className='submit-analysis-btn bap-window-button' style={{ display: this.state.bapWindowOpen ? "none" : "inline-block" }}
                         onClick={() => this.setState({ bapWindowOpen: !this.state.bapWindowOpen })} >
                         <Glyphicon className="inner-glyph" glyph="resize-full"
                         />
                     </Button>
                     <Tooltip
                         style={{ fontSize: "14px" }} isOpen={this.state.bapWindowToolTip && !this.state.bapWindowOpen}
-                        target="openBapWindow" toggle={() => this.setState({
+                        target={`openBapWindow${this.props.bapId}`} toggle={() => this.setState({
                             bapWindowToolTip: !this.state.bapWindowToolTip
                         })} delay={0}>
                         View Bap in new window
@@ -212,7 +235,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                     {
                         this.state.bapWindowOpen &&
                         <CustomDialog
-                        className="bap-popout-window"
+                            className="bap-popout-window"
                             isResizable={true}
                             isDraggable={true}
                             title={this.state.sb_properties.title}
@@ -325,18 +348,35 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
 
         }
 
+        togglePbapTooltip = () => this.setState({
+            pBapToolTipOpen: !this.state.pBapToolTipOpen
+        });
+
 
         render() {
             return (
                 <div id={this.props.bapId}
                     style={{ display: this.state.isEnabled ? 'block' : 'none' }}
                     className="nbm-flex-row-no-padding small-padding">
-                    <span onClick={this.toggleDropdown} className="bapTitle">
-                        {this.state.sb_properties.title}
-                        <Glyphicon style={{ display: this.state.canOpen ? "inline-block" : "none" }}
-                            className="dropdown-glyph"
-                            glyph={this.state.glyph} />
-                    </span>
+
+                    <div className="bap-title-content" style={{ width: '20px' }}>
+                        <span onClick={this.toggleDropdown} className="bapTitle">
+                            <Glyphicon style={{ display: this.state.canOpen ? "inline-block" : "none" }}
+                                className="dropdown-glyph"
+                                glyph={this.state.glyph} />
+                        </span>
+                    </div>
+                    <div className="bap-title-content" style={{ width: 'calc(100% - 40px)' }}>
+                        <span onClick={this.toggleDropdown} className="bapTitle">{this.state.sb_properties.title}</span>
+                    </div>
+                    <div className="bap-title-content" style={{ width: '20px' }}>
+                        <input id={`pBapToolTip${this.props.bapId}`} className="priority-bap-raido" style={{ display: this.state.canOpen ? 'block' : 'none' }} type='radio' readOnly={true} checked={this.props.bapId === this.props.priorityBap && this.allowPriority} onClick={this.setPriorityBap} ></input>
+                        <Tooltip
+                            style={{ fontSize: "14px" }} isOpen={this.state.pBapToolTipOpen}
+                            target={`pBapToolTip${this.props.bapId}`} toggle={this.togglePbapTooltip} delay={0}>
+                            { this.props.bapId === this.props.priorityBap && this.allowPriority ? "Deselect Priority Bap" : "Select Priority Bap"}
+                         </Tooltip>
+                    </div>
                     <Collapse className="settings-dropdown" isOpen={this.state.isOpen && this.state.isEnabled}>
                         <AnalysisPackage
                             {...this.props}

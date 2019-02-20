@@ -17,7 +17,8 @@ let HBP_URL = "https://my-beta.usgs.gov/bcb/elastic/search/nvcs/nvcs_unit_hierar
 
 const layers = {
     class_service: {
-        title: "GAP Landcover 2011 Class",
+        title: "Class",
+        titlePrefix: "GAP Landcover 2011 ",
         layer: L.tileLayer.wms(
             "https://www.sciencebase.gov/geoserver/nvcs/wms",
             {
@@ -34,7 +35,8 @@ const layers = {
         checked: false
     },
     subclass_service: {
-        title: "GAP Landcover 2011 Subclass",
+        title: "Subclass",
+        titlePrefix: "GAP Landcover 2011 ",
         layer: L.tileLayer.wms(
             "https://www.sciencebase.gov/geoserver/nvcs/wms",
             {
@@ -51,7 +53,8 @@ const layers = {
         checked: false
     },
     formation_service: {
-        title: "GAP Landcover 2011 Formation",
+        title: "Formation",
+        titlePrefix: "GAP Landcover 2011 ",
         layer: L.tileLayer.wms(
             "https://www.sciencebase.gov/geoserver/nvcs/wms",
             {
@@ -68,7 +71,8 @@ const layers = {
         checked: false
     },
     division_service: {
-        title: "GAP Landcover 2011 Division",
+        title: "Division",
+        titlePrefix: "GAP Landcover 2011 ",
         layer: L.tileLayer.wms(
             "https://www.sciencebase.gov/geoserver/nvcs/wms",
             {
@@ -85,7 +89,8 @@ const layers = {
         checked: false
     },
     macrogroup_service: {
-        title: "GAP Landcover 2011 Macrogroup",
+        title: "Macrogroup",
+        titlePrefix: "GAP Landcover 2011 ",
         layer: L.tileLayer.wms(
             "https://www.sciencebase.gov/geoserver/nvcs/wms",
             {
@@ -102,7 +107,8 @@ const layers = {
         checked: false
     },
     nvc_group_service: {
-        title: "GAP Landcover 2011 Group",
+        title: "Group",
+        titlePrefix: "GAP Landcover 2011 ",
         layer: L.tileLayer.wms(
             "https://www.sciencebase.gov/geoserver/nvcs/wms",
             {
@@ -119,7 +125,8 @@ const layers = {
         checked: false
     },
     ecosys_lu_service: {
-        title: "GAP Landcover 2011 Ecological System",
+        title: "Ecological System",
+        titlePrefix: "GAP Landcover 2011 ",
         layer: L.tileLayer.wms(
             "https://www.sciencebase.gov/geoserver/nvcs/wms",
             {
@@ -174,11 +181,9 @@ class NVCSHierarchyByPixelPackage extends React.Component {
                 return props.layers[key].checked
             })
             if (enabledLayer && this.state.charts.pixelHierarchy.data) {
-                let temp = props.layers[enabledLayer].title.split(" ")
-                let matchHighlight = temp.length ? temp[temp.length - 1] : ""
-
+             
                 let match = this.state.charts.pixelHierarchy.data.find((d) => {
-                    return Object.keys(d)[0].includes(matchHighlight)
+                    return Object.keys(d)[0].includes(props.layers[enabledLayer].title)
                 })
                 if (match) {
                     this.setState({
@@ -310,7 +315,6 @@ class NVCSHierarchyByPixelPackage extends React.Component {
         return {
             pixelHierarchy: { id: chartId, config: chartConfig, data: data }
         }
-
     }
 
 
