@@ -10,7 +10,7 @@ class HistogramChart extends React.Component {
             id: null,
             config: null,
             data: null,
-            bucketSize:null
+            bucketSize: null
         }
         this.drawChart = this.drawChart.bind(this);
         this.print = this.print.bind(this)
@@ -291,7 +291,9 @@ class HistogramChart extends React.Component {
                 const svg = "data:image/svg+xml," + d3.select(`#${id}ChartContainer .svg-container-chart`).html()
                 image.src = svg
             }
-            catch (error) { reject(error) }
+            catch (error) {
+                reject(error)
+            }
         })
     }
 

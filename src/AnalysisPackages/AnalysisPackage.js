@@ -456,6 +456,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                             inputRefs={this.inputRefs}
                             layers={this.state.layers}
                             handleBapError={this.handleBapError}
+                            isOpen={this.state.isOpen}
                         />
                     </Collapse>
                     {

@@ -296,7 +296,7 @@ class NVCSSummaryByRegionPackage extends React.Component {
 
 
     print() {
-        if (this.state.charts.nvcsSummTable.data) {
+        if (this.state.charts.nvcsSummTable.data && this.props.isOpen) {
 
             return [
                 { stack: this.props.getSBItemForPrint() },

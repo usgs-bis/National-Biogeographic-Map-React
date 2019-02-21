@@ -519,7 +519,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
 
 
     print() {
-        if (this.state.charts.protectionStatus.data) {
+        if (this.state.charts.protectionStatus.data && this.props.isOpen) {
             let charts = []
             charts.push(this.HorizontalBarChart.print(this.state.charts.protectionStatus.id))
             charts.push(this.PieChart.print(this.state.charts.gap12.id))

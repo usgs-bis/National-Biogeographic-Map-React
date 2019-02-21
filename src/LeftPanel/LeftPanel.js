@@ -3,6 +3,7 @@ import "./LeftPanel.css";
 import SearchBar from "./searchBar/searchBar.js"
 import PDFReport from "../PDF/PdfReport";
 import { BarLoader } from "react-spinners"
+import { Tooltip } from "reactstrap";
 import * as turf from '@turf/turf'
 import Biogeography from "../Bioscapes/Biogeography";
 import TerrestrialEcosystems2011 from "../Bioscapes/TerrestrialEcosystems2011";
@@ -20,6 +21,9 @@ class LeftPanel extends React.Component {
             updateAnalysisLayers: props.updateAnalysisLayers,
             loading: false,
             enabledLayers: [],
+            shareToolTipOpen: false,
+            reportToolTipOpen: false,
+            shareText: 'Share'
         }
 
         this.share = this.share.bind(this);
@@ -69,6 +73,23 @@ class LeftPanel extends React.Component {
 
     share() {
         this.props.shareState()
+        if (this.props.feature && this.props.feature.properties.userDefined) {
+            this.setState({
+                shareText: "Error!",
+                shareToolTipOpen: true
+            })
+        }
+        else {
+            this.setState({ shareText: "Done!" })
+        }
+        setTimeout(() => {
+            this.setState({
+                shareText: "Share",
+                shareToolTipOpen: false
+            })
+        }, 2000)
+
+
     }
 
     report() {
@@ -91,6 +112,11 @@ class LeftPanel extends React.Component {
                         loading: false
                     })
                 }, 3000);
+            },(error) => {
+                console.log(error)
+                   this.setState({
+                        loading: false
+                    })
             })
     }
 
@@ -117,11 +143,21 @@ class LeftPanel extends React.Component {
                             <div className="category-text">Approximate Area: <span className="feature-text">  {this.state.feature_area} acres</span></div>
                         </div>
                         <div className="panel-buttons">
-                            <button className="submit-analysis-btn" onClick={this.share}>Share</button>
+                            <button id="ShareTooltip" className="submit-analysis-btn" onClick={this.share}>{this.state.shareText}</button>
                             <input className="share-url-input" type="text"></input>
-                            <button className="submit-analysis-btn" onClick={this.report}>
+                            <Tooltip
+                                style={{ fontSize: "14px" }} isOpen={this.state.shareToolTipOpen}
+                                target="ShareTooltip" toggle={() => { this.setState({ shareToolTipOpen: !this.state.shareToolTipOpen }) }} delay={0}>
+                                {this.props.feature && this.props.feature.properties.userDefined ? 'Unable to share a user drawn polygon.' : 'Share this map by copying a url to your clipboard.'}
+                            </Tooltip>
+                            <button id="ReportTooltip" className="submit-analysis-btn" onClick={this.report}>
                                 <PDFReport onRef={ref => (this.PDFReport = ref)}></PDFReport>
                             </button>
+                            <Tooltip
+                                style={{ fontSize: "14px" }} isOpen={this.state.reportToolTipOpen}
+                                target="ReportTooltip" toggle={() => { this.setState({ reportToolTipOpen: !this.state.reportToolTipOpen }) }} delay={0}>
+                                {"Only expanded sections will appear in the PDF and all user selections/filters will be reflected."}
+                            </Tooltip>
                         </div>
                         <BarLoader ref={this.loaderRef} width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
                     </div>

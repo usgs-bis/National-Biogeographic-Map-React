@@ -254,8 +254,7 @@ class FirstLeafAnalysisPackage extends React.Component {
 
     print() {
 
-        if (this.state.charts.histogram.data) {
-
+        if (this.state.charts.histogram.data && this.props.isOpen) {
             let charts = []
             charts.push(this.HistogramChart.print(this.state.charts.histogram.id))
             charts.push(this.BoxAndWhiskerChart.print(this.state.charts.boxAndWhisker.id))

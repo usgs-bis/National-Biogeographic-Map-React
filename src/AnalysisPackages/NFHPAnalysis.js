@@ -160,7 +160,7 @@ class NFHPAnalysisPackage extends React.Component {
 
 
     print() {
-        if (this.state.charts.horizontalBarChart.data) {
+        if (this.state.charts.horizontalBarChart.data && this.props.isOpen) {
             return [
                 this.HorizontalBarChart.print(this.state.charts.horizontalBarChart.id)
                     .then(img => {

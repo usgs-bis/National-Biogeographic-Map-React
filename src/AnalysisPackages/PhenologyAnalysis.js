@@ -433,7 +433,7 @@ class PhenologyAnalysisPackage extends React.Component {
     }
 
     print() {
-        if (this.state.refs.length) {
+        if (this.state.refs.length && this.props.isOpen) {
             let charts = []
             for (let i = 0; i < this.state.refs.length; i++) {
                 charts.push(this.state.refs[i].print(this.state.charts[i].props.id))

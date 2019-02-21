@@ -90,7 +90,7 @@ class BoxAndWhiskerChart extends React.Component {
             yDomain.push(data[year][0])
             yDomain.push(data[year][data[year].length - 1])
             let summary = {
-                mean: data[year].reduce(reducer,0) / data[year].length,
+                mean: data[year].reduce(reducer, 0) / data[year].length,
                 median: data[year][parseInt(data[year].length / 2)],
                 maximum: data[year][0],
                 minimum: data[year][parseInt(data[year].length - 1)]
@@ -115,7 +115,7 @@ class BoxAndWhiskerChart extends React.Component {
 
         // Create the x-axis
         const xAxis = d3.axisBottom(x)
-        .tickFormat((d) => { return years.length > 10 ? d.toString().slice(2) : d});
+            .tickFormat((d) => { return years.length > 10 ? d.toString().slice(2) : d });
 
         // Create the y-axis
         const yAxis = d3.axisLeft(y)
@@ -369,7 +369,9 @@ class BoxAndWhiskerChart extends React.Component {
                 const svg = "data:image/svg+xml," + d3.select(`#${id}ChartContainer .svg-container-chart`).html()
                 image.src = svg
             }
-            catch (error) { reject(error) }
+            catch (error) {
+                reject(error)
+            }
         })
     }
 

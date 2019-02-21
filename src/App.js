@@ -65,19 +65,21 @@ class App extends React.Component {
 
     shareState() {
 
-        let state = {
-            feature: { id: this.state.feature.properties.feature_id },
-            basemap: this.state.basemap,
-            timeSlider: { rangeYearMin: this.state.rangeYearMin, rangeYearMax: this.state.rangeYearMax, mapDisplayYear: this.state.mapDisplayYear },
-            bap: { activeLayerTitle: this.state.analysisLayers && this.state.analysisLayers.length ? this.state.analysisLayers[0].title : '', priorityBap: this.state.priorityBap }
+        if (this.state.feature && !this.state.feature.properties.userDefined) {
+            let state = {
+                feature: { id: this.state.feature.properties.feature_id },
+                basemap: this.state.basemap,
+                timeSlider: { rangeYearMin: this.state.rangeYearMin, rangeYearMax: this.state.rangeYearMax, mapDisplayYear: this.state.mapDisplayYear },
+                bap: { activeLayerTitle: this.state.analysisLayers && this.state.analysisLayers.length ? this.state.analysisLayers[0].title : '', priorityBap: this.state.priorityBap }
+            }
+            let objJsonB64 = Buffer.from(JSON.stringify(state)).toString("base64");
+            let copyText = document.getElementsByClassName('share-url-input')[0]
+            copyText.style.display = 'inline-block'
+            copyText.value = window.location.href.split('#')[0] + '#' + objJsonB64
+            copyText.select()
+            document.execCommand("copy")
+            copyText.style.display = 'none'
         }
-        let objJsonB64 = Buffer.from(JSON.stringify(state)).toString("base64");
-        let copyText = document.getElementsByClassName('share-url-input')[0]
-        copyText.style.display = 'inline-block'
-        copyText.value = window.location.href.split('#')[0] + '#' + objJsonB64
-        copyText.select()
-        document.execCommand("copy")
-        copyText.style.display = 'none'
     }
 
     loadState(s) {
@@ -188,10 +190,18 @@ class App extends React.Component {
             .then(res => res.json())
             .then(
                 (result) => {
-                    this.setState({
-                        feature: result.hits.hits[0]["_source"],
-                        mapClicked: false
-                    })
+                    if (result && result.hits.hits.length && result.hits.hits[0]["_source"]) {
+                        this.setState({
+                            feature: result.hits.hits[0]["_source"],
+                            mapClicked: false
+                        })
+                    }
+                    else {
+                        this.setState({
+                            feature: null,
+                            mapClicked: false
+                        })
+                    }
                 },
                 (error) => {
                     this.setState({

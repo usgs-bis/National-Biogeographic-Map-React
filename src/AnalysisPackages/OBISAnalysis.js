@@ -21,7 +21,8 @@ const layers = {
             url: "https://gis1.usgs.gov/arcgis/rest/services/nfhp2015/HCI_Dissolved_NFHP2015_v20160907/MapServer",
             opacity: .5
         }),
-        checked: false
+        checked: false,
+        loading: false,
     }
 }
 
@@ -33,7 +34,8 @@ class OBISAnalysisPackage extends React.Component {
                 speciesCountChart: { id: "", config: {}, data: null }
             },
             layersOpen: false,
-            value: []
+            value: [],
+            loading: false
         }
 
         this.getCharts = this.getCharts.bind(this)
@@ -167,7 +169,7 @@ class OBISAnalysisPackage extends React.Component {
     }
 
     print() {
-        if (this.state.charts.speciesCountChart.data) {
+        if (this.state.charts.speciesCountChart.data && this.props.isOpen) {
             return [
                 this.SpeciesCountChart.print(this.state.charts.speciesCountChart.id)
                     .then(img => {

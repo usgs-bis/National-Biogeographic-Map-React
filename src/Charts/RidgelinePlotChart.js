@@ -81,7 +81,7 @@ class RidgelinePlotChart extends React.Component {
         for (let year of years) {
             data[year].sort((a, b) => (parseInt(a) < parseInt(b)) ? 1 : ((parseInt(b) < parseInt(a)) ? -1 : 0));
             let summary = {
-                mean: data[year].reduce(reducer,0) / data[year].length,
+                mean: data[year].reduce(reducer, 0) / data[year].length,
                 median: data[year][parseInt(data[year].length / 2)],
                 maximum: data[year][0],
                 minimum: data[year][parseInt(data[year].length - 1)]
@@ -361,10 +361,13 @@ class RidgelinePlotChart extends React.Component {
                     canvasContainer.remove()
                     resolve(canvas.toDataURL())
                 }
-                const svg = "data:image/svg+xml," + d3.select(`#${id}ChartContainer .svg-container-chart`).html()
+                image.onerror = (e) => {reject(e)}
+                let svg = "data:image/svg+xml," + d3.select(`#${id}ChartContainer .svg-container-chart`).html().replace(/#/g,'%23')
                 image.src = svg
             }
-            catch (error) { reject(error) }
+            catch (error) {
+                reject(error)
+            }
         })
     }
 

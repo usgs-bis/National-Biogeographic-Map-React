@@ -320,7 +320,7 @@ class NVCSHierarchyByPixelPackage extends React.Component {
 
 
     print() {
-        if (this.state.charts.pixelHierarchy.data) {
+        if (this.state.charts.pixelHierarchy.data && this.props.isOpen) {
             let content = []
             for (let entry of this.state.charts.pixelHierarchy.data) {
                 let key = Object.keys(entry)[0]

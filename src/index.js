@@ -7,8 +7,8 @@ import App from './App';
 
 require('dotenv').config();
 
-let bioscapeName = "biogeography";
-//let bioscapeName = "terrestrial-ecosystems-2011";
+//let bioscapeName = "biogeography";
+let bioscapeName = "terrestrial-ecosystems-2011";
 
 let name = window.location.pathname;
 let chunks = name.split("/");

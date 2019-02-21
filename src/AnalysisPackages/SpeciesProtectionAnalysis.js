@@ -380,7 +380,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
     }
 
     print() {
-        if (this.state.charts.gap12.data) {
+        if (this.state.charts.gap12.data && this.props.isOpen) {
             let charts = []
             charts.push(this.PieChart.print(this.state.charts.gap12.id))
             charts.push(this.PieChart.print(this.state.charts.gap123.id))

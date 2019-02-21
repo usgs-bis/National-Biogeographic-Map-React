@@ -230,7 +230,7 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
     }
 
     print() {
-        if (this.state.charts.ComparisonChart.data) {
+        if (this.state.charts.ComparisonChart.data && this.props.isOpen) {
             return [
                 this.ComparisonChart.print(this.state.charts.ComparisonChart.id)
                     .then(img => {
