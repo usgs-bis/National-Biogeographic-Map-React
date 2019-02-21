@@ -59,6 +59,7 @@ class App extends React.Component {
 
     componentDidMount() {
         this.parseBioscape()
+        document.title = this.state.bioscape.title
         if (this.initFeatureId) this.submitHandler(this.initFeatureId)
     }
 

@@ -58,7 +58,6 @@ class HorizontalBarChart extends React.Component {
     *       ]
     */
     drawChart(id, config, data) {
-
         if (!id || !config || !data) return
 
         const chart = d3.select(`#${id}ChartContainer`)

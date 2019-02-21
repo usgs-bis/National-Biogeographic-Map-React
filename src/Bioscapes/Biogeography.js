@@ -59,13 +59,6 @@ class Biogeography extends React.Component {
         return charts
     }
 
-    // updateAnalysisLayers(enabledLayers, bapId) {
-    //     this.setState({
-    //         enabledLayers: enabledLayers
-    //     })
-    //
-    //     this.props.updateAnalysisLayers(enabledLayers, bapId)
-    // }
 
     render() {
         let counter = 1;
