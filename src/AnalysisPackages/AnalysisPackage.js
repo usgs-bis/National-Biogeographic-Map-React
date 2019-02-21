@@ -113,14 +113,14 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 this.setState({
                     layers: layers
                 })
-                this.updateAnalysisLayers()
+                this.updateAnalysisLayers({})
             }
 
             this.initilized = true
         }
 
         resetAnalysisLayers() {
-            this.props.updateAnalysisLayers([])
+            this.props.updateAnalysisLayers({})
             let l = this.state.layers
             Object.keys(l).forEach(function (key) {
                 l[key].checked = false
@@ -130,6 +130,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
         }
 
         updateAnalysisLayers(layer) {
+            if(!layer) layer = {}
             let newLayers = {}
             let enabledLayers = []
             Object.keys(this.state.layers).forEach((key) => {

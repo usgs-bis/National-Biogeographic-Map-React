@@ -115,8 +115,10 @@ class PhenologyAnalysisPackage extends React.Component {
 
     turnOnLayer(value) {
         layers["phenology_service"]["legend"]["imageUrl"] = baseLegendUrl + `&layer=${value[0]}&style=${value[1]}`
-        this.props.inputRefs["phenology_service"].checked = true;
-        this.props.updateBapLayers()
+
+        // this will get flipped to turn on the layer in analysysPackage 
+        layers["phenology_service"].checked = false
+        this.props.updateBapLayers(layers["phenology_service"])
 
         layers["phenology_service"]["layer"].setParams({
             layers: value[0],
@@ -164,7 +166,7 @@ class PhenologyAnalysisPackage extends React.Component {
                         data: results,
                         loading: false
                     }, () => {
-                        this.getCharts(this.state.data)
+                        this.getCharts(this.state.data, 0)
                     })
                     this.props.isEnabled(true)
                     this.props.canOpen(true)
