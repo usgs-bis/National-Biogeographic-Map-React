@@ -204,7 +204,8 @@ class NVCSHierarchyByPixelPackage extends React.Component {
         if (!this.props.point.lat || !this.props.point.lng) return
 
         this.setState({
-            loading: true
+            loading: true,
+            error: false
         })
         let buffer = .01;
         var parameters = {
@@ -238,7 +239,7 @@ class NVCSHierarchyByPixelPackage extends React.Component {
                 },
                 (error) => {
                     this.setState({
-                        error,
+                        error: true,
                         loading: false
                     });
                 }
@@ -339,6 +340,7 @@ class NVCSHierarchyByPixelPackage extends React.Component {
         return (
             <div>
                 {this.props.getAnalysisLayers()}
+                {this.props.handleBapError(this.state.error)}
                 <div className="chartsDiv">
                     <AccordionChart
                         onRef={ref => (this.AccordionChart = ref)}

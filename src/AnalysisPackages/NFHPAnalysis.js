@@ -77,7 +77,8 @@ class NFHPAnalysisPackage extends React.Component {
 
     fetch() {
         this.setState({
-            loading: true
+            loading: true,
+            error: false
         })
         fetch(NFHP_URL + this.props.feature.properties.feature_id)
             .then(res => res.json())
@@ -104,7 +105,7 @@ class NFHPAnalysisPackage extends React.Component {
                 },
                 (error) => {
                     this.setState({
-                        error,
+                        error: true,
                         loading: false
                     });
                 }
@@ -179,6 +180,7 @@ class NFHPAnalysisPackage extends React.Component {
         return (
             <div>
                 {this.props.getAnalysisLayers()}
+                {this.props.handleBapError(this.state.error)}
                 <div className="chartsDiv">
                     <HorizontalBarChart
                         onRef={ref => (this.HorizontalBarChart = ref)}

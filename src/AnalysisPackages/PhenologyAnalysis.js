@@ -153,7 +153,8 @@ class PhenologyAnalysisPackage extends React.Component {
     submitAnalysis() {
         if (this.props.feature && !this.props.feature.properties.userDefined) {
             this.setState({
-                loading: true
+                loading: true,
+                error: false
             })
             let fetches = []
             for (let date of this.state.dates) {
@@ -177,7 +178,7 @@ class PhenologyAnalysisPackage extends React.Component {
                 }
             }, (error) => {
                 this.setState({
-                    error,
+                    error: true,
                     loading: false
                 });
             })
@@ -185,7 +186,8 @@ class PhenologyAnalysisPackage extends React.Component {
         else if (this.props.feature) {
             // hit with drawn polygon
             this.setState({
-                loading: true
+                loading: true,
+                error: false
             })
             let fetches = []
             for (let date of this.state.dates) {
@@ -209,7 +211,7 @@ class PhenologyAnalysisPackage extends React.Component {
                 }
             }, (error) => {
                 this.setState({
-                    error,
+                    error: true,
                     loading: false
                 });
             })
@@ -474,6 +476,7 @@ class PhenologyAnalysisPackage extends React.Component {
         return (
             <div>
                 {this.props.getAnalysisLayers()}
+                {this.props.handleBapError(this.state.error)}
                 <div className="chartsDiv">
                     <div className="chart-headers" >
                         <button className="submit-analysis-btn" onClick={this.submitAnalysis}>Get Phenology Forecast</button>

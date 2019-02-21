@@ -90,7 +90,7 @@ class BoxAndWhiskerChart extends React.Component {
             yDomain.push(data[year][0])
             yDomain.push(data[year][data[year].length - 1])
             let summary = {
-                mean: data[year].reduce(reducer) / data[year].length,
+                mean: data[year].reduce(reducer,0) / data[year].length,
                 median: data[year][parseInt(data[year].length / 2)],
                 maximum: data[year][0],
                 minimum: data[year][parseInt(data[year].length - 1)]

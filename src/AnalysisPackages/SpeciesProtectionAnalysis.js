@@ -128,7 +128,8 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
 
     fetch() {
         this.setState({
-            loading: true
+            loading: true,
+            error: false
         })
         fetch(SPECIES_URL + this.props.feature.properties.feature_id)
             .then(res => res.json())
@@ -161,7 +162,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                 },
                 (error) => {
                     this.setState({
-                        error,
+                        error: true,
                         loading: false
                     });
                 }
@@ -470,6 +471,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
         return (
             <div>
                 {this.props.getAnalysisLayers()}
+                {this.props.handleBapError(this.state.error)}
                 <div
                     style={{ display: (this.props.feature && this.props.feature.properties.feature_name) ? 'block' : 'none' }}
                     className="chartsDiv">

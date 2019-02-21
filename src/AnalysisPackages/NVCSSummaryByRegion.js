@@ -196,7 +196,8 @@ class NVCSSummaryByRegionPackage extends React.Component {
     fetch() {
         if (!this.props.feature) return
         this.setState({
-            loading: true
+            loading: true,
+            error: false
         })
         let searchURL = null
         switch (this.props.feature.properties.feature_class) {
@@ -265,7 +266,7 @@ class NVCSSummaryByRegionPackage extends React.Component {
                 },
                 (error) => {
                     this.setState({
-                        error,
+                        error: true,
                         loading: false
                     });
                 }
@@ -357,13 +358,14 @@ class NVCSSummaryByRegionPackage extends React.Component {
         return (
             <div>
                 {this.props.getAnalysisLayers()}
+                {this.props.handleBapError(this.state.error)}
                 <div className="chartsDiv">
-                <div style={{padding:'10px'}}>
+                    <div style={{ padding: '10px' }}>
 
-                {`The data displayed in this summary table is based on the NVCS ${this.enabledLayer ? this.enabledLayer.title: 'Class'}
+                        {`The data displayed in this summary table is based on the NVCS ${this.enabledLayer ? this.enabledLayer.title : 'Class'}
                  hierarchy level, as selected in the Bioscape.`}
 
-                </div>
+                    </div>
                     <TableChart
                         onRef={ref => (this.TableChart = ref)}
                         data={this.state.charts.nvcsSummTable.data}

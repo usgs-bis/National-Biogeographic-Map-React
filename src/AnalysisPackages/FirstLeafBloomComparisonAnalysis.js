@@ -124,21 +124,22 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
     submitAnalysis() {
         if (this.props.feature && !this.props.feature.properties.userDefined) {
             this.setState({
-                loading: true
+                loading: true,
+                error: false
             })
             this.clearCharts()
             let firstLeafFetch = fetch(FIRSTLEAF_URL + `?year_min=${this.props.yearMin}&year_max=${this.props.yearMax}&feature_id=${this.props.feature.properties.feature_id}&token=${PUBLIC_TOKEN}`)
                 .then(res => { return res.json() },
                     (error) => {
                         this.setState({
-                            error
+                            error: true
                         });
                     })
             let firstBloomFetch = fetch(FIRSTBLOOM_URL + `?year_min=${this.props.yearMin}&year_max=${this.props.yearMax}&feature_id=${this.props.feature.properties.feature_id}&token=${PUBLIC_TOKEN}`)
                 .then(res => { return res.json() },
                     (error) => {
                         this.setState({
-                            error
+                            error: true
                         });
                     })
             Promise.all([firstLeafFetch, firstBloomFetch]).then(results => {
@@ -162,21 +163,22 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
         }
         else if (this.props.feature) {
             this.setState({
-                loading: true
+                loading: true,
+                error: false
             })
             this.clearCharts()
             let firstLeafFetch = fetch(FIRSTLEAF_POLY_URL + `?year_min=${this.props.yearMin}&year_max=${this.props.yearMax}&geojson=${JSON.stringify(this.props.feature.geometry)}&token=${PUBLIC_TOKEN}`)
                 .then(res => { return res.json() },
                     (error) => {
                         this.setState({
-                            error
+                            error: true
                         });
                     })
             let firstBloomFetch = fetch(FIRSTBLOOM_POLY_URL + `?year_min=${this.props.yearMin}&year_max=${this.props.yearMax}&geojson=${JSON.stringify(this.props.feature.geometry)}&token=${PUBLIC_TOKEN}`)
                 .then(res => { return res.json() },
                     (error) => {
                         this.setState({
-                            error
+                            error: true
                         });
                     })
             Promise.all([firstLeafFetch, firstBloomFetch]).then(results => {
@@ -212,15 +214,16 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
 
             if (chart.toString() === "ComparisonChart" && datas[chart]) {
                 const data = datas[chart]
+                let firstYear = Object.keys(data.bloom)[0]
+                let lastYear = Object.keys(data.bloom)[Object.keys(data.bloom).length - 1]
                 const chartId = "FL_FB_Comparison"
                 const chartConfig = {
                     margins: { left: 80, right: 20, top: 20, bottom: 70 },
-                    chart: { title: `First Bloom Spring Index/First Leaf Spring Index for  ${this.props.feature.properties.feature_name}`, subtitle: `By Year for the Period ${this.props.yearMin} to ${this.props.yearMax}` },
+                    chart: { title: `First Bloom Spring Index/First Leaf Spring Index for  ${this.props.feature.properties.feature_name}`, subtitle: `By Year for the Period ${firstYear} to ${lastYear}` },
                     xAxis: { label: "Day of Year" },
                     yAxis: { label: "Year" }
                 }
-                const chartData = data
-                charts[chart] = { id: chartId, config: chartConfig, data: chartData }
+                charts[chart] = { id: chartId, config: chartConfig, data: data }
             }
         }
         return charts
@@ -250,6 +253,7 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
         return (
             <div>
                 {this.props.getAnalysisLayers()}
+                {this.props.handleBapError(this.state.error)}
                 <div className="chartsDiv">
                     <div className="chart-headers" >
                         <button className="submit-analysis-btn" onClick={this.submitAnalysis}>Analyze Time Period: {this.props.yearMin} to  {this.props.yearMax}</button>
