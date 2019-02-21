@@ -84,7 +84,8 @@ class OBISAnalysisPackage extends React.Component {
 
     fetch() {
         this.setState({
-            loading: true
+            loading: true,
+            error: false
         })
         fetch(OBIS_URL + this.props.feature.properties.feature_id.split(':')[1])
             .then(res => res.json())
@@ -105,7 +106,7 @@ class OBISAnalysisPackage extends React.Component {
                 },
                 (error) => {
                     this.setState({
-                        error,
+                        error: true,
                         loading: false
                     });
                 }
@@ -185,6 +186,7 @@ class OBISAnalysisPackage extends React.Component {
         return (
             <div>
                 {this.props.getAnalysisLayers()}
+                {this.props.handleBapError(this.state.error)}
                 <div className="chartsDiv">
                     <SpeciesCountChart
                         onRef={ref => (this.SpeciesCountChart = ref)}
@@ -206,7 +208,7 @@ class OBISAnalysisPackage extends React.Component {
         )
     }
 
-    
+
 }
 const OBISAnalysis = withSharedAnalysisCharacteristics(OBISAnalysisPackage, layers, sb_properties, SB_URL);
 

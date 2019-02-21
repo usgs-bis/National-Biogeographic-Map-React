@@ -117,7 +117,8 @@ class FirstBloomAnalysisPackage extends React.Component {
     submitAnalysis() {
         if (this.props.feature && !this.props.feature.properties.userDefined) {
             this.setState({
-                loading: true
+                loading: true,
+                error: false
             })
             this.clearCharts()
             fetch(FIRSTBLOOM_URL + `?year_min=${this.props.yearMin}&year_max=${this.props.yearMax}&feature_id=${this.props.feature.properties.feature_id}&token=${PUBLIC_TOKEN}`)
@@ -142,15 +143,16 @@ class FirstBloomAnalysisPackage extends React.Component {
                     },
                     (error) => {
                         this.setState({
-                            error,
-                            loading: false
+                            loading: false,
+                            error: true
                         });
                     }
                 )
         }
         else if (this.props.feature) {
             this.setState({
-                loading: true
+                loading: true,
+                error: false
             })
             this.clearCharts()
             fetch(FIRSTBLOOM_POLY_URL + `?year_min=${this.props.yearMin}&year_max=${this.props.yearMax}&geojson=${JSON.stringify(this.props.feature.geometry)}&token=${PUBLIC_TOKEN}`)
@@ -175,7 +177,7 @@ class FirstBloomAnalysisPackage extends React.Component {
                     },
                     (error) => {
                         this.setState({
-                            error,
+                            error: true,
                             loading: false
                         });
                     }
@@ -196,41 +198,44 @@ class FirstBloomAnalysisPackage extends React.Component {
 
             if (chart.toString() === "histogram" && datas[chart]) {
                 const data = datas[chart]
+                let firstYear = Object.keys(data)[0]
+                let lastYear = Object.keys(data)[Object.keys(data).length - 1]
                 const chartId = "FB_Histogram"
                 const chartConfig = {
                     margins: { left: 80, right: 20, top: 20, bottom: 70 },
-                    chart: { title: `First Bloom Spring Index for ${this.props.feature.properties.feature_name}`, subtitle: `All Years for the Period ${this.props.yearMin} to ${this.props.yearMax}` },
+                    chart: { title: `First Bloom Spring Index for ${this.props.feature.properties.feature_name}`, subtitle: `All Years for the Period ${firstYear} to ${lastYear}` },
                     xAxis: { label: "Day of Year" },
                     yAxis: { label: "Number of Grid Cells" }
                 }
-                const chartData = data
-                charts[chart] = { id: chartId, config: chartConfig, data: chartData }
+                charts[chart] = { id: chartId, config: chartConfig, data: data }
             }
             else if (chart.toString() === "ridgelinePlot" && datas[chart]) {
                 // To Do
                 const data = datas[chart]
+                let firstYear = Object.keys(data)[0]
+                let lastYear = Object.keys(data)[Object.keys(data).length - 1]
                 const chartId = "FB_RidgelinePlot"
                 const chartConfig = {
                     margins: { left: 80, right: 20, top: 35, bottom: 70 },
-                    chart: { title: `First Bloom Spring Index for ${this.props.feature.properties.feature_name}`, subtitle: `By Year for the Period ${this.props.yearMin} to ${this.props.yearMax}` },
+                    chart: { title: `First Bloom Spring Index for ${this.props.feature.properties.feature_name}`, subtitle: `By Year for the Period ${firstYear} to ${lastYear}` },
                     xAxis: { label: "Day of Year" },
                     yAxis: { label: "Year" }
                 }
-                const chartData = data
-                charts[chart] = { id: chartId, config: chartConfig, data: chartData }
+                charts[chart] = { id: chartId, config: chartConfig, data: data }
             }
             else if (chart.toString() === "boxAndWhisker" && datas[chart]) {
 
                 const data = datas[chart]
+                let firstYear = Object.keys(data)[0]
+                let lastYear = Object.keys(data)[Object.keys(data).length - 1]
                 const chartId = "FB_BoxAndWhisker"
                 const chartConfig = {
                     margins: { left: 80, right: 20, top: 20, bottom: 70 },
-                    chart: { title: `First Bloom Spring Index for ${this.props.feature.properties.feature_name}`, subtitle: `All Years for the Period ${this.props.yearMin} to ${this.props.yearMax}` },
+                    chart: { title: `First Bloom Spring Index for ${this.props.feature.properties.feature_name}`, subtitle: `All Years for the Period ${firstYear} to ${lastYear}` },
                     xAxis: { label: "Year" },
                     yAxis: { label: "Day of Year" }
                 }
-                const chartData = data
-                charts[chart] = { id: chartId, config: chartConfig, data: chartData }
+                charts[chart] = { id: chartId, config: chartConfig, data: data }
             }
         }
         return charts
@@ -291,6 +296,7 @@ class FirstBloomAnalysisPackage extends React.Component {
         return (
             <div>
                 {this.props.getAnalysisLayers()}
+                {this.props.handleBapError(this.state.error)}
                 <div className="chartsDiv">
                     <div className="chart-headers" >
 

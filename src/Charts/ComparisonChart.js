@@ -280,15 +280,15 @@ class ComparisonChart extends React.Component {
         function processData(rawData) {
             let processedData = []
             for (let currentYear in rawData[0]) {
-                let adv = rawData[0][currentYear].reduce(getSum) / rawData[0][currentYear].length
-                let min = rawData[0][currentYear].reduce((a, b) => Math.min(a, b))
-                let max = rawData[0][currentYear].reduce((a, b) => Math.max(a, b))
+                let adv = rawData[0][currentYear].reduce(getSum,0) / rawData[0][currentYear].length
+                let min = rawData[0][currentYear].reduce((a, b) => Math.min(a, b),0)
+                let max = rawData[0][currentYear].reduce((a, b) => Math.max(a, b),0)
                 processedData.push({ year: currentYear, DOY: adv, value: 15, min: min, max: max })
             }
             for (let currentYear in rawData[1]) {
-                let adv = rawData[1][currentYear].reduce(getSum) / rawData[1][currentYear].length
-                let min = rawData[1][currentYear].reduce((a, b) => Math.min(a, b))
-                let max = rawData[1][currentYear].reduce((a, b) => Math.max(a, b))
+                let adv = rawData[1][currentYear].reduce(getSum,0) / rawData[1][currentYear].length
+                let min = rawData[1][currentYear].reduce((a, b) => Math.min(a, b),0)
+                let max = rawData[1][currentYear].reduce((a, b) => Math.max(a, b),0)
                 processedData.push({ year: currentYear, DOY: adv, value: 15, min: min, max: max })
             }
             return processedData

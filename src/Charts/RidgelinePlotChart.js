@@ -81,7 +81,7 @@ class RidgelinePlotChart extends React.Component {
         for (let year of years) {
             data[year].sort((a, b) => (parseInt(a) < parseInt(b)) ? 1 : ((parseInt(b) < parseInt(a)) ? -1 : 0));
             let summary = {
-                mean: data[year].reduce(reducer) / data[year].length,
+                mean: data[year].reduce(reducer,0) / data[year].length,
                 median: data[year][parseInt(data[year].length / 2)],
                 maximum: data[year][0],
                 minimum: data[year][parseInt(data[year].length - 1)]

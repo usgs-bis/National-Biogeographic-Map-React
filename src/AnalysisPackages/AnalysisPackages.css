@@ -169,3 +169,11 @@ display: inline-flex;
 .sbinfo-popout-window h3{
     font-size: 18px;
 }
+
+.analysis-error{
+    background-color: rgba(10, 10, 15, .2);
+    font-size: 14px;
+    color: white;
+    padding-top: 10px;
+    text-align: center;
+}

@@ -46,6 +46,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             this.setPriorityBap = this.setPriorityBap.bind(this)
             this.getSbContactInfo = this.getSbContactInfo.bind(this)
             this.getSbWebLinkInfo = this.getSbWebLinkInfo.bind(this)
+            this.handleBapError = this.handleBapError.bind(this)
         }
 
 
@@ -130,7 +131,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
         }
 
         updateAnalysisLayers(layer) {
-            if(!layer) layer = {}
+            if (!layer) layer = {}
             let newLayers = {}
             let enabledLayers = []
             Object.keys(this.state.layers).forEach((key) => {
@@ -181,6 +182,18 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             this.state.layers[key].layer.setOpacity(this[key + "Opacity"].value)
         }
 
+        handleBapError(error) {
+            if (error) {
+                return (
+                    <div className='analysis-error'>
+                        <Glyphicon style={{ paddingRight: '5px', fontSize: '13px' }} className="inner-glyph" glyph="exclamation-sign" />
+                        There was an error producing this analysis. Please try again.
+                    </div>
+                )
+            }
+            return []
+        }
+
         getAnalysisLayers() {
             let that = this
             if (this.state.layers) {
@@ -227,6 +240,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                                 )
                             })}
                         </Collapse>
+
                     </div>
                 )
             }
@@ -441,6 +455,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                             canOpen={this.canOpen}
                             inputRefs={this.inputRefs}
                             layers={this.state.layers}
+                            handleBapError={this.handleBapError}
                         />
                     </Collapse>
                     {
