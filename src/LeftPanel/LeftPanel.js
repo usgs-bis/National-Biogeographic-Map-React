@@ -151,7 +151,7 @@ class LeftPanel extends React.Component {
                                 {this.props.feature && this.props.feature.properties.userDefined ? 'Unable to share a user drawn polygon.' : 'Share this map by copying a url to your clipboard.'}
                             </Tooltip>
                             <button id="ReportTooltip" className="submit-analysis-btn" onClick={this.report}>
-                                <PDFReport onRef={ref => (this.PDFReport = ref)}></PDFReport>
+                                <PDFReport onRef={ref => (this.PDFReport = ref)} getShareUrl={this.props.shareState}></PDFReport>
                             </button>
                             <Tooltip
                                 style={{ fontSize: "14px" }} isOpen={this.state.reportToolTipOpen}

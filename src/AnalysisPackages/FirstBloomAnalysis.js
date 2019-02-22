@@ -65,6 +65,11 @@ class FirstBloomAnalysisPackage extends React.Component {
     componentDidMount() {
         this.props.onRef(this)
         this.featureChange()
+        if(this.props.bapId === this.props.priorityBap){
+            // try to let the feature load before submitting
+            // could change to willRecieveProps with a flag for init
+            setTimeout(()=>{this.submitAnalysis()},3000) 
+        } 
     }
 
     toggleDropdown() {

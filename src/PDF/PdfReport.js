@@ -65,7 +65,7 @@ class PDFReport extends React.Component {
                         text: `\nThis summary report was generated on ${new Date().toUTCString()} using USGS National Biogeographic Map analytics and data assets. The analysis packages and data sources used for this synthesis are documented below. To recreate the synthesis with current data and analytical methods, click `,
 
                     },
-                    { text: 'here', link: window.location.href, style: 'annotationLink' },
+                    { text: 'here', link: this.props.getShareUrl(), style: 'annotationLink' },
                     {
                         text: `.\n\nFor questions or comments contact: ${SUPPORT_EMAIL}.`
                     }

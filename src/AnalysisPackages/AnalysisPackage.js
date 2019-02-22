@@ -32,11 +32,9 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             this.initilized = false
             this.toggleDropdown = this.toggleDropdown.bind(this)
             this.toggleLayerDropdown = this.toggleLayerDropdown.bind(this)
-            this.updateAnalysisLayers = this.updateAnalysisLayers.bind(this)
             this.setOpacity = this.setOpacity.bind(this)
             this.getAnalysisLayers = this.getAnalysisLayers.bind(this)
             this.getBapContents = this.getBapContents.bind(this)
-            this.resetAnalysisLayers = this.resetAnalysisLayers.bind(this)
             this.updateEnabled = this.updateEnabled.bind(this)
             this.canOpen = this.canOpen.bind(this)
             this.inputRefs = {}
@@ -47,6 +45,8 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             this.getSbContactInfo = this.getSbContactInfo.bind(this)
             this.getSbWebLinkInfo = this.getSbWebLinkInfo.bind(this)
             this.handleBapError = this.handleBapError.bind(this)
+            this.turnOnLayer = this.turnOnLayer.bind(this)
+            this.toggleLayer = this.toggleLayer.bind(this)
         }
 
 
@@ -66,91 +66,100 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                         });
                     }
                 )
-            this.initilize(this.props)
-
+            this.initilize()
         }
 
         componentDidUpdate(prevProps, prevState) {
 
-            if (prevProps.feature !== this.props.feature) {
-                this.updateAnalysisLayers({})
-            }
-
-            if (prevProps.priorityBap !== this.props.priorityBap) {
-                if (this.props.priorityBap !== this.props.bapId) {
-                    let l = layers;
-                    let that = this;
-                    Object.keys(l).forEach(function (key) {
-                        l[key].checked = false
-                        that.inputRefs[key].checked = false
-                    })
-
+            if (this.initilized) {
+                if (prevProps.feature !== this.props.feature) {
+                    this.turnOnLayer()
+                }
+                if (prevProps.priorityBap !== this.props.priorityBap) {
+                    if (this.props.priorityBap !== this.props.bapId) {
+                        let l = layers;
+                        let that = this;
+                        Object.keys(l).forEach(function (key) {
+                            l[key].checked = false
+                            that.inputRefs[key].checked = false
+                        })
+                        this.setState({
+                            layers: l
+                        })
+                    }
+                }
+                // forcing a rerender so the bapwindow will populate
+                // not sure why calling this.render() doesnt work
+                // will try to find a better way. 
+                else if (prevState.bapWindowOpen !== this.state.bapWindowOpen) {
                     this.setState({
-                        layers: l
+                        random: Math.random()
                     })
                 }
             }
-            // forcing a rerender so the bapwindow will populate
-            // not sure why calling this.render() doesnt work
-            // will try to find a better way. 
-            else if (prevState.bapWindowOpen !== this.state.bapWindowOpen) {
-                this.setState({
-                    random: Math.random()
-                })
-            }
         }
 
-        initilize(props) {
-            if (props.priorityBap === props.bapId && props.initLayerTitle) {
-                let layers = []
+        initilize() {
+
+            if (this.props.priorityBap === this.props.bapId && this.props.initLayerTitle) {
                 Object.keys(this.state.layers).forEach((key) => {
-                    let layer = this.state.layers[key]
-                    if (this.state.layers[key].title === props.initLayerTitle) {
-                        layer.checked = true
-                        this.inputRefs[key].checked = true
+                    if (this.state.layers[key].title === this.props.initLayerTitle) {
+                        this.turnOnLayer(this.state.layers[key])
                     }
-                    layers.push(layer)
                 })
-                this.setState({
-                    layers: layers
+            }
+            // let the layer actualy load before we start detecting changes
+            setTimeout(() => { this.initilized = true }, 3000)
+        }
+
+
+        turnOnLayer(layer) {
+            let newLayers = {}
+            if (layer) {
+                Object.keys(this.state.layers).forEach((key) => {
+                    newLayers[key] = this.state.layers[key]
+                    if (newLayers[key].title === layer.title) {
+                        newLayers[key].checked = true
+                    }
+                    else {
+                        newLayers[key].checked = false
+                    }
                 })
-                this.updateAnalysisLayers({})
+                this.props.updateAnalysisLayers([layer], this.props.bapId)
+
+            }
+            else {
+                Object.keys(this.state.layers).forEach((key) => {
+                    newLayers[key] = this.state.layers[key]
+                    newLayers[key].checked = false
+                })
+                this.props.updateAnalysisLayers([], this.props.bapId)
             }
 
-            this.initilized = true
-        }
-
-        resetAnalysisLayers() {
-            this.props.updateAnalysisLayers({})
-            let l = this.state.layers
-            Object.keys(l).forEach(function (key) {
-                l[key].checked = false
-            })
-
-            return l
-        }
-
-        updateAnalysisLayers(layer) {
-            if (!layer) layer = {}
-            let newLayers = {}
-            let enabledLayers = []
-            Object.keys(this.state.layers).forEach((key) => {
-                newLayers[key] = this.state.layers[key]
-                if (newLayers[key].title !== layer.title) {
-                    newLayers[key].checked = false
-                }
-                else {
-                    newLayers[key].checked = !newLayers[key].checked
-                    if (newLayers[key].checked) {
-                        enabledLayers.push(newLayers[key])
-                    }
-                }
-            })
             this.setState({
                 layers: newLayers
             })
-            this.props.updateAnalysisLayers(enabledLayers, this.props.bapId)
+
         }
+
+        toggleLayer(layer) {
+            if (layer) {
+                Object.keys(this.state.layers).forEach((key) => {
+                    if (this.state.layers[key].title) {
+                        if (layer.title && this.state.layers[key].checked) {
+                            this.turnOnLayer()
+                        }
+                        else (
+                            this.turnOnLayer(layer)
+                        )
+                    }
+                })
+            }
+            else {
+                this.turnOnLayer()
+            }
+        }
+
 
         setPriorityBap() {
             if (this.state.canOpen) {
@@ -160,7 +169,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 if (this.allowPriority) {
                     let avaiableLayers = Object.keys(this.state.layers)
                     if (avaiableLayers.length) {
-                        this.updateAnalysisLayers(this.state.layers[avaiableLayers[0]])
+                        this.turnOnLayer(this.state.layers[avaiableLayers[0]])
                     }
                     this.setState({
                         isOpen: true,
@@ -168,7 +177,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                     })
                 }
                 else {
-                    this.updateAnalysisLayers({})
+                    this.turnOnLayer({})
 
                 }
             }
@@ -221,7 +230,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                                             <input
                                                 style={{ display: layer.hideCheckbox ? "none" : "inline-block" }}
                                                 ref={(input) => { that[key] = input; that["inputRefs"][key] = input }}
-                                                onChange={function () { that.updateAnalysisLayers(that.state.layers[key]) }}
+                                                onChange={function () { that.toggleLayer(that.state.layers[key]) }}
                                                 checked={that.state.layers[key].checked}
                                                 type="checkbox" />
                                             {' ' + (layer.titlePrefix ? layer.titlePrefix : "") + layer.title}
@@ -446,7 +455,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                             {...this.state}
                             setOpacity={this.setOpacity}
                             toggleLayerDropdown={this.toggleLayerDropdown}
-                            updateBapLayers={this.updateAnalysisLayers}
+                            updateBapLayers={this.turnOnLayer}
                             resetAnalysisLayers={this.resetAnalysisLayers}
                             getAnalysisLayers={this.getAnalysisLayers}
                             getBapContents={this.getBapContents}
