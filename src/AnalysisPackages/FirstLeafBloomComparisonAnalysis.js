@@ -34,7 +34,9 @@ const layers = {
             imageUrl: "https://geoserver.usanpn.org/geoserver/si-x/wms??service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=average_leaf_prism"
         },
         timeEnabled: true,
-        checked: false
+        checked: false,
+        description: "The Spring Leaf Index is a synthetic measure of these early season events in plants, based on recent temperature conditions. This model allows us to track the progression of spring onset across the country.",
+        SBURL:"https://www.sciencebase.gov/catalog/item/5ac3b12ee4b0e2c2dd0c2b95"
     },
     first_bloom_service: {
         title: "Average Bloom PRISM",
@@ -51,7 +53,9 @@ const layers = {
             imageUrl: "https://geoserver.usanpn.org/geoserver/si-x/wms??service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=average_bloom_prism"
         },
         timeEnabled: true,
-        checked: false
+        checked: false,
+        description: "",
+        SBURL:"https://www.sciencebase.gov/catalog/item/5ac3b12ee4b0e2c2dd0c2b95"
     }
 }
 

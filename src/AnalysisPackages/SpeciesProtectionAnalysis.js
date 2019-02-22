@@ -27,7 +27,9 @@ const layers = {
             arcgisUrl: "https://gis1.usgs.gov/arcgis/rest/services/PADUS1_4/GAP_Status_Code/MapServer/legend?f=pjson",
             layers: [0]
         },
-        checked: false
+        checked: false,
+        description: "The GAP Status Code is a measure of management intent to conserve biodiversity defined as: Status 1: An area having permanent protection from conversion of natural land cover and a mandated management plan in operation to maintain a natural state within which disturbance events (of natural type, frequency, intensity, and legacy) are allowed to proceed without interference or are mimicked through management. Status 2: An area having permanent protection from conversion of natural land cover and a mandated management plan in operation to maintain a primarily natural state, but which may receive uses or management practices that degrade the quality of existing natural communities, including suppression of natural disturbance. Status 3: An area having permanent protection from conversion of natural land cover for the majority of the area, but subject to extractive uses of either a broad, low-intensity type (e.g., logging, Off Highway Vehicle recreation) or localized intense type (e.g., mining). It also confers protection to federally listed endangered and threatened species throughout the area. Status 4: There are no known public or private institutional mandates or legally recognized easements or deed restrictions held by the managing entity to prevent conversion of natural habitat types to anthropogenic habitat types. The area generally allows conversion to unnatural land cover throughout or management intent is unknown. See the PADUS Standards Manual for a summary of methods or the geodatabase look up table for short descriptions. \nThis measure of management intent, a necessary analysis input utilized by USGS GAP to achieve its mission, facilitates biodiversity assessments (i.e. GAP Status Code 1 and 2) for the nation.  GAP Status Code 3 may also be useful for multiple use management assessments across the landscape. While locally assigned or reviewed GAP Codes (and IUCN Categories) are transferred between PAD-US updates, a categorical assignment  based upon “Designation Type” is assigned by GAP when no other information is available.  GAP is collaborating with the NOAA Marine Protected Areas (MPA) Center to update a similar crosswalk for MPAs specifically.   Default GAP Codes reflect the lowest conservation value applicable for categorical assignment by designation type at the national scale. ",
+        SBURL:"https://www.sciencebase.gov/catalog/item/56bba50ce4b08d617f657956"
     },
     species_range: {
         title: "Species Range",
@@ -45,7 +47,9 @@ const layers = {
             imageUrl: ""
         },
         checked: false,
-        hideCheckbox: true
+        hideCheckbox: true,
+        description: "This item is not currently documented in ScienceBase. You may contact the Biogeographic Characterization Branch to request this information: bcb@usgs.gov",
+        SBURL:""
     },
     habitat_map: {
         title: "Habitat Map",
@@ -63,7 +67,9 @@ const layers = {
             imageUrl: ""
         },
         checked: false,
-        hideCheckbox: true
+        hideCheckbox: true,
+        description: "This item is not currently documented in ScienceBase. You may contact the Biogeographic Characterization Branch to request this information: bcb@usgs.gov",
+        SBURL:""
     }
 }
 

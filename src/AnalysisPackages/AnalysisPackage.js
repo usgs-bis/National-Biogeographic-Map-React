@@ -27,6 +27,8 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 pBapToolTipOpen: false,
                 sbInfoPopUp: false,
                 sbInfoPopUpToolTip: false,
+                sbInfoLayerPopUp: false,
+                sbInfoLayerPopUpToolTip: false,
             }
             this.allowPriority = true
             this.initilized = false
@@ -234,6 +236,43 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                                                 checked={that.state.layers[key].checked}
                                                 type="checkbox" />
                                             {' ' + (layer.titlePrefix ? layer.titlePrefix : "") + layer.title}
+                                            <span id={`sbInfoLayerToolTip${that.props.bapId}${key}`} key={`sbInfoLayerToolTip${that.props.bapId}${key}`}
+                                                onClick={(event) => { that.setState({ [`sbInfoLayerPopUp${key}`]: !that.state[`sbInfoLayerPopUp${key}`] }); event.preventDefault() }}
+                                                className="title-info-icon">
+                                                <Glyphicon glyph="info-sign" />
+                                                <Tooltip
+                                                    style={{ fontSize: "14px" }} isOpen={that.state[`sbInfoLayerPopUpToolTip${key}`]}
+                                                    target={`sbInfoLayerToolTip${that.props.bapId}${key}`}
+                                                    toggle={() => that.setState({ [`sbInfoLayerPopUpToolTip${key}`]: !that.state[`sbInfoLayerPopUpToolTip${key}`] }) }
+                                                    delay={0}>
+                                                    Information
+                                                 </Tooltip>
+                                            </span>
+                                            {
+                                                that.state[`sbInfoLayerPopUp${key}`] &&
+                                                <span onClick={(event) => event.preventDefault()}>
+                                                    <CustomDialog
+                                                        className="sbinfo-popout-window"
+                                                        isResizable={true}
+                                                        isDraggable={true}
+                                                        title={' ' + (layer.titlePrefix ? layer.titlePrefix : "") + layer.title}
+                                                        modal={false}
+                                                        onClose={() => {
+                                                            that.setState({
+                                                                [`sbInfoLayerPopUpToolTip${key}`]: false,
+                                                                [`sbInfoLayerPopUp${key}`]: false
+                                                            })
+                                                        }}
+                                                        body={
+                                                            <div>
+                                                                <div> {that.state.layers[key].description}</div>
+                                                                <br></br>
+                                                                <div><a href={`${that.state.layers[key].SBURL}`}>{`${that.state.layers[key].SBURL}`}</a></div>
+                                                            </div>
+                                                        }
+                                                    />
+                                                </span>
+                                            }
                                         </Label>
                                         <input style={{ width: "50%" }}
                                             ref={(input) => { that[key + "Opacity"] = input; }}
@@ -249,6 +288,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                                 )
                             })}
                         </Collapse>
+
 
                     </div>
                 )
@@ -387,7 +427,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             let r = [<br></br>, <h4>Contacts:</h4>]
             let c = this.state.sb_properties.contacts
             for (let i of c) {
-                r.push(<div>
+                r.push(<div key={i.lastName}>
                     <div>{`Name: ${i.firstName + ' ' + i.lastName}`}</div>
                     <div>{`Email: ${i.email}`}</div>
                 </div>)
