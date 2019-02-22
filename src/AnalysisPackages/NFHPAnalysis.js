@@ -26,8 +26,7 @@ const layers = {
             layers: [0]
         },
         checked: false,
-        description: "This map service displays a composite view of the National Fish Habitat Partnership's (NFHP) 2015 National Assessment of Fish Habitat Condition Index (HCI) Scores for both streams and estuaries.  HCI scores represent current risk of fish habitat degradation due to anthropogenic disturbance factors.  Fish habitats with very high risk of habitat degredation are shown in red, high risk in orange, moderate risk in green, low risk in blue and very low risk in purple. \nFor detailed information about the input datasets used to derive this service see the following links: http://assessment.fishhabitat.org/#578a9a43e4b0c1aacab89763/578a99f4e4b0c1aacab89699.",
-        SBURL:"https://www.sciencebase.gov/catalog/item/58c8542ce4b0849ce97961e4"
+        sb_item:'58c8542ce4b0849ce97961e4'
     }
 }
 

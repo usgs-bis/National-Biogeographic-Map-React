@@ -35,8 +35,7 @@ const layers = {
         },
         timeEnabled: true,
         checked: false,
-        description: "The Spring Leaf Index is a synthetic measure of these early season events in plants, based on recent temperature conditions. This model allows us to track the progression of spring onset across the country.",
-        SBURL:"https://www.sciencebase.gov/catalog/item/5ac3b12ee4b0e2c2dd0c2b95"
+        sb_item:'591c6ec6e4b0a7fdb43dea8a'
     },
     first_bloom_service: {
         title: "Average Bloom PRISM",
@@ -54,8 +53,7 @@ const layers = {
         },
         timeEnabled: true,
         checked: false,
-        description: "",
-        SBURL:"https://www.sciencebase.gov/catalog/item/5ac3b12ee4b0e2c2dd0c2b95"
+        sb_item:'5ac3b12ee4b0e2c2dd0c2b95'
     }
 }
 

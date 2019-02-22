@@ -34,8 +34,7 @@ const layers = {
         },
         timeEnabled: true,
         checked: false,
-        description: "",
-        SBURL:"https://www.sciencebase.gov/catalog/item/5ac3b12ee4b0e2c2dd0c2b95"
+        sb_item:'5ac3b12ee4b0e2c2dd0c2b95'
     }
 }
 
