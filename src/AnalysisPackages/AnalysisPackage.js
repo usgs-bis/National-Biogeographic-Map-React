@@ -27,6 +27,8 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 pBapToolTipOpen: false,
                 sbInfoPopUp: false,
                 sbInfoPopUpToolTip: false,
+                sbInfoLayerPopUp: false,
+                sbInfoLayerPopUpToolTip: false,
             }
             this.allowPriority = true
             this.initilized = false
@@ -100,6 +102,29 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
         }
 
         initilize() {
+            let newLayers = {}
+            Object.keys(this.state.layers).forEach((key) => {
+                newLayers[key] = this.state.layers[key]
+            })
+            Object.keys(newLayers).forEach((key) => {
+                if (newLayers[key].sb_item) {
+                    fetch(`https://www.sciencebase.gov/catalog/item/${newLayers[key].sb_item}?format=json`)
+                        .then(res => res.json())
+                        .then(
+                            (result) => {
+                                newLayers[key].sb_properties = result
+                                this.setState({
+                                    layers: newLayers
+                                })
+                            },
+                            (error) => {
+                                this.setState({
+                                    error
+                                });
+                            }
+                        )
+                }
+            })
 
             if (this.props.priorityBap === this.props.bapId && this.props.initLayerTitle) {
                 Object.keys(this.state.layers).forEach((key) => {
@@ -108,6 +133,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                     }
                 })
             }
+
             // let the layer actualy load before we start detecting changes
             setTimeout(() => { this.initilized = true }, 3000)
         }
@@ -234,6 +260,51 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                                                 checked={that.state.layers[key].checked}
                                                 type="checkbox" />
                                             {' ' + (layer.titlePrefix ? layer.titlePrefix : "") + layer.title}
+                                            <span id={`sbInfoLayerToolTip${that.props.bapId}${key}`} key={`sbInfoLayerToolTip${that.props.bapId}${key}`}
+                                                onClick={(event) => { that.setState({ [`sbInfoLayerPopUp${key}`]: !that.state[`sbInfoLayerPopUp${key}`] }); event.preventDefault() }}
+                                                className="title-info-icon">
+                                                <Glyphicon glyph="info-sign" />
+                                                <Tooltip
+                                                    style={{ fontSize: "14px" }} isOpen={that.state[`sbInfoLayerPopUpToolTip${key}`]}
+                                                    target={`sbInfoLayerToolTip${that.props.bapId}${key}`}
+                                                    toggle={() => that.setState({ [`sbInfoLayerPopUpToolTip${key}`]: !that.state[`sbInfoLayerPopUpToolTip${key}`] })}
+                                                    delay={0}>
+                                                    Information
+                                                 </Tooltip>
+                                            </span>
+                                            {
+                                                that.state[`sbInfoLayerPopUp${key}`] &&
+                                                <span onClick={(event) => event.preventDefault()}>
+                                                    <CustomDialog
+                                                        className="sbinfo-popout-window"
+                                                        isResizable={true}
+                                                        isDraggable={true}
+                                                        title={' ' + (layer.titlePrefix ? layer.titlePrefix : "") + layer.title}
+                                                        modal={false}
+                                                        onClose={() => {
+                                                            that.setState({
+                                                                [`sbInfoLayerPopUpToolTip${key}`]: false,
+                                                                [`sbInfoLayerPopUp${key}`]: false
+                                                            })
+                                                        }}
+                                                        body={that.state.layers[key].sb_properties ?
+                                                            <div>
+                                                                <div dangerouslySetInnerHTML={{ __html: that.state.layers[key].sb_properties.body }}></div>
+                                                                {that.getSbContactInfo(that.state.layers[key].sb_properties)}
+                                                                {that.getSbWebLinkInfo(that.state.layers[key].sb_properties)}
+                                                                <br></br>
+                                                                {<div><a href={that.state.layers[key].sb_properties.link.url}>{`${that.state.layers[key].sb_properties.link.url}`}</a></div>}
+                                                            </div>
+                                                            :
+                                                            <div>
+                                                                <div>{'This item is not currently documented in ScienceBase. You may contact the Biogeographic Characterization Branch to request this information: bcb@usgs.gov'}</div>
+                                                                <br></br>
+                                                                <br></br>
+                                                            </div>
+                                                        }
+                                                    />
+                                                </span>
+                                            }
                                         </Label>
                                         <input style={{ width: "50%" }}
                                             ref={(input) => { that[key + "Opacity"] = input; }}
@@ -249,6 +320,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                                 )
                             })}
                         </Collapse>
+
 
                     </div>
                 )
@@ -382,23 +454,23 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             return pdfDoc
 
         }
-        getSbContactInfo() {
-            if (!this.state.sb_properties || !this.state.sb_properties.contacts) return []
+
+        getSbContactInfo(sb_properties) {
+            if (!sb_properties || !sb_properties.contacts) return []
             let r = [<br></br>, <h4>Contacts:</h4>]
-            let c = this.state.sb_properties.contacts
+            let c = sb_properties.contacts
             for (let i of c) {
-                r.push(<div>
+                r.push(<div key={i.lastName}>
                     <div>{`Name: ${i.firstName + ' ' + i.lastName}`}</div>
                     <div>{`Email: ${i.email}`}</div>
                 </div>)
             }
             return r
         }
-
-        getSbWebLinkInfo() {
-            if (!this.state.sb_properties || !this.state.sb_properties.webLinks) return []
+        getSbWebLinkInfo(sb_properties) {
+            if (!sb_properties || !sb_properties.webLinks) return []
             let r = [<br></br>, <h4>Web Links:</h4>]
-            let c = this.state.sb_properties.webLinks
+            let c = sb_properties.webLinks
             for (let i of c) {
                 if (i.type === 'citation') {
                     r.push(<div>
@@ -425,7 +497,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                     <div className="bap-title-content" style={{ width: 'calc(100% - 40px)' }}>
                         <span className="bapTitle">
                             <span onClick={this.toggleDropdown}>{this.state.sb_properties.title}</span>
-                            <span id={`sbInfoToolTip${this.props.bapId}`}
+                            {this.state.canOpen && <span id={`sbInfoToolTip${this.props.bapId}`}
                                 onClick={() => this.setState({ sbInfoPopUp: !this.state.sbInfoPopUp })}
                                 className="title-info-icon">
                                 <Glyphicon glyph="info-sign" />
@@ -436,7 +508,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                                     delay={0}>
                                     Information
                                 </Tooltip>
-                            </span>
+                            </span>}
                         </span>
                     </div>
                     <div className="bap-title-content" style={{ width: '20px' }}>
@@ -486,8 +558,8 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                             body={
                                 <div>
                                     <div dangerouslySetInnerHTML={{ __html: this.state.sb_properties.body }}></div>
-                                    {this.getSbContactInfo()}
-                                    {this.getSbWebLinkInfo()}
+                                    {this.getSbContactInfo(this.state.sb_properties)}
+                                    {this.getSbWebLinkInfo(this.state.sb_properties)}
                                 </div>
                             }
                         />

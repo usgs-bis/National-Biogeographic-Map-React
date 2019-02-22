@@ -34,7 +34,8 @@ const layers = {
                 "format=image%2Fpng&layer=average_leaf_prism"
         },
         timeEnabled: true,
-        checked: false
+        checked: false,
+        sb_item:'591c6ec6e4b0a7fdb43dea8a'
     }
 }
 

@@ -32,7 +32,9 @@ const layers = {
             imageUrl: "https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=class"
         },
         timeEnabled: true,
-        checked: false
+        checked: false,
+        sb_item:'58d1b8ade4b0236b68f6b88e'
+
     },
     subclass_service: {
         title: "Subclass",
@@ -50,7 +52,9 @@ const layers = {
             imageUrl: "https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=subclass"
         },
         timeEnabled: true,
-        checked: false
+        checked: false,
+        sb_item:'58d2b96ce4b0236b68f84d9f'
+
     },
     formation_service: {
         title: "Formation",
@@ -68,7 +72,9 @@ const layers = {
             imageUrl: "https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=formation"
         },
         timeEnabled: true,
-        checked: false
+        checked: false,
+        sb_item:'58d1ba7ae4b0236b68f6b8a3'
+
     },
     division_service: {
         title: "Division",
@@ -86,7 +92,9 @@ const layers = {
             imageUrl: "https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=division"
         },
         timeEnabled: true,
-        checked: false
+        checked: false,
+        sb_item:'58d2ba5ae4b0236b68f84db5'
+
     },
     macrogroup_service: {
         title: "Macrogroup",
@@ -104,7 +112,9 @@ const layers = {
             imageUrl: "https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=macrogroup"
         },
         timeEnabled: true,
-        checked: false
+        checked: false,
+        sb_item:'58d1bad8e4b0236b68f6b8a5'
+
     },
     nvc_group_service: {
         title: "Group",
@@ -122,7 +132,9 @@ const layers = {
             imageUrl: "https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=group"
         },
         timeEnabled: true,
-        checked: false
+        checked: false,
+        sb_item:'58d2bab6e4b0236b68f84dba'
+
     },
     ecosys_lu_service: {
         title: "Ecological System",
@@ -140,7 +152,9 @@ const layers = {
             imageUrl: "https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=ecological_system"
         },
         timeEnabled: true,
-        checked: false
+        checked: false,
+        sb_item:'58d1bb47e4b0236b68f6b8a7'
+
     },
 
 }

@@ -33,7 +33,8 @@ const layers = {
             imageUrl: "https://geoserver.usanpn.org/geoserver/si-x/wms??service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=average_bloom_prism"
         },
         timeEnabled: true,
-        checked: false
+        checked: false,
+        sb_item:'5ac3b12ee4b0e2c2dd0c2b95'
     }
 }
 

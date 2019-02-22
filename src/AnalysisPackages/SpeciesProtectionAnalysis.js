@@ -27,7 +27,8 @@ const layers = {
             arcgisUrl: "https://gis1.usgs.gov/arcgis/rest/services/PADUS1_4/GAP_Status_Code/MapServer/legend?f=pjson",
             layers: [0]
         },
-        checked: false
+        checked: false,
+        sb_item:"56bba50ce4b08d617f657956"
     },
     species_range: {
         title: "Species Range",
@@ -45,7 +46,8 @@ const layers = {
             imageUrl: ""
         },
         checked: false,
-        hideCheckbox: true
+        hideCheckbox: true,
+        sb_item:""
     },
     habitat_map: {
         title: "Habitat Map",
@@ -63,7 +65,8 @@ const layers = {
             imageUrl: ""
         },
         checked: false,
-        hideCheckbox: true
+        hideCheckbox: true,
+        sb_item:""
     }
 }
 

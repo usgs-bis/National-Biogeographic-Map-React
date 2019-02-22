@@ -28,7 +28,8 @@ const layers = {
             arcgisUrl: "https://gis1.usgs.gov/arcgis/rest/services/PADUS1_4/GAP_Status_Code/MapServer/legend?f=pjson",
             layers: [0]
         },
-        checked: false
+        checked: false,
+        sb_item:'56bba50ce4b08d617f657956'
     },
     ecological_systems: {
         title: "GAP Landcover 2011 Ecological System",
@@ -45,7 +46,8 @@ const layers = {
             imageUrl: "https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic" +
                 "&format=image%2Fpng&layer=ecological_system"
         },
-        checked: false
+        checked: false,
+        sb_item: '58d1bb47e4b0236b68f6b8a7'
     }
 }
 

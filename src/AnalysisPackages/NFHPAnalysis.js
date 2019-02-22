@@ -25,7 +25,8 @@ const layers = {
             arcgisUrl: "https://gis1.usgs.gov/arcgis/rest/services/nfhp2015/HCI_Dissolved_NFHP2015_v20160907/MapServer/legend?f=pjson",
             layers: [0]
         },
-        checked: false
+        checked: false,
+        sb_item:'58c8542ce4b0849ce97961e4'
     }
 }
 
