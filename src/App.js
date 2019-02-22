@@ -79,7 +79,9 @@ class App extends React.Component {
             copyText.select()
             document.execCommand("copy")
             copyText.style.display = 'none'
+            return copyText.value
         }
+        return window.location.href
     }
 
     loadState(s) {

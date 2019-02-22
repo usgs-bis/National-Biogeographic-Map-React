@@ -70,6 +70,11 @@ class PhenologyAnalysisPackage extends React.Component {
     componentDidMount() {
         this.props.onRef(this)
         this.featureChange()
+        if(this.props.bapId === this.props.priorityBap){
+            // try to let the feature load before submitting
+            // could change to willRecieveProps with a flag for init
+            setTimeout(()=>{this.submitAnalysis()},3000) 
+        } 
     }
 
 
@@ -436,7 +441,7 @@ class PhenologyAnalysisPackage extends React.Component {
         if (this.state.refs.length && this.props.isOpen) {
             let charts = []
             for (let i = 0; i < this.state.refs.length; i++) {
-                charts.push(this.state.refs[i].print(this.state.charts[i].props.id))
+                charts.push(this.state.refs[i].print(this.state.refs[i].props.id))
             }
 
             return Promise.all(charts.flat()).then(contents => {
@@ -444,7 +449,7 @@ class PhenologyAnalysisPackage extends React.Component {
                 content.push({ stack: this.props.getSBItemForPrint() })
 
                 for (let i = 0; i < this.state.refs.length; i += 2) {
-                    content.push({ text: this.state.charts[i].props.config.chart.title, style: 'chartTitle', margin: [5, 5, 5, 5] })
+                    content.push({ text: this.state.refs[i].props.config.chart.title, style: 'chartTitle', margin: [5, 5, 5, 5] })
                     content.push({
                         columns: [
                             {
