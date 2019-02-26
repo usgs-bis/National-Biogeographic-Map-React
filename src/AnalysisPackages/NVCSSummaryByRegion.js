@@ -16,7 +16,7 @@ const layers = {
     class_service: {
         title: "Class",
         titlePrefix: "GAP Landcover 2011 ",
-        elasticTerm: 'nvc_class',
+        elasticTerm: 'class',
         layer: L.tileLayer.wms(
             "https://www.sciencebase.gov/geoserver/nvcs/wms",
             {
@@ -31,12 +31,12 @@ const layers = {
         },
         timeEnabled: true,
         checked: false,
-        sb_item:'58d1b8ade4b0236b68f6b88e'
+        sb_item: '58d1b8ade4b0236b68f6b88e'
     },
     subclass_service: {
         title: "Subclass",
         titlePrefix: "GAP Landcover 2011 ",
-        elasticTerm: 'nvc_subcl',
+        elasticTerm: 'subclass',
         layer: L.tileLayer.wms(
             "https://www.sciencebase.gov/geoserver/nvcs/wms",
             {
@@ -51,12 +51,12 @@ const layers = {
         },
         timeEnabled: true,
         checked: false,
-        sb_item:'58d2b96ce4b0236b68f84d9f'
+        sb_item: '58d2b96ce4b0236b68f84d9f'
     },
     formation_service: {
         title: "Formation",
         titlePrefix: "GAP Landcover 2011 ",
-        elasticTerm: 'nvc_form',
+        elasticTerm: 'formation',
         layer: L.tileLayer.wms(
             "https://www.sciencebase.gov/geoserver/nvcs/wms",
             {
@@ -71,12 +71,12 @@ const layers = {
         },
         timeEnabled: true,
         checked: false,
-        sb_item:'58d1ba7ae4b0236b68f6b8a3'
+        sb_item: '58d1ba7ae4b0236b68f6b8a3'
     },
     division_service: {
         title: "Division",
         titlePrefix: "GAP Landcover 2011 ",
-        elasticTerm: 'nvc_div',
+        elasticTerm: 'division',
         layer: L.tileLayer.wms(
             "https://www.sciencebase.gov/geoserver/nvcs/wms",
             {
@@ -91,12 +91,12 @@ const layers = {
         },
         timeEnabled: true,
         checked: false,
-        sb_item:'58d2ba5ae4b0236b68f84db5'
+        sb_item: '58d2ba5ae4b0236b68f84db5'
     },
     macrogroup_service: {
         title: "Macrogroup",
         titlePrefix: "GAP Landcover 2011 ",
-        elasticTerm: 'nvc_macro',
+        elasticTerm: 'macrogroup',
         layer: L.tileLayer.wms(
             "https://www.sciencebase.gov/geoserver/nvcs/wms",
             {
@@ -111,12 +111,12 @@ const layers = {
         },
         timeEnabled: true,
         checked: false,
-        sb_item:'58d1bad8e4b0236b68f6b8a5'
+        sb_item: '58d1bad8e4b0236b68f6b8a5'
     },
     nvc_group_service: {
         title: "Group",
         titlePrefix: "GAP Landcover 2011 ",
-        elasticTerm: 'nvc_group',
+        elasticTerm: 'group',
         layer: L.tileLayer.wms(
             "https://www.sciencebase.gov/geoserver/nvcs/wms",
             {
@@ -131,12 +131,12 @@ const layers = {
         },
         timeEnabled: true,
         checked: false,
-        sb_item:'58d2bab6e4b0236b68f84dba'
+        sb_item: '58d2bab6e4b0236b68f84dba'
     },
     ecosys_lu_service: {
         title: "Ecological System",
         titlePrefix: "GAP Landcover 2011 ",
-        elasticTerm: 'ecosys_lu',
+        elasticTerm: 'ecosystem',
         layer: L.tileLayer.wms(
             "https://www.sciencebase.gov/geoserver/nvcs/wms",
             {
@@ -151,14 +151,12 @@ const layers = {
         },
         timeEnabled: true,
         checked: false,
-        sb_item:'58d1bb47e4b0236b68f6b8a7'
+        sb_item: '58d1bb47e4b0236b68f6b8a7'
     },
 
 }
-let NVCS_SUMM_ECO_URL = "https://my-beta.usgs.gov/bcb/elastic/search/nvcs/eco_l3_nvc_summ?q="
-let NVCS_SUMM_LCC_URL = "https://my-beta.usgs.gov/bcb/elastic/search/nvcs/lcc_nvc_summ?q="
-let NVCS_SUMM_STATE_URL = "https://my-beta.usgs.gov/bcb/elastic/search/nvcs/state_nvc_summ?q="
-let NVCS_SUMM_COUNTY_URL = "https://my-beta.usgs.gov/bcb/elastic/search/nvcs/county_nvc_summ?q="
+
+const NVCS_SUMM = process.env.REACT_APP_BIS_API + "/api/v1/nvcs/summary";
 
 
 class NVCSSummaryByRegionPackage extends React.Component {
@@ -206,54 +204,18 @@ class NVCSSummaryByRegionPackage extends React.Component {
             loading: true,
             error: false
         })
-        let searchURL = null
-        switch (this.props.feature.properties.feature_class) {
-            case 'Ecoregion III':
-                searchURL = NVCS_SUMM_ECO_URL
-                sb_properties.title = "NVCS Summary within Ecoregion III Area"
-                //SB_URL = "https://www.sciencebase.gov/catalog/item/580ff6e4e4b0f497e7960b53?format=json"
-                break;
-            case 'Landscape Conservation Cooperatives':
-                searchURL = NVCS_SUMM_LCC_URL
-                sb_properties.title = "NVCS Summary within LCC Area"
-                //SB_URL = "https://www.sciencebase.gov/catalog/item/580ffa58e4b0f497e7960b5e?format=json"
 
-                break;
-            case 'US States and Territories':
-                searchURL = NVCS_SUMM_STATE_URL
-                sb_properties.title = "NVCS Summary within State"
-                //SB_URL = "https://www.sciencebase.gov/catalog/item/580a50ece4b0f497e7906700?format=json"
-
-                break;
-            case 'US County':
-                searchURL = NVCS_SUMM_COUNTY_URL
-                sb_properties.title = "NVCS Summary within County"
-                //SB_URL = "https://www.sciencebase.gov/catalog/item/5811385de4b0f497e799c5da?format=json"
-
-                break;
-            default:
-                searchURL = null
-        }
-
-
-        let featureIdArray = this.props.feature.properties.feature_id.split(":")
-        let term = {}
-        if (featureIdArray.length === 3) {
-            term[`properties.${featureIdArray[1]}`] = featureIdArray[2]
-        }
-
-        let nvcs_class = { "properties.level": 'nvc_class' }
+        let level = "class"
         if (this.enabledLayer) {
-            nvcs_class = { "properties.level": `${this.enabledLayer.elasticTerm}` }
+            level = this.enabledLayer.elasticTerm
         }
 
-        const query = { "from": 0, "size": 50, "query": { "bool": { "must": [{ "match": term }, { "match": nvcs_class }] } } }
-        fetch(searchURL + encodeURI(JSON.stringify(query)))
+        fetch(NVCS_SUMM + encodeURI(`?feature_id=${this.props.feature.properties.feature_id}&level=${level}`))
             .then(res => res.json())
             .then(
                 (result) => {
-                    if (result && result.success.hits.hits.length) {
-                        const charts = this.getCharts(result.success.hits.hits)
+                    if (result && result.hits.hits.length) {
+                        const charts = this.getCharts(result.hits.hits)
                         this.setState({
                             charts: charts,
                             loading: false
@@ -378,8 +340,6 @@ class NVCSSummaryByRegionPackage extends React.Component {
                         data={this.state.charts.nvcsSummTable.data}
                         id={this.state.charts.nvcsSummTable.id}
                         config={this.state.charts.nvcsSummTable.config} />
-                    <br></br>
-                    This BAP still gets value from the old API, that data needs to move to the new flask API
                 </div>
             </div>
         )
