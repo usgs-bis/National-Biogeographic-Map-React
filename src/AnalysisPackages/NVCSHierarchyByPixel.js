@@ -12,8 +12,8 @@ let sb_properties = {
     "title": "NVCS Hierarchy by Pixel"
 }
 
-// will need to change to flask api
-let HBP_URL = "https://my-beta.usgs.gov/bcb/elastic/search/nvcs/nvcs_unit_hierarchy?q="
+const HBP_URL = process.env.REACT_APP_BIS_API + "/api/v1/nvcs/hierarchy_by_pixel?pixel_value=";
+
 
 const layers = {
     class_service: {
@@ -33,7 +33,7 @@ const layers = {
         },
         timeEnabled: true,
         checked: false,
-        sb_item:'58d1b8ade4b0236b68f6b88e'
+        sb_item: '58d1b8ade4b0236b68f6b88e'
 
     },
     subclass_service: {
@@ -53,7 +53,7 @@ const layers = {
         },
         timeEnabled: true,
         checked: false,
-        sb_item:'58d2b96ce4b0236b68f84d9f'
+        sb_item: '58d2b96ce4b0236b68f84d9f'
 
     },
     formation_service: {
@@ -73,7 +73,7 @@ const layers = {
         },
         timeEnabled: true,
         checked: false,
-        sb_item:'58d1ba7ae4b0236b68f6b8a3'
+        sb_item: '58d1ba7ae4b0236b68f6b8a3'
 
     },
     division_service: {
@@ -93,7 +93,7 @@ const layers = {
         },
         timeEnabled: true,
         checked: false,
-        sb_item:'58d2ba5ae4b0236b68f84db5'
+        sb_item: '58d2ba5ae4b0236b68f84db5'
 
     },
     macrogroup_service: {
@@ -113,7 +113,7 @@ const layers = {
         },
         timeEnabled: true,
         checked: false,
-        sb_item:'58d1bad8e4b0236b68f6b8a5'
+        sb_item: '58d1bad8e4b0236b68f6b8a5'
 
     },
     nvc_group_service: {
@@ -133,7 +133,7 @@ const layers = {
         },
         timeEnabled: true,
         checked: false,
-        sb_item:'58d2bab6e4b0236b68f84dba'
+        sb_item: '58d2bab6e4b0236b68f84dba'
 
     },
     ecosys_lu_service: {
@@ -153,7 +153,7 @@ const layers = {
         },
         timeEnabled: true,
         checked: false,
-        sb_item:'58d1bb47e4b0236b68f6b8a7'
+        sb_item: '58d1bb47e4b0236b68f6b8a7'
 
     },
 
@@ -261,13 +261,12 @@ class NVCSHierarchyByPixelPackage extends React.Component {
     }
 
     getHBPData(pixelValue, that) {
-        const query = { "query": { "term": { "properties.gid": pixelValue } } }
-        fetch(HBP_URL + encodeURI(JSON.stringify(query)))
+        fetch(HBP_URL + pixelValue)
             .then(res => res.json())
             .then(
                 (result) => {
-                    if (result && result.success.hits.hits.length) {
-                        const hbpData = result.success.hits.hits[0]["_source"]["properties"]
+                    if (result && result.hits.hits.length) {
+                        const hbpData = result.hits.hits[0]["_source"]["properties"]
                         const charts = that.getCharts({ pixelHierarchy: hbpData })
                         that.setState({
                             pixelValue: pixelValue,
@@ -363,9 +362,6 @@ class NVCSHierarchyByPixelPackage extends React.Component {
                         config={this.state.charts.pixelHierarchy.config}
                         highlight={this.state.enabledLayer}
                     />
-
-                    <br></br>
-                    This BAP still gets value from the old API, that data needs to move to the new flask API
                 </div>
             </div>
         )

@@ -170,16 +170,12 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
 
         toggleLayer(layer) {
             if (layer) {
-                Object.keys(this.state.layers).forEach((key) => {
-                    if (this.state.layers[key].title) {
-                        if (layer.title && this.state.layers[key].checked) {
-                            this.turnOnLayer()
-                        }
-                        else (
-                            this.turnOnLayer(layer)
-                        )
-                    }
-                })
+                if (layer.checked) {
+                    this.turnOnLayer()
+                }
+                else (
+                    this.turnOnLayer(layer)
+                )
             }
             else {
                 this.turnOnLayer()
@@ -203,7 +199,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                     })
                 }
                 else {
-                    this.turnOnLayer({})
+                    this.turnOnLayer()
 
                 }
             }
