@@ -149,7 +149,7 @@ class TimeSlider extends React.Component {
                 this.mapDisplaySlider.value = parseInt(this.mapDisplaySlider.value) + 1
             }
             this.setIntermittentMapDisplayYear()
-            this.props.setMapDisplayYear(this.mapDisplaySlider.value)
+            this.props.setMapDisplayYearFade(this.mapDisplaySlider.value)
             setTimeout(() => {
                     this.playCycle()
             }, 3000)

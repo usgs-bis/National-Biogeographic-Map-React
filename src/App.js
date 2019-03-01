@@ -48,6 +48,7 @@ class App extends React.Component {
         this.basemapChanged = this.basemapChanged.bind(this)
         this.setYearRange = this.setYearRange.bind(this)
         this.setMapDisplayYear = this.setMapDisplayYear.bind(this)
+        this.setMapDisplayYearFade = this.setMapDisplayYearFade.bind(this)
         this.updateAnalysisLayers = this.updateAnalysisLayers.bind(this)
         this.setMap = this.setMap.bind(this)
         this.shareState = this.shareState.bind(this)
@@ -290,10 +291,27 @@ class App extends React.Component {
         })
     }
 
+    setMapDisplayYear(year) {
+        this.setState({
+            mapDisplayYear: year
+        })
+        if (this.state.analysisLayers) {
+            this.state.analysisLayers.forEach((item) => {
+                if (item.timeEnabled) {
+                    item.layer.setParams(
+                        {
+                            time: `${year}-01-01`
+                        }
+                    )
+                }
+            })
+        }
+    }
+
     // changes the map display year.
     // unfortunate that we need to use timeouts to acount for rendering time
     // for a smooth transition. on 'load' is network only, not time it takes to paint
-    setMapDisplayYear(year) {
+    setMapDisplayYearFade(year) {
         this.setState({
             mapDisplayYear: year
         })
@@ -405,6 +423,7 @@ class App extends React.Component {
                             parentDrawHandler={this.handelDrawnPolygon}
                             setYearRange={this.setYearRange}
                             setMapDisplayYear={this.setMapDisplayYear}
+                            setMapDisplayYearFade={this.setMapDisplayYearFade}
                             analysisLayers={this.state.analysisLayers}
                             setMap={this.setMap}
                             rangeYearMax={this.state.rangeYearMax}

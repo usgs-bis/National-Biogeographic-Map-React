@@ -265,6 +265,7 @@ class NBM extends React.PureComponent {
                 <div className="global-time-slider" onMouseOver={this.disableDragging} onMouseOut={this.enableDragging}>
                 {this.props.bioscapeName !== "terrestrial-ecosystems-2011" && <TimeSlider
                         setMapDisplayYear={this.props.setMapDisplayYear}
+                        setMapDisplayYearFade={this.props.setMapDisplayYearFade}
                         setYearRange={this.props.setYearRange}
                         rangeYearMax={this.props.rangeYearMax}
                         rangeYearMin={this.props.rangeYearMin}
