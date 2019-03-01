@@ -49,3 +49,9 @@
     background: none;
     padding-top: 0px;
 }
+
+.no-time-slider{
+
+    bottom: 20px !important;
+    left: 5px !important;
+}
