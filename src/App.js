@@ -5,6 +5,7 @@ import LeftPanel from "./LeftPanel/LeftPanel";
 import nbmBioscape from "./Bioscapes/biogeography.json"
 import nvcsBioscape from "./Bioscapes/terrestrial-ecosystems-2011.json"
 import Resizable from 're-resizable';
+import cloneLayer from "leaflet-clonelayer"
 import L from "leaflet";
 import "./App.css";
 
@@ -53,6 +54,8 @@ class App extends React.Component {
         this.loadState = this.loadState.bind(this)
         this.handelDrawnPolygon = this.handelDrawnPolygon.bind(this)
         this.overlayChanged = this.overlayChanged.bind(this)
+        this.layerTransitionFade = this.layerTransitionFade.bind(this)
+
         this.state = this.loadState(this.state)
 
     }
@@ -287,6 +290,9 @@ class App extends React.Component {
         })
     }
 
+    // changes the map display year.
+    // unfortunate that we need to use timeouts to acount for rendering time
+    // for a smooth transition. on 'load' is network only, not time it takes to paint
     setMapDisplayYear(year) {
         this.setState({
             mapDisplayYear: year
@@ -294,13 +300,54 @@ class App extends React.Component {
         if (this.state.analysisLayers) {
             this.state.analysisLayers.forEach((item) => {
                 if (item.timeEnabled) {
-                    item.layer.setParams(
-                        {
-                            time: `${year}-01-01`
-                        }
-                    )
+                    let currentOpacity = Number(item.layer.options.opacity)
+                    let clone = cloneLayer(item.layer);
+                    clone.setParams({ time: item.layer.wmsParams.time })
+                    clone.setOpacity(0)
+                    clone.addTo(this.state.map.leafletElement)
+                    // weird case where layer 'lode' doesent fire and clone doesnt get removed. 
+                    setTimeout(()=>{this.state.map.leafletElement.removeLayer(clone); console.log("removing clone here")},2000) 
+                    clone.on('load', (event) => {
+                        setTimeout(() => {
+                            clone.setOpacity(currentOpacity)
+                            item.layer.setOpacity(0)
+                            item.layer.setParams({ time: `${year}-01-01` })
+                        }, 150)
+                        clone.off('load')
+                    })
+                    item.layer.on('load', (event) => {
+                        setTimeout(() => {
+                            this.layerTransitionFade(item.layer, clone, currentOpacity)
+                        }, 150)
+                        item.layer.off('load')
+                    })
                 }
             })
+        }
+    }
+
+    // brings layer 1 up and layer 2 down; removes layer 2.
+    layerTransitionFade(layer, layer2, targetOpacity) {
+        let currentOpacityLayer = Number(layer.options.opacity)
+        let currentOpacitylayer2 = Number(layer2.options.opacity)
+        let recurse = false
+
+        if (currentOpacitylayer2 > .06) {
+            layer2.setOpacity(currentOpacitylayer2 - 0.05);
+            recurse = true
+        }
+
+        if (currentOpacityLayer < targetOpacity) {
+            layer.setOpacity(currentOpacityLayer + 0.05);
+            recurse = true
+        }
+        if (recurse){
+             setTimeout(() => { this.layerTransitionFade(layer, layer2, targetOpacity) }, 50)
+        }
+        // Idealy we would only remove clone here but about 5% of the time layer 'load' doesnt fire
+        // see comment in setMapDisplayYear above
+        else{
+            this.state.map.leafletElement.removeLayer(layer2)
         }
     }
 
@@ -321,7 +368,7 @@ class App extends React.Component {
                     <Resizable
                         className="panel-area"
                         enable={{ top: false, right: true, bottom: false, left: false, topRight: false, bottomRight: false, bottomLeft: false, topLeft: false }}
-                        defaultSize={{ width: 500 }}
+                        defaultSize={{ width: 540 }}
                         minWidth={250}
                         maxWidth={1000}
                         onResizeStop={() => { this.state.map.leafletElement.invalidateSize(); this.setMapDisplayYear(this.state.mapDisplayYear + 1); this.setMapDisplayYear(this.state.mapDisplayYear - 1) }}

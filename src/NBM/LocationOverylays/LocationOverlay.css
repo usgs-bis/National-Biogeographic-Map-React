@@ -1,13 +1,14 @@
 .location-overlay{
     position: absolute;
     bottom: 60px;
-    left: 5px;
+    left: 130px;
     z-index: 1000;
     display: flex;
     background-color: rgba(10, 10, 15, .6);
     color: #f3f3f3;
     border-radius: 3px;
     font-size: 1em;
+    height: 27px;
 }
 
 .location-overlay span{
@@ -18,4 +19,33 @@
 .location-overlay span label{
     font-weight: 600;
     margin-bottom: 0px
+}
+
+.leaflet-bottom.leaflet-left{
+    position: absolute;
+    bottom: 60px;
+    left:   5px;
+    z-index: 1000;
+    display: flex;
+    background-color: rgba(10, 10, 15, .6);
+    color: #f3f3f3;
+    border-radius: 3px;
+    font-size: 1em;
+    color:  white;
+    height: 27px;
+}
+
+.leaflet-control-scale.leaflet-control{
+    border: 2px solid #f3f3f3;
+    border-top: none;
+    margin-top: 8px;
+    margin-left: 8px;
+    margin-right: 8px;
+}
+
+.leaflet-control-scale-line{
+    color: white;
+    border: none;
+    background: none;
+    padding-top: 0px;
 }

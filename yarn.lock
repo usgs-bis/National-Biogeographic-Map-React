@@ -7577,6 +7577,11 @@ lcid@^2.0.0:
   dependencies:
     invert-kv "^2.0.0"
 
+leaflet-clonelayer@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/leaflet-clonelayer/-/leaflet-clonelayer-1.0.7.tgz#8d43dba55748e8ed996170723093a9bf45659a9c"
+  integrity sha512-kqpGX1NfoPZ7fy8SU+PfrfWhvjAEsLECx2JYFdifhW6WGbJRlESMP7vnI3DVbrplcIcSHPOcAUPuGpoK9jNcPg==
+
 leaflet-draw@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/leaflet-draw/-/leaflet-draw-1.0.4.tgz#45be92f378ed253e7202fdeda1fcc71885198d46"

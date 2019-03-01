@@ -1,6 +1,6 @@
 import React from "react";
 import "./TimeSlider.css";
-// import { Glyphicon } from "react-bootstrap";
+import { Glyphicon } from "react-bootstrap";
 
 
 const minSliderValue = 1981
@@ -21,7 +21,10 @@ class TimeSlider extends React.Component {
         this.state = {
             mapDisplayYear: props.mapDisplayYear,
             rangeYearMax: props.rangeYearMax,
-            rangeYearMin: props.rangeYearMin
+            rangeYearMin: props.rangeYearMin,
+            playGlyph: 'play-circle',
+            playing: false,
+
         }
 
 
@@ -31,6 +34,8 @@ class TimeSlider extends React.Component {
         this.setIntermittentMapDisplayYear = this.setIntermittentMapDisplayYear.bind(this)
         this.initHandelPos = this.initHandelPos.bind(this)
         this.checkOverlap = this.checkOverlap.bind(this)
+        this.playTimeSlider = this.playTimeSlider.bind(this)
+        this.playCycle = this.playCycle.bind(this)
         this.sliderSize = 0
     }
 
@@ -64,10 +69,17 @@ class TimeSlider extends React.Component {
         let leftValue = inOrderRange[0] === minSliderValue ? 0 : (inOrderRange[0] - minSliderValue) / (maxSliderValue - minSliderValue)
         let rightValue = inOrderRange[1] === minSliderValue ? 0 : (inOrderRange[1] - minSliderValue) / (maxSliderValue - minSliderValue)
 
+        // range slider text handels
         document.getElementById('leftHandelOutput').style.left = ((leftValue * this.sliderSize) - 12) + 'px'
         document.getElementById('leftHandelOutputText').innerHTML = inOrderRange[0]
         document.getElementById('rightHandelOutput').style.left = ((rightValue * this.sliderSize) - 12) + 'px'
         document.getElementById('rightHandelOutputText').innerHTML = inOrderRange[1]
+
+        // fill between range sliders
+        document.getElementById('sliderRangeFill').style.left = ((leftValue * this.sliderSize) + 12) + 'px'
+        document.getElementById('sliderRangeFill').style.width = (((rightValue * this.sliderSize) - 6) - ((leftValue * this.sliderSize) + 3)) + 'px'
+
+
 
         this.setState({
             rangeYearMin: inOrderRange[0],
@@ -76,12 +88,12 @@ class TimeSlider extends React.Component {
 
     }
 
-    checkOverlap(){
+    checkOverlap() {
         let left = parseInt(document.getElementById('leftHandelOutput').style.left)
         let middle = parseInt(document.getElementById('middleHandelOutput').style.left)
         let right = parseInt(document.getElementById('rightHandelOutput').style.left)
 
-        if ((left + 40 > middle && left < middle + 120 ) || (right + 40 > middle && right < middle + 120)) {
+        if ((left + 40 > middle && left < middle + 120) || (right + 40 > middle && right < middle + 120)) {
             if (!document.getElementById('middleHandelOutput').className.includes('handel-overlap')) {
                 document.getElementById('middleHandelOutput').className = 'range-handle handel-overlap'
             }
@@ -96,7 +108,9 @@ class TimeSlider extends React.Component {
         let value = this.mapDisplaySlider.value === minSliderValue ? 0 : (this.mapDisplaySlider.value - minSliderValue) / (maxSliderValue - minSliderValue)
 
         document.getElementById('middleHandelOutput').style.left = ((value * this.sliderSize) - 48) + 'px'
-      
+        document.getElementById('middleHandelOutputGlyph').style.left = ((value * this.sliderSize) + 3) + 'px'
+
+
         document.getElementById('middleHandelOutputText').innerHTML = 'Map Display: ' + this.mapDisplaySlider.value
 
         this.setState({
@@ -117,6 +131,31 @@ class TimeSlider extends React.Component {
         this.props.setMapDisplayYear(this.mapDisplaySlider.value)
     }
 
+    playTimeSlider() {
+        this.setState({
+            playing: !this.state.playing,
+            playGlyph: this.state.playing ? 'play-circle' : 'pause'
+        }, this.playCycle)
+
+    }
+
+    playCycle() {
+
+        if (this.state.playing) {
+            if( (parseInt(this.mapDisplaySlider.value) + 1) > maxSliderValue){
+                this.mapDisplaySlider.value = minSliderValue
+            } 
+            else{
+                this.mapDisplaySlider.value = parseInt(this.mapDisplaySlider.value) + 1
+            }
+            this.setIntermittentMapDisplayYear()
+            this.props.setMapDisplayYear(this.mapDisplaySlider.value)
+            setTimeout(() => {
+                    this.playCycle()
+            }, 3000)
+        }
+    }
+
     render() {
         return (
             <div>
@@ -126,9 +165,10 @@ class TimeSlider extends React.Component {
                     {this.state.rangeYearMin + "-" + this.state.rangeYearMax}
                 </section> */}
                 <section className="range-slider">
-                    <span className="range-values" style={{ left: "10px" }}>{minSliderValue}</span>
+                    <Glyphicon onClick={this.playTimeSlider} className="play-glyph inner-glyph" glyph={this.state.playGlyph} />
+                    <span className="range-values" style={{ left: "30px" }}>{minSliderValue}</span>
                     <span id="rangeSliderContainer" className="range-slider-container">
-
+                        <span id="sliderRangeFill" className="slider-range-fill"></span>
                         <input
                             ref={(input) => { this.rangeSlider1 = input; }}
                             onMouseUp={this.setYearRange}
@@ -157,11 +197,13 @@ class TimeSlider extends React.Component {
                             step="1"
                             type="range"
                             name="middleHandel"
-                            id="middleHandel" />
+                            id="middleHandel"
+                        // style={{ zIndex: 10 }}
+                        />
                         <span id="middleHandelOutput" className="range-handle" >
                             <span id="middleHandelOutputText"></span>
-                            {/* <Glyphicon className="inner-glyph" glyph="tag" /> */}
                         </span>
+                        <Glyphicon id="middleHandelOutputGlyph" className="center-glyph-tag inner-glyph" glyph="tag" />
 
                         <input
                             ref={(input) => { this.rangeSlider2 = input; }}

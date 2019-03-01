@@ -29,6 +29,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 sbInfoPopUpToolTip: false,
                 sbInfoLayerPopUp: false,
                 sbInfoLayerPopUpToolTip: false,
+                layersOpen: false
             }
             this.allowPriority = true
             this.initilized = false
@@ -230,14 +231,17 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             if (this.state.layers) {
                 return (
                     <div className="analysis-layers">
-                        <div onClick={that.toggleLayerDropdown} className="analysis-layers-dropdown">
-                            {"Analysis Layers"}
-                            <Glyphicon
-                                className="analysis-dropdown-glyph"
-                                glyph={that.state.layersOpen ? "menu-down" : "menu-right"}
-                            />
+                        <div className="analysis-layers-dropdown">
+                            <span onClick={this.toggleLayerDropdown} >
+                                {"Analysis Layers"}
+                                <Glyphicon
+                                    className="analysis-dropdown-glyph"
+                                    glyph={this.state.layersOpen ? "menu-down" : "menu-right"}
+                                />
+                            </span>
+
                             <Button id={`openBapWindow${this.props.bapId}`} className='bap-window-button' style={{ display: this.state.bapWindowOpen ? "none" : "inline-block" }}
-                                onClick={() => this.setState({ bapWindowOpen: !this.state.bapWindowOpen })} >
+                                onClick={() => { this.setState({ bapWindowOpen: !this.state.bapWindowOpen }) }} >
                                 <Glyphicon className="inner-glyph" glyph="resize-full"
                                 />
                             </Button>
@@ -311,7 +315,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                                             step=".05"
                                             min="0"
                                             max="1"
-                                            defaultValue={.5} />
+                                            defaultValue={that.state.layers[key].layer.options.opacity} />
                                     </FormGroup>
                                 )
                             })}
@@ -453,7 +457,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
 
         getSbContactInfo(sb_properties) {
             if (!sb_properties || !sb_properties.contacts) return []
-            let r = [<br></br>, <h4>Contacts:</h4>]
+            let r = [<br key="br1-CI"></br>, <h4 key="h41-CI">Contacts:</h4>]
             let c = sb_properties.contacts
             for (let i of c) {
                 r.push(<div key={i.lastName}>
@@ -465,11 +469,11 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
         }
         getSbWebLinkInfo(sb_properties) {
             if (!sb_properties || !sb_properties.webLinks) return []
-            let r = [<br></br>, <h4>Web Links:</h4>]
+            let r = [<br key="br2-CI"></br>, <h4 key="h42-CI">Web Links:</h4>]
             let c = sb_properties.webLinks
             for (let i of c) {
                 if (i.type === 'citation') {
-                    r.push(<div>
+                    r.push(<div key={i.title}>
                         <div><a href={i.uri}>{i.title}</a></div>
                     </div>)
                 }

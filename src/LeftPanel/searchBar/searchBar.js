@@ -77,6 +77,9 @@ class SearchBar extends React.Component {
     }
 
     basemapChanged(e) {
+        // Fixes bug in FF where search bar gains focus
+        this.setState({focused: false})
+         
         this.props.basemapChanged(e)
     }
 

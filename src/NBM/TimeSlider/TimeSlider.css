@@ -40,13 +40,12 @@ section.range-slider input {
     pointer-events: none;
     position: absolute;
     overflow: hidden;
-    /* width: calc(100% - 100px); */
     outline: none;
     height: 18px;
     padding: 0;
-    /* margin-left: 50px; */
     left: 0px;
     background: none;
+    /* z-index: 5; */
 }
 
 section.range-slider input::-webkit-slider-thumb {
@@ -79,23 +78,9 @@ section.range-slider input[type=range]::-moz-focus-outer {
     border: 0;
 }
 
-/*input[type='range'] {*/
-    /*-webkit-appearance: none !important;*/
-    /*background:red;*/
-    /*height:7px;*/
-/*}*/
-/*input.map-display-slider::-webkit-slider-thumb {*/
-    /*-webkit-appearance: none !important;*/
-    /*background:blue;*/
-    /*height:10px;*/
-    /*width:10px;*/
-/*}*/
-
 input.map-display-slider[type='range'] {
-    -webkit-appearance: none !important;
-    -moz-appearance: none !important;
     background:rgba(0,0,0,0);
-    /*height:7px;*/
+    -webkit-appearance: progressbar-vertical;
 }
 input.map-display-slider[type='range']::-webkit-slider-thumb {
     -webkit-appearance: none !important;
@@ -114,18 +99,16 @@ input.map-display-slider[type='range']::-webkit-slider-thumb {
     height: 27px;
     overflow: visible !important;
 }
-
-
   .slider-span{
     position: absolute;
-    width: calc(100% - 100px);
-    left: 50px;
+    width: calc(100% - 110px);
+    left: 65px;
   }
 
   .range-slider-container {
-    width: calc(100% - 100px);
+    width: calc(100% - 110px);
     position: absolute;
-    left: 50px;
+    left: 65px;
     height: 18px;
   }
 
@@ -149,14 +132,37 @@ input.map-display-slider[type='range']::-webkit-slider-thumb {
     top: -42px;
   }
 
-  .global-time-slider .inner-glyph{
-    -webkit-transform:  rotate(225deg);
-    transform:  rotate(225deg);
+.global-time-slider .inner-glyph{
+
     position: absolute;
-    top: 22px;
-    font-size: 24px;
     z-index: 9999;
-    pointer-events: none;
     left: 8px;
     color: white;
-  }
+}
+
+.center-glyph-tag {
+    background-color: black;
+    width: 10px;
+    height: 10px;
+    pointer-events: none;
+    top: 10px;
+    font-size: 23px !important;
+    -webkit-transform:  rotate(225deg);
+    transform:  rotate(225deg);
+    pointer-events: none;
+}
+
+
+.slider-range-fill{
+    height: 5px;
+    background-color: lightblue;
+    z-index: 1;
+    position: absolute;
+    margin-top: 8px;
+    width: 300px;
+}
+
+
+.play-glyph{
+    top:5px;
+}

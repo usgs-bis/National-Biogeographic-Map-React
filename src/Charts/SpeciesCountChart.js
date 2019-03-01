@@ -217,23 +217,34 @@ class SpeciesCountChart extends React.Component {
         })
     }
 
-     // returns a promise with a dataURI - i.e. base 64 encoded PNG
-     print(id) {
+    // returns a promise with a dataURI - i.e. base 64 encoded PNG
+    print(id) {
         return new Promise((resolve, reject) => {
             try {
+                // firefox issue where svgs wont draw to image without a width and height
+                // if we include a with and height they become unresponsive
+                const currentWidth = d3.select(`#${id}ChartContainer .svg-container-chart`).node().clientWidth
+                const currentHeight = d3.select(`#${id}ChartContainer .svg-container-chart`).node().clientHeight
+                d3.select(`#${id}ChartContainer .svg-container-chart svg`)
+                    .attr("height", currentHeight)
+                    .attr("width", currentWidth)
+
                 const canvasContainer = d3.select(`#${id}ChartContainer`)
                     .append('div')
                     .attr("class", `${id}Class`)
-                    .html(`<canvas id="canvas${id}" width="800" height="800" style="position: fixed;"></canvas>`)
+                    .html(`<canvas id="canvas${id}" width="${currentWidth}" height="${currentHeight}" style="position: fixed;"></canvas>`)
 
                 const canvas = document.getElementById(`canvas${id}`);
                 const image = new Image();
                 image.onload = () => {
-                    canvas.getContext("2d").drawImage(image, 0, 0, 800, 800);
+                    canvas.getContext("2d").drawImage(image, 0, 0, currentWidth, currentHeight);
                     canvasContainer.remove()
+                    d3.select(`#${id}ChartContainer .svg-container-chart svg`)
+                        .attr("height", null)
+                        .attr("width", null)
                     resolve(canvas.toDataURL())
                 }
-                const svg = "data:image/svg+xml," + d3.select(`#${id}ChartContainer .svg-container-chart`).html()
+                const svg = "data:image/svg+xml," + d3.select(`#${id}ChartContainer .svg-container-chart`).html().replace(/#/g, '%23')
                 image.src = svg
             }
             catch (error) { reject(error) }
