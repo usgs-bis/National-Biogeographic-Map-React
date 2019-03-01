@@ -109,6 +109,7 @@
     z-index: 999;
     color: white;
     background-color: rgba(10, 10, 15, .6);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.4)
 }
 
 .icon.icon-close {

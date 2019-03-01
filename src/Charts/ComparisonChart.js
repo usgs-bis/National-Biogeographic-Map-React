@@ -280,15 +280,15 @@ class ComparisonChart extends React.Component {
         function processData(rawData) {
             let processedData = []
             for (let currentYear in rawData[0]) {
-                let adv = rawData[0][currentYear].reduce(getSum,0) / rawData[0][currentYear].length
-                let min = rawData[0][currentYear].reduce((a, b) => Math.min(a, b),0)
-                let max = rawData[0][currentYear].reduce((a, b) => Math.max(a, b),0)
+                let adv = rawData[0][currentYear].reduce(getSum, 0) / rawData[0][currentYear].length
+                let min = rawData[0][currentYear].reduce((a, b) => Math.min(a, b), 0)
+                let max = rawData[0][currentYear].reduce((a, b) => Math.max(a, b), 0)
                 processedData.push({ year: currentYear, DOY: adv, value: 15, min: min, max: max })
             }
             for (let currentYear in rawData[1]) {
-                let adv = rawData[1][currentYear].reduce(getSum,0) / rawData[1][currentYear].length
-                let min = rawData[1][currentYear].reduce((a, b) => Math.min(a, b),0)
-                let max = rawData[1][currentYear].reduce((a, b) => Math.max(a, b),0)
+                let adv = rawData[1][currentYear].reduce(getSum, 0) / rawData[1][currentYear].length
+                let min = rawData[1][currentYear].reduce((a, b) => Math.min(a, b), 0)
+                let max = rawData[1][currentYear].reduce((a, b) => Math.max(a, b), 0)
                 processedData.push({ year: currentYear, DOY: adv, value: 15, min: min, max: max })
             }
             return processedData
@@ -318,8 +318,8 @@ class ComparisonChart extends React.Component {
 
     }
 
-     // returns a promise with a dataURI - i.e. base 64 encoded PNG
-     print(id) {
+    // returns a promise with a dataURI - i.e. base 64 encoded PNG
+    print(id) {
         return new Promise((resolve, reject) => {
             try {
                 const canvasContainer = d3.select(`#${id}ChartContainer`)
@@ -327,11 +327,22 @@ class ComparisonChart extends React.Component {
                     .attr("class", `${id}Class`)
                     .html(`<canvas id="canvas${id}" width="800" height="800" style="position: fixed;"></canvas>`)
 
+                //firefox issue where svgs wont draw to image without a width and height
+                // if we include a with and height they become unresponsive
+                const currentWidth = d3.select(`#${id}ChartContainer .svg-container-chart`).node().clientWidth
+                const currentHeight = d3.select(`#${id}ChartContainer .svg-container-chart`).node().clientHeight
+                d3.select(`#${id}ChartContainer .svg-container-chart svg`)
+                    .attr("height", currentHeight)
+                    .attr("width", currentWidth)
+
                 const canvas = document.getElementById(`canvas${id}`);
                 const image = new Image();
                 image.onload = () => {
                     canvas.getContext("2d").drawImage(image, 0, 0, 800, 800);
                     canvasContainer.remove()
+                    d3.select(`#${id}ChartContainer .svg-container-chart svg`)
+                        .attr("height", null)
+                        .attr("width", null)
                     resolve(canvas.toDataURL())
                 }
                 const svg = "data:image/svg+xml," + d3.select(`#${id}ChartContainer .svg-container-chart`).html()

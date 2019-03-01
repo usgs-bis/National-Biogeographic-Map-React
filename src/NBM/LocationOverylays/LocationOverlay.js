@@ -16,12 +16,37 @@ class LocationOverlay extends React.Component {
             lat: null,
             lng: null,
             elv: null,
+            leftOffset: '100px'
         }
+        this.map = null
+        this.updateOffset = this.updateOffset.bind(this)
 
     }
 
     componentDidMount() {
         this.props.onRef(this)
+    }
+
+    componentWillUnmount(){
+        this.map.off('zoomend', this.updateOffset)
+    }
+
+    componentDidUpdate() {
+        if (!this.map && this.props.map.leafletElement) {
+            this.map = this.props.map.leafletElement
+            this.updateOffset()
+            this.map.on('zoomend', this.updateOffset)
+        }
+    }
+
+    // Pushes the lat, lng, & elev display left based on leaflet scale position
+    updateOffset() {
+        let offset = this.state.leftOffset
+        const scale = document.getElementsByClassName('leaflet-control-scale leaflet-control')
+        if (scale.length) offset = (scale[0].clientWidth + 30).toString() + 'px'
+        this.setState({
+            leftOffset: offset
+        })
     }
 
     setLocation(lat, lng) {
@@ -65,8 +90,9 @@ class LocationOverlay extends React.Component {
 
 
     render() {
+
         return (
-            <div className={"location-overlay"}>
+            <div className={"location-overlay"} style={{ left: this.state.leftOffset }}>
                 <span><label>Lat:</label>   {this.state.lat},</span>
                 <span><label>Long:</label>  {this.state.lng},</span>
                 <span><label>Elev:</label>  {this.state.elv}</span>

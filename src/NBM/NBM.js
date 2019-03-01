@@ -1,5 +1,6 @@
 import React from 'react'
 import { Map, TileLayer, WMSTileLayer, Marker, Popup, GeoJSON, FeatureGroup } from 'react-leaflet'
+import CustomDialog from "../CustomDialog/CustomDialog";
 import './NBM.css'
 import LocationOverlay from './LocationOverylays/LocationOverlay';
 import TimeSlider from "./TimeSlider/TimeSlider"
@@ -14,6 +15,7 @@ class NBM extends React.PureComponent {
         super(props);
         this.state = {
             point: null,
+            attributionOpen: false
         }
         this.drawnpolygon = null
         this.bounds = [[21, -134], [51, -63]];
@@ -40,11 +42,12 @@ class NBM extends React.PureComponent {
     }
 
     componentDidMount() {
-        setTimeout(()=>{
+        setTimeout(() => {
             this.refs.map.leafletElement.invalidateSize()
             this.refs.map.leafletElement.fitBounds(this.bounds)
-        },100)
-    
+            L.control.scale({ metric: false, imperial: true, position: 'bottomleft' }).addTo(this.refs.map.leafletElement)
+        }, 250)
+
         this.props.setMap(this.refs.map)
 
     }
@@ -64,6 +67,14 @@ class NBM extends React.PureComponent {
             currentLayers.forEach(function (item) {
                 if (oldLayers.indexOf(item) === -1) {
                     that.refs.map.leafletElement.addLayer(item.layer)
+                    if (item.timeEnabled) {
+                        item.layer.setParams(
+                            {
+                                time: `${that.props.mapDisplayYear}-01-01`
+                            }
+                        )
+                    }
+
                 }
             })
         }
@@ -156,6 +167,92 @@ class NBM extends React.PureComponent {
             }
         }
 
+        const attribution = () => {
+
+            if (!this.state.attributionOpen) return
+            return (
+
+                <CustomDialog
+                    className="sbinfo-popout-window"
+                    isResizable={true}
+                    isDraggable={true}
+                    title={'Attributions'}
+                    modal={false}
+                    onClose={() => {
+                        this.setState({
+                            attributionOpen: false
+                        })
+                    }}
+                    body={
+                        <div>
+
+                            <div className="attrDiv">
+                                <strong>Mapping API: </strong>
+                                <a href="http://leafletjs.com" title="A JS library for interactive maps">{'Leaflet '}</a>
+                                powered by
+                                    <a href="https://www.esri.com">{` Esri`}</a>.
+                                </div>
+                            <div className="attrDiv">
+                                <strong>Black & white tiles: </strong>
+                                <a href="http://stamen.com" >Stamen Design</a>, under
+                                    <a href="http://creativecommons.org/licenses/by/3.0" >CC BY 3.0</a>. Data by
+                                    <a href="http://openstreetmap.org" >{` OpenStreetMap`}</a>, under
+                                    <a href="http://www.openstreetmap.org/copyright" >{` ODbL`}</a>.
+                                </div>
+                            <div className="attrDiv">
+                                <strong>Satellite tiles: </strong>
+                                <a href="https://www.mapbox.com/about/maps/" >Mapbox</a>. Data by
+                                    <a href="http://openstreetmap.org" >{` OpenStreetMap`}</a>, under
+                                    <a href="http://www.openstreetmap.org/copyright" >{` ODbL`}</a>.
+                                </div>
+                            <div className="attrDiv">
+                                <strong>Biogeography interface </strong>heavily influenced by: UW-Macrostrat project
+                                    <a href="https://github.com/UW-Macrostrat/gmna-app" >{` on Github`}</a>.
+                                </div>
+                            <div className="attrDiv">
+                                <strong>NatureServe Species Data: </strong>Natureserve. 2008. NatureServe Web Service. Arlington, VA. U.S.A.
+                                Available
+                                    <a href="http://services.natureserve.org" >{` http://services.natureserve.org`}</a>.
+                                </div>
+                            <div className="attrDiv">
+                                <div id="popup-footer-bar">
+                                    <ul>
+                                        <li>
+                                            <a href="https://www2.usgs.gov/laws/accessibility.html" >Accessibility</a>
+                                        </li>
+                                        <li>
+                                            <a href="https://www2.usgs.gov/foia/" >FOIA</a>
+                                        </li>
+                                        <li>
+                                            <a href="https://www2.usgs.gov/laws/privacy.html" >Privacy</a>
+                                        </li>
+                                        <li>
+                                            <a href="https://www2.usgs.gov/laws/policies_notices.html" >Policies and Notices</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div id="footer-text">
+                                    <a href="https://www.doi.gov/" >U.S. Department of the Interior</a> |
+                                        <a href="https://www.usgs.gov/" >{` U.S. Geological Survey`}</a>
+                                    <div>Contact Information:
+                                                <a href="mailto:bcb@usgs.gov" >bcb@usgs.gov</a>
+                                    </div>
+                                    {/* <div>Application Version:
+                                            <span id="frontEndVersion"></span>
+                                    </div>
+                                    <div>API Version:
+                                            <span id="apiVersion"></span>
+                                    </div> */}
+                                </div>
+                            </div>
+                        </div>
+                    }
+                />
+            )
+
+
+        }
+
         return (
             <Map ref={"map"}
                 onClick={this.handleClick}
@@ -163,7 +260,7 @@ class NBM extends React.PureComponent {
                 onMouseMove={this.handleMouseMove}
                 onMouseOut={this.handleMouseOut} >
                 {basemap()}
-                <LocationOverlay onRef={ref => (this.LocationOverlay = ref)} />
+                <LocationOverlay onRef={ref => (this.LocationOverlay = ref)} map={this.refs.map} />
                 <MapMarker point={this.state.point} />
                 {geojson()}
                 <div className="global-time-slider" onMouseOver={this.disableDragging} onMouseOut={this.enableDragging}>
@@ -175,12 +272,13 @@ class NBM extends React.PureComponent {
                         mapDisplayYear={this.props.mapDisplayYear}
                     />
                 </div>
-                <div className="attribution" onMouseOver={this.disableDragging} onMouseOut={this.enableDragging}>
+                <div className="attribution" onClick={() => { this.setState({ attributionOpen: !this.state.attributionOpen }) }} onMouseOver={this.disableDragging} onMouseOut={this.enableDragging}>
                 </div>
+                <span onMouseOver={this.disableDragging} onMouseOut={this.enableDragging} >{attribution()}</span>
                 <FeatureGroup>
                     <EditControl
                         position='topright'
-                        onDeleted={()=>{this.props.parentDrawHandler(null)}}
+                        onDeleted={() => { this.props.parentDrawHandler(null) }}
                         onDrawStart={this.userDrawnPolygonStart}
                         // onEditStart={this.disableDragging}
                         // onEdited={this.userDrawnPolygon}
