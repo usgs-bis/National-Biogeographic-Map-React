@@ -92,7 +92,7 @@ class LocationOverlay extends React.Component {
     render() {
 
         return (
-            <div className={"location-overlay"} style={{ left: this.state.leftOffset }}>
+            <div className={ this.props.bioscapeName !== "terrestrial-ecosystems-2011" ? "location-overlay" : "no-time-slider location-overlay"} style={{ left: this.state.leftOffset }}>
                 <span><label>Lat:</label>   {this.state.lat},</span>
                 <span><label>Long:</label>  {this.state.lng},</span>
                 <span><label>Elev:</label>  {this.state.elv}</span>

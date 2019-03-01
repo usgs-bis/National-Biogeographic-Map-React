@@ -252,7 +252,6 @@ class NBM extends React.PureComponent {
 
 
         }
-
         return (
             <Map ref={"map"}
                 onClick={this.handleClick}
@@ -260,17 +259,17 @@ class NBM extends React.PureComponent {
                 onMouseMove={this.handleMouseMove}
                 onMouseOut={this.handleMouseOut} >
                 {basemap()}
-                <LocationOverlay onRef={ref => (this.LocationOverlay = ref)} map={this.refs.map} />
+                <LocationOverlay onRef={ref => (this.LocationOverlay = ref)} map={this.refs.map} bioscapeName={this.props.bioscapeName} />
                 <MapMarker point={this.state.point} />
                 {geojson()}
                 <div className="global-time-slider" onMouseOver={this.disableDragging} onMouseOut={this.enableDragging}>
-                    <TimeSlider
+                {this.props.bioscapeName !== "terrestrial-ecosystems-2011" && <TimeSlider
                         setMapDisplayYear={this.props.setMapDisplayYear}
                         setYearRange={this.props.setYearRange}
                         rangeYearMax={this.props.rangeYearMax}
                         rangeYearMin={this.props.rangeYearMin}
                         mapDisplayYear={this.props.mapDisplayYear}
-                    />
+                    /> }
                 </div>
                 <div className="attribution" onClick={() => { this.setState({ attributionOpen: !this.state.attributionOpen }) }} onMouseOver={this.disableDragging} onMouseOut={this.enableDragging}>
                 </div>

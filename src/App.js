@@ -410,6 +410,7 @@ class App extends React.Component {
                             rangeYearMax={this.state.rangeYearMax}
                             rangeYearMin={this.state.rangeYearMin}
                             mapDisplayYear={this.state.mapDisplayYear}
+                            bioscapeName={this.state.bioscapeName}
 
                         />
                     </div>
