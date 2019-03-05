@@ -44,12 +44,17 @@ class RadioGroup extends React.Component{
 
     constructor(props) {
         super(props);
+
+        let selected = props.options.find((opp)=>{
+            return opp.selected === true
+        })
         this.state = {
-            selectedIndex: 0,
+            selectedIndex: selected ? props.options.indexOf(selected) : '',
             selectedValue: null,
             options: props.options,
             canDeselect: props.canDeselect
         };
+
     }
 
     toggleRadioBtn(index){

@@ -15,6 +15,7 @@ const bioscapeMap = {
     "terrestrial-ecosystems-2011": nvcsBioscape
 };
 
+const NVCS_FEATURE_LOOKUP = ['Landscape Conservation Cooperatives','US County','Ecoregion III','US States and Territories']
 
 const TEXT_SEARCH_API = process.env.REACT_APP_BIS_API + "/api/v1/places/search/text?q=";
 const POINT_SEARCH_API = process.env.REACT_APP_BIS_API + "/api/v1/places/search/point?";
@@ -39,7 +40,7 @@ class App extends React.Component {
             analysisLayers: null,
             activeLayerTitle: '',
             priorityBap: null,
-            APIVersion : '',
+            APIVersion: '',
 
         }
         this.initFeatureId = null;
@@ -69,20 +70,20 @@ class App extends React.Component {
         document.title = this.state.bioscape.title
         if (this.initFeatureId) this.submitHandler(this.initFeatureId)
         fetch(API_VERSION_URL)
-        .then(res => res.json())
-        .then(
-            (result) => {
-                this.setState({
-                    APIVersion: result.Version
-                })
-                
-            },
-            (error) => {
-                this.setState({
-                    APIVersion: 'UNKNOWN'
-                })
-            }
-        )
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    this.setState({
+                        APIVersion: result.Version
+                    })
+
+                },
+                (error) => {
+                    this.setState({
+                        APIVersion: 'UNKNOWN'
+                    })
+                }
+            )
     }
 
     shareState() {
@@ -238,7 +239,8 @@ class App extends React.Component {
     sendFeatureRequestFromOverlay(results) {
         let overlay = this.state.overlay;
         if (!overlay) {
-            overlay = this.state.bioscape.overlays[0]
+            //overlay = this.state.bioscape.overlays[0]
+            return
         }
         for (let i = 0; i < results.length; i++) {
             let feature = results[i]
@@ -256,13 +258,26 @@ class App extends React.Component {
             .then(res => res.json())
             .then(
                 (result) => {
-                    if (this.state.bioscape.overlays) {
+                    if (this.state.overlay) {
                         this.sendFeatureRequestFromOverlay(result.hits.hits.map(a => a["_source"]["properties"]))
                         this.setState({
                             lat: e.latlng.lat,
-                            lng: e.latlng.lng
+                            lng: e.latlng.lng,
                         })
-                    } else {
+                    }
+                    else if(this.state.bioscape.overlays){
+                        let r = result.hits.hits.map(a => a["_source"]["properties"])
+                        r = r.filter((a)=>{
+                            return NVCS_FEATURE_LOOKUP.includes(a.feature_class)
+                        })
+                        this.setState({
+                            lat: e.latlng.lat,
+                            lng: e.latlng.lng,
+                            results: r,
+                            mapClicked: true
+                        })
+                    }
+                    else {
                         this.setState({
                             lat: e.latlng.lat,
                             lng: e.latlng.lng,
@@ -342,7 +357,7 @@ class App extends React.Component {
                     clone.setOpacity(0)
                     clone.addTo(this.state.map.leafletElement)
                     // weird case where layer 'lode' doesent fire and clone doesnt get removed. 
-                    setTimeout(()=>{this.state.map.leafletElement.removeLayer(clone)},2000) 
+                    setTimeout(() => { this.state.map.leafletElement.removeLayer(clone) }, 2000)
                     clone.on('load', (event) => {
                         setTimeout(() => {
                             clone.setOpacity(currentOpacity)
@@ -377,12 +392,12 @@ class App extends React.Component {
             layer.setOpacity(currentOpacityLayer + 0.05);
             recurse = true
         }
-        if (recurse){
-             setTimeout(() => { this.layerTransitionFade(layer, layer2, targetOpacity) }, 50)
+        if (recurse) {
+            setTimeout(() => { this.layerTransitionFade(layer, layer2, targetOpacity) }, 50)
         }
         // Idealy we would only remove clone here but about 5% of the time layer 'load' doesnt fire
         // see comment in setMapDisplayYear above
-        else{
+        else {
             this.state.map.leafletElement.removeLayer(layer2)
         }
     }

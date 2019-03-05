@@ -1,5 +1,7 @@
 import React from "react";
-import { Button, Tooltip } from "reactstrap";
+// import { Button, Tooltip } from "reactstrap";
+import { Button } from "reactstrap";
+
 import { Glyphicon } from "react-bootstrap";
 
 import CustomDialog from "../CustomDialog/CustomDialog";
@@ -47,13 +49,14 @@ class Legend extends React.Component {
         return (
             <div>
                 <Button id={"LegendTooltip"} className='submit-analysis-btn placeholder-button' onClick={this.toggleDialog} >
-                    <Glyphicon className="inner-glyph" glyph="th-list" />
+                    <Glyphicon className="inner-glyph" glyph="th-list"
+                    data-toggle="tooltip" data-placement="bottom" title="Legend" />
                 </Button>
-                <Tooltip
+                {/* <Tooltip
                     style={{ fontSize: "14px" }} isOpen={this.state.toolTipOpen && !this.state.isDialogOpen}
                     target="LegendTooltip" toggle={this.toggleLegendTooltip} delay={0}>
                     Legend
-                </Tooltip>
+                </Tooltip> */}
                 {
                     this.state.isDialogOpen &&
                     <CustomDialog

@@ -17,7 +17,7 @@ class Header extends React.Component {
         return (
             <div className={"nbm-header"}>
                 <span className="usgs-Logo"></span>
-                {this.state.title}
+                <span className="bioscape-title-text">{this.state.title}</span>
                 <span onClick={() => this.setState({ showDescription: !this.state.showDescription })} className="main-title-info">
                     <Glyphicon glyph="info-sign" />
                 </span>

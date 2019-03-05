@@ -216,7 +216,7 @@ class TimeSlider extends React.Component {
 
                 <section className="range-slider">
                     <Glyphicon onClick={this.playTimeSlider} className="play-glyph inner-glyph" glyph={this.state.playGlyph}
-                    dataToggle="tooltip" dataPlacement="top" title={this.state.playing ? "Pause" : "Play"} />
+                    data-toggle="tooltip" data-placement="top" title={this.state.playing ? "Pause" : "Play"} />
                     <span className="range-values" style={{ left: "30px" }}>{minSliderValue}</span>
                     <span id="rangeSliderContainer" className="range-slider-container">
                         <span id="sliderRangeFill" className="slider-range-fill"></span>
