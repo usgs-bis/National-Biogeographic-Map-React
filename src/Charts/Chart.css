@@ -4,6 +4,10 @@ text {
     fill:rgb(204, 204, 204) !important;
 }
 
+.bw-line{
+    stroke:rgb(204, 204, 204);
+}
+
 .chart-container {
     text-align: center;
 }

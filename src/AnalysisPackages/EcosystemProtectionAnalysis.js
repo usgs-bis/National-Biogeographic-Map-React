@@ -29,7 +29,7 @@ const layers = {
             layers: [0]
         },
         checked: false,
-        sb_item:'56bba50ce4b08d617f657956'
+        sb_item: '56bba50ce4b08d617f657956'
     },
     ecological_systems: {
         title: "GAP Landcover 2011 Ecological System",
@@ -628,6 +628,8 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                         id={this.state.charts.protectionStatus.id}
                         config={this.state.charts.protectionStatus.config} />
 
+                    <div className="dividing-line"></div>
+
                     <div>
                         <div className="chart-titles">
                             <div className="title">Protection Status of {this.props.feature ? this.props.feature.properties.feature_name : ''}</div>
@@ -657,6 +659,8 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                         data={this.state.charts.gapTable.data}
                         id={this.state.charts.gapTable.id}
                         config={this.state.charts.gapTable.config} />
+                    <div className="dividing-line"></div>
+
                     <PieChart
                         onRef={ref => (this.PieChart = ref)}
                         data={this.state.charts.gapCoverage.data}

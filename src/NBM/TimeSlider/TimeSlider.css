@@ -106,19 +106,28 @@ input.map-display-slider[type='range']::-webkit-slider-thumb {
   }
 
   .range-slider-container {
+    /* width: calc(100% - 110px);
+    position: absolute;
+    left: 65px;
+    height: 18px; */
     width: calc(100% - 110px);
     position: absolute;
     left: 65px;
-    height: 18px;
+    height: 7px;
+    background: black;
+    border-radius: 9px;
+    top: 11px;
+
   }
 
   .range-handle{
+
     position: absolute;
     text-align: center;
     color: #ffffff;
     border-radius: 10px;
     display: inline-block;
-    top: -24px;
+    top: -27px;
     left: 0;
     padding-left: 6px;
     padding-right: 6px;
@@ -126,10 +135,13 @@ input.map-display-slider[type='range']::-webkit-slider-thumb {
     background-color: rgba(10, 10, 15, .6);
     min-width: 38px;
     white-space: nowrap;
+    height: 15px;
+    padding-top: 0px;
+    line-height: 16px;
   }
 
 .handel-overlap{
-    top: -42px;
+    top: -43px;
   }
 
 .global-time-slider .inner-glyph{
@@ -144,22 +156,35 @@ input.map-display-slider[type='range']::-webkit-slider-thumb {
     background-color: black;
     width: 10px;
     height: 10px;
-    pointer-events: none;
-    top: 10px;
+    /* pointer-events: none; */
+    top: 4px;
+    font-size: 34px !important;
+    -webkit-transform: scaleX(0.8) scaleY(1) rotate(225deg);
+    transform: scaleX(0.8) scaleY(1) rotate(225deg);
+}
+
+.edge-glyph-tag {
+    background-color: black;
+    width: 10px;
+    height: 10px;
+    /* pointer-events: none; */
+    top: 4px;
     font-size: 23px !important;
     -webkit-transform:  rotate(225deg);
     transform:  rotate(225deg);
-    pointer-events: none;
 }
 
 
 .slider-range-fill{
-    height: 5px;
+    height: 7px;
     background-color: lightblue;
     z-index: 1;
     position: absolute;
-    margin-top: 8px;
+    /* margin-top: 8px; */
     width: 300px;
+    border-radius: 9px;
+    top: 0px;
+    
 }
 
 

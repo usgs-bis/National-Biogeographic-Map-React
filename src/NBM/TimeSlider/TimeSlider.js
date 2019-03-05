@@ -28,26 +28,31 @@ class TimeSlider extends React.Component {
         }
 
 
-        this.setMapDisplayYear = this.setMapDisplayYear.bind(this)
-        this.setYearRange = this.setYearRange.bind(this)
         this.setIntermittentYearRange = this.setIntermittentYearRange.bind(this)
         this.setIntermittentMapDisplayYear = this.setIntermittentMapDisplayYear.bind(this)
         this.initHandelPos = this.initHandelPos.bind(this)
-        this.checkOverlap = this.checkOverlap.bind(this)
         this.playTimeSlider = this.playTimeSlider.bind(this)
         this.playCycle = this.playCycle.bind(this)
+        this.dragElement = this.dragElement.bind(this)
         this.sliderSize = 0
+        this.leftPos = 0;
     }
 
     componentDidMount() {
 
         // when the other components load it changes the space avaiable for the time slider
+        // looking for a better way
         for (let i = 1; i < 6; i++) {
             setTimeout(() => {
                 this.initHandelPos()
-            }, 500 * i)
+            }, 1500 * i)
         }
         window.addEventListener("resize", this.initHandelPos)
+        this.dragElement(document.getElementById("leftHandelOutputGlyph"));
+        this.dragElement(document.getElementById("rightHandelOutputGlyph"));
+        this.dragElement(document.getElementById("middleHandelOutputGlyph"));
+
+
     }
 
     componentWillUnmount() {
@@ -56,80 +61,78 @@ class TimeSlider extends React.Component {
 
     componentDidUpdate() {
 
-        if (document.getElementById("rangeSliderContainer").clientWidth - 15 !== this.sliderSize) {
-            this.sliderSize = document.getElementById("rangeSliderContainer").clientWidth - 15
+        if (document.getElementById("rangeSliderContainer").clientWidth - 12 !== this.sliderSize) {
+            this.sliderSize = document.getElementById("rangeSliderContainer").clientWidth - 12
             this.initHandelPos()
         }
     }
 
     setIntermittentYearRange() {
-        this.checkOverlap()
-        let inOrderRange = [this.rangeSlider1.value, this.rangeSlider2.value].sort()
+        let l = document.getElementById('leftHandelOutputGlyph').offsetLeft
+        let r = document.getElementById('rightHandelOutputGlyph').offsetLeft
 
-        let leftValue = inOrderRange[0] === minSliderValue ? 0 : (inOrderRange[0] - minSliderValue) / (maxSliderValue - minSliderValue)
-        let rightValue = inOrderRange[1] === minSliderValue ? 0 : (inOrderRange[1] - minSliderValue) / (maxSliderValue - minSliderValue)
+        let leftpos = l >= r ? r : l
+        let rightpos = r > l ? r : l
 
-        // range slider text handels
-        document.getElementById('leftHandelOutput').style.left = ((leftValue * this.sliderSize) - 12) + 'px'
-        document.getElementById('leftHandelOutputText').innerHTML = inOrderRange[0]
-        document.getElementById('rightHandelOutput').style.left = ((rightValue * this.sliderSize) - 12) + 'px'
-        document.getElementById('rightHandelOutputText').innerHTML = inOrderRange[1]
+        let leftWidthRatio = leftpos / this.sliderSize
+        let rightWidthRatio = rightpos / this.sliderSize
 
-        // fill between range sliders
-        document.getElementById('sliderRangeFill').style.left = ((leftValue * this.sliderSize) + 12) + 'px'
-        document.getElementById('sliderRangeFill').style.width = (((rightValue * this.sliderSize) - 6) - ((leftValue * this.sliderSize) + 3)) + 'px'
+        let leftYear = minSliderValue + parseInt((maxSliderValue - minSliderValue) * leftWidthRatio)
+        let rightYear = minSliderValue + parseInt((maxSliderValue - minSliderValue) * rightWidthRatio)
 
+        document.getElementById('leftHandelOutput').style.left = (leftpos - 12) + 'px'
+        document.getElementById('leftHandelOutputText').innerHTML = leftYear
 
+        document.getElementById('rightHandelOutput').style.left = (rightpos - 12) + 'px'
+        document.getElementById('rightHandelOutputText').innerHTML = rightYear
 
-        this.setState({
-            rangeYearMin: inOrderRange[0],
-            rangeYearMax: inOrderRange[1]
-        })
+        document.getElementById('sliderRangeFill').style.left = leftpos + 'px'
+        document.getElementById('sliderRangeFill').style.width = (rightpos - leftpos) + 'px'
 
-    }
-
-    checkOverlap() {
-        let left = parseInt(document.getElementById('leftHandelOutput').style.left)
-        let middle = parseInt(document.getElementById('middleHandelOutput').style.left)
-        let right = parseInt(document.getElementById('rightHandelOutput').style.left)
-
-        if ((left + 40 > middle && left < middle + 120) || (right + 40 > middle && right < middle + 120)) {
-            if (!document.getElementById('middleHandelOutput').className.includes('handel-overlap')) {
-                document.getElementById('middleHandelOutput').className = 'range-handle handel-overlap'
-            }
-        }
-        else {
-            document.getElementById('middleHandelOutput').className = 'range-handle'
+        if (this.state.rangeYearMin !== leftYear || this.state.rangeYearMax !== rightYear) {
+            this.setState({
+                rangeYearMin: leftYear,
+                rangeYearMax: rightYear
+            })
         }
     }
 
     setIntermittentMapDisplayYear() {
-        this.checkOverlap()
-        let value = this.mapDisplaySlider.value === minSliderValue ? 0 : (this.mapDisplaySlider.value - minSliderValue) / (maxSliderValue - minSliderValue)
 
-        document.getElementById('middleHandelOutput').style.left = ((value * this.sliderSize) - 48) + 'px'
-        document.getElementById('middleHandelOutputGlyph').style.left = ((value * this.sliderSize) + 3) + 'px'
+        let pos = document.getElementById('middleHandelOutputGlyph').offsetLeft
+        let widthRatio = pos / this.sliderSize
 
+        let year = minSliderValue + parseInt((maxSliderValue - minSliderValue) * widthRatio)
 
-        document.getElementById('middleHandelOutputText').innerHTML = 'Map Display: ' + this.mapDisplaySlider.value
-
-        this.setState({
-            layerYear: this.mapDisplaySlider.value
-        })
+        document.getElementById('middleHandelOutput').style.left = (pos - 48) + 'px'
+        document.getElementById('middleHandelOutputText').innerHTML = 'Map Display: ' + year
+        if (this.state.mapDisplayYear !== year) {
+            this.setState({
+                mapDisplayYear: year
+            })
+        }
     }
 
     initHandelPos() {
-        this.setIntermittentYearRange()
+        this.sliderSize = document.getElementById("rangeSliderContainer").clientWidth - 12
+        // init middle
+        let left = ((this.state.mapDisplayYear - minSliderValue) / (maxSliderValue - minSliderValue)) * this.sliderSize
+        document.getElementById('middleHandelOutputGlyph').style.left = (left + 5) + 'px'
+
+        // init left 
+        left = ((this.state.rangeYearMin - minSliderValue) / (maxSliderValue - minSliderValue)) * this.sliderSize
+        document.getElementById('leftHandelOutputGlyph').style.left = (left + 12) + 'px'
+
+        // init right
+        left = ((this.state.rangeYearMax - minSliderValue) / (maxSliderValue - minSliderValue)) * this.sliderSize
+        if (left >= this.sliderSize) left = this.sliderSize - 12
+        document.getElementById('rightHandelOutputGlyph').style.left = (left + 12) + 'px'
+
         this.setIntermittentMapDisplayYear()
+        this.setIntermittentYearRange()
     }
 
-    setYearRange() {
-        this.props.setYearRange([this.rangeSlider1.value, this.rangeSlider2.value].sort())
-    }
 
-    setMapDisplayYear() {
-        this.props.setMapDisplayYear(this.mapDisplaySlider.value)
-    }
 
     playTimeSlider() {
         this.setState({
@@ -142,85 +145,97 @@ class TimeSlider extends React.Component {
     playCycle() {
 
         if (this.state.playing) {
-            if( (parseInt(this.mapDisplaySlider.value) + 1) > maxSliderValue){
-                this.mapDisplaySlider.value = minSliderValue
-            } 
-            else{
-                this.mapDisplaySlider.value = parseInt(this.mapDisplaySlider.value) + 1
+            if ((this.state.mapDisplayYear + 1) > maxSliderValue) {
+                this.setState({
+                    mapDisplayYear: minSliderValue
+                }, () => {
+                    this.initHandelPos()
+                    this.props.setMapDisplayYearFade(this.state.mapDisplayYear)
+                })
             }
-            this.setIntermittentMapDisplayYear()
-            this.props.setMapDisplayYearFade(this.mapDisplaySlider.value)
+            else {
+                this.setState({
+                    mapDisplayYear: this.state.mapDisplayYear + 1
+                }, () => {
+                    this.initHandelPos()
+                    this.props.setMapDisplayYearFade(this.state.mapDisplayYear)
+                })
+            }
+
             setTimeout(() => {
-                    this.playCycle()
+                this.playCycle()
             }, 3000)
         }
     }
 
+    dragElement(elmnt) {
+        let that = this
+        let pos1 = 0, pos3 = 0;
+
+        elmnt.onmousedown = dragMouseDown;
+
+
+        function dragMouseDown(e) {
+            e = e || window.event;
+            e.preventDefault();
+            // get the mouse cursor position at startup:
+            pos3 = e.clientX;
+            document.onmouseup = closeDragElement;
+            // call a function whenever the cursor moves:
+            document.onmousemove = elementDrag;
+        }
+
+        function elementDrag(e) {
+            e = e || window.event;
+            e.preventDefault();
+            // calculate the new cursor position:
+            pos1 = pos3 - e.clientX;
+            pos3 = e.clientX;
+            let left = elmnt.offsetLeft - pos1
+            if (left > that.sliderSize) left = that.sliderSize
+            if (left < 0) left = 0
+            elmnt.style.left = (left) + "px";
+            that.setIntermittentMapDisplayYear()
+            that.setIntermittentYearRange()
+        }
+
+        function closeDragElement() {
+            /* stop moving when mouse button is released:*/
+            document.onmouseup = null;
+            document.onmousemove = null;
+            that.props.setMapDisplayYear(that.state.mapDisplayYear)
+            that.props.setYearRange([that.state.rangeYearMin, that.state.rangeYearMax])
+
+        }
+    }
+
+
     render() {
         return (
             <div>
-                {/* <section className="range-input-values">
-                    <span className="year-label">Map Display:</span>{this.state.mapDisplayYear},
-                    <span style={{ marginLeft: "10px" }} className="year-label">Year Range:</span>
-                    {this.state.rangeYearMin + "-" + this.state.rangeYearMax}
-                </section> */}
+
                 <section className="range-slider">
                     <Glyphicon onClick={this.playTimeSlider} className="play-glyph inner-glyph" glyph={this.state.playGlyph} />
                     <span className="range-values" style={{ left: "30px" }}>{minSliderValue}</span>
                     <span id="rangeSliderContainer" className="range-slider-container">
                         <span id="sliderRangeFill" className="slider-range-fill"></span>
-                        <input
-                            ref={(input) => { this.rangeSlider1 = input; }}
-                            onMouseUp={this.setYearRange}
-                            onKeyUp={this.setYearRange}
-                            onChange={this.setIntermittentYearRange}
-                            defaultValue={this.props.rangeYearMin}
-                            min={minSliderValue}
-                            max={maxSliderValue}
-                            step="1"
-                            type="range"
-                            name="leftHandel"
-                            id="leftHandel" />
+                       
                         <span id="leftHandelOutput" className="range-handle" >
                             <span id="leftHandelOutputText"></span>
-                            {/* <Glyphicon className="inner-glyph" glyph="tag" /> */}
                         </span>
-                        <input
-                            className="map-display-slider"
-                            ref={(input) => { this.mapDisplaySlider = input; }}
-                            onMouseUp={this.setMapDisplayYear}
-                            onKeyUp={this.setMapDisplayYear}
-                            onChange={this.setIntermittentMapDisplayYear}
-                            defaultValue={this.props.mapDisplayYear}
-                            min={minSliderValue}
-                            max={maxSliderValue}
-                            step="1"
-                            type="range"
-                            name="middleHandel"
-                            id="middleHandel"
-                        // style={{ zIndex: 10 }}
-                        />
-                        <span id="middleHandelOutput" className="range-handle" >
+                        <Glyphicon id="leftHandelOutputGlyph" className="edge-glyph-tag inner-glyph" glyph="tag" />
+                       
+                        <span id="middleHandelOutput" className="range-handle handel-overlap" >
                             <span id="middleHandelOutputText"></span>
                         </span>
+                        <span></span>
                         <Glyphicon id="middleHandelOutputGlyph" className="center-glyph-tag inner-glyph" glyph="tag" />
 
-                        <input
-                            ref={(input) => { this.rangeSlider2 = input; }}
-                            onMouseUp={this.setYearRange}
-                            onKeyUp={this.setYearRange}
-                            onChange={this.setIntermittentYearRange}
-                            defaultValue={this.props.rangeYearMax}
-                            min={minSliderValue}
-                            max={maxSliderValue}
-                            step="1"
-                            type="range"
-                            name="rightHandel"
-                            id="rightHandel" />
+                       
                         <span id="rightHandelOutput" className="range-handle" >
                             <span id="rightHandelOutputText"></span>
-                            {/* <Glyphicon className="inner-glyph" glyph="tag" /> */}
                         </span>
+                        <Glyphicon id="rightHandelOutputGlyph" className="edge-glyph-tag inner-glyph" glyph="tag" />
 
                     </span>
 

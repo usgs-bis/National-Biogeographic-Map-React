@@ -6,6 +6,8 @@ import LocationOverlay from './LocationOverylays/LocationOverlay';
 import TimeSlider from "./TimeSlider/TimeSlider"
 import { EditControl } from "react-leaflet-draw"
 import L from 'leaflet';
+import { Glyphicon } from "react-bootstrap";
+
 
 
 const BUFFER = .5;
@@ -46,6 +48,7 @@ class NBM extends React.PureComponent {
             this.refs.map.leafletElement.invalidateSize()
             this.refs.map.leafletElement.fitBounds(this.bounds)
             L.control.scale({ metric: false, imperial: true, position: 'bottomleft' }).addTo(this.refs.map.leafletElement)
+            this.refs.map.leafletElement.removeControl(this.refs.map.leafletElement.attributionControl);
         }, 250)
 
         this.props.setMap(this.refs.map)
@@ -215,7 +218,7 @@ class NBM extends React.PureComponent {
                                     <a href="http://services.natureserve.org" >{` http://services.natureserve.org`}</a>.
                                 </div>
                             <div className="attrDiv">
-                                <div id="popup-footer-bar">
+                                <div className="popup-footer-bar">
                                     <ul>
                                         <li>
                                             <a href="https://www2.usgs.gov/laws/accessibility.html" >Accessibility</a>
@@ -237,12 +240,12 @@ class NBM extends React.PureComponent {
                                     <div>Contact Information:
                                                 <a href="mailto:bcb@usgs.gov" >bcb@usgs.gov</a>
                                     </div>
-                                    {/* <div>Application Version:
-                                            <span id="frontEndVersion"></span>
+                                    <div>Application Version:
+                                            <span id="frontEndVersion"> {this.props.applicationVersion}</span>
                                     </div>
                                     <div>API Version:
-                                            <span id="apiVersion"></span>
-                                    </div> */}
+                                            <span id="apiVersion"> {this.props.APIVersion}</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -257,22 +260,24 @@ class NBM extends React.PureComponent {
                 onClick={this.handleClick}
                 bounds={this.bounds}
                 onMouseMove={this.handleMouseMove}
-                onMouseOut={this.handleMouseOut} >
+                onMouseOut={this.handleMouseOut}
+                attribution="" >
                 {basemap()}
                 <LocationOverlay onRef={ref => (this.LocationOverlay = ref)} map={this.refs.map} bioscapeName={this.props.bioscapeName} />
                 <MapMarker point={this.state.point} />
                 {geojson()}
                 <div className="global-time-slider" onMouseOver={this.disableDragging} onMouseOut={this.enableDragging}>
-                {this.props.bioscapeName !== "terrestrial-ecosystems-2011" && <TimeSlider
+                    {this.props.bioscapeName !== "terrestrial-ecosystems-2011" && <TimeSlider
                         setMapDisplayYear={this.props.setMapDisplayYear}
                         setMapDisplayYearFade={this.props.setMapDisplayYearFade}
                         setYearRange={this.props.setYearRange}
                         rangeYearMax={this.props.rangeYearMax}
                         rangeYearMin={this.props.rangeYearMin}
                         mapDisplayYear={this.props.mapDisplayYear}
-                    /> }
+                    />}
                 </div>
                 <div className="attribution" onClick={() => { this.setState({ attributionOpen: !this.state.attributionOpen }) }} onMouseOver={this.disableDragging} onMouseOut={this.enableDragging}>
+                    <span className="attribution-info"><Glyphicon glyph="info-sign" /></span>
                 </div>
                 <span onMouseOver={this.disableDragging} onMouseOut={this.enableDragging} >{attribution()}</span>
                 <FeatureGroup>

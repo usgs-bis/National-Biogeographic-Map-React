@@ -1,6 +1,6 @@
 .location-overlay{
     position: absolute;
-    bottom: 60px;
+    bottom: 65px;
     left: 130px;
     z-index: 1000;
     display: flex;
@@ -23,7 +23,7 @@
 
 .leaflet-bottom.leaflet-left{
     position: absolute;
-    bottom: 60px;
+    bottom: 65px;
     left:   5px;
     z-index: 1000;
     display: flex;
