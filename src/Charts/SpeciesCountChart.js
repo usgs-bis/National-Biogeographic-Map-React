@@ -90,8 +90,8 @@ class SpeciesCountChart extends React.Component {
             return d3.ascending(a.value, b.value);
         })
 
-
-        x.domain([-200, 200 + d3.max(data, function (d) { return d.value; })]);
+        let max = d3.max(data, function (d) { return d.value; })
+        x.domain([-1 * (0.05 * max), (0.05 * max) + max]);
         y.domain(data.map(function (d) { return d.name; })).padding(0.1);
 
         // Create the x-axis

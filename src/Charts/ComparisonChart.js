@@ -181,6 +181,15 @@ class ComparisonChart extends React.Component {
         // Add a div inside chart for tooltips
         const tooltip = d3.select('#d3chartTooltip')
 
+        compare.append("text")
+            .attr("x", function (d) {
+                return x(((d.values[1].DOY + d.values[0].DOY) / 2) - 4);
+            })
+            .attr("y", 27)
+            .attr("dy", ".35em")
+            .attr("font-size", "12px")
+            .text(function (d) { return parseInt((d.values[1].DOY - d.values[0].DOY)) + " Days" });
+
 
         // Add tooltip functionality on mouseOver
         leaf.on("mouseover", function (d) {

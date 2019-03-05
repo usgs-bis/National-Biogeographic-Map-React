@@ -190,3 +190,9 @@ display: inline-flex;
     padding-top: 10px;
     text-align: center;
 }
+
+.dividing-line{
+    clear: both;
+    border-top: 1px solid rgba(245, 245, 245, .2);
+    margin-top: 15px;
+}

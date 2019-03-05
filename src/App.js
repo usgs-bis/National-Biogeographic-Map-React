@@ -19,6 +19,8 @@ const bioscapeMap = {
 const TEXT_SEARCH_API = process.env.REACT_APP_BIS_API + "/api/v1/places/search/text?q=";
 const POINT_SEARCH_API = process.env.REACT_APP_BIS_API + "/api/v1/places/search/point?";
 const GET_FEATURE_API = process.env.REACT_APP_BIS_API + "/api/v1/places/search/feature?feature_id=";
+const API_VERSION_URL = process.env.REACT_APP_BIS_API + "/api"
+const REACT_VERSION = process.env.REACT_APP_VERSION
 
 class App extends React.Component {
 
@@ -37,6 +39,7 @@ class App extends React.Component {
             analysisLayers: null,
             activeLayerTitle: '',
             priorityBap: null,
+            APIVersion : '',
 
         }
         this.initFeatureId = null;
@@ -65,6 +68,21 @@ class App extends React.Component {
         this.parseBioscape()
         document.title = this.state.bioscape.title
         if (this.initFeatureId) this.submitHandler(this.initFeatureId)
+        fetch(API_VERSION_URL)
+        .then(res => res.json())
+        .then(
+            (result) => {
+                this.setState({
+                    APIVersion: result.Version
+                })
+                
+            },
+            (error) => {
+                this.setState({
+                    APIVersion: 'UNKNOWN'
+                })
+            }
+        )
     }
 
     shareState() {
@@ -324,7 +342,7 @@ class App extends React.Component {
                     clone.setOpacity(0)
                     clone.addTo(this.state.map.leafletElement)
                     // weird case where layer 'lode' doesent fire and clone doesnt get removed. 
-                    setTimeout(()=>{this.state.map.leafletElement.removeLayer(clone); console.log("removing clone here")},2000) 
+                    setTimeout(()=>{this.state.map.leafletElement.removeLayer(clone)},2000) 
                     clone.on('load', (event) => {
                         setTimeout(() => {
                             clone.setOpacity(currentOpacity)
@@ -430,6 +448,8 @@ class App extends React.Component {
                             rangeYearMin={this.state.rangeYearMin}
                             mapDisplayYear={this.state.mapDisplayYear}
                             bioscapeName={this.state.bioscapeName}
+                            applicationVersion={REACT_VERSION}
+                            APIVersion={this.state.APIVersion}
 
                         />
                     </div>

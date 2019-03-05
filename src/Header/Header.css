@@ -20,3 +20,12 @@
     height: 55px;
     float: left;
 }
+
+.sbinfo-body{
+    line-height: 20px;
+    text-align: justify;
+}
+
+.sbinfo-title header{
+    font-size: 12px !important;
+}

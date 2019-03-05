@@ -115,7 +115,7 @@ class BoxAndWhiskerChart extends React.Component {
 
         // Create the x-axis
         const xAxis = d3.axisBottom(x)
-            .tickFormat((d) => { return years.length > 10 ? d.toString().slice(2) : d });
+            .tickFormat((d) => { return years.length > 20 ? "" :  years.length > 10 ? d.toString().slice(2) : d });
 
         // Create the y-axis
         const yAxis = d3.axisLeft(y)
@@ -186,6 +186,7 @@ class BoxAndWhiskerChart extends React.Component {
             .data(boxPlotData)
             .enter()
             .append("line")
+            .classed("bw-line", true)
             .attr("x1", function (datum) { return x(datum.key) + barWidth / 2; })
             .attr("y1", function (datum) { return y(datum.min); })
             .attr("x2", function (datum) { return x(datum.key) + barWidth / 2; })
@@ -287,6 +288,7 @@ class BoxAndWhiskerChart extends React.Component {
                 .data(boxPlotData)
                 .enter()
                 .append("line")
+                .classed("bw-line", true)
                 .attr("x1", lineConfig.x1)
                 .attr("y1", lineConfig.y1)
                 .attr("x2", lineConfig.x2)
