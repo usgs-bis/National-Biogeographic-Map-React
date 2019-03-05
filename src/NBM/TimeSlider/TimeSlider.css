@@ -101,8 +101,8 @@ input.map-display-slider[type='range']::-webkit-slider-thumb {
 }
   .slider-span{
     position: absolute;
-    width: calc(100% - 110px);
-    left: 65px;
+    width: calc(100% - 120px);
+    left: 70px;
   }
 
   .range-slider-container {
@@ -110,9 +110,9 @@ input.map-display-slider[type='range']::-webkit-slider-thumb {
     position: absolute;
     left: 65px;
     height: 18px; */
-    width: calc(100% - 110px);
+    width: calc(100% - 120px);
     position: absolute;
-    left: 65px;
+    left: 70px;
     height: 7px;
     background: black;
     border-radius: 9px;

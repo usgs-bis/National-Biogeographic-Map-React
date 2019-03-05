@@ -178,7 +178,7 @@ class LeftPanel extends React.Component {
                         basemapChanged={this.props.basemapChanged}></SearchBar>
                     {featureText()}
                 </div>
-                <div id='analysis-package-container' className="analysis-package-container" >
+                <div id='analysis-package-container' className="analysis-package-container" style={{height : this.props.feature ?  'calc(100% - 212px)' : '100%'}} >
                     {
                         this.props.bioscapeName === "terrestrial-ecosystems-2011" ?
                             <TerrestrialEcosystems2011

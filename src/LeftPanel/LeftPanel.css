@@ -147,6 +147,10 @@
     padding-right: 15px;
     padding-left: 10px;
     padding-top: 10px;
+    height : calc(100% );
+    position : absolute;
+    overflow-y: scroll;
+    width : 100%;
 }
 
 .share-url-input{
