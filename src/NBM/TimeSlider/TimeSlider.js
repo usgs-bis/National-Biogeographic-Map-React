@@ -61,8 +61,8 @@ class TimeSlider extends React.Component {
 
     componentDidUpdate() {
 
-        if (document.getElementById("rangeSliderContainer").clientWidth - 12 !== this.sliderSize) {
-            this.sliderSize = document.getElementById("rangeSliderContainer").clientWidth - 12
+        if (document.getElementById("rangeSliderContainer").clientWidth !== this.sliderSize) {
+            this.sliderSize = document.getElementById("rangeSliderContainer").clientWidth
             this.initHandelPos()
         }
     }
@@ -114,19 +114,19 @@ class TimeSlider extends React.Component {
     }
 
     initHandelPos() {
-        this.sliderSize = document.getElementById("rangeSliderContainer").clientWidth - 12
+        this.sliderSize = document.getElementById("rangeSliderContainer").clientWidth
         // init middle
         let left = ((this.state.mapDisplayYear - minSliderValue) / (maxSliderValue - minSliderValue)) * this.sliderSize
-        document.getElementById('middleHandelOutputGlyph').style.left = (left + 5) + 'px'
+        document.getElementById('middleHandelOutputGlyph').style.left = (left +5) + 'px'
 
         // init left 
         left = ((this.state.rangeYearMin - minSliderValue) / (maxSliderValue - minSliderValue)) * this.sliderSize
-        document.getElementById('leftHandelOutputGlyph').style.left = (left + 12) + 'px'
+        document.getElementById('leftHandelOutputGlyph').style.left = (left + 5) + 'px'
 
         // init right
         left = ((this.state.rangeYearMax - minSliderValue) / (maxSliderValue - minSliderValue)) * this.sliderSize
-        if (left >= this.sliderSize) left = this.sliderSize - 12
-        document.getElementById('rightHandelOutputGlyph').style.left = (left + 12) + 'px'
+        if (left >= this.sliderSize) left = this.sliderSize
+        document.getElementById('rightHandelOutputGlyph').style.left = (left + 5) + 'px'
 
         this.setIntermittentMapDisplayYear()
         this.setIntermittentYearRange()
@@ -219,19 +219,19 @@ class TimeSlider extends React.Component {
                     <span className="range-values" style={{ left: "30px" }}>{minSliderValue}</span>
                     <span id="rangeSliderContainer" className="range-slider-container">
                         <span id="sliderRangeFill" className="slider-range-fill"></span>
-                       
+
                         <span id="leftHandelOutput" className="range-handle" >
                             <span id="leftHandelOutputText"></span>
                         </span>
                         <Glyphicon id="leftHandelOutputGlyph" className="edge-glyph-tag inner-glyph" glyph="tag" />
-                       
+
                         <span id="middleHandelOutput" className="range-handle handel-overlap" >
                             <span id="middleHandelOutputText"></span>
                         </span>
                         <span></span>
                         <Glyphicon id="middleHandelOutputGlyph" className="center-glyph-tag inner-glyph" glyph="tag" />
 
-                       
+
                         <span id="rightHandelOutput" className="range-handle" >
                             <span id="rightHandelOutputText"></span>
                         </span>
