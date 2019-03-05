@@ -47,7 +47,7 @@ const layers = {
         },
         checked: false,
         hideCheckbox: true,
-        sb_item:""
+        sb_item:"5951527de4b062508e3b1e79"
     },
     habitat_map: {
         title: "Habitat Map",
@@ -66,7 +66,7 @@ const layers = {
         },
         checked: false,
         hideCheckbox: true,
-        sb_item:""
+        sb_item:"527d0a83e4b0850ea0518326"
     }
 }
 

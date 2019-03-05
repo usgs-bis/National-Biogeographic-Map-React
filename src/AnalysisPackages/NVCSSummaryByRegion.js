@@ -214,7 +214,7 @@ class NVCSSummaryByRegionPackage extends React.Component {
             .then(res => res.json())
             .then(
                 (result) => {
-                    if (result && result.hits.hits.length) {
+                    if (result && result.hits && result.hits.hits.length) {
                         const charts = this.getCharts(result.hits.hits)
                         this.setState({
                             charts: charts,

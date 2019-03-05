@@ -30,3 +30,7 @@
 .sbinfo-title header{
     font-size: 12px !important;
 }
+
+.bioscape-title-text{
+    font-size:  calc(14px + 0.5vw)
+}

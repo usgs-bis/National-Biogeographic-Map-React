@@ -1,6 +1,8 @@
 import React from "react";
 import "./searchBar.css";
-import { Button, ButtonGroup, Tooltip } from "reactstrap";
+// import { Button, ButtonGroup, Tooltip } from "reactstrap";
+import { Button, ButtonGroup } from "reactstrap";
+
 import { Glyphicon } from "react-bootstrap";
 import Legend from "../../Legend/Legend";
 import { RadioGroup } from "../../CustomRadio/CustomRadio";
@@ -90,20 +92,22 @@ class SearchBar extends React.Component {
                 <div className="nbm-flex-row">
                     <div className="settings-btn-group nbm-flex-column">
                         <Button id={"SettingsTooltip"} onClick={this.toggleBasemapDropdown} className='submit-analysis-btn placeholder-button' >
-                            <Glyphicon className="inner-glyph" glyph="menu-hamburger" />
+                            <Glyphicon className="inner-glyph" glyph="menu-hamburger" 
+                             data-toggle="tooltip" data-placement="bottom" title="Settings"/>
                         </Button>
-                        <Tooltip
-                            style={{ fontSize: "14px" }} isOpen={this.state.basemapTooltipOpen && !this.state.layersDropdownOpen}
+                        {/* <Tooltip
+                            style={{ fontSize: "14px", pointerEvents:'none'}} isOpen={this.state.basemapTooltipOpen && !this.state.layersDropdownOpen}
                             target="SettingsTooltip" toggle={this.toggleSettingsTooltip} delay={0}>
                             Settings
-                </Tooltip>
+                </Tooltip> */}
                     </div>
                     <div className="settings-btn-group nbm-flex-column">
                         <Legend
                             enabledLayers={this.props.enabledLayers}
                         />
                     </div>
-                    {!this.props.bioscape.overlays &&
+                    {/* {!this.props.bioscape.overlays && */}
+                    {
                         <div className="nbm-flex-column-big">
                             {
 
