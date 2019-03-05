@@ -277,7 +277,7 @@ class NBM extends React.PureComponent {
                     />}
                 </div>
                 <div className="attribution" onClick={() => { this.setState({ attributionOpen: !this.state.attributionOpen }) }} onMouseOver={this.disableDragging} onMouseOut={this.enableDragging}>
-                    <span className="attribution-info"><Glyphicon glyph="info-sign" /></span>
+                    <span className="attribution-info" style={{color: 'rgb(107, 153, 197)'}}><Glyphicon glyph="info-sign" /></span>
                 </div>
                 <span onMouseOver={this.disableDragging} onMouseOut={this.enableDragging} >{attribution()}</span>
                 <FeatureGroup>

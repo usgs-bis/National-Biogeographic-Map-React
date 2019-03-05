@@ -108,13 +108,13 @@ class SearchBar extends React.Component {
                             {
 
                                 <input ref={(input) => { this.textInput = input; }} onClick={this.onFocus} onBlur={this.onBlur} onKeyUp={this.handleKeyUp}
-                                    className="input-box" type={"text"} />
+                                    className="input-box" placeholder="Search for a place of interest or click on the map" type={"text"} />
                             }
                         </div>
                     }
                 </div>
                 <div className="nbm-flex-row" >
-                    <div className="button-group">
+                    <div className="button-group" style={this.props.results.length > 0 && this.state.focused ? { } : {height: '0px'}}>
                         {(this.props.results.length > 0 && this.state.focused) ? <ButtonGroup vertical>
                             {this.props.results.map(function (d, idx) {
                                 return (

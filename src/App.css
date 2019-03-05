@@ -96,3 +96,12 @@
 .tooltip{
     z-index: 999999999;
 }
+
+.glyphicon-info-sign:before{
+    color: rgb(107, 153, 197);
+    background-color: white;
+    border-radius: 7px;
+    display: block;
+    width: 13px;
+    height: 13px;
+}

@@ -164,6 +164,7 @@ display: inline-flex;
 .title-info-icon{
     margin-left: 5px;
     font-size: 14px;
+    /* color: rgb(107, 153, 197); */
 }
 
 .sbinfo-popout-window{

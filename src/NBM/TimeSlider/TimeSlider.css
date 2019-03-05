@@ -189,5 +189,7 @@ input.map-display-slider[type='range']::-webkit-slider-thumb {
 
 
 .play-glyph{
-    top:5px;
+    top: 3px;
+    left: 4px !important;
+    font-size: 22px !important;
 }

@@ -114,8 +114,9 @@ class BoxAndWhiskerChart extends React.Component {
         const barWidth = (35 - years.length) > 5 ? (35 - years.length) : 5
 
         // Create the x-axis
+        // sorry about the nested opps
         const xAxis = d3.axisBottom(x)
-            .tickFormat((d) => { return years.length > 20 ? "" :  years.length > 10 ? d.toString().slice(2) : d });
+            .tickFormat((d) => { return years.length > 20 ? parseInt(d) % 2 === 0 ? d.toString().slice(2) : ''  :  years.length > 10 ? d.toString().slice(2) : d });
 
         // Create the y-axis
         const yAxis = d3.axisLeft(y)
