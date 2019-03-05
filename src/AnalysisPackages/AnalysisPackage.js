@@ -497,7 +497,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                     <div className="bap-title-content" style={{ width: 'calc(100% - 40px)' }}>
                         <span className="bapTitle">
                             <span onClick={this.toggleDropdown}>{this.state.sb_properties.title}</span>
-                            {this.state.canOpen && <span id={`sbInfoToolTip${this.props.bapId}`}
+                            { <span id={`sbInfoToolTip${this.props.bapId}`}
                                 onClick={() => this.setState({ sbInfoPopUp: !this.state.sbInfoPopUp })}
                                 className="title-info-icon">
                                 <Glyphicon glyph="info-sign" />
