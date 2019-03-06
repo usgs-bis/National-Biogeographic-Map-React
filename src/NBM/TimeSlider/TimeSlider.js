@@ -203,9 +203,12 @@ class TimeSlider extends React.Component {
             /* stop moving when mouse button is released:*/
             document.onmouseup = null;
             document.onmousemove = null;
-            that.props.setMapDisplayYear(that.state.mapDisplayYear)
-            that.props.setYearRange([that.state.rangeYearMin, that.state.rangeYearMax])
-
+            if(elmnt.id.toString() === 'middleHandelOutputGlyph'){
+                that.props.setMapDisplayYear(that.state.mapDisplayYear)
+            }
+            else{
+                that.props.setYearRange([that.state.rangeYearMin, that.state.rangeYearMax])
+            }
         }
     }
 
