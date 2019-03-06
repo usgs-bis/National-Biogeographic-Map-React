@@ -60,7 +60,7 @@ class App extends React.Component {
         this.handelDrawnPolygon = this.handelDrawnPolygon.bind(this)
         this.overlayChanged = this.overlayChanged.bind(this)
         this.layerTransitionFade = this.layerTransitionFade.bind(this)
-
+        this.parseGeom = this.parseGeom.bind(this)
         this.state = this.loadState(this.state)
 
     }
@@ -210,12 +210,100 @@ class App extends React.Component {
         }
     }
 
+    // turns geometries into line collections
+    // draws lines that cross the 180 on both sides of the map
+    // ex 'Alaska' or 'Aleutian and Bering Sea Islands'
+    parseGeom(geometry){
+        let polyLineCollection = [];
+        let polyLineCollectionOtherWorld = [];
+        let edgeOfMap = 10 
+        let leftEdge=false // close to left edge
+        let rightEdge = false // close to right edge
+    
+        // convert 
+        geometry.coordinates.forEach(feature => {
+            feature.forEach(polygon => {
+                let lineCoord = {
+                    "type": "LineString",
+                    "coordinates": []
+                }
+                let lineCoordCopy = {
+                    "type": "LineString",
+                    "coordinates": []
+                }
+                let crossed22 = false
+                for(let i=0; i < polygon.length; i++){
+                    let coordinates = polygon[i]
+                    if ((coordinates[0] < -179.99 || coordinates[0] > 179.99) && lineCoord.coordinates.length) {
+                        if(lineCoord.coordinates.length > 1){
+                            polyLineCollection.push(lineCoord)
+                            if (crossed22) {
+                                lineCoordCopy = {
+                                    "type": "LineString",
+                                    "coordinates": []
+                                }
+                                // eslint-disable-next-line 
+                                lineCoord.coordinates.forEach((coordinates) => {
+                                    lineCoordCopy.coordinates.push([coordinates[0] - 360, coordinates[1]])
+                                })
+                                polyLineCollectionOtherWorld.push(lineCoordCopy)
+                            }
+                        }
+                        lineCoord = {
+                            "type": "LineString",
+                            "coordinates": []
+                        }
+                    }
+                    if (coordinates[0] > -179.99 && coordinates[0] < 179.99) {
+                        lineCoord.coordinates.push(coordinates)
+                        if (coordinates[0] > 22.5) crossed22 = true
+                        if (coordinates[0] > 180 - edgeOfMap) rightEdge = true
+                        if (coordinates[0] < -180 + edgeOfMap) leftEdge = true
+                    }
+                    else{
+                        if(i+1 < polygon.length && polygon[i+1][0] > -179.99 && polygon[i+1][0] < 179.99){
+                            lineCoord.coordinates.push(coordinates)
+                        }
+                    }
+        
+                }
+
+                polyLineCollection.push(lineCoord)
+                if (crossed22) {
+                    lineCoordCopy = {
+                        "type": "LineString",
+                        "coordinates": []
+                    }
+                    lineCoord.coordinates.forEach(coordinates => {
+                        lineCoordCopy.coordinates.push([coordinates[0] - 360, coordinates[1]])
+                    })
+                    polyLineCollectionOtherWorld.push(lineCoordCopy)
+                }
+            })
+        });
+    
+            if(rightEdge && leftEdge){ // if its close to both edges draw on both sides of map
+            polyLineCollectionOtherWorld.forEach(line =>{
+                polyLineCollection.push(line)
+            })
+        }
+        let lines = polyLineCollection.map((p)=>{
+            return p.coordinates
+        })
+        let result = {
+            type: 'MultiLineString',
+            coordinates : lines
+        }
+        return result
+    }
+
     submitHandler(e) {
         fetch(GET_FEATURE_API + e.id)
             .then(res => res.json())
             .then(
                 (result) => {
                     if (result && result.hits.hits.length && result.hits.hits[0]["_source"]) {
+                        result.hits.hits[0]["_source"].geometry = this.parseGeom(result.hits.hits[0]["_source"].geometry)
                         this.setState({
                             feature: result.hits.hits[0]["_source"],
                             mapClicked: false

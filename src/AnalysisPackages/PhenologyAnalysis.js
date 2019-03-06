@@ -87,7 +87,11 @@ class PhenologyAnalysisPackage extends React.Component {
 
     featureChange() {
         if (this.props.feature) {
-            if (this.props.feature.properties.userDefined) {
+            if(this.props.feature.properties.feature_id.includes('OBIS_Areas')){
+                this.props.isEnabled(false)
+                this.props.canOpen(false)
+            }
+            else if (this.props.feature.properties.userDefined) {
                 this.props.isEnabled(true)
                 this.props.canOpen(true)
                 this.setState({

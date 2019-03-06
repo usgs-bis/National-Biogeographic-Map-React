@@ -160,7 +160,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                     newLayers[key] = this.state.layers[key]
                     newLayers[key].checked = false
                 })
-                this.props.updateAnalysisLayers([], this.props.bapId)
+                this.props.updateAnalysisLayers([], null)
             }
 
             this.setState({
@@ -460,9 +460,11 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             let r = [<br key="br1-CI"></br>, <h4 key="h41-CI">Contacts:</h4>]
             let c = sb_properties.contacts
             for (let i of c) {
-                r.push(<div key={i.lastName}>
-                    <div>{`Name: ${i.firstName + ' ' + i.lastName}`}</div>
-                    <div>{`Email: ${i.email}`}</div>
+                r.push(<div key={i.name + i.email}>
+                    <span>{i.name ? `${i.name}    ` : ''}</span>
+                    <span>{i.email ? ` -  ${i.email}    ` : ''}</span>
+                    <span>{i.type ? ` -  ${i.type}    ` : ''}</span>
+
                 </div>)
             }
             return r
@@ -560,6 +562,8 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                                     <div dangerouslySetInnerHTML={{ __html: this.state.sb_properties.body }}></div>
                                     {this.getSbContactInfo(this.state.sb_properties)}
                                     {this.getSbWebLinkInfo(this.state.sb_properties)}
+                                    <br></br>
+                                    { this.state.sb_properties.link && <div><a href={this.state.sb_properties.link.url}>{`${this.state.sb_properties.link.url}`}</a></div>}
                                 </div>
                             }
                         />
