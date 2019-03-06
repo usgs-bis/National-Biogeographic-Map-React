@@ -31,7 +31,6 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 sbInfoLayerPopUpToolTip: false,
                 layersOpen: false
             }
-            this.allowPriority = true
             this.initilized = false
             this.toggleDropdown = this.toggleDropdown.bind(this)
             this.toggleLayerDropdown = this.toggleLayerDropdown.bind(this)
@@ -186,10 +185,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
 
         setPriorityBap() {
             if (this.state.canOpen) {
-                if (this.props.priorityBap === this.props.bapId) {
-                    this.allowPriority = !this.allowPriority
-                }
-                if (this.allowPriority) {
+                    if(this.props.bapId !== this.props.priorityBap ){
                     let avaiableLayers = Object.keys(this.state.layers)
                     if (avaiableLayers.length) {
                         this.turnOnLayer(this.state.layers[avaiableLayers[0]])
@@ -201,7 +197,6 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 }
                 else {
                     this.turnOnLayer()
-
                 }
             }
         }
@@ -514,13 +509,14 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                         </span>
                     </div>
                     <div className="bap-title-content" style={{ width: '20px' }}>
-                        <input id={`pBapToolTip${this.props.bapId}`} className="priority-bap-raido" style={{ display: this.state.canOpen ? 'block' : 'none' }} type='radio' readOnly={true} checked={this.props.bapId === this.props.priorityBap && this.allowPriority} onClick={this.setPriorityBap} ></input>
+                    <input id={`pBapToolTip${this.props.bapId}`} className="priority-bap-raido" style={{ display: this.state.canOpen ? 'block' : 'none' }} type='radio' readOnly={true} checked={this.props.bapId === this.props.priorityBap} onClick={this.setPriorityBap} ></input>
                         <Tooltip
                             style={{ fontSize: "14px" }} isOpen={this.state.pBapToolTipOpen}
                             target={`pBapToolTip${this.props.bapId}`}
                             toggle={() => this.setState({ pBapToolTipOpen: !this.state.pBapToolTipOpen })}
                             delay={0}>
-                            {this.props.bapId === this.props.priorityBap && this.allowPriority ? "Deselect Priority Bap" : "Select Priority Bap"}
+                            {this.props.bapId === this.props.priorityBap ? "Deselect Priority Bap" : "Select Priority Bap"}
+
                         </Tooltip>
                     </div>
                     <Collapse className="settings-dropdown" isOpen={this.state.isOpen && this.state.isEnabled}>
