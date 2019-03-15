@@ -279,6 +279,7 @@ class NBM extends React.PureComponent {
                         rangeYearMax={this.props.rangeYearMax}
                         rangeYearMin={this.props.rangeYearMin}
                         mapDisplayYear={this.props.mapDisplayYear}
+                        priorityBap={this.props.priorityBap}
                     />}
                 </div>
                 <div className="attribution" onClick={() => { this.setState({ attributionOpen: !this.state.attributionOpen }) }} onMouseOver={this.disableDragging} onMouseOut={this.enableDragging}>
@@ -288,17 +289,17 @@ class NBM extends React.PureComponent {
                 <FeatureGroup>
                     <EditControl
                         position='topright'
-                        onDeleted={() => { this.props.parentDrawHandler(null) }}
+                        //onDeleted={() => { this.props.parentDrawHandler(null) }}
                         onDrawStart={this.userDrawnPolygonStart}
                         // onEditStart={this.disableDragging}
                         // onEdited={this.userDrawnPolygon}
                         //onEditStop={this.enableDragging}
 
-                        onDeleteStart={this.userDrawnPolygonStart}
+                        //onDeleteStart={this.userDrawnPolygonStart}
                         onDrawStop={this.enableDragging}
-                        onDeleteStop={this.enableDragging}
+                        //onDeleteStop={this.enableDragging}
                         onCreated={this.userDrawnPolygonStop}
-                        edit={{ edit: false }}
+                        edit={{ edit: false, remove: false }}
                         draw={{
                             rectangle: false,
                             marker: false,

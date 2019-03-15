@@ -68,11 +68,13 @@ class Legend extends React.Component {
                         body={
                             this.props.enabledLayers.map(function (layer, idx) {
                                 return (
+                                    <div className = "legend">
                                     <div className="legend-holder" key={"legend" + idx}>
                                         <span className="layer-title">{layer.title}</span><br></br>
                                         {
                                             layer.legend ? legend(layer.legend) : "No legend info"
                                         }
+                                    </div>
                                     </div>
                                 )
                             })

@@ -553,6 +553,7 @@ class App extends React.Component {
                             bioscapeName={this.state.bioscapeName}
                             applicationVersion={REACT_VERSION}
                             APIVersion={this.state.APIVersion}
+                            priorityBap = {this.state.priorityBap}
 
                         />
                     </div>

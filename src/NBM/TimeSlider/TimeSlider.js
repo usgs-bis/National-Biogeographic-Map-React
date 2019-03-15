@@ -6,6 +6,11 @@ import { Glyphicon } from "react-bootstrap";
 const minSliderValue = 1981
 const maxSliderValue = 2018
 
+const enableLookup = {
+    'bap1' : true,
+    'bab2' : true,
+    'bab3' : true,
+}
 
 
 class TimeSlider extends React.Component {
@@ -36,6 +41,7 @@ class TimeSlider extends React.Component {
         this.dragElement = this.dragElement.bind(this)
         this.sliderSize = 0
         this.leftPos = 0;
+        this.enabled = true
     }
 
     componentDidMount() {
@@ -64,6 +70,14 @@ class TimeSlider extends React.Component {
         if (document.getElementById("rangeSliderContainer").clientWidth !== this.sliderSize) {
             this.sliderSize = document.getElementById("rangeSliderContainer").clientWidth
             this.initHandelPos()
+        }
+        if(!enableLookup[this.props.priorityBap]){
+            document.getElementById("range-slider").style.opacity = "0.4";
+            this.enabled = false
+        }
+        else{
+            document.getElementById("range-slider").style.opacity = "1";
+            this.enabled = true
         }
     }
 
@@ -186,6 +200,7 @@ class TimeSlider extends React.Component {
         }
 
         function elementDrag(e) {
+            if(!that.enabled) return 
             e = e || window.event;
             e.preventDefault();
             // calculate the new cursor position:
@@ -217,7 +232,7 @@ class TimeSlider extends React.Component {
         return (
             <div>
 
-                <section className="range-slider">
+                <section id="range-slider" className="range-slider">
                     <Glyphicon onClick={this.playTimeSlider} className="play-glyph inner-glyph" glyph={this.state.playGlyph}
                     data-toggle="tooltip" data-placement="top" title={this.state.playing ? "Pause" : "Play"} />
                     <span className="range-values" style={{ left: "30px" }}>{minSliderValue}</span>
