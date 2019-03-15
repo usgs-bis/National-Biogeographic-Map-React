@@ -1,3 +1,11 @@
 .layer-title {
     font-size: 18px;
 }
+.legend{
+    padding: 20px;
+}
+
+.legend-holder {
+    padding: 20px;
+    border: 1px solid white;
+}

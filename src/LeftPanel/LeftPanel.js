@@ -140,7 +140,7 @@ class LeftPanel extends React.Component {
                         </div>
                         <div className="panel-subtitle">
                             <div className="category-text">Category: <span className="feature-text">  {this.state.feature_class}</span></div>
-                            <div className="category-text">Approximate Area: <span className="feature-text">  {this.state.feature_area} acres</span></div>
+                            <div className="category-text">Approximate Area: <span className="feature-text">  {this.state.feature_area === "Unknown" ? 'Unknown' : this.state.feature_area + " acres"} </span></div>
                         </div>
                         <div className="panel-buttons">
                             <button id="ShareTooltip" className="submit-analysis-btn" onClick={this.share}>{this.state.shareText}</button>

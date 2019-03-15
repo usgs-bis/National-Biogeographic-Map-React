@@ -49,6 +49,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             this.handleBapError = this.handleBapError.bind(this)
             this.turnOnLayer = this.turnOnLayer.bind(this)
             this.toggleLayer = this.toggleLayer.bind(this)
+            this.resetBap = this.resetBap.bind(this)
         }
 
 
@@ -75,7 +76,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
 
             if (this.initilized) {
                 if (prevProps.feature !== this.props.feature) {
-                    this.turnOnLayer()
+                    this.resetBap()
                 }
                 if (prevProps.priorityBap !== this.props.priorityBap) {
                     if (this.props.priorityBap !== this.props.bapId) {
@@ -86,7 +87,17 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                             that.inputRefs[key].checked = false
                         })
                         this.setState({
-                            layers: l
+                            layers: l,
+                        })
+                    }
+                    else {
+                        let avaiableLayers = Object.keys(this.state.layers)
+                        if (avaiableLayers.length) {
+                            this.turnOnLayer(this.state.layers[avaiableLayers[0]])
+                        }
+                        this.setState({
+                            isOpen: true,
+                            glyph: "menu-down",
                         })
                     }
                 }
@@ -138,6 +149,26 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             setTimeout(() => { this.initilized = true }, 3000)
         }
 
+        resetBap() {
+            let newLayers = {}
+            Object.keys(this.state.layers).forEach((key) => {
+                newLayers[key] = this.state.layers[key]
+                newLayers[key].checked = false
+            })
+            this.props.updateAnalysisLayers([], 'bap1')
+            if (this.props.priorityBap !== this.props.bapId) {
+                this.setState({
+                    layers: newLayers,
+                })
+            }
+            else {
+                this.setState({
+                    layers: newLayers,
+                    isOpen: true,
+                    glyph: "menu-down",
+                })
+            }
+        }
 
         turnOnLayer(layer) {
             let newLayers = {}
@@ -185,7 +216,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
 
         setPriorityBap() {
             if (this.state.canOpen) {
-                    if(this.props.bapId !== this.props.priorityBap ){
+                if (this.props.bapId !== this.props.priorityBap) {
                     let avaiableLayers = Object.keys(this.state.layers)
                     if (avaiableLayers.length) {
                         this.turnOnLayer(this.state.layers[avaiableLayers[0]])
@@ -494,7 +525,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                     <div className="bap-title-content" style={{ width: 'calc(100% - 40px)' }}>
                         <span className="bapTitle">
                             <span onClick={this.toggleDropdown}>{this.state.sb_properties.title}</span>
-                            { <span id={`sbInfoToolTip${this.props.bapId}`}
+                            {<span id={`sbInfoToolTip${this.props.bapId}`}
                                 onClick={() => this.setState({ sbInfoPopUp: !this.state.sbInfoPopUp })}
                                 className="title-info-icon">
                                 <Glyphicon glyph="info-sign" />
@@ -509,7 +540,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                         </span>
                     </div>
                     <div className="bap-title-content" style={{ width: '20px' }}>
-                    <input id={`pBapToolTip${this.props.bapId}`} className="priority-bap-raido" style={{ display: this.state.canOpen ? 'block' : 'none' }} type='radio' readOnly={true} checked={this.props.bapId === this.props.priorityBap} onClick={this.setPriorityBap} ></input>
+                        <input id={`pBapToolTip${this.props.bapId}`} className="priority-bap-raido" style={{ display: this.state.canOpen ? 'block' : 'none' }} type='radio' readOnly={true} checked={this.props.bapId === this.props.priorityBap} onClick={this.setPriorityBap} ></input>
                         <Tooltip
                             style={{ fontSize: "14px" }} isOpen={this.state.pBapToolTipOpen}
                             target={`pBapToolTip${this.props.bapId}`}
@@ -559,7 +590,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                                     {this.getSbContactInfo(this.state.sb_properties)}
                                     {this.getSbWebLinkInfo(this.state.sb_properties)}
                                     <br></br>
-                                    { this.state.sb_properties.link && <div><a href={this.state.sb_properties.link.url}>{`${this.state.sb_properties.link.url}`}</a></div>}
+                                    {this.state.sb_properties.link && <div><a href={this.state.sb_properties.link.url}>{`${this.state.sb_properties.link.url}`}</a></div>}
                                 </div>
                             }
                         />

@@ -1,5 +1,5 @@
 import React from "react";
-import { DynamicMapLayer } from "esri-leaflet"
+// import { DynamicMapLayer } from "esri-leaflet"
 import { BarLoader } from "react-spinners"
 
 import SpeciesCountChart from "../Charts/SpeciesCountChart";
@@ -15,15 +15,15 @@ let sb_properties = {
 }
 
 const layers = {
-    nfhp_service: {
-        title: "Risk to Fish Habitat Degradation",
-        layer: new DynamicMapLayer({
-            url: "https://gis1.usgs.gov/arcgis/rest/services/nfhp2015/HCI_Dissolved_NFHP2015_v20160907/MapServer",
-            opacity: .5
-        }),
-        checked: false,
-        loading: false,
-    }
+    // nfhp_service: {
+    //     title: "Risk to Fish Habitat Degradation",
+    //     layer: new DynamicMapLayer({
+    //         url: "https://gis1.usgs.gov/arcgis/rest/services/nfhp2015/HCI_Dissolved_NFHP2015_v20160907/MapServer",
+    //         opacity: .5
+    //     }),
+    //     checked: false,
+    //     loading: false,
+    // }
 }
 
 class OBISAnalysisPackage extends React.Component {
@@ -94,6 +94,7 @@ class OBISAnalysisPackage extends React.Component {
             .then(
                 (result) => {
                     if (result) {
+                        this.props.updateAnalysisLayers([], this.props.bapId) // make the obis bap priority when only one 
                         const charts = this.getCharts(result)
                         this.setState({
                             charts: charts,
