@@ -155,18 +155,29 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 newLayers[key] = this.state.layers[key]
                 newLayers[key].checked = false
             })
-            this.props.updateAnalysisLayers([], 'bap1')
-            if (this.props.priorityBap !== this.props.bapId) {
-                this.setState({
-                    layers: newLayers,
-                })
+
+            // would like to get away from using bapid, okay if baps are stablized
+            // but will be frustrating if adding more baps in future
+            // this logic assumes bap1 is avaiable with all features escept obis
+            if(this.props.feature.properties.feature_id.includes('OBIS_Areas')){
+                if(this.props.bapId === 'bap8'){
+                    let avaiableLayers = Object.keys(this.state.layers)
+                    if (avaiableLayers.length) {
+                        this.turnOnLayer(this.state.layers[avaiableLayers[0]])
+                    }
+                    else{
+                        this.props.updateAnalysisLayers([], this.props.bapId)
+                    }
+                }
             }
-            else {
-                this.setState({
-                    layers: newLayers,
-                    isOpen: true,
-                    glyph: "menu-down",
-                })
+            else if(this.props.bapId === 'bap1'){
+                let avaiableLayers = Object.keys(this.state.layers)
+                if (avaiableLayers.length) {
+                    this.turnOnLayer(this.state.layers[avaiableLayers[0]])
+                }
+                else{
+                    this.props.updateAnalysisLayers([], this.props.bapId)
+                }
             }
         }
 
