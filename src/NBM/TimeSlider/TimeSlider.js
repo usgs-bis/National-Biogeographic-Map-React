@@ -8,8 +8,8 @@ const maxSliderValue = 2018
 
 const enableLookup = {
     'bap1' : true,
-    'bab2' : true,
-    'bab3' : true,
+    'bap2' : true,
+    'bap3' : true,
 }
 
 
