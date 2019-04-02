@@ -1,6 +1,7 @@
 # The National Biogeographic Map
 
-This is reworking/refactoring of the current NBM project: https://github.com/usgs-bis/nbm_front_end
+This is reworking/refactoring of the current NBM project:
+https://github.com/usgs-bis/nbm_front_end
 
 
 This project consists of a lightweight React APP and Leaflet map viewer.
@@ -15,6 +16,7 @@ https://sciencebase.usgs.gov/staging/bis/
 4. pdfmake http://pdfmake.org/#/
 
 To run with docker : `bash run.sh`
+
 To run with yarn (or npm) : yarn install yarn start
 
 ## Current Deploys:
