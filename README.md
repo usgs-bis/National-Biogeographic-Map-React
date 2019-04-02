@@ -1,9 +1,9 @@
-# NBM React
+# The National Biogeographic Map
 
-This is reworking/refactoring of the current NBM project
+This is reworking/refactoring of the current NBM project: https://github.com/usgs-bis/nbm_front_end
+
 
 This project consists of a lightweight React APP and Leaflet map viewer.
-
 
 Content is driven from a back end API:
 https://sciencebase.usgs.gov/staging/bis/
