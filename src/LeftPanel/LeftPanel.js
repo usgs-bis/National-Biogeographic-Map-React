@@ -51,7 +51,7 @@ class LeftPanel extends React.Component {
                     else {
                         area = turf.area(turf.polygon(props.feature.geometry.coordinates))
                     }
-                    approxArea = numberWithCommas(parseInt(turf.convertArea(area)))
+                    approxArea = numberWithCommas(parseInt(turf.convertArea(area, 'meters', 'acres')))
                 }
             }
             catch (e) {
