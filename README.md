@@ -15,9 +15,11 @@ https://sciencebase.usgs.gov/staging/bis/
 3. D3 https://d3js.org/
 4. pdfmake http://pdfmake.org/#/
 
-To run with docker : `bash run.sh`
 
-To run with yarn (or npm) : yarn install yarn start
+## To Run:
+docker : `bash run.sh`
+
+yarn (or npm) : yarn install yarn start
 
 ## Current Deploys:
 DEV-IS k8s: https://master.staging.sciencebase.gov/biogeography
