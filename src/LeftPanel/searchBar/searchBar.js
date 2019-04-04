@@ -7,7 +7,7 @@ import { Glyphicon } from "react-bootstrap";
 import Legend from "../../Legend/Legend";
 import { RadioGroup } from "../../CustomRadio/CustomRadio";
 import { Collapse, CardBody, Card } from "reactstrap";
-
+import speechBubble from './bubble.png'
 
 
 class SearchBar extends React.Component {
@@ -18,7 +18,7 @@ class SearchBar extends React.Component {
             focused: false,
             basemapTooltipOpen: false,
             layersDropdownOpen: false,
-            displayHelp:true
+            displayHelp: true
         }
 
         this.handleKeyUp = this.handleKeyUp.bind(this);
@@ -32,12 +32,12 @@ class SearchBar extends React.Component {
     }
 
     componentDidMount() {
-        document.body.addEventListener('click', ()=>{this.setState({displayHelp:false})}, true);
-        document.body.addEventListener('keydown', ()=>{this.setState({displayHelp:false})}, true); 
+        document.body.addEventListener('click', () => { this.setState({ displayHelp: false }) }, true);
+        document.body.addEventListener('keydown', () => { this.setState({ displayHelp: false }) }, true);
     }
-    componentWillUnmount(){
-        document.body.removeEventListener('click', ()=>{this.setState({displayHelp:false})}, true);
-        document.body.removeEventListener('keydown', ()=>{this.setState({displayHelp:false})}, true); 
+    componentWillUnmount() {
+        document.body.removeEventListener('click', () => { this.setState({ displayHelp: false }) }, true);
+        document.body.removeEventListener('keydown', () => { this.setState({ displayHelp: false }) }, true);
     }
 
     componentWillReceiveProps(props) {
@@ -86,8 +86,8 @@ class SearchBar extends React.Component {
 
     basemapChanged(e) {
         // Fixes bug in FF where search bar gains focus
-        this.setState({focused: false})
-         
+        this.setState({ focused: false })
+
         this.props.basemapChanged(e)
     }
 
@@ -98,8 +98,8 @@ class SearchBar extends React.Component {
                 <div className="nbm-flex-row">
                     <div className="settings-btn-group nbm-flex-column">
                         <Button id={"SettingsTooltip"} onClick={this.toggleBasemapDropdown} className='submit-analysis-btn placeholder-button' >
-                            <Glyphicon className="inner-glyph" glyph="menu-hamburger" 
-                             data-toggle="tooltip" data-placement="bottom" title="Settings"/>
+                            <Glyphicon className="inner-glyph" glyph="menu-hamburger"
+                                data-toggle="tooltip" data-placement="bottom" title="Settings" />
                         </Button>
                         {/* <Tooltip
                             style={{ fontSize: "14px", pointerEvents:'none'}} isOpen={this.state.basemapTooltipOpen && !this.state.layersDropdownOpen}
@@ -124,7 +124,7 @@ class SearchBar extends React.Component {
                     }
                 </div>
                 <div className="nbm-flex-row" >
-                    <div className="button-group" style={this.props.results.length > 0 && this.state.focused ? { } : {height: '0px'}}>
+                    <div className="button-group" style={this.props.results.length > 0 && this.state.focused ? {} : { height: '0px' }}>
                         {(this.props.results.length > 0 && this.state.focused) ? <ButtonGroup vertical>
                             {this.props.results.map(function (d, idx) {
                                 return (
@@ -165,13 +165,11 @@ class SearchBar extends React.Component {
                     </Collapse>
                 </div>
 
-                {this.state.displayHelp && <div className="popup" id="helpPopup">
-                    <div className="popuptitle" > Help!
-                         <i  onClick={()=>{this.setState({displayHelp:false})}} className="close-popup-btn icon icon-close" > </i>
-                     </div>
-                    <div className="popuptext" id="myPopup">Search for a place of interest or click on the map</div>
-                    </div> }
 
+                {this.state.displayHelp && <div className="popup" id="helpPopup">
+                    <img src={speechBubble} alt="Speech Bubble"></img>
+                    <div className="popuptext" id="myPopup">Search for a place of interest or click on the map</div>}
+                </div>}
             </div>
         )
     }
