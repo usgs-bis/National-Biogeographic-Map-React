@@ -5,57 +5,26 @@
 .popup{
     position: fixed;
     z-index: 99999;
-    width: 325px;
-    height: 55px;
-    left: 549px;
-    top: 60px;
-    background: white;
-    border-radius: 7px;
-    border: 2px solid  #555555;
-    text-align: center;
+    left: 539px;
+    top: 52px;
+    width: 400px;
+    height: 220px;
 }
 
-.close-popup-btn{
-    height: 17px;
-    width: 17px;
-    padding: 3px;
-    margin: 10px;
-    cursor: pointer;
-}
-.popuptitle{
-    height: 55%;
-    font-size: 16px;
-    background-color: #555555;
-    border: 2px solid white;
-    border-radius: 5px;
-}
 .popuptext{
     color: black;
-    font-size: 14px;
-    height: 55%;
+    font-size: 21px;
+    line-height: 28px;
+    height: 100%;
+    margin: 10px;
+    position: absolute;
+    width: 66%;
+    margin-left: 107px;
+    text-align: center;
+    margin-top: 30px;
 }
 
-/* Popup arrow */
-.popup .popuptext::after {
-    content: "";
+.popup img {
+    width: 400px;
     position: absolute;
-    top: 11px;
-    left: 0%;
-    margin-left: -20px;
-    border-width: 10px;
-    border-style: solid;
-    border-color:  transparent #555555 transparent transparent;
-  }
-  
-  /* Toggle this class - hide and show the popup */
-  .popup .show {
-    visibility: visible;
-    -webkit-animation: fadeIn 1s;
-    animation: fadeIn 1s;
-  }
-  
-  /* Add animation (fade in the popup) */
-  @-webkit-keyframes fadeIn {
-    from {opacity: 0;} 
-    to {opacity: 1;}
-  }
+}
