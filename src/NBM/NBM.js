@@ -1,5 +1,5 @@
 import React from 'react'
-import { Map, TileLayer, WMSTileLayer, Marker, Popup, GeoJSON, FeatureGroup } from 'react-leaflet'
+import { Map, TileLayer, WMSTileLayer, Marker, Popup, GeoJSON, FeatureGroup, ZoomControl} from 'react-leaflet'
 import CustomDialog from "../CustomDialog/CustomDialog";
 import './NBM.css'
 import LocationOverlay from './LocationOverylays/LocationOverlay';
@@ -266,7 +266,8 @@ class NBM extends React.PureComponent {
                 bounds={this.bounds}
                 onMouseMove={this.handleMouseMove}
                 onMouseOut={this.handleMouseOut}
-                attribution="" >
+                attribution=""
+                zoomControl={false} >
                 {basemap()}
                 <LocationOverlay onRef={ref => (this.LocationOverlay = ref)} map={this.refs.map} bioscapeName={this.props.bioscapeName} />
                 <MapMarker point={this.state.point} />
@@ -287,6 +288,7 @@ class NBM extends React.PureComponent {
                 </div>
                 <span onMouseOver={this.disableDragging} onMouseOut={this.enableDragging} >{attribution()}</span>
                 <FeatureGroup>
+                    <ZoomControl position='topright'></ZoomControl>
                     <EditControl
                         position='topright'
                         //onDeleted={() => { this.props.parentDrawHandler(null) }}

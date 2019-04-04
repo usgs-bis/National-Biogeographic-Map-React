@@ -17,8 +17,8 @@ class SearchBar extends React.Component {
         this.state = {
             focused: false,
             basemapTooltipOpen: false,
-            layersDropdownOpen: false
-
+            layersDropdownOpen: false,
+            displayHelp:true
         }
 
         this.handleKeyUp = this.handleKeyUp.bind(this);
@@ -32,6 +32,12 @@ class SearchBar extends React.Component {
     }
 
     componentDidMount() {
+        document.body.addEventListener('click', ()=>{this.setState({displayHelp:false})}, true);
+        document.body.addEventListener('keydown', ()=>{this.setState({displayHelp:false})}, true); 
+    }
+    componentWillUnmount(){
+        document.body.removeEventListener('click', ()=>{this.setState({displayHelp:false})}, true);
+        document.body.removeEventListener('keydown', ()=>{this.setState({displayHelp:false})}, true); 
     }
 
     componentWillReceiveProps(props) {
@@ -158,6 +164,14 @@ class SearchBar extends React.Component {
                         }
                     </Collapse>
                 </div>
+
+                {this.state.displayHelp && <div className="popup" id="helpPopup">
+                    <div className="popuptitle" > Help!
+                         <i  onClick={()=>{this.setState({displayHelp:false})}} className="close-popup-btn icon icon-close" > </i>
+                     </div>
+                    <div className="popuptext" id="myPopup">Search for a place of interest or click on the map</div>
+                    </div> }
+
             </div>
         )
     }
