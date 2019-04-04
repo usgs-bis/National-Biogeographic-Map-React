@@ -179,3 +179,9 @@
 .chart-container .chartTooltip p{
     margin: 5px;
 }
+
+.analysis-available{
+    color: #fcf301;
+    font-size: 18px;
+    font-weight: 500;
+}

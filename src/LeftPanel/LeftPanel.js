@@ -179,6 +179,8 @@ class LeftPanel extends React.Component {
                     {featureText()}
                 </div>
                 <div id='analysis-package-container' className="analysis-package-container" style={{height : this.props.feature ?  'calc(100% - 212px)' : '100%'}} >
+                    
+                    {this.state.feature_name && <div className="analysis-available">Analysis available for {this.state.feature_name}</div>}
                     {
                         this.props.bioscapeName === "terrestrial-ecosystems-2011" ?
                             <TerrestrialEcosystems2011
