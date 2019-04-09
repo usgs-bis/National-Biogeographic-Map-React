@@ -48,6 +48,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             this.getSbWebLinkInfo = this.getSbWebLinkInfo.bind(this)
             this.handleBapError = this.handleBapError.bind(this)
             this.turnOnLayer = this.turnOnLayer.bind(this)
+            this.turnOffLayer = this.turnOffLayer.bind(this)
             this.toggleLayer = this.toggleLayer.bind(this)
             this.resetBap = this.resetBap.bind(this)
         }
@@ -79,28 +80,9 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                     this.resetBap()
                 }
                 if (prevProps.priorityBap !== this.props.priorityBap) {
-                    if (this.props.priorityBap !== this.props.bapId) {
-                        let l = layers;
-                        let that = this;
-                        Object.keys(l).forEach(function (key) {
-                            l[key].checked = false
-                            that.inputRefs[key].checked = false
-                        })
-                        this.setState({
-                            layers: l,
-                        })
-                    }
-                    else {
-                        let avaiableLayers = Object.keys(this.state.layers)
-                        if (avaiableLayers.length) {
-                            this.turnOnLayer(this.state.layers[avaiableLayers[0]])
-                        }
-                        this.setState({
-                            isOpen: true,
-                            glyph: "menu-down",
-                        })
-                    }
+                    this.turnOffLayer()
                 }
+               
                 // forcing a rerender so the bapwindow will populate
                 // not sure why calling this.render() doesnt work
                 // will try to find a better way. 
@@ -159,34 +141,34 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             // would like to get away from using bapid, okay if baps are stablized
             // but will be frustrating if adding more baps in future
             // this logic assumes bap1 is avaiable with all features escept obis
-            if(this.props.feature.properties.feature_id.includes('OBIS_Areas')){
-                if(this.props.bapId === 'bap8'){
+            if (this.props.feature.properties.feature_id.includes('OBIS_Areas')) {
+                if (this.props.bapId === 'bap8') {
                     let avaiableLayers = Object.keys(this.state.layers)
                     if (avaiableLayers.length) {
-                        this.turnOnLayer(this.state.layers[avaiableLayers[0]])
+                        this.setPriorityBap(this.state.layers[avaiableLayers[0]])
                     }
-                    else{
+                    else {
                         this.props.updateAnalysisLayers([], this.props.bapId)
                     }
                 }
             }
-            else if(this.props.bapId === 'bap1'){
+            else if (this.props.bapId === 'bap1') {
                 let avaiableLayers = Object.keys(this.state.layers)
                 if (avaiableLayers.length) {
-                    this.turnOnLayer(this.state.layers[avaiableLayers[0]])
+                    this.setPriorityBap(this.state.layers[avaiableLayers[0]])
                 }
-                else{
+                else {
                     this.props.updateAnalysisLayers([], this.props.bapId)
                 }
             }
         }
 
+
+        // Turns on a given layer. 
+        // A Bap shoud only call this if we know it is already the pbap.
+        // otherwise we should call the setPriority function with the layer param. 
         turnOnLayer(layer) {
 
-            if (this.props.bapId !== this.props.priorityBap) {
-                // let the priority bap propigate then turn on the correct layer; needs work
-                setTimeout(()=>{this.turnOnLayer(layer)},50) 
-            }
             let newLayers = {}
             if (layer) {
                 Object.keys(this.state.layers).forEach((key) => {
@@ -198,22 +180,35 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                         newLayers[key].checked = false
                     }
                 })
-                this.props.updateAnalysisLayers([layer], this.props.bapId)
-
+                this.props.updateAnalysisLayers([layer])
             }
             else {
+                // make sure all layers are off
                 Object.keys(this.state.layers).forEach((key) => {
                     newLayers[key] = this.state.layers[key]
                     newLayers[key].checked = false
                 })
-                this.props.updateAnalysisLayers([], null)
+                this.props.updateAnalysisLayers([])
             }
-
             this.setState({
                 layers: newLayers
             })
-
         }
+
+        turnOffLayer() {
+            // when priority bap changes need to make sure all layers are off
+            if (this.props.bapId !== this.props.priorityBap) {
+                let newLayers = {}
+                Object.keys(this.state.layers).forEach((key) => {
+                    newLayers[key] = this.state.layers[key]
+                    newLayers[key].checked = false
+                })
+                this.setState({
+                    layers: newLayers
+                })
+            }
+        }
+
 
         toggleLayer(layer) {
             if (layer) {
@@ -221,7 +216,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                     this.turnOnLayer()
                 }
                 else (
-                    this.turnOnLayer(layer)
+                    this.setPriorityBap(layer)
                 )
             }
             else {
@@ -230,22 +225,44 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
         }
 
 
-        setPriorityBap() {
-            if (this.state.canOpen) {
-                if (this.props.bapId !== this.props.priorityBap) {
-                    let avaiableLayers = Object.keys(this.state.layers)
-                    if (avaiableLayers.length) {
-                        this.turnOnLayer(this.state.layers[avaiableLayers[0]])
-                    }
-                    this.setState({
-                        isOpen: true,
-                        glyph: "menu-down",
-                    })
+        // Take an optional layer to turn on when switching priority bap 
+        // if no layer is provided we will turn on the first if avaiable. 
+        // Example- User trys to turn on the Bloom layer in the leaf comparison bap
+        setPriorityBap(layer) {
+
+            const layerOrDefault = (l) => {
+                // If layer provided, turn it on
+                // If no layer provided and the bap has layers, turn on the first by default
+                if (l) {
+                    this.turnOnLayer(l)
                 }
                 else {
-                    this.turnOnLayer()
+                    let avaiableLayers = Object.keys(this.state.layers)
+                    if (avaiableLayers.length) {
+                        this.turnOnLayer(this.state.layers[avaiableLayers[0]], true)
+                    }
+                    else {
+                        this.turnOnLayer(null)
+                    }
                 }
+                return
             }
+
+            if (this.props.bapId !== this.props.priorityBap) {
+                // detect if we are not the priority bap and begin switching process
+                this.props.setPriorityBap(this.props.bapId)
+                layerOrDefault(layer)
+            }
+            else {
+                // allready the proiority bap
+                // if layer provided turn it on. 
+                layerOrDefault(layer)
+            }
+            // open the bap 
+            this.setState({
+                isOpen: true,
+                glyph: "menu-down",
+            })
         }
 
         toggleLayerDropdown() {
@@ -556,7 +573,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                         </span>
                     </div>
                     <div className="bap-title-content" style={{ width: '20px' }}>
-                        <input id={`pBapToolTip${this.props.bapId}`} className="priority-bap-raido" style={{ display: this.state.canOpen ? 'block' : 'none' }} type='radio' readOnly={true} checked={this.props.bapId === this.props.priorityBap} onClick={this.setPriorityBap} ></input>
+                        <input id={`pBapToolTip${this.props.bapId}`} className="priority-bap-raido" style={{ display: this.state.canOpen ? 'block' : 'none' }} type='radio' readOnly={true} checked={this.props.bapId === this.props.priorityBap} onClick={() => this.setPriorityBap()} ></input>
                         <Tooltip
                             style={{ fontSize: "14px" }} isOpen={this.state.pBapToolTipOpen}
                             target={`pBapToolTip${this.props.bapId}`}
@@ -572,7 +589,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                             {...this.state}
                             setOpacity={this.setOpacity}
                             toggleLayerDropdown={this.toggleLayerDropdown}
-                            updateBapLayers={this.turnOnLayer}
+                            updateBapLayers={this.setPriorityBap}
                             resetAnalysisLayers={this.resetAnalysisLayers}
                             getAnalysisLayers={this.getAnalysisLayers}
                             getBapContents={this.getBapContents}

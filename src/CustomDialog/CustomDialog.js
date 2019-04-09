@@ -23,6 +23,7 @@ class CustomDialog extends React.Component {
                 title={this.state.title}
                 modal={this.state.modal}
                 onClose={this.state.onClose}
+                height={this.props.height}
             >
                 <div className={this.props.className}>
                     {this.props.body}

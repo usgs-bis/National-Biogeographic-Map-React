@@ -68,6 +68,7 @@ class Biogeography extends React.Component {
                     <FirstLeafAnalysis
                         onRef={ref => (this.FirstLeafAnalysis = ref)}
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
+                        setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
                         yearMin={this.props.rangeYearMin}
                         yearMax={this.props.rangeYearMax}
@@ -80,6 +81,7 @@ class Biogeography extends React.Component {
                     <FirstBloomAnalysis
                         onRef={ref => (this.FirstBloomAnalysis = ref)}
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
+                        setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
                         yearMin={this.props.rangeYearMin}
                         yearMax={this.props.rangeYearMax}
@@ -92,6 +94,7 @@ class Biogeography extends React.Component {
                     <FirstLeafBloomComparisonAnalysis
                         onRef={ref => (this.FirstLeafBloomComparisonAnalysis = ref)}
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
+                        setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
                         yearMin={this.props.rangeYearMin}
                         yearMax={this.props.rangeYearMax}
@@ -104,6 +107,7 @@ class Biogeography extends React.Component {
                     <NFHPAnalysis
                         onRef={ref => (this.NFHPAnalysis = ref)}
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
+                        setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
                         bapId={`bap${counter++}`}
@@ -114,6 +118,7 @@ class Biogeography extends React.Component {
                     <EcosystemProtectionAnalysis
                         onRef={ref => (this.EcosystemProtectionAnalysis = ref)}
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
+                        setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
                         bapId={`bap${counter++}`}
@@ -124,6 +129,7 @@ class Biogeography extends React.Component {
                     <SpeciesProtectionAnalysis
                         onRef={ref => (this.SpeciesProtectionAnalysis = ref)}
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
+                        setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
                         bapId={`bap${counter++}`}
@@ -134,6 +140,7 @@ class Biogeography extends React.Component {
                     <PhenologyAnalysis
                         onRef={ref => (this.PhenologyAnalysis = ref)}
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
+                        setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
                         bapId={`bap${counter++}`}
@@ -144,6 +151,7 @@ class Biogeography extends React.Component {
                     <OBISAnalysis
                         onRef={ref => (this.OBISAnalysis = ref)}
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
+                        setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
                         bapId={`bap${counter++}`}

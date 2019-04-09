@@ -112,7 +112,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
             this.featureChange()
         }
         if (prevProps.priorityBap === prevProps.bapId && this.props.bapId !== this.props.priorityBap) {
-            this.resetRaidoBtn()
+            this.resetSppTable()
         }
 
     }
@@ -404,7 +404,9 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
     resetRaidoBtn(){
         this.previous_row_sppcode = ""
         this.previous_type = ""
-        this.props.updateBapLayers(null)
+        if(this.props.bapId === this.props.priorityBap){
+            this.props.updateBapLayers()
+        }
     }
 
     print() {
