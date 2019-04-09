@@ -28,7 +28,7 @@ const layers = {
             layers: [0]
         },
         checked: false,
-        sb_item:"56bba50ce4b08d617f657956"
+        sb_item: "56bba50ce4b08d617f657956"
     },
     species_range: {
         title: "Species Range",
@@ -47,7 +47,7 @@ const layers = {
         },
         checked: false,
         hideCheckbox: true,
-        sb_item:"5951527de4b062508e3b1e79"
+        sb_item: "5951527de4b062508e3b1e79"
     },
     habitat_map: {
         title: "Habitat Map",
@@ -66,7 +66,7 @@ const layers = {
         },
         checked: false,
         hideCheckbox: true,
-        sb_item:"527d0a83e4b0850ea0518326"
+        sb_item: "527d0a83e4b0850ea0518326"
     }
 }
 
@@ -99,6 +99,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
         this.featureChange = this.featureChange.bind(this)
         this.fetch = this.fetch.bind(this)
         this.createUniqueBapContents = this.createUniqueBapContents.bind(this)
+        this.resetRaidoBtn =  this.resetRaidoBtn.bind(this)
     }
 
     componentDidMount() {
@@ -110,6 +111,10 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
         if (prevProps.feature !== this.props.feature) {
             this.featureChange()
         }
+        if (prevProps.priorityBap === prevProps.bapId && this.props.bapId !== this.props.priorityBap) {
+            this.resetSppTable()
+        }
+
     }
 
     featureChange() {
@@ -173,7 +178,16 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
     }
 
 
-    changeFilter(e, layerKey) {
+    changeFilter(e, layerKey, row_sppcode) {
+
+
+        this.previous_row_sppcode = row_sppcode
+        this.previous_type = layerKey
+        const charts = this.getCharts(this.state.data)
+        this.setState({
+            charts: charts,
+            loading: false
+        })
         let otherKey = layerKey === "species_range" ? "habitat_map" : "species_range"
         layers[layerKey]["legend"]["imageUrl"] = layers[layerKey]["legend"]["baseLegendUrl"] +
             `&layer=${e.currentTarget.value}`
@@ -314,7 +328,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                 }
 
                 for (let row of preData) {
-                    const name = `${row.common_name} ${row.common_name ? '(' + row.scientific_name : 'No common name recorded (' + row.scientific_name})`
+                    const name = <span className={this.previous_row_sppcode === row.sppcode ? "highlight-table-row" : ""}>{`${row.common_name} ${row.common_name ? '(' + row.scientific_name : 'No common name recorded (' + row.scientific_name})`}</span>
                     if (this.state.gapRange !== 'ALL') {
                         if (this.state.gapStatus === 'status_1_2_group') protectedPercent = `${parseFloat(row.status_1_2).toFixed(2)}%`
                         if (this.state.gapStatus === 'status_1_2_3_group') protectedPercent = `${parseFloat(row.status_1_2_3).toFixed(2)}%`
@@ -323,13 +337,15 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                         id={`Range_${row.sppcode}`}
                         type="radio"
                         name={`sp_radio`}
-                        onChange={function (e) { that.changeFilter(e, "species_range") }}
+                        checked={this.previous_row_sppcode === row.sppcode && this.previous_type === 'species_range'}
+                        onChange={function (e) { that.changeFilter(e, "species_range", row.sppcode) }}
                         value={`${row.common_name} (${row.scientific_name}) ${row.sppcode} v1`} />
                     const radio2 = <input
                         id={`Habitat_${row.sppcode}`}
                         type="radio"
                         name={`sp_radio`}
-                        onChange={function (e) { that.changeFilter(e, "habitat_map") }}
+                        checked={this.previous_row_sppcode === row.sppcode && this.previous_type === 'habitat_map'}
+                        onChange={function (e) { that.changeFilter(e, "habitat_map", row.sppcode) }}
                         value={`${row.common_name} (${row.scientific_name}) ${row.sppcode} v1`} />
                     chartData.push([name, protectedPercent, radio1, radio2,])
                 }
@@ -345,6 +361,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
     }
 
     onSpeciesChanged(e) {
+        this.resetRaidoBtn()
         this.setState({
             taxaLetter: e.currentTarget.value
         }, () => {
@@ -357,6 +374,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
     }
 
     resetSppTable() {
+        this.resetRaidoBtn()
         this.setState({
             gapStatus: "ALL",
             gapRange: "ALL"
@@ -370,6 +388,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
     }
 
     filterTableData(d) {
+       this.resetRaidoBtn()
         this.setState({
             gapStatus: d.status,
             gapRange: d.range
@@ -380,6 +399,14 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                 loading: false
             })
         })
+    }
+
+    resetRaidoBtn(){
+        this.previous_row_sppcode = ""
+        this.previous_type = ""
+        if(this.props.bapId === this.props.priorityBap){
+            this.props.updateBapLayers()
+        }
     }
 
     print() {

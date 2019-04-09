@@ -53,6 +53,7 @@ class TerrestrialEcosystems2011 extends React.Component {
                     <NVCSHierarchyByPixel
                         onRef={ref => (this.NVCSHierarchyByPixel = ref)}
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
+                        setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
                         bapId={`bap${counter++}`}
@@ -63,6 +64,7 @@ class TerrestrialEcosystems2011 extends React.Component {
                     <NVCSSummaryByRegion
                         onRef={ref => (this.NVCSSummaryByRegion = ref)}
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
+                        setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
                         bapId={`bap${counter++}`}

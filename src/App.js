@@ -61,6 +61,7 @@ class App extends React.Component {
         this.overlayChanged = this.overlayChanged.bind(this)
         this.layerTransitionFade = this.layerTransitionFade.bind(this)
         this.parseGeom = this.parseGeom.bind(this)
+        this.setPriorityBap = this.setPriorityBap.bind(this)
         this.state = this.loadState(this.state)
 
     }
@@ -493,6 +494,12 @@ class App extends React.Component {
     updateAnalysisLayers(layers, bapId) {
         this.setState({
             analysisLayers: layers,
+           // priorityBap: bapId
+        })
+    }
+
+    setPriorityBap(bapId){
+        this.setState({
             priorityBap: bapId
         })
     }
@@ -524,6 +531,7 @@ class App extends React.Component {
                             rangeYearMin={this.state.rangeYearMin}
                             rangeYearMax={this.state.rangeYearMax}
                             updateAnalysisLayers={this.updateAnalysisLayers}
+                            setPriorityBap={this.setPriorityBap}
                             shareState={this.shareState}
                             map={this.state.map}
                             initLayerTitle={this.initLayerTitle}
