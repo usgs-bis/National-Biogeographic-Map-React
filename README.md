@@ -22,9 +22,9 @@ docker : `bash run.sh`
 yarn (or npm) : yarn install yarn start
 
 ## Current Deploys:
-DEV-IS k8s: https://master.staging.sciencebase.gov/biogeography
+(deprecated) DEV-IS k8s: https://master.staging.sciencebase.gov/biogeography
 
-DEV-IS k8s: https://master.staging.sciencebase.gov/terrestrial-ecosystems-2011
+(deprecated) DEV-IS k8s: https://master.staging.sciencebase.gov/terrestrial-ecosystems-2011
 
 DEV-IS https://dev-sciencebase.usgs.gov/biogeography
 
