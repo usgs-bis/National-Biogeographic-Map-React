@@ -197,3 +197,7 @@ display: inline-flex;
     border-top: 1px solid rgba(245, 245, 245, .2);
     margin-top: 15px;
 }
+
+.highlight-table-row {
+    color:yellow !important;
+}

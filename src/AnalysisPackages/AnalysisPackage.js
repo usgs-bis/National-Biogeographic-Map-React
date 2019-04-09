@@ -29,7 +29,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 sbInfoPopUpToolTip: false,
                 sbInfoLayerPopUp: false,
                 sbInfoLayerPopUpToolTip: false,
-                layersOpen: false
+                layersOpen: true
             }
             this.initilized = false
             this.toggleDropdown = this.toggleDropdown.bind(this)
@@ -182,6 +182,11 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
         }
 
         turnOnLayer(layer) {
+
+            if (this.props.bapId !== this.props.priorityBap) {
+                // let the priority bap propigate then turn on the correct layer; needs work
+                setTimeout(()=>{this.turnOnLayer(layer)},50) 
+            }
             let newLayers = {}
             if (layer) {
                 Object.keys(this.state.layers).forEach((key) => {

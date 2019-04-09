@@ -84,12 +84,14 @@ class PDFReport extends React.Component {
     }
 
     getTitleMap(map) {
-        map.leafletElement.zoomControl.getContainer().hidden = true
+        //map.leafletElement.zoomControl.getContainer().hidden = true
+        document.getElementsByClassName('leaflet-control-container')[0].hidden = true
         document.getElementsByClassName('global-time-slider')[0].hidden = true
         document.getElementsByClassName('location-overlay')[0].hidden = true
 
         return html2canvas(map.container, { useCORS: true, logging: false }).then((canvas) => {
-            map.leafletElement.zoomControl.getContainer().hidden = false
+            // map.leafletElement.zoomControl.getContainer().hidden = false
+            document.getElementsByClassName('leaflet-control-container')[0].hidden = false
             document.getElementsByClassName('global-time-slider')[0].hidden = false
             document.getElementsByClassName('location-overlay')[0].hidden = false
 
