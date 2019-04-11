@@ -60,7 +60,7 @@ class Legend extends React.Component {
                 {
                     this.state.isDialogOpen &&
                     <CustomDialog
-                        height={500}
+                        height={475}
                         isResizable={true}
                         isDraggable={true}
                         title="Legend"

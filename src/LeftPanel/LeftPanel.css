@@ -185,3 +185,18 @@
     font-size: 18px;
     font-weight: 500;
 }
+
+.analysis-package-text{
+    color: white;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    width: 100%;
+    font-size: x-large;
+    padding-left: 20px;
+    padding-bottom: 5px;
+    font-weight: 500;
+}

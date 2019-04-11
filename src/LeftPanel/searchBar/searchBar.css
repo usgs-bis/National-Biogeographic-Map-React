@@ -2,6 +2,17 @@
     max-width: 50px;
 }
 
+@media only screen and (max-width: 700px) {
+    .popup{
+        position: fixed;
+        z-index: 99999;
+        left: 107px !important;
+        top: 52px;
+        width: 400px;
+        height: 220px;
+    }
+}
+
 .popup{
     position: fixed;
     z-index: 99999;
