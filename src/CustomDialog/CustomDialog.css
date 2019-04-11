@@ -19,8 +19,16 @@
     z-index: 101;
     background-color: white;
     border: 1px solid #f6f6f6;
+    scrollbar-width: none;
 }
 
+.ui-dialog-content{
+    scrollbar-width: none;
+}
+
+.ui-dialog  ::-webkit-scrollbar {
+    display: none;
+}
 .ui-dialog.maximized{
     position: fixed;
     top: 0;
@@ -178,4 +186,8 @@
     margin-right: .5em;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 1.5em;
+}
+
+.dialog-footer{
+    position: absolute;
 }
