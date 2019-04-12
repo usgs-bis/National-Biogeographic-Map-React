@@ -245,6 +245,7 @@ class NVCSHierarchyByPixelPackage extends React.Component {
             .then(res => res.json())
             .then(
                 (result) => {
+                    this.props.setBapJson(result)
                     let pixelValue = null
                     if (result["features"]) {
                         pixelValue = result["features"][0]["properties"]["pixel_value"]

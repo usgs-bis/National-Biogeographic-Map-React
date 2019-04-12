@@ -121,6 +121,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
             .then(
                 (result) => {
                     if (result && result.success) {
+                        this.props.setBapJson(result.result)
                         const charts = this.getCharts(result.result)
                         this.setState({
                             charts: charts,
