@@ -24,14 +24,19 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 isEnabled: true,
                 bapWindowOpen: false,
                 bapWindowToolTip: false,
+                jsonWindowOpen: false,
+                jsonWindowToolTip: false,
                 pBapToolTipOpen: false,
                 sbInfoPopUp: false,
                 sbInfoPopUpToolTip: false,
                 sbInfoLayerPopUp: false,
                 sbInfoLayerPopUpToolTip: false,
-                layersOpen: true
+                layersOpen: true,
+                prettyJson: false
             }
             this.initilized = false
+            this.jsonData = null
+            this.inputRefs = {}
             this.toggleDropdown = this.toggleDropdown.bind(this)
             this.toggleLayerDropdown = this.toggleLayerDropdown.bind(this)
             this.setOpacity = this.setOpacity.bind(this)
@@ -39,7 +44,6 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             this.getBapContents = this.getBapContents.bind(this)
             this.updateEnabled = this.updateEnabled.bind(this)
             this.canOpen = this.canOpen.bind(this)
-            this.inputRefs = {}
             this.getSBItemForPrint = this.getSBItemForPrint.bind(this)
             this.htmlToPDFMake = this.htmlToPDFMake.bind(this)
             this.initilize = this.initilize.bind(this)
@@ -51,6 +55,8 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             this.turnOffLayer = this.turnOffLayer.bind(this)
             this.toggleLayer = this.toggleLayer.bind(this)
             this.resetBap = this.resetBap.bind(this)
+            this.toggle = this.toggle.bind(this)
+            this.setBapJson = this.setBapJson.bind(this)
         }
 
 
@@ -82,7 +88,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 if (prevProps.priorityBap !== this.props.priorityBap) {
                     this.turnOffLayer()
                 }
-               
+
                 // forcing a rerender so the bapwindow will populate
                 // not sure why calling this.render() doesnt work
                 // will try to find a better way. 
@@ -132,6 +138,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
         }
 
         resetBap() {
+            this.jsonData = null
             let newLayers = {}
             Object.keys(this.state.layers).forEach((key) => {
                 newLayers[key] = this.state.layers[key]
@@ -285,6 +292,10 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             return []
         }
 
+        setBapJson(data) {
+            this.jsonData = data
+        }
+
         getAnalysisLayers() {
             let that = this
             if (this.state.layers) {
@@ -298,12 +309,24 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                                     glyph={this.state.layersOpen ? "menu-down" : "menu-right"}
                                 />
                             </span>
-
-                            <Button id={`openBapWindow${this.props.bapId}`} className='bap-window-button' style={{ display: this.state.bapWindowOpen ? "none" : "inline-block" }}
-                                onClick={() => { this.setState({ bapWindowOpen: !this.state.bapWindowOpen }) }} >
-                                <Glyphicon className="inner-glyph" glyph="resize-full"
-                                />
-                            </Button>
+                            <span>
+                                <Button id={`openBapWindow${this.props.bapId}`} className='bap-window-button'
+                                    style={{ display: this.state.bapWindowOpen ? "none" : "inline-block" }}
+                                    onClick={() => { this.setState({ bapWindowOpen: !this.state.bapWindowOpen }) }}
+                                    onMouseEnter={() => this.toggle(this.state.bapWindowToolTip, 'bapWindowToolTip')}
+                                    onMouseLeave={() => this.toggle(this.state.bapWindowToolTip, 'bapWindowToolTip')}>
+                                    <Glyphicon className="inner-glyph" glyph="resize-full"
+                                    />
+                                </Button>
+                                <Button id={`viewJsonWindow${this.props.bapId}`} className='bap-window-button'
+                                    style={{ display: this.state.jsonWindowOpen || !this.jsonData ? "none" : "inline-block" }}
+                                    onClick={() => { this.setState({ jsonWindowOpen: !this.state.jsonWindowOpen }) }}
+                                    onMouseEnter={() => this.toggle(this.state.jsonWindowToolTip, 'jsonWindowToolTip')}
+                                    onMouseLeave={() => this.toggle(this.state.jsonWindowToolTip, 'jsonWindowToolTip')}>
+                                    <Glyphicon className="inner-glyph" glyph="console"
+                                    />
+                                </Button>
+                            </span>
                         </div>
 
                         <Collapse className='analysis-dropdown-content' isOpen={that.state.layersOpen}>
@@ -386,17 +409,50 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             }
         }
 
+        toggle(val, name) {
+            this.setState({
+                [name]: !val
+            })
+        }
+
         getBapContents(bapContent) {
+
+            const syntaxHighlight = (json) => {
+                json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                // eslint-disable-next-line
+                return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                    var cls = 'number';
+                    if (/^"/.test(match)) {
+                        if (/:$/.test(match)) {
+                            cls = 'key';
+                        } else {
+                            cls = 'string';
+                        }
+                    } else if (/true|false/.test(match)) {
+                        cls = 'boolean';
+                    } else if (/null/.test(match)) {
+                        cls = 'null';
+                    }
+                    return '<span class="' + cls + '">' + match + '</span>';
+                });
+            }
+            const getDownloadLink = ()=>{
+                return "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.jsonData))
+            }
             return (
                 <div>
 
                     <Tooltip
                         style={{ fontSize: "14px" }} isOpen={this.state.bapWindowToolTip && !this.state.bapWindowOpen}
-                        target={`openBapWindow${this.props.bapId}`} toggle={() => this.setState({
-                            bapWindowToolTip: !this.state.bapWindowToolTip
-                        })} delay={0}>
+                        target={`openBapWindow${this.props.bapId}`} delay={0}>
                         View Bap in new window
                     </Tooltip>
+                    <Tooltip
+                        style={{ fontSize: "14px" }} isOpen={this.state.jsonWindowToolTip && !this.state.jsonWindowOpen}
+                        target={`viewJsonWindow${this.props.bapId}`} delay={0}>
+                        View the raw JSON used for analysis
+                    </Tooltip>
+
                     {
                         this.state.bapWindowOpen &&
                         <CustomDialog
@@ -416,6 +472,40 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                         />
                     }
                     {!this.state.bapWindowOpen && bapContent()}
+                    {
+                        this.state.jsonWindowOpen &&
+                        <CustomDialog
+                            className="bap-popout-window"
+                            isResizable={true}
+                            isDraggable={true}
+                            title={"JSON - " + this.state.sb_properties.title}
+                            modal={false}
+                            onClose={() => {
+                                this.setState({
+                                    jsonWindowToolTip: false,
+                                    jsonWindowOpen: false
+                                })
+                            }
+                            }
+                            body={
+                                <div className="JSON-container">
+                                    <div className="JSON-text-header">
+                                        <a className="download-json-link" href={getDownloadLink()} download={"JSON_" + this.state.sb_properties.title} >Download</a>
+                                        <label htmlFor="prettyCheckbox">{"Pretty JSON "}  </label>
+                                        <input checked={this.state.prettyJson}
+                                            onChange={()=>this.setState({prettyJson:!this.state.prettyJson})}
+                                            type="checkbox" id="prettyCheckbox" name="prettyCheckbox" />
+                                    </div>
+                                    <div className="JSON-text-container">
+                                        <div className="JSON-text-area">
+                                             {!this.state.prettyJson && JSON.stringify(this.jsonData, undefined, 0)}
+                                             {this.state.prettyJson && <pre dangerouslySetInnerHTML={{ __html:syntaxHighlight(JSON.stringify(this.jsonData, undefined, 4))}}></pre> }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        />
+                    }
                 </div>
             )
         }
@@ -600,6 +690,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                             layers={this.state.layers}
                             handleBapError={this.handleBapError}
                             isOpen={this.state.isOpen}
+                            setBapJson={this.setBapJson}
                         />
                     </Collapse>
                     {

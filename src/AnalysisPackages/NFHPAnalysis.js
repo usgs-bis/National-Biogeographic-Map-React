@@ -86,6 +86,7 @@ class NFHPAnalysisPackage extends React.Component {
             .then(
                 (result) => {
                     if (result && result.hits.hits[0]) {
+                        this.props.setBapJson(result.hits.hits[0]._source.properties)
                         const charts = this.getCharts({ horizontalBarChart: result.hits.hits[0]._source.properties })
                         this.setState({
                             charts: charts,

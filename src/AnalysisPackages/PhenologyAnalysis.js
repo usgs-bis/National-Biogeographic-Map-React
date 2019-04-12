@@ -172,6 +172,7 @@ class PhenologyAnalysisPackage extends React.Component {
             }
             Promise.all(fetches).then(results => {
                 if (results) {
+                    this.props.setBapJson(results)
                     this.setState({
                         data: results,
                         loading: false

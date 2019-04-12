@@ -94,6 +94,7 @@ class OBISAnalysisPackage extends React.Component {
             .then(
                 (result) => {
                     if (result) {
+                        this.props.setBapJson(result)
                         this.props.updateAnalysisLayers([], this.props.bapId) // make the obis bap priority when only one 
                         const charts = this.getCharts(result)
                         this.setState({
