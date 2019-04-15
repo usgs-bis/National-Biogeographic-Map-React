@@ -172,6 +172,7 @@ class FirstBloomAnalysisPackage extends React.Component {
                 .then(
                     (result) => {
                         if (result) {
+                            this.props.setBapJson(result)
                             const charts = this.getCharts({ histogram: result, ridgelinePlot: result, boxAndWhisker: result })
                             this.setState({
                                 charts: charts,
