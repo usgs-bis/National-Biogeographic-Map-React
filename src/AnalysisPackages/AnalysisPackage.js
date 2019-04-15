@@ -3,6 +3,7 @@ import { Collapse, Button, Tooltip } from "reactstrap"
 import { Glyphicon } from "react-bootstrap";
 import { FormGroup, Label } from 'reactstrap';
 import CustomDialog from "../CustomDialog/CustomDialog";
+import InfoSign from "../ InfoSign/InfoSign"
 
 import "./AnalysisPackages.css"
 
@@ -27,10 +28,6 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 jsonWindowOpen: false,
                 jsonWindowToolTip: false,
                 pBapToolTipOpen: false,
-                sbInfoPopUp: false,
-                sbInfoPopUpToolTip: false,
-                sbInfoLayerPopUp: false,
-                sbInfoLayerPopUpToolTip: false,
                 layersOpen: true,
                 prettyJson: false
             }
@@ -342,18 +339,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                                                 checked={that.state.layers[key].checked}
                                                 type="checkbox" />
                                             {' ' + (layer.titlePrefix ? layer.titlePrefix : "") + layer.title}
-                                            <span id={`sbInfoLayerToolTip${that.props.bapId}${key}`} key={`sbInfoLayerToolTip${that.props.bapId}${key}`}
-                                                onClick={(event) => { that.setState({ [`sbInfoLayerPopUp${key}`]: !that.state[`sbInfoLayerPopUp${key}`] }); event.preventDefault() }}
-                                                className="title-info-icon">
-                                                <Glyphicon glyph="info-sign" />
-                                                <Tooltip
-                                                    style={{ fontSize: "14px" }} isOpen={that.state[`sbInfoLayerPopUpToolTip${key}`]}
-                                                    target={`sbInfoLayerToolTip${that.props.bapId}${key}`}
-                                                    toggle={() => that.setState({ [`sbInfoLayerPopUpToolTip${key}`]: !that.state[`sbInfoLayerPopUpToolTip${key}`] })}
-                                                    delay={0}>
-                                                    Information
-                                                 </Tooltip>
-                                            </span>
+                                            <InfoSign  onClick={(event) => { that.setState({ [`sbInfoLayerPopUp${key}`]: !that.state[`sbInfoLayerPopUp${key}`] }); event.preventDefault() }}> </InfoSign>
                                             {
                                                 that.state[`sbInfoLayerPopUp${key}`] &&
                                                 <span onClick={(event) => event.preventDefault()}>
@@ -648,18 +634,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                     <div className="bap-title-content" style={{ width: 'calc(100% - 40px)' }}>
                         <span className="bapTitle">
                             <span onClick={this.toggleDropdown}>{this.state.sb_properties.title}</span>
-                            {<span id={`sbInfoToolTip${this.props.bapId}`}
-                                onClick={() => this.setState({ sbInfoPopUp: !this.state.sbInfoPopUp })}
-                                className="title-info-icon">
-                                <Glyphicon glyph="info-sign" />
-                                <Tooltip
-                                    style={{ fontSize: "14px" }} isOpen={this.state.sbInfoPopUpToolTip}
-                                    target={`sbInfoToolTip${this.props.bapId}`}
-                                    toggle={() => this.setState({ sbInfoPopUpToolTip: !this.state.sbInfoPopUpToolTip })}
-                                    delay={0}>
-                                    Information
-                                </Tooltip>
-                            </span>}
+                            {<InfoSign  onClick={() => this.setState({ sbInfoPopUp: !this.state.sbInfoPopUp })}> </InfoSign>}
                         </span>
                     </div>
                     <div className="bap-title-content" style={{ width: '20px' }}>
