@@ -7,6 +7,7 @@ import TimeSlider from "./TimeSlider/TimeSlider"
 import { EditControl } from "react-leaflet-draw"
 import L from 'leaflet';
 import { Glyphicon } from "react-bootstrap";
+import InfoSign from '../ InfoSign/InfoSign';
 
 
 
@@ -284,7 +285,9 @@ class NBM extends React.PureComponent {
                     />}
                 </div>
                 <div className="attribution" onClick={() => { this.setState({ attributionOpen: !this.state.attributionOpen }) }} onMouseOver={this.disableDragging} onMouseOut={this.enableDragging}>
-                    <span className="attribution-info" style={{color: 'rgb(107, 153, 197)'}}><Glyphicon glyph="info-sign" /></span>
+                    <span className="attribution-info" style={{color: 'rgb(107, 153, 197)'}}>
+                    <InfoSign></InfoSign>
+                    </span>
                 </div>
                 <span onMouseOver={this.disableDragging} onMouseOut={this.enableDragging} >{attribution()}</span>
                 <FeatureGroup>
