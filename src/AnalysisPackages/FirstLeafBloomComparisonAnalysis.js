@@ -155,6 +155,7 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
                     })
             Promise.all([firstLeafFetch, firstBloomFetch]).then(results => {
                 if (results && results.length === 2) {
+                    this.props.setBapJson(results)
                     const charts = this.getCharts({ ComparisonChart: { leaf: results[0], bloom: results[1] } })
                     this.setState({
                         charts: charts,
@@ -194,6 +195,7 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
                     })
             Promise.all([firstLeafFetch, firstBloomFetch]).then(results => {
                 if (results && results.length === 2) {
+                    this.props.setBapJson(results)
                     const charts = this.getCharts({ ComparisonChart: { leaf: results[0], bloom: results[1] } })
                     this.setState({
                         charts: charts,

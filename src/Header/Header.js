@@ -2,6 +2,7 @@ import React from "react";
 import { Glyphicon } from "react-bootstrap";
 import "./Header.css"
 import CustomDialog from "../CustomDialog/CustomDialog";
+import {Tooltip } from "reactstrap"
 
 
 class Header extends React.Component {
@@ -9,7 +10,8 @@ class Header extends React.Component {
         super(props)
         this.state = {
             title: props.title,
-            showDescription: false
+            showDescription: false,
+            infoToolTip:false
         }
     }
 
@@ -18,9 +20,16 @@ class Header extends React.Component {
             <div className={"nbm-header"}>
                 <span className="usgs-Logo"></span>
                 <span className="bioscape-title-text">{this.state.title}</span>
-                <span onClick={() => this.setState({ showDescription: !this.state.showDescription })} className="main-title-info">
+                <span id ="HeaderInfoToolTip" onClick={() => this.setState({ showDescription: !this.state.showDescription })} className="main-title-info">
                     <Glyphicon glyph="info-sign" />
                 </span>
+                <Tooltip
+                    style={{ fontSize: "14px" }} isOpen={this.state.infoToolTip}
+                    target={`HeaderInfoToolTip`}
+                    toggle={() => this.setState({ infoToolTip: !this.state.infoToolTip })}
+                    delay={0}>
+                    Information
+                </Tooltip>
                 {this.state.showDescription &&
                     <div className="sbinfo-title">
                         <CustomDialog
