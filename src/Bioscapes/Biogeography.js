@@ -32,11 +32,6 @@ class Biogeography extends React.Component {
         this.loaderRef = React.createRef();
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        if (prevProps.feature !== this.props.feature) {
-            this.getDefaultPriorityBap(this.props.feature)
-        }
-    }
 
     componentDidMount() {
         this.props.onRef(this)
