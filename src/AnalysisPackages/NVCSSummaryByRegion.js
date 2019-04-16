@@ -332,8 +332,7 @@ class NVCSSummaryByRegionPackage extends React.Component {
                 <div className="chartsDiv">
                     <div style={{ padding: '10px' }}>
 
-                        {`The data displayed in this summary table is based on the NVCS ${this.enabledLayer ? this.enabledLayer.title : 'Class'}
-                 hierarchy level, as selected in the Bioscape.`}
+                        {`The data displayed in this table defaults to the 'Class' hierarchy level. To change levels, select a new one from the above 'Analysis Inputs'.`}
 
                     </div>
                     <TableChart
