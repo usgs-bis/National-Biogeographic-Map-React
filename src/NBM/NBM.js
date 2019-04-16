@@ -6,7 +6,6 @@ import LocationOverlay from './LocationOverylays/LocationOverlay';
 import TimeSlider from "./TimeSlider/TimeSlider"
 import { EditControl } from "react-leaflet-draw"
 import L from 'leaflet';
-import { Glyphicon } from "react-bootstrap";
 import InfoSign from '../ InfoSign/InfoSign';
 
 
@@ -94,6 +93,13 @@ class NBM extends React.PureComponent {
             if (this.props.overlay) {
                 this.refs.map.leafletElement.addLayer(this.props.overlay.layer)
             }
+        }
+        if(prevProps.feature !== this.props.feature){
+            let center = L.geoJSON(this.props.feature).getBounds().getCenter()
+            this.setState({
+                point: [center.lat, center.lng]
+            });
+            this.props.parentClickHandler({latlng:{lat:center.lat,lng:center.lng}},true)
         }
     }
 
