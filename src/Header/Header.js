@@ -9,7 +9,31 @@ class Header extends React.Component {
         this.state = {
             title: props.title,
             showDescription: false,
-            infoToolTip:false
+            infoToolTip: false,
+            showBetaBanner: false,
+            betaBannerText: 'Beta'
+        }
+    }
+
+    // display the beta banner for non production deploys
+    componentDidMount() {
+        if (document.location.host === "localhost:3000") {
+            this.setState({
+                showBetaBanner: true,
+                betaBannerText: 'Local'
+            })
+        }
+        else if (document.location.host === "dev-sciencebase.usgs.gov") {
+            this.setState({
+                showBetaBanner: true,
+                betaBannerText: 'Dev-IS'
+            })
+        }
+        else if (document.location.host === "localhost:3000") {
+            this.setState({
+                showBetaBanner: true,
+                betaBannerText: 'My-Beta'
+            })
         }
     }
 
@@ -17,6 +41,10 @@ class Header extends React.Component {
         return (
             <div className={"nbm-header"}>
                 <span className="usgs-Logo"></span>
+                {this.state.showBetaBanner && <span className="beta-banner">
+                    <span className="beta-banner-text">{this.state.betaBannerText}</span>
+                </span>
+                }
                 <span className="bioscape-title-text">{this.state.title}</span>
                 <InfoSign onClick={() => this.setState({ showDescription: !this.state.showDescription })}> </InfoSign>
                 {this.state.showDescription &&
