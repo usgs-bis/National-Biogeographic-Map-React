@@ -1,12 +1,11 @@
 import React from 'react'
-import { Map, TileLayer, WMSTileLayer, Marker, Popup, GeoJSON, FeatureGroup, ZoomControl} from 'react-leaflet'
+import { Map, TileLayer, WMSTileLayer, Marker, Popup, GeoJSON, FeatureGroup, ZoomControl } from 'react-leaflet'
 import CustomDialog from "../CustomDialog/CustomDialog";
 import './NBM.css'
 import LocationOverlay from './LocationOverylays/LocationOverlay';
 import TimeSlider from "./TimeSlider/TimeSlider"
 import { EditControl } from "react-leaflet-draw"
 import L from 'leaflet';
-import { Glyphicon } from "react-bootstrap";
 import InfoSign from '../ InfoSign/InfoSign';
 
 
@@ -39,7 +38,7 @@ class NBM extends React.PureComponent {
             let b = L.geoJSON(props.feature).getBounds()
             let northEastLng = b._northEast.lng + BUFFER
             // zooms to features that cross 180 on the right side of map
-            if(northEastLng > 179){
+            if (northEastLng > 179) {
                 northEastLng = -50
             }
             this.bounds = [
@@ -93,6 +92,15 @@ class NBM extends React.PureComponent {
             }
             if (this.props.overlay) {
                 this.refs.map.leafletElement.addLayer(this.props.overlay.layer)
+            }
+        }
+        if (prevProps.feature !== this.props.feature) {
+            if (this.props.feature) {
+                let center = L.geoJSON(this.props.feature).getBounds().getCenter()
+                this.setState({
+                    point: [center.lat, center.lng]
+                });
+                this.props.parentClickHandler({ latlng: { lat: center.lat, lng: center.lng } }, true)
             }
         }
     }
@@ -285,8 +293,8 @@ class NBM extends React.PureComponent {
                     />}
                 </div>
                 <div className="attribution" onClick={() => { this.setState({ attributionOpen: !this.state.attributionOpen }) }} onMouseOver={this.disableDragging} onMouseOut={this.enableDragging}>
-                    <span className="attribution-info" style={{color: 'rgb(107, 153, 197)'}}>
-                    <InfoSign></InfoSign>
+                    <span className="attribution-info" style={{ color: 'rgb(107, 153, 197)' }}>
+                        <InfoSign></InfoSign>
                     </span>
                 </div>
                 <span onMouseOver={this.disableDragging} onMouseOut={this.enableDragging} >{attribution()}</span>

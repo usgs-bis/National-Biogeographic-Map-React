@@ -342,7 +342,7 @@ class App extends React.Component {
         }
     }
 
-    handleMapClick(e) {
+    handleMapClick(e,ignore) {
         fetch(POINT_SEARCH_API + `lat=${e.latlng.lat}&lng=${e.latlng.lng}`)
             .then(res => res.json())
             .then(
@@ -363,7 +363,7 @@ class App extends React.Component {
                             lat: e.latlng.lat,
                             lng: e.latlng.lng,
                             results: r,
-                            mapClicked: true
+                            mapClicked: !ignore
                         })
                     }
                     else {
@@ -371,7 +371,7 @@ class App extends React.Component {
                             lat: e.latlng.lat,
                             lng: e.latlng.lng,
                             results: result.hits.hits.map(a => a["_source"]["properties"]),
-                            mapClicked: true
+                            mapClicked: !ignore
                         })
                     }
                 },

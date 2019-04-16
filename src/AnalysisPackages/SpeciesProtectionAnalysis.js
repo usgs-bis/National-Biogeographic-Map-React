@@ -83,9 +83,6 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
             taxaLetter: "ALL",
             gapStatus: "ALL",
             gapRange: "ALL",
-            enabledLayers: {
-                nfhp_service: false
-            },
             layers: layers,
             value: []
         }
@@ -159,11 +156,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                                 gap12: { id: "", config: {}, data: null },
                                 gap123: { id: "", config: {}, data: null },
                                 gapTable: { id: "", config: {}, data: null }
-                            },
-                            enabledLayers: {
-                                nfhp_service: false,
-                                loading: false
-                            },
+                            }
                         })
                         this.props.isEnabled(false)
                         this.props.canOpen(false)

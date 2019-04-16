@@ -1,7 +1,7 @@
 {
-  "name": "nbm-react",
+  "name": "biogeography",
   "version": "0.1.0",
-  "homepage": "/nbm-react/",
+  "homepage": "/biogeography/",
   "private": true,
   "dependencies": {
     "@turf/turf": "^5.1.6",
