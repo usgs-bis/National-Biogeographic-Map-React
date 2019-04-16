@@ -22,6 +22,7 @@ class TerrestrialEcosystems2011 extends React.Component {
         this.submit = this.submit.bind(this)
         this.share = this.share.bind(this);
         this.report = this.report.bind(this);
+        this.getDefaultPriorityBap = this.getDefaultPriorityBap.bind(this);
         this.loaderRef = React.createRef();
     }
     componentDidMount() {
@@ -41,8 +42,16 @@ class TerrestrialEcosystems2011 extends React.Component {
         let charts = []
         charts.push(this.NVCSHierarchyByPixel.print())
         charts.push(this.NVCSSummaryByRegion.print())
-        
+
         return charts
+    }
+
+    // given any feature set the default priority bap
+    getDefaultPriorityBap() {
+        if (this.props.feature) {
+            return 'bap1'
+        }
+        else return ""
     }
 
     render() {
@@ -58,6 +67,7 @@ class TerrestrialEcosystems2011 extends React.Component {
                         priorityBap={this.props.priorityBap}
                         bapId={`bap${counter++}`}
                         initLayerTitle={this.props.initLayerTitle}
+                        getDefaultPriorityBap={this.getDefaultPriorityBap}
                         point={this.props.point}
                         overlay={this.props.overlay}
                     />
@@ -69,6 +79,7 @@ class TerrestrialEcosystems2011 extends React.Component {
                         priorityBap={this.props.priorityBap}
                         bapId={`bap${counter++}`}
                         initLayerTitle={this.props.initLayerTitle}
+                        getDefaultPriorityBap={this.getDefaultPriorityBap}
                         overlay={this.props.overlay}
                     />
                 </div>

@@ -184,7 +184,8 @@ class NVCSHierarchyByPixelPackage extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.point !== this.props.point) {
+        // simple objects wont be the same bit the json representation should be
+        if (JSON.stringify(prevProps.point) !== JSON.stringify(this.props.point)) {
             this.fetch()
         }
     }
@@ -247,7 +248,7 @@ class NVCSHierarchyByPixelPackage extends React.Component {
                 (result) => {
                     this.props.setBapJson(result)
                     let pixelValue = null
-                    if (result["features"]) {
+                    if (result["features"].length) {
                         pixelValue = result["features"][0]["properties"]["pixel_value"]
                     }
                     this.getHBPData(pixelValue, this)
@@ -266,7 +267,7 @@ class NVCSHierarchyByPixelPackage extends React.Component {
             .then(res => res.json())
             .then(
                 (result) => {
-                    if (result && result.hits.hits.length) {
+                    if (result && result.hits && result.hits.hits.length) {
                         const hbpData = result.hits.hits[0]["_source"]["properties"]
                         const charts = that.getCharts({ pixelHierarchy: hbpData })
                         that.setState({

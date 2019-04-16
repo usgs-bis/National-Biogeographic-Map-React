@@ -87,12 +87,8 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 }
 
                 // forcing a rerender so the bapwindow will populate
-                // not sure why calling this.render() doesnt work
-                // will try to find a better way. 
-                else if (prevState.bapWindowOpen !== this.state.bapWindowOpen) {
-                    this.setState({
-                        random: Math.random()
-                    })
+                if (prevState.bapWindowOpen !== this.state.bapWindowOpen) {
+                    this.forceUpdate()
                 }
             }
         }
@@ -142,28 +138,8 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 newLayers[key].checked = false
             })
 
-            // would like to get away from using bapid, okay if baps are stablized
-            // but will be frustrating if adding more baps in future
-            // this logic assumes bap1 is avaiable with all features escept obis
-            if (this.props.feature.properties.feature_id.includes('OBIS_Areas')) {
-                if (this.props.bapId === 'bap8') {
-                    let avaiableLayers = Object.keys(this.state.layers)
-                    if (avaiableLayers.length) {
-                        this.setPriorityBap(this.state.layers[avaiableLayers[0]])
-                    }
-                    else {
-                        this.props.updateAnalysisLayers([], this.props.bapId)
-                    }
-                }
-            }
-            else if (this.props.bapId === 'bap1') {
-                let avaiableLayers = Object.keys(this.state.layers)
-                if (avaiableLayers.length) {
-                    this.setPriorityBap(this.state.layers[avaiableLayers[0]])
-                }
-                else {
-                    this.props.updateAnalysisLayers([], this.props.bapId)
-                }
+            if (this.props.bapId === this.props.getDefaultPriorityBap()) {
+                this.setPriorityBap()
             }
         }
 
@@ -339,7 +315,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                                                 checked={that.state.layers[key].checked}
                                                 type="checkbox" />
                                             {' ' + (layer.titlePrefix ? layer.titlePrefix : "") + layer.title}
-                                            <InfoSign  onClick={(event) => { that.setState({ [`sbInfoLayerPopUp${key}`]: !that.state[`sbInfoLayerPopUp${key}`] }); event.preventDefault() }}> </InfoSign>
+                                            <InfoSign onClick={(event) => { that.setState({ [`sbInfoLayerPopUp${key}`]: !that.state[`sbInfoLayerPopUp${key}`] }); event.preventDefault() }}> </InfoSign>
                                             {
                                                 that.state[`sbInfoLayerPopUp${key}`] &&
                                                 <span onClick={(event) => event.preventDefault()}>
@@ -422,7 +398,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                     return '<span class="' + cls + '">' + match + '</span>';
                 });
             }
-            const getDownloadLink = ()=>{
+            const getDownloadLink = () => {
                 return "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.jsonData))
             }
             return (
@@ -479,13 +455,13 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                                         <a className="download-json-link" href={getDownloadLink()} download={"JSON_" + this.state.sb_properties.title} >Download</a>
                                         <label htmlFor="prettyCheckbox">{"Pretty JSON "}  </label>
                                         <input checked={this.state.prettyJson}
-                                            onChange={()=>this.setState({prettyJson:!this.state.prettyJson})}
+                                            onChange={() => this.setState({ prettyJson: !this.state.prettyJson })}
                                             type="checkbox" id="prettyCheckbox" name="prettyCheckbox" />
                                     </div>
                                     <div className="JSON-text-container">
                                         <div className="JSON-text-area">
-                                             {!this.state.prettyJson && JSON.stringify(this.jsonData, undefined, 0)}
-                                             {this.state.prettyJson && <pre dangerouslySetInnerHTML={{ __html:syntaxHighlight(JSON.stringify(this.jsonData, undefined, 4))}}></pre> }
+                                            {!this.state.prettyJson && JSON.stringify(this.jsonData, undefined, 0)}
+                                            {this.state.prettyJson && <pre dangerouslySetInnerHTML={{ __html: syntaxHighlight(JSON.stringify(this.jsonData, undefined, 4)) }}></pre>}
                                         </div>
                                     </div>
                                 </div>
@@ -634,7 +610,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                     <div className="bap-title-content" style={{ width: 'calc(100% - 40px)' }}>
                         <span className="bapTitle">
                             <span onClick={this.toggleDropdown}>{this.state.sb_properties.title}</span>
-                            {<InfoSign  onClick={() => this.setState({ sbInfoPopUp: !this.state.sbInfoPopUp })}> </InfoSign>}
+                            {<InfoSign onClick={() => this.setState({ sbInfoPopUp: !this.state.sbInfoPopUp })}> </InfoSign>}
                         </span>
                     </div>
                     <div className="bap-title-content" style={{ width: '20px' }}>

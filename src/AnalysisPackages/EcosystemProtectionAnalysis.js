@@ -65,9 +65,6 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
             data: null,
             gapStatus: "ALL",
             gapRange: "ALL",
-            enabledLayers: {
-                nfhp_service: false
-            },
             layers: layers,
             value: []
         }
@@ -141,10 +138,6 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                                 gapCoverage: { id: "", config: {}, data: null }
                             },
                             submitted: true,
-                            enabledLayers: {
-                                nfhp_service: false,
-                                loading: false
-                            }
                         })
                         this.props.isEnabled(false)
                         this.props.canOpen(false)

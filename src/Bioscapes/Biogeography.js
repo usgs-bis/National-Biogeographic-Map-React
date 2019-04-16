@@ -28,8 +28,14 @@ class Biogeography extends React.Component {
         this.submit = this.submit.bind(this)
         this.share = this.share.bind(this);
         this.report = this.report.bind(this);
-        // this.updateAnalysisLayers = this.updateAnalysisLayers.bind(this)
+        this.getDefaultPriorityBap = this.getDefaultPriorityBap.bind(this);
         this.loaderRef = React.createRef();
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.feature !== this.props.feature) {
+            this.getDefaultPriorityBap(this.props.feature)
+        }
     }
 
     componentDidMount() {
@@ -55,13 +61,27 @@ class Biogeography extends React.Component {
         charts.push(this.SpeciesProtectionAnalysis.print())
         charts.push(this.PhenologyAnalysis.print())
         charts.push(this.OBISAnalysis.print())
-        
+
         return charts
     }
 
 
+    // given any feature set the default priority bap
+    getDefaultPriorityBap() {
+        if (this.props.feature) {
+            if (this.props.feature.properties.feature_id.includes('OBIS_Areas')) {
+                return 'bap8'
+            }
+            else {
+                return 'bap1'
+            }
+        }
+        else return ""
+    }
+
+
+
     render() {
-        let counter = 1;
         return (
             <div>
                 <div className="nbm-flex-row-no-padding">
@@ -73,8 +93,9 @@ class Biogeography extends React.Component {
                         yearMin={this.props.rangeYearMin}
                         yearMax={this.props.rangeYearMax}
                         priorityBap={this.props.priorityBap}
-                        bapId={`bap${counter++}`}
+                        bapId={`bap1`}
                         initLayerTitle={this.props.initLayerTitle}
+                        getDefaultPriorityBap={this.getDefaultPriorityBap}
                     />
                 </div>
                 <div className="nbm-flex-row-no-padding">
@@ -86,8 +107,9 @@ class Biogeography extends React.Component {
                         yearMin={this.props.rangeYearMin}
                         yearMax={this.props.rangeYearMax}
                         priorityBap={this.props.priorityBap}
-                        bapId={`bap${counter++}`}
+                        bapId={`bap2`}
                         initLayerTitle={this.props.initLayerTitle}
+                        getDefaultPriorityBap={this.getDefaultPriorityBap}
                     />
                 </div>
                 <div className="nbm-flex-row-no-padding">
@@ -99,8 +121,9 @@ class Biogeography extends React.Component {
                         yearMin={this.props.rangeYearMin}
                         yearMax={this.props.rangeYearMax}
                         priorityBap={this.props.priorityBap}
-                        bapId={`bap${counter++}`}
+                        bapId={`bap3`}
                         initLayerTitle={this.props.initLayerTitle}
+                        getDefaultPriorityBap={this.getDefaultPriorityBap}
                     />
                 </div>
                 <div className="nbm-flex-row-no-padding">
@@ -110,8 +133,9 @@ class Biogeography extends React.Component {
                         setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
-                        bapId={`bap${counter++}`}
+                        bapId={`bap4`}
                         initLayerTitle={this.props.initLayerTitle}
+                        getDefaultPriorityBap={this.getDefaultPriorityBap}
                     />
                 </div>
                 <div className="nbm-flex-row-no-padding">
@@ -121,8 +145,9 @@ class Biogeography extends React.Component {
                         setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
-                        bapId={`bap${counter++}`}
+                        bapId={`bap5`}
                         initLayerTitle={this.props.initLayerTitle}
+                        getDefaultPriorityBap={this.getDefaultPriorityBap}
                     />
                 </div>
                 <div className="nbm-flex-row-no-padding">
@@ -132,8 +157,9 @@ class Biogeography extends React.Component {
                         setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
-                        bapId={`bap${counter++}`}
+                        bapId={`bap6`}
                         initLayerTitle={this.props.initLayerTitle}
+                        getDefaultPriorityBap={this.getDefaultPriorityBap}
                     />
                 </div>
                 <div className="nbm-flex-row-no-padding">
@@ -143,8 +169,9 @@ class Biogeography extends React.Component {
                         setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
-                        bapId={`bap${counter++}`}
+                        bapId={`bap7`}
                         initLayerTitle={this.props.initLayerTitle}
+                        getDefaultPriorityBap={this.getDefaultPriorityBap}
                     />
                 </div>
                 <div className="nbm-flex-row-no-padding">
@@ -154,8 +181,9 @@ class Biogeography extends React.Component {
                         setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
-                        bapId={`bap${counter++}`}
+                        bapId={`bap8`}
                         initLayerTitle={this.props.initLayerTitle}
+                        getDefaultPriorityBap={this.getDefaultPriorityBap}
                     />
                 </div>
             </div>
