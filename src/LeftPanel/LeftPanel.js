@@ -3,10 +3,11 @@ import "./LeftPanel.css";
 import SearchBar from "./searchBar/searchBar.js"
 import PDFReport from "../PDF/PdfReport";
 import { BarLoader } from "react-spinners"
-import { Tooltip } from "reactstrap";
 import * as turf from '@turf/turf'
 import Biogeography from "../Bioscapes/Biogeography";
 import TerrestrialEcosystems2011 from "../Bioscapes/TerrestrialEcosystems2011";
+import CustomToolTip from "../ToolTip/ToolTip";
+import speechBubble from './bubble.png'
 
 const numberWithCommas = (x) => {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -21,16 +22,28 @@ class LeftPanel extends React.Component {
             updateAnalysisLayers: props.updateAnalysisLayers,
             loading: false,
             enabledLayers: [],
-            shareToolTipOpen: false,
-            reportToolTipOpen: false,
-            shareText: 'Share'
+            shareText: 'Share',
+            displayHelp: true
         }
 
         this.share = this.share.bind(this);
         this.report = this.report.bind(this);
         this.updateAnalysisLayers = this.updateAnalysisLayers.bind(this)
         this.loaderRef = React.createRef();
+        this.listnerAdded = false
     }
+
+
+    componentDidMount() {
+
+    }
+    componentWillUnmount() {
+        if(this.listnerAdded){
+        document.body.removeEventListener('click', () => { this.setState({ displayHelp: false }) }, true);
+        document.body.removeEventListener('keydown', () => { this.setState({ displayHelp: false }) }, true);
+        }
+    }
+
 
     componentWillReceiveProps(props) {
         if (props.feature && props.feature.properties) {
@@ -66,6 +79,12 @@ class LeftPanel extends React.Component {
                 feature_area: approxArea
 
             })
+        }
+
+        if (!this.props.priorityBap && props.feature && !this.listnerAdded) {
+            this.listnerAdded = true
+            document.body.addEventListener('click', () => { this.setState({ displayHelp: false }) }, true);
+            document.body.addEventListener('keydown', () => { this.setState({ displayHelp: false }) }, true);
         }
 
     }
@@ -112,11 +131,11 @@ class LeftPanel extends React.Component {
                         loading: false
                     })
                 }, 3000);
-            },(error) => {
+            }, (error) => {
                 console.log(error)
-                   this.setState({
-                        loading: false
-                    })
+                this.setState({
+                    loading: false
+                })
             })
     }
 
@@ -141,23 +160,18 @@ class LeftPanel extends React.Component {
                         <div className="panel-subtitle">
                             <div className="category-text">Category: <span className="feature-text">  {this.state.feature_class}</span></div>
                             <div className="category-text">Approximate Area: <span className="feature-text">  {this.state.feature_area === "Unknown" ? 'Unknown' : this.state.feature_area + " acres"} </span></div>
+                            <div className="category-text">Lat, Long, Elev(ft): <span className="feature-text">  {`${this.props.point.lat.toFixed(5)} ${this.props.point.lng.toFixed(5)} ${this.props.point.elv}`}</span></div>
+
                         </div>
                         <div className="panel-buttons">
                             <button id="ShareTooltip" className="submit-analysis-btn" onClick={this.share}>{this.state.shareText}</button>
                             <input className="share-url-input" type="text"></input>
-                            <Tooltip
-                                style={{ fontSize: "14px" }} isOpen={this.state.shareToolTipOpen}
-                                target="ShareTooltip" toggle={() => { this.setState({ shareToolTipOpen: !this.state.shareToolTipOpen }) }} delay={0}>
-                                {this.props.feature && this.props.feature.properties.userDefined ? 'Unable to share a user drawn polygon.' : 'Share this map by copying a url to your clipboard.'}
-                            </Tooltip>
+                            <CustomToolTip target="ShareTooltip" text={this.props.feature && this.props.feature.properties.userDefined ? 'Unable to share a user drawn polygon.' : 'Share this map by copying a url to your clipboard.'} > </CustomToolTip>
+
                             <button id="ReportTooltip" className="submit-analysis-btn" onClick={this.report}>
                                 <PDFReport onRef={ref => (this.PDFReport = ref)} getShareUrl={this.props.shareState}></PDFReport>
                             </button>
-                            <Tooltip
-                                style={{ fontSize: "14px" }} isOpen={this.state.reportToolTipOpen}
-                                target="ReportTooltip" toggle={() => { this.setState({ reportToolTipOpen: !this.state.reportToolTipOpen }) }} delay={0}>
-                                {"Only expanded sections will appear in the PDF and all user selections/filters will be reflected."}
-                            </Tooltip>
+                            <CustomToolTip target="ReportTooltip" text={"Only expanded sections will appear in the PDF and all user selections/filters will be reflected."} > </CustomToolTip>
                         </div>
                         <BarLoader ref={this.loaderRef} width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
                     </div>
@@ -178,8 +192,13 @@ class LeftPanel extends React.Component {
                         basemapChanged={this.props.basemapChanged}></SearchBar>
                     {featureText()}
                 </div>
-                <div id='analysis-package-container' className="analysis-package-container" style={{height : this.props.feature ?  'calc(100% - 212px)' : '100%'}} >
-                    
+                {!this.props.priorityBap && this.state.feature_name && this.state.displayHelp && <div className="bap-popup" id="baphHelpPopup">
+                    <img src={speechBubble} alt="Speech Bubble"></img>
+                    <div className="bap-popuptext" id="myPopup">Choose an Analysis</div>
+                </div>}
+
+                <div id='analysis-package-container' className="analysis-package-container" style={{ height: this.props.feature ? 'calc(100% - 212px)' : '100%' }} >
+
                     {this.state.feature_name && <div className="analysis-available">Analyses available for {this.state.feature_name}</div>}
                     {!this.state.feature_name && <div className="analysis-package-text">Analysis Packages {this.state.feature_name}</div>}
                     {

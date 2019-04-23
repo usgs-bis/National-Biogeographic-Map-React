@@ -29,7 +29,7 @@ class Header extends React.Component {
                 betaBannerText: 'Dev-IS'
             })
         }
-        else if (document.location.host === "localhost:3000") {
+        else if (document.location.host === "my-beta.usgs.gov") {
             this.setState({
                 showBetaBanner: true,
                 betaBannerText: 'My-Beta'
