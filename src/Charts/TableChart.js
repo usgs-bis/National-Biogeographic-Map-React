@@ -1,74 +1,100 @@
 import React from "react";
 import "./Chart.css"
-import ReactTable from "react-table";
-import "react-table/react-table.css";
+
+const numberWithCommas = (x) => {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 
 class TableChart extends React.Component {
     constructor(props) {
         super(props)
-        this.state = {}
+        this.state = {
+            header: null,
+            body: null
+        }
+        this.data = null
+
+        this.createTable = this.createTable.bind(this)
+        this.createTableHeader = this.createTableHeader.bind(this)
         this.sortTable = this.sortTable.bind(this)
     }
 
     componentDidMount() {
 
+        this.data = this.props.data
     }
 
     componentDidUpdate() {
+        if ((this.data !== this.props.data || !this.state.header) && this.props.data) {
+            this.data = this.props.data
+            this.createTable(this.data[0], this.data.slice(1))
+        }
 
     }
 
+    createTable(head, body) {
+        if(!head || !body) return
+        let table = []
 
-    sortTable(a, b, desc) {
-
-        if (parseFloat(a) && a.includes(',')) {
-            a = parseFloat(a.replace(/,/g, ''))
+        // Outer loop to create parent
+        for (let i = 0; i < body.length; i++) {
+            let children = []
+            //Inner loop to create children
+            for (let j = 0; j < body[0].length; j++) {
+                children.push(<td key={`${i}_${j}`}>{body[i][j]}</td>)
+            }
+            //Create the parent and add the children
+            table.push(<tr key={`${i}_row`}>{children}</tr>)
         }
-        if (parseFloat(b) && b.includes(',')) {
-            b = parseFloat(b.replace(/,/g, ''))
-        }
-        return a < b ? 1 : (b < a) ? -1 : 0;
+        this.setState({
+            header: <thead><tr>{this.createTableHeader(head)}</tr></thead>,
+            body: <tbody>{table}</tbody>
+        })
+    }
 
+    createTableHeader(head) {
+        let headers = []
+        for (let i = 0; i < head.length; i++) {
+            headers.push(<th key={`${i}_head`} onClick={() => { this.sortTable(i) }} >{head[i]}</th>)
+        }
+        return headers
+    }
+
+    sortTable(i) {
+        this.ascending = !this.ascending
+        let body = this.data.slice(1)
+
+        // if we detect numbers are formatted with commas 
+        // we remove the commas and convert to float before sorting
+        // then replace the commas after sorting
+        let commaFormatted = false
+        body.map((b) => {
+            if (parseFloat(b[i]) && b[i].includes(',')) {
+                commaFormatted = true
+                b[i] = parseFloat(b[i].replace(',', ''))
+                return b
+            }
+            return b
+        })
+        if (this.ascending) {
+            body = body.sort((a, b) => (a[i] < b[i]) ? 1 : ((b[i] < a[i]) ? -1 : 0));
+        }
+        else {
+            body = body.sort((a, b) => (a[i] > b[i]) ? 1 : ((b[i] > a[i]) ? -1 : 0));
+        }
+
+        // replacing the commas
+        if (commaFormatted) {
+            body.map((b) => {
+                b[i] = numberWithCommas(b[i])
+                return b
+            })
+        }
+        this.createTable(this.data[0], body)
     }
 
 
     render() {
-
-        const getTable = () => {
-            let headers = this.props.data[0]
-            let data = this.props.data.slice(1).sort((a,b)=>{return a[0] >= b[0] ? 1 : -1 } )
-            return <ReactTable
-                data={data}
-                columns={
-                    headers.map((h, i) => {
-                        return i === 0 ?
-                            {
-                                Header: h,
-                                id: `${h}_${i}_id`,
-                                accessor: d => d[i],
-                                minWidth: 225 // make the first row a bit bigger then the rest
-                            }
-                            :
-                            {
-                                Header: h,
-                                id: `${h}_${i}_id`,
-                                accessor: d => d[i]
-                            }
-                    })
-                }
-
-                showPagination={false}
-                showPageSizeOptions={false}
-                defaultSortMethod={this.sortTable}
-                defaultPageSize={data.length}
-                minRows={0}
-                style={{
-                    height: "600px" // This will force the table body to scroll
-                }}
-                className="-striped -highlight"
-            />
-
-        }
         const divs = () => {
             if (this.props.data) {
                 const id = this.props.id
@@ -87,10 +113,13 @@ class TableChart extends React.Component {
                             </div>
                             <div id={id + 'Chart'} className="chart">
                                 <div className="analysis-chart-container">
-                                    <div className="table-container">
-                                        {getTable()}
-                                    </div>
+                                    <table>
+                                        {this.state.header}
+                                        {this.state.body}
+                                    </table>
+
                                 </div>
+
                             </div>
                         </div>
                     </div>

@@ -6,7 +6,7 @@ import { TiledMapLayer } from "esri-leaflet";
 import withSharedAnalysisCharacteristics from "./AnalysisPackage"
 import PieChart from "../Charts/PieChart"
 import TableChart from "../Charts/TableChart"
-import CustomToolTip from "../ToolTip/ToolTip"
+
 import "./AnalysisPackages.css";
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/5b86d48ce4b0702d0e7962b5?format=json"
@@ -96,7 +96,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
         this.featureChange = this.featureChange.bind(this)
         this.fetch = this.fetch.bind(this)
         this.createUniqueBapContents = this.createUniqueBapContents.bind(this)
-        this.resetRaidoBtn = this.resetRaidoBtn.bind(this)
+        this.resetRaidoBtn =  this.resetRaidoBtn.bind(this)
     }
 
     componentDidMount() {
@@ -311,7 +311,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                 }
 
                 let chartTitle = `${tableType} in ${this.props.feature.properties.feature_name} (${preData.length})`
-                let chartData = [['Species Name', 'Range', 'Habitat']]
+                let chartData = [['Species Name', '', 'Range', 'Habitat']]
                 let protectedPercent = ''
 
                 if (this.state.gapRange !== 'ALL') {
@@ -327,35 +327,21 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                         if (this.state.gapStatus === 'status_1_2_group') protectedPercent = `${parseFloat(row.status_1_2).toFixed(2)}%`
                         if (this.state.gapStatus === 'status_1_2_3_group') protectedPercent = `${parseFloat(row.status_1_2_3).toFixed(2)}%`
                     }
-                    const radio1 = <span>
-                        <input
-                            id={`Range_${row.sppcode}`}
-                            style={{ marginLeft: '10px' }}
-                            type="radio"
-                            name={`sp_radio`}
-                            checked={this.previous_row_sppcode === row.sppcode && this.previous_type === 'species_range'}
-                            onChange={function (e) { that.changeFilter(e, "species_range", row.sppcode) }}
-                            value={`${row.common_name} (${row.scientific_name}) ${row.sppcode} v1`} />
-                        <CustomToolTip target={`Range_${row.sppcode}`} text={"Known Range Map"} > </CustomToolTip>
-
-                    </span>
-                    const radio2 = <span>
-                        <input
-                            id={`Habitat_${row.sppcode}`}
-                            type="radio"
-                            name={`sp_radio`}
-                            checked={this.previous_row_sppcode === row.sppcode && this.previous_type === 'habitat_map'}
-                            onChange={function (e) { that.changeFilter(e, "habitat_map", row.sppcode) }}
-                            value={`${row.common_name} (${row.scientific_name}) ${row.sppcode} v1`} />
-                        <CustomToolTip target={`Habitat_${row.sppcode}`} text={"Predicted Habitat Map"} > </CustomToolTip>
-                    </span>
-
-                    if (protectedPercent) {
-                        chartData.push([name, protectedPercent, radio1, radio2,])
-                    }
-                    else {
-                        chartData.push([name, radio1, radio2,])
-                    }
+                    const radio1 = <input
+                        id={`Range_${row.sppcode}`}
+                        type="radio"
+                        name={`sp_radio`}
+                        checked={this.previous_row_sppcode === row.sppcode && this.previous_type === 'species_range'}
+                        onChange={function (e) { that.changeFilter(e, "species_range", row.sppcode) }}
+                        value={`${row.common_name} (${row.scientific_name}) ${row.sppcode} v1`} />
+                    const radio2 = <input
+                        id={`Habitat_${row.sppcode}`}
+                        type="radio"
+                        name={`sp_radio`}
+                        checked={this.previous_row_sppcode === row.sppcode && this.previous_type === 'habitat_map'}
+                        onChange={function (e) { that.changeFilter(e, "habitat_map", row.sppcode) }}
+                        value={`${row.common_name} (${row.scientific_name}) ${row.sppcode} v1`} />
+                    chartData.push([name, protectedPercent, radio1, radio2,])
                 }
                 const chartConfig = {
                     margins: { left: 20, right: 20, top: 20, bottom: 125 },
@@ -396,7 +382,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
     }
 
     filterTableData(d) {
-        this.resetRaidoBtn()
+       this.resetRaidoBtn()
         this.setState({
             gapStatus: d.status,
             gapRange: d.range
@@ -409,10 +395,10 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
         })
     }
 
-    resetRaidoBtn() {
+    resetRaidoBtn(){
         this.previous_row_sppcode = ""
         this.previous_type = ""
-        if (this.props.bapId === this.props.priorityBap) {
+        if(this.props.bapId === this.props.priorityBap){
             this.props.updateBapLayers()
         }
     }

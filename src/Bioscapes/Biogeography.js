@@ -63,16 +63,15 @@ class Biogeography extends React.Component {
 
     // given any feature set the default priority bap
     getDefaultPriorityBap() {
-        return ""     // update BCB-1103 "default to no baps open or priority" the folling logic might still be helpful in the future
-        // if (this.props.feature) {
-        //     if (this.props.feature.properties.feature_id.includes('OBIS_Areas')) {
-        //         return 'bap8'
-        //     }
-        //     else {
-        //         return 'bap1'
-        //     }
-        // }
-        // else return ""
+        if (this.props.feature) {
+            if (this.props.feature.properties.feature_id.includes('OBIS_Areas')) {
+                return 'bap8'
+            }
+            else {
+                return 'bap1'
+            }
+        }
+        else return ""
     }
 
 

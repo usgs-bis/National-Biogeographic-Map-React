@@ -7,7 +7,7 @@ import { Glyphicon } from "react-bootstrap";
 import Legend from "../../Legend/Legend";
 import { RadioGroup } from "../../CustomRadio/CustomRadio";
 import { Collapse, CardBody, Card } from "reactstrap";
-import speechBubble from '../bubble.png'
+import speechBubble from './bubble.png'
 
 
 class SearchBar extends React.Component {

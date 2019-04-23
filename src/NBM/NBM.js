@@ -95,7 +95,7 @@ class NBM extends React.PureComponent {
             }
         }
         if (prevProps.feature !== this.props.feature) {
-            if (this.props.feature && !this.props.clickDrivenEvent) {
+            if (this.props.feature) {
                 let center = L.geoJSON(this.props.feature).getBounds().getCenter()
                 this.setState({
                     point: [center.lat, center.lng]

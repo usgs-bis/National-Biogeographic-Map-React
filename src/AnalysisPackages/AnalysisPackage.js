@@ -1,10 +1,10 @@
 import React from "react";
-import { Collapse, Button } from "reactstrap"
+import { Collapse, Button, Tooltip } from "reactstrap"
 import { Glyphicon } from "react-bootstrap";
 import { FormGroup, Label } from 'reactstrap';
 import CustomDialog from "../CustomDialog/CustomDialog";
 import InfoSign from "../ InfoSign/InfoSign"
-import CustomToolTip from "../ToolTip/ToolTip"
+
 import "./AnalysisPackages.css"
 
 const withSharedAnalysisCharacteristics = (AnalysisPackage,
@@ -24,7 +24,10 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 layers: layers,
                 isEnabled: true,
                 bapWindowOpen: false,
+                bapWindowToolTip: false,
                 jsonWindowOpen: false,
+                jsonWindowToolTip: false,
+                pBapToolTipOpen: false,
                 layersOpen: true,
                 prettyJson: false
             }
@@ -273,7 +276,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                     <div className="analysis-layers">
                         <div className="analysis-layers-dropdown">
                             <span onClick={this.toggleLayerDropdown} >
-                                {"Analysis Inputs"}
+                                {"Analysis Layers"}
                                 <Glyphicon
                                     className="analysis-dropdown-glyph"
                                     glyph={this.state.layersOpen ? "menu-down" : "menu-right"}
@@ -282,19 +285,20 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                             <span>
                                 <Button id={`openBapWindow${this.props.bapId}`} className='bap-window-button'
                                     style={{ display: this.state.bapWindowOpen ? "none" : "inline-block" }}
-                                    onClick={() => { this.setState({ bapWindowOpen: !this.state.bapWindowOpen }) }}>
+                                    onClick={() => { this.setState({ bapWindowOpen: !this.state.bapWindowOpen }) }}
+                                    onMouseEnter={() => this.toggle(this.state.bapWindowToolTip, 'bapWindowToolTip')}
+                                    onMouseLeave={() => this.toggle(this.state.bapWindowToolTip, 'bapWindowToolTip')}>
                                     <Glyphicon className="inner-glyph" glyph="resize-full"
                                     />
                                 </Button>
                                 <Button id={`viewJsonWindow${this.props.bapId}`} className='bap-window-button'
                                     style={{ display: this.state.jsonWindowOpen || !this.jsonData ? "none" : "inline-block" }}
-                                    onClick={() => { this.setState({ jsonWindowOpen: !this.state.jsonWindowOpen }) }}>
+                                    onClick={() => { this.setState({ jsonWindowOpen: !this.state.jsonWindowOpen }) }}
+                                    onMouseEnter={() => this.toggle(this.state.jsonWindowToolTip, 'jsonWindowToolTip')}
+                                    onMouseLeave={() => this.toggle(this.state.jsonWindowToolTip, 'jsonWindowToolTip')}>
                                     <Glyphicon className="inner-glyph" glyph="console"
                                     />
                                 </Button>
-                                <CustomToolTip target={`openBapWindow${this.props.bapId}`} text="View Bap in new window" ></CustomToolTip>
-                                <CustomToolTip target={`viewJsonWindow${this.props.bapId}`} text="View the raw JSON used for analysis" ></CustomToolTip>
-
                             </span>
                         </div>
 
@@ -400,6 +404,17 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             return (
                 <div>
 
+                    <Tooltip
+                        style={{ fontSize: "14px" }} isOpen={this.state.bapWindowToolTip && !this.state.bapWindowOpen}
+                        target={`openBapWindow${this.props.bapId}`} delay={0}>
+                        View Bap in new window
+                    </Tooltip>
+                    <Tooltip
+                        style={{ fontSize: "14px" }} isOpen={this.state.jsonWindowToolTip && !this.state.jsonWindowOpen}
+                        target={`viewJsonWindow${this.props.bapId}`} delay={0}>
+                        View the raw JSON used for analysis
+                    </Tooltip>
+
                     {
                         this.state.bapWindowOpen &&
                         <CustomDialog
@@ -410,6 +425,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                             modal={false}
                             onClose={() => {
                                 this.setState({
+                                    bapWindowToolTip: false,
                                     bapWindowOpen: false
                                 })
                             }
@@ -428,6 +444,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                             modal={false}
                             onClose={() => {
                                 this.setState({
+                                    jsonWindowToolTip: false,
                                     jsonWindowOpen: false
                                 })
                             }
@@ -592,13 +609,20 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                     </div>
                     <div className="bap-title-content" style={{ width: 'calc(100% - 40px)' }}>
                         <span className="bapTitle">
-                            <span onClick={this.state.canOpen ? () => this.setPriorityBap() : null}>{this.state.sb_properties.title}</span>
+                            <span onClick={this.toggleDropdown}>{this.state.sb_properties.title}</span>
                             {<InfoSign onClick={() => this.setState({ sbInfoPopUp: !this.state.sbInfoPopUp })}> </InfoSign>}
                         </span>
                     </div>
                     <div className="bap-title-content" style={{ width: '20px' }}>
                         <input id={`pBapToolTip${this.props.bapId}`} className="priority-bap-raido" style={{ display: this.state.canOpen ? 'block' : 'none' }} type='radio' readOnly={true} checked={this.props.bapId === this.props.priorityBap} onClick={() => this.setPriorityBap()} ></input>
-                        <CustomToolTip target={`pBapToolTip${this.props.bapId}`} text={this.props.bapId === this.props.priorityBap ? "Deselect Priority Bap" : "Select Priority Bap"} ></CustomToolTip>
+                        <Tooltip
+                            style={{ fontSize: "14px" }} isOpen={this.state.pBapToolTipOpen}
+                            target={`pBapToolTip${this.props.bapId}`}
+                            toggle={() => this.setState({ pBapToolTipOpen: !this.state.pBapToolTipOpen })}
+                            delay={0}>
+                            {this.props.bapId === this.props.priorityBap ? "Deselect Priority Bap" : "Select Priority Bap"}
+
+                        </Tooltip>
                     </div>
                     <Collapse className="settings-dropdown" isOpen={this.state.isOpen && this.state.isEnabled}>
                         <AnalysisPackage
