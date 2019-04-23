@@ -14,10 +14,8 @@ const bioscapeMap = {
     "nbm-react": nbmBioscape,
     "terrestrial-ecosystems-2011": nvcsBioscape
 };
-const ELEVATION_SOURCE = 'https://nationalmap.gov/epqs/pqs.php?'
 
-
-const NVCS_FEATURE_LOOKUP = ['Landscape Conservation Cooperatives', 'US County', 'Ecoregion III', 'US States and Territories']
+const NVCS_FEATURE_LOOKUP = ['Landscape Conservation Cooperatives','US County','Ecoregion III','US States and Territories']
 
 const TEXT_SEARCH_API = process.env.REACT_APP_BIS_API + "/api/v1/places/search/text?q=";
 const POINT_SEARCH_API = process.env.REACT_APP_BIS_API + "/api/v1/places/search/point?";
@@ -43,7 +41,6 @@ class App extends React.Component {
             activeLayerTitle: '',
             priorityBap: null,
             APIVersion: '',
-            clickDrivenEvent: false
 
         }
         this.initFeatureId = null;
@@ -65,7 +62,6 @@ class App extends React.Component {
         this.layerTransitionFade = this.layerTransitionFade.bind(this)
         this.parseGeom = this.parseGeom.bind(this)
         this.setPriorityBap = this.setPriorityBap.bind(this)
-        this.getElevationFromPoint = this.getElevationFromPoint.bind(this)
         this.state = this.loadState(this.state)
 
     }
@@ -218,13 +214,13 @@ class App extends React.Component {
     // turns geometries into line collections
     // draws lines that cross the 180 on both sides of the map
     // ex 'Alaska' or 'Aleutian and Bering Sea Islands'
-    parseGeom(geometry) {
+    parseGeom(geometry){
         let polyLineCollection = [];
         let polyLineCollectionOtherWorld = [];
-        let edgeOfMap = 10
-        let leftEdge = false // close to left edge
+        let edgeOfMap = 10 
+        let leftEdge=false // close to left edge
         let rightEdge = false // close to right edge
-
+    
         // convert 
         geometry.coordinates.forEach(feature => {
             feature.forEach(polygon => {
@@ -237,10 +233,10 @@ class App extends React.Component {
                     "coordinates": []
                 }
                 let crossed22 = false
-                for (let i = 0; i < polygon.length; i++) {
+                for(let i=0; i < polygon.length; i++){
                     let coordinates = polygon[i]
                     if ((coordinates[0] < -179.99 || coordinates[0] > 179.99) && lineCoord.coordinates.length) {
-                        if (lineCoord.coordinates.length > 1) {
+                        if(lineCoord.coordinates.length > 1){
                             polyLineCollection.push(lineCoord)
                             if (crossed22) {
                                 lineCoordCopy = {
@@ -265,12 +261,12 @@ class App extends React.Component {
                         if (coordinates[0] > 180 - edgeOfMap) rightEdge = true
                         if (coordinates[0] < -180 + edgeOfMap) leftEdge = true
                     }
-                    else {
-                        if (i + 1 < polygon.length && polygon[i + 1][0] > -179.99 && polygon[i + 1][0] < 179.99) {
+                    else{
+                        if(i+1 < polygon.length && polygon[i+1][0] > -179.99 && polygon[i+1][0] < 179.99){
                             lineCoord.coordinates.push(coordinates)
                         }
                     }
-
+        
                 }
 
                 polyLineCollection.push(lineCoord)
@@ -286,18 +282,18 @@ class App extends React.Component {
                 }
             })
         });
-
-        if (rightEdge && leftEdge) { // if its close to both edges draw on both sides of map
-            polyLineCollectionOtherWorld.forEach(line => {
+    
+            if(rightEdge && leftEdge){ // if its close to both edges draw on both sides of map
+            polyLineCollectionOtherWorld.forEach(line =>{
                 polyLineCollection.push(line)
             })
         }
-        let lines = polyLineCollection.map((p) => {
+        let lines = polyLineCollection.map((p)=>{
             return p.coordinates
         })
         let result = {
             type: 'MultiLineString',
-            coordinates: lines
+            coordinates : lines
         }
         return result
     }
@@ -346,8 +342,7 @@ class App extends React.Component {
         }
     }
 
-    handleMapClick(e, ignore) {
-        this.getElevationFromPoint(e.latlng.lat,e.latlng.lng)
+    handleMapClick(e,ignore) {
         fetch(POINT_SEARCH_API + `lat=${e.latlng.lat}&lng=${e.latlng.lng}`)
             .then(res => res.json())
             .then(
@@ -357,20 +352,18 @@ class App extends React.Component {
                         this.setState({
                             lat: e.latlng.lat,
                             lng: e.latlng.lng,
-                            clickDrivenEvent: true
                         })
                     }
-                    else if (this.state.bioscape.overlays) {
+                    else if(this.state.bioscape.overlays){
                         let r = result.hits.hits.map(a => a["_source"]["properties"])
-                        r = r.filter((a) => {
+                        r = r.filter((a)=>{
                             return NVCS_FEATURE_LOOKUP.includes(a.feature_class)
                         })
                         this.setState({
                             lat: e.latlng.lat,
                             lng: e.latlng.lng,
                             results: r,
-                            mapClicked: !ignore,
-                            clickDrivenEvent: true
+                            mapClicked: !ignore
                         })
                     }
                     else {
@@ -378,39 +371,13 @@ class App extends React.Component {
                             lat: e.latlng.lat,
                             lng: e.latlng.lng,
                             results: result.hits.hits.map(a => a["_source"]["properties"]),
-                            mapClicked: !ignore,
-                            clickDrivenEvent: true
-
+                            mapClicked: !ignore
                         })
                     }
                 },
                 (error) => {
                     this.setState({
                         error
-                    });
-                }
-            )
-    }
-
-    getElevationFromPoint(lat, lng) {
-        const numberWithCommas = (x) => {
-            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
-
-        fetch(`${ELEVATION_SOURCE}x=${lng}&y=${lat}&units=Feet&output=json`)
-            .then(res => res.json())
-            .then(
-                (result) => {
-                    let identifiedElevationValue = result.USGS_Elevation_Point_Query_Service
-                    let elev = identifiedElevationValue.Elevation_Query.Elevation;
-                    elev = elev > -20 ? numberWithCommas(parseInt(elev)) : "No Data"
-                    this.setState({
-                        elv: elev
-                    })
-                },
-                (error) => {
-                    this.setState({
-                        error: error
                     });
                 }
             )
@@ -428,8 +395,7 @@ class App extends React.Component {
             .then(
                 (result) => {
                     this.setState({
-                        results: result.hits.hits.map(a => a["_source"]["properties"]),
-                        clickDrivenEvent: false
+                        results: result.hits.hits.map(a => a["_source"]["properties"])
                     })
                 },
                 (error) => {
@@ -528,11 +494,11 @@ class App extends React.Component {
     updateAnalysisLayers(layers, bapId) {
         this.setState({
             analysisLayers: layers,
-            // priorityBap: bapId
+           // priorityBap: bapId
         })
     }
 
-    setPriorityBap(bapId) {
+    setPriorityBap(bapId){
         this.setState({
             priorityBap: bapId
         })
@@ -571,7 +537,7 @@ class App extends React.Component {
                             initLayerTitle={this.initLayerTitle}
                             priorityBap={this.state.priorityBap}
                             bioscapeName={this.state.bioscapeName}
-                            point={{ lat: this.state.lat, lng: this.state.lng, elv: this.state.elv }}
+                            point={{ lat: this.state.lat, lng: this.state.lng }}
                             overlay={this.state.overlay}
                         />
                     </Resizable>
@@ -595,8 +561,7 @@ class App extends React.Component {
                             bioscapeName={this.state.bioscapeName}
                             applicationVersion={REACT_VERSION}
                             APIVersion={this.state.APIVersion}
-                            priorityBap={this.state.priorityBap}
-                            clickDrivenEvent={this.state.clickDrivenEvent}
+                            priorityBap = {this.state.priorityBap}
 
                         />
                     </div>
