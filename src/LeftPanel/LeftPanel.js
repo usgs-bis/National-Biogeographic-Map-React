@@ -38,9 +38,9 @@ class LeftPanel extends React.Component {
 
     }
     componentWillUnmount() {
-        if(this.listnerAdded){
-        document.body.removeEventListener('click', () => { this.setState({ displayHelp: false }) }, true);
-        document.body.removeEventListener('keydown', () => { this.setState({ displayHelp: false }) }, true);
+        if (this.listnerAdded) {
+            document.body.removeEventListener('click', () => { this.setState({ displayHelp: false }) }, true);
+            document.body.removeEventListener('keydown', () => { this.setState({ displayHelp: false }) }, true);
         }
     }
 
@@ -155,13 +155,12 @@ class LeftPanel extends React.Component {
                 return (
                     <div className="panel-header">
                         <div className="panel-title">
-                            <span >{this.state.feature_name}</span>
+                            <span>{this.state.feature_name}</span>
                         </div>
                         <div className="panel-subtitle">
                             <div className="category-text">Category: <span className="feature-text">  {this.state.feature_class}</span></div>
                             <div className="category-text">Approximate Area: <span className="feature-text">  {this.state.feature_area === "Unknown" ? 'Unknown' : this.state.feature_area + " acres"} </span></div>
-                            <div className="category-text">Lat, Long, Elev(ft): <span className="feature-text">  {`${this.props.point.lat.toFixed(5)} ${this.props.point.lng.toFixed(5)} ${this.props.point.elv}`}</span></div>
-
+                            <div className="category-text">Lat, Long, Elev(ft): <span className="feature-text">  { this.props.point && this.props.point.elev ? `${this.props.point.lat.toFixed(5)} ${this.props.point.lng.toFixed(5)} ${this.props.point.elv}` : ''}</span></div>
                         </div>
                         <div className="panel-buttons">
                             <button id="ShareTooltip" className="submit-analysis-btn" onClick={this.share}>{this.state.shareText}</button>
