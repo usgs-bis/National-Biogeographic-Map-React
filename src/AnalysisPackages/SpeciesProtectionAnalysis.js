@@ -462,7 +462,12 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                                             // widths: ['*','auto'],
                                             heights: 15,
                                             body: this.state.charts.gapTable.data.slice(0, Math.floor(this.state.charts.gapTable.data.length / 3))
-                                                .map(elm => { return elm[1] ? [elm[0], elm[1]] : [elm[0]] })
+                                                .map(elm => {
+                                                    if (elm.length === 3) {
+                                                        return elm[0].props ? [elm[0].props.children] : [elm[0]]
+                                                    }
+                                                    return [elm[0].props ? elm[0].props.children : elm[0], elm[1].props ? elm[1].props.children : elm[1]]
+                                                })
                                         }
                                     },
                                 ]
@@ -477,7 +482,12 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                                             // widths: ['*','auto'],
                                             heights: 15,
                                             body: this.state.charts.gapTable.data.slice(Math.floor(this.state.charts.gapTable.data.length / 3), Math.floor((this.state.charts.gapTable.data.length / 3) * 2))
-                                                .map(elm => { return elm[1] ? [elm[0], elm[1]] : [elm[0]] })
+                                                .map(elm => {
+                                                    if (elm.length === 3) {
+                                                        return elm[0].props ? [elm[0].props.children] : [elm[0]]
+                                                    }
+                                                    return [elm[0].props ? elm[0].props.children : elm[0], elm[1].props ? elm[1].props.children : elm[1]]
+                                                })
                                         }
                                     },
                                 ]
@@ -492,7 +502,12 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                                             //widths: ['*','auto'],
                                             heights: 15,
                                             body: this.state.charts.gapTable.data.slice(Math.floor((this.state.charts.gapTable.data.length / 3) * 2), this.state.charts.gapTable.data.length)
-                                                .map(elm => { return elm[1] ? [elm[0], elm[1]] : [elm[0]] })
+                                                .map(elm => {
+                                                    if (elm.length === 3) {
+                                                        return elm[0].props ? [elm[0].props.children] : [elm[0]]
+                                                    }
+                                                    return [elm[0].props ? elm[0].props.children : elm[0], elm[1].props ? elm[1].props.children : elm[1]]
+                                                })
                                         }
                                     },
                                 ]

@@ -124,7 +124,7 @@ class LeftPanel extends React.Component {
             charts = this.Biogeography.report()
         }
 
-        this.PDFReport.generateReport(this.state.feature_name, this.state.feature_class, this.props.map, charts)
+        this.PDFReport.generateReport(this.state.feature_name, this.state.feature_class, this.props.point,this.state.feature_area, this.props.map, charts)
             .then(() => {
                 setTimeout(() => {
                     this.setState({
