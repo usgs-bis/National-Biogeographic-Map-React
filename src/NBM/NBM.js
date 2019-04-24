@@ -58,6 +58,11 @@ class NBM extends React.PureComponent {
 
         this.props.setMap(this.refs.map)
 
+        if (this.props.initPoint && this.props.initPoint.elv) {
+            this.setState({
+                point: [this.props.initPoint.lat, this.props.initPoint.lng]
+            });
+        }
     }
 
     componentDidUpdate(prevProps) {

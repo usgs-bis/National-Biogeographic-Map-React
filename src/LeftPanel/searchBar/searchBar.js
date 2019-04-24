@@ -150,7 +150,8 @@ class SearchBar extends React.Component {
                                 />
                             </CardBody>
                         </Card>
-                        {this.props.bioscape.overlays &&
+                        {/* Terrestrial had overlays section. comment for now, may remove layer if this change sticks */}
+                        {/* {this.props.bioscape.overlays &&
                             <Card>
                                 <span className="header">Overlays</span>
                                 <CardBody>
@@ -161,7 +162,7 @@ class SearchBar extends React.Component {
                                     />
                                 </CardBody>
                             </Card>
-                        }
+                        } */}
                     </Collapse>
                 </div>
 

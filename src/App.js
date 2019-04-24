@@ -46,8 +46,9 @@ class App extends React.Component {
             clickDrivenEvent: false
 
         }
-        this.initFeatureId = null;
+        this.initFeatureId = null
         this.initLayerTitle = null
+        this.initPoint = null
         this.parseBioscape = this.parseBioscape.bind(this)
         this.handleSearchBox = this.handleSearchBox.bind(this)
         this.submitHandler = this.submitHandler.bind(this)
@@ -98,7 +99,8 @@ class App extends React.Component {
                 feature: { id: this.state.feature.properties.feature_id },
                 basemap: this.state.basemap,
                 timeSlider: { rangeYearMin: this.state.rangeYearMin, rangeYearMax: this.state.rangeYearMax, mapDisplayYear: this.state.mapDisplayYear },
-                bap: { activeLayerTitle: this.state.analysisLayers && this.state.analysisLayers.length ? this.state.analysisLayers[0].title : '', priorityBap: this.state.priorityBap }
+                bap: { activeLayerTitle: this.state.analysisLayers && this.state.analysisLayers.length ? this.state.analysisLayers[0].title : '', priorityBap: this.state.priorityBap },
+                point: { lat: this.state.lat, lng: this.state.lng, elv: this.state.elv }
             }
             let objJsonB64 = Buffer.from(JSON.stringify(state)).toString("base64");
             let copyText = document.getElementsByClassName('share-url-input')[0]
@@ -126,6 +128,12 @@ class App extends React.Component {
             s.rangeYearMax = initState.timeSlider.rangeYearMax
             s.mapDisplayYear = initState.timeSlider.mapDisplayYear
             s.priorityBap = initState.bap.priorityBap
+            this.initPoint = { lat: initState.point.lat, lng: initState.point.lng, elv: initState.point.elv }
+            s.lat = initState.point.lat
+            s.lng = initState.point.lng
+            s.elv = initState.point.elv
+            s.clickDrivenEvent = initState.point.lat ? true : false
+
             return s
         }
         return s
@@ -347,7 +355,7 @@ class App extends React.Component {
     }
 
     handleMapClick(e, ignore) {
-        this.getElevationFromPoint(e.latlng.lat,e.latlng.lng)
+        this.getElevationFromPoint(e.latlng.lat, e.latlng.lng)
         fetch(POINT_SEARCH_API + `lat=${e.latlng.lat}&lng=${e.latlng.lng}`)
             .then(res => res.json())
             .then(
@@ -427,8 +435,14 @@ class App extends React.Component {
             .then(res => res.json())
             .then(
                 (result) => {
+                    let r = result.hits.hits.map(a => a["_source"]["properties"])
+                    if (this.state.bioscape.overlays) {
+                        r = r.filter((a) => {
+                            return NVCS_FEATURE_LOOKUP.includes(a.feature_class)
+                        })
+                    }
                     this.setState({
-                        results: result.hits.hits.map(a => a["_source"]["properties"]),
+                        results: r,
                         clickDrivenEvent: false
                     })
                 },
@@ -597,6 +611,7 @@ class App extends React.Component {
                             APIVersion={this.state.APIVersion}
                             priorityBap={this.state.priorityBap}
                             clickDrivenEvent={this.state.clickDrivenEvent}
+                            initPoint={this.initPoint}
 
                         />
                     </div>
