@@ -311,14 +311,23 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                 }
 
                 let chartTitle = `${tableType} in ${this.props.feature.properties.feature_name} (${preData.length})`
-                let chartData = [['Species Name', 'Range', 'Habitat']]
+                let chartData = [
+                    ['Species Name',
+                        <span id="Range_Title_Target">Range  <CustomToolTip target="Range_Title_Target" text={"Known Range Map"} > </CustomToolTip></span>,
+                        <span id="Habitat_Title_Target">Habitat <CustomToolTip target="Habitat_Title_Target" text={"Predicted Habitat Map"} > </CustomToolTip></span>,
+                    ]]
                 let protectedPercent = ''
 
                 if (this.state.gapRange !== 'ALL') {
                     preData = preData.filter((d) => { return d[this.state.gapStatus] === this.state.gapRange })
                     if (this.state.gapStatus === 'status_1_2_group') chartTitle = `${preData.length} ${tableType} with ${this.state.gapRange}% within GAP Status 1 & 2 in ${this.props.feature.properties.feature_name}`
                     if (this.state.gapStatus === 'status_1_2_3_group') chartTitle = `${preData.length} ${tableType} with ${this.state.gapRange}% within GAP Status 1, 2 & 3 in ${this.props.feature.properties.feature_name}`
-                    chartData = [['Species Name', 'Protected', 'Range', 'Habitat']]
+                    chartData = [
+                        ['Species Name',
+                            'Protected',
+                            <span id="Range_Title_Target">Range  <CustomToolTip target="Range_Title_Target" text={"Known Range Map"} > </CustomToolTip></span>,
+                            <span id="Habitat_Title_Target">Habitat <CustomToolTip target="Habitat_Title_Target" text={"Predicted Habitat Map"} > </CustomToolTip></span>,
+                        ]]
                 }
 
                 for (let row of preData) {
