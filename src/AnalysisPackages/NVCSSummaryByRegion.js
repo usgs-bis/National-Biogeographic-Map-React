@@ -284,6 +284,9 @@ class NVCSSummaryByRegionPackage extends React.Component {
                                         widths: ['40%', '30%', '30%'],
                                         heights: 50,
                                         body: this.state.charts.nvcsSummTable.data.slice(0, Math.floor(this.state.charts.nvcsSummTable.data.length / 3))
+                                        .map(elm => {
+                                            return [elm[0], elm[1]]
+                                        })
                                     }
                                 },
                             ]
@@ -298,6 +301,9 @@ class NVCSSummaryByRegionPackage extends React.Component {
                                         widths: ['40%', '30%', '30%'],
                                         heights: 50,
                                         body: this.state.charts.nvcsSummTable.data.slice(Math.floor(this.state.charts.nvcsSummTable.data.length / 3), Math.floor((this.state.charts.nvcsSummTable.data.length / 3) * 2))
+                                        .map(elm => {
+                                            return [elm[0], elm[1]]
+                                        })
                                     }
                                 },
                             ]
@@ -312,6 +318,9 @@ class NVCSSummaryByRegionPackage extends React.Component {
                                         widths: ['40%', '30%', '30%'],
                                         heights: 50,
                                         body: this.state.charts.nvcsSummTable.data.slice(Math.floor((this.state.charts.nvcsSummTable.data.length / 3) * 2), this.state.charts.nvcsSummTable.data.length)
+                                        .map(elm => {
+                                            return [elm[0], elm[1]]
+                                        })
                                     }
                                 },
                             ]

@@ -565,6 +565,9 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                                             widths: ['40%', '30%', '30%'],
                                             heights: 50,
                                             body: this.state.charts.gapTable.data.slice(0, Math.floor(this.state.charts.gapTable.data.length / 3))
+                                                .map(elm => {
+                                                    return [elm[0], elm[1], elm[2]]
+                                                })
                                         }
                                     },
                                 ]
@@ -579,6 +582,9 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                                             widths: ['40%', '30%', '30%'],
                                             heights: 50,
                                             body: this.state.charts.gapTable.data.slice(Math.floor(this.state.charts.gapTable.data.length / 3), Math.floor((this.state.charts.gapTable.data.length / 3) * 2))
+                                                .map(elm => {
+                                                    return [elm[0], elm[1], elm[2]]
+                                                })
                                         }
                                     },
                                 ]
@@ -593,6 +599,9 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                                             widths: ['40%', '30%', '30%'],
                                             heights: 50,
                                             body: this.state.charts.gapTable.data.slice(Math.floor((this.state.charts.gapTable.data.length / 3) * 2), this.state.charts.gapTable.data.length)
+                                                .map(elm => {
+                                                    return [elm[0], elm[1], elm[2]]
+                                                })
                                         }
                                     },
                                 ]
@@ -649,7 +658,6 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                         <button className="submit-analysis-btn" onClick={this.resetEcoTable}>Clear Chart Selection</button>
                     </div>
                     <TableChart
-                        onRef={ref => (this.TableChart = ref)}
                         data={this.state.charts.gapTable.data}
                         id={this.state.charts.gapTable.id}
                         config={this.state.charts.gapTable.config} />
