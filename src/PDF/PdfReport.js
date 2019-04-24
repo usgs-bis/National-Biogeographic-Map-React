@@ -2,6 +2,8 @@ import React from 'react'
 import pdfMake from "pdfmake/build/pdfmake.js"
 import * as pdfFonts from 'pdfmake/build/vfs_fonts.js';
 import html2canvas from 'html2canvas';
+import markerIcon from './marker-icon.png'
+
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
@@ -95,21 +97,35 @@ class PDFReport extends React.Component {
             document.getElementsByClassName('global-time-slider')[0].hidden = false
             document.getElementsByClassName('location-overlay')[0].hidden = false
 
-            //     //WORK IN PROGRESS
-            //     map.leafletElement.eachLayer((layer) => {
-            //         if (layer.options.name === 'mapClickedMarker') {
-            //             let destCtx = canvas.getContext('2d');
-            //             let markerEl = layer.getElement();
-            //             const markerRect = markerEl.getBoundingClientRect()
-            //             const mapPaneRect = map.leafletElement.getPane('mapPane').getBoundingClientRect()
-            //             let x = markerRect.x - mapPaneRect.x - markerEl.width
-            //             let y = markerRect.y - mapPaneRect.y - markerEl.height                  
-            //             destCtx.drawImage(markerEl, x,y);
-            //         }
-            //    });
 
-            return canvas.toDataURL()
-        });
+            // create a promise so the marker image can load
+            // we store the marker png locally so the canvas does not become 'tainted' (CORS)
+            // calculate its position on the map and draw it to the canvas
+            let p = new Promise(function (resolve, reject) {
+                map.leafletElement.eachLayer((layer) => {
+                    if (layer.options.name === 'mapClickedMarker') {
+                        let markerEl = layer.getElement();
+                        const markerRect = markerEl.getBoundingClientRect()
+                        const leftPannel = document.getElementsByClassName('panel-area')
+                        let offset = 0
+                        if (leftPannel.length) offset = leftPannel[0].clientWidth
+                        let x = markerRect.x - offset
+                        let y = markerRect.y - markerEl.height - 15
+                        let context = canvas.getContext("2d");
+                        let img = new Image();
+                        img.onload = function () {
+                            context.drawImage(img, x, y);
+                            resolve(canvas)
+                        }
+                        img.src = markerIcon
+                    }
+                })
+            })
+
+            return p.then(function (c) {
+                return c.toDataURL()
+            })
+        })
     }
 
     getStyles() {
