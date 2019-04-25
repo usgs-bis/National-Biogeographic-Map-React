@@ -3,11 +3,14 @@ import NBM from "./NBM/NBM";
 import Header from "./Header/Header";
 import LeftPanel from "./LeftPanel/LeftPanel";
 import nbmBioscape from "./Bioscapes/biogeography.json"
+import states from "./states.json"
 import nvcsBioscape from "./Bioscapes/terrestrial-ecosystems-2011.json"
 import Resizable from 're-resizable';
 import cloneLayer from "leaflet-clonelayer"
 import L from "leaflet";
 import "./App.css";
+import * as turf from '@turf/turf'
+
 
 const bioscapeMap = {
     "biogeography": nbmBioscape,
@@ -24,6 +27,10 @@ const POINT_SEARCH_API = process.env.REACT_APP_BIS_API + "/api/v1/places/search/
 const GET_FEATURE_API = process.env.REACT_APP_BIS_API + "/api/v1/places/search/feature?feature_id=";
 const API_VERSION_URL = process.env.REACT_APP_BIS_API + "/api"
 const REACT_VERSION = process.env.REACT_APP_VERSION
+
+const numberWithCommas = (x) => {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 
 class App extends React.Component {
 
@@ -67,6 +74,7 @@ class App extends React.Component {
         this.parseGeom = this.parseGeom.bind(this)
         this.setPriorityBap = this.setPriorityBap.bind(this)
         this.getElevationFromPoint = this.getElevationFromPoint.bind(this)
+        this.countyStateLookup = this.countyStateLookup.bind(this)
         this.state = this.loadState(this.state)
 
     }
@@ -314,11 +322,30 @@ class App extends React.Component {
         fetch(GET_FEATURE_API + e.id)
             .then(res => res.json())
             .then(
-                (result) => {
-                    if (result && result.hits.hits.length && result.hits.hits[0]["_source"]) {
-                        result.hits.hits[0]["_source"].geometry = this.parseGeom(result.hits.hits[0]["_source"].geometry)
+                (data) => {
+                    if (data && data.hits.hits.length && data.hits.hits[0]["_source"]) {
+                        let result = data.hits.hits[0]["_source"]
+                        let approxArea = 'Unknown'
+                        try {
+                            let area = 0
+                            if (result.geometry.type === 'MultiPolygon') {
+                                for (let poly of result.geometry.coordinates) {
+                                    area += turf.area(turf.polygon(poly))
+                                }
+                            }
+                            else {
+                                area = turf.area(turf.polygon(result.geometry.coordinates))
+                            }
+                            approxArea = numberWithCommas(parseInt(turf.convertArea(area, 'meters', 'acres')))
+                        }
+                        catch (e) {
+                            console.log(e)
+                        }
+                        result.properties.approxArea = approxArea
+                        result.geometry = this.parseGeom(result.geometry)
+                        result.properties = this.countyStateLookup([result.properties])[0]
                         this.setState({
-                            feature: result.hits.hits[0]["_source"],
+                            feature: result,
                             mapClicked: false
                         })
                     }
@@ -370,6 +397,7 @@ class App extends React.Component {
                     }
                     else if (this.state.bioscape.overlays) {
                         let r = result.hits.hits.map(a => a["_source"]["properties"])
+                        r = this.countyStateLookup(r)
                         r = r.filter((a) => {
                             return NVCS_FEATURE_LOOKUP.includes(a.feature_class)
                         })
@@ -382,10 +410,12 @@ class App extends React.Component {
                         })
                     }
                     else {
+                        let r = result.hits.hits.map(a => a["_source"]["properties"])
+                        r = this.countyStateLookup(r)
                         this.setState({
                             lat: e.latlng.lat,
                             lng: e.latlng.lng,
-                            results: result.hits.hits.map(a => a["_source"]["properties"]),
+                            results: r,
                             mapClicked: !ignore,
                             clickDrivenEvent: true
 
@@ -400,11 +430,23 @@ class App extends React.Component {
             )
     }
 
-    getElevationFromPoint(lat, lng) {
-        const numberWithCommas = (x) => {
-            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
 
+    // given a list of results look up the state if applicable
+    countyStateLookup(rlist) {
+        return rlist.map(a => {
+            if (a.feature_class === 'US County') {
+                let stateFips = a.feature_id.substring(15, 17)
+                let state = states.find(s => {
+                    return s.fips === stateFips
+                })
+                a.state = state
+            }
+            return a
+        })
+    }
+
+    getElevationFromPoint(lat, lng) {
+        
         fetch(`${ELEVATION_SOURCE}x=${lng}&y=${lat}&units=Feet&output=json`)
             .then(res => res.json())
             .then(
@@ -436,6 +478,7 @@ class App extends React.Component {
             .then(
                 (result) => {
                     let r = result.hits.hits.map(a => a["_source"]["properties"])
+                    r = this.countyStateLookup(r)
                     if (this.state.bioscape.overlays) {
                         r = r.filter((a) => {
                             return NVCS_FEATURE_LOOKUP.includes(a.feature_class)

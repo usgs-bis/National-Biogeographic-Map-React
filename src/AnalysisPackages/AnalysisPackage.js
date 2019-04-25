@@ -592,7 +592,9 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                     </div>
                     <div className="bap-title-content" style={{ width: 'calc(100% - 40px)' }}>
                         <span className="bapTitle">
-                            <span onClick={this.state.canOpen ? () => this.setPriorityBap() : null}>{this.state.sb_properties.title}</span>
+                            <span onClick={this.state.canOpen ? () => this.props.bapId !== this.props.priorityBap ? this.setPriorityBap() : this.toggleDropdown() : null}>
+                                {this.state.sb_properties.title}
+                            </span>
                             {<InfoSign onClick={() => this.setState({ sbInfoPopUp: !this.state.sbInfoPopUp })}> </InfoSign>}
                         </span>
                     </div>

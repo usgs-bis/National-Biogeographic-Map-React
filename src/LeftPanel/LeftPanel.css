@@ -207,7 +207,7 @@
         position: fixed;
         z-index: 99999;
         left: 180px !important;
-        top: 311px !important;
+        top: 340px !important;
         width: 400px;
         height: 220px;
     }
@@ -217,7 +217,7 @@
     position: fixed;
     z-index: 99999;
     left: 539px;
-    top: 293px;
+    top: 320px;
     width: 400px;
     height: 220px;
 }
@@ -238,4 +238,14 @@
 .bap-popup img {
     width: 350px;
     position: absolute;
+}
+
+.pdf-loading-gif{
+    position: fixed;
+    right: 30vw;
+    z-index: 99999;
+    top: 50vh;
+    background-color: white;
+    border-radius: 60px;
+
 }
