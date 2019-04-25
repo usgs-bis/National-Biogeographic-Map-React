@@ -188,7 +188,6 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
 
 
         toggleLayer(layer) {
-            console.log(layer)
             if (layer) {
                 if (layer.checked) {
                     this.turnOnLayer()
