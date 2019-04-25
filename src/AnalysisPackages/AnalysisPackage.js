@@ -188,6 +188,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
 
 
         toggleLayer(layer) {
+            console.log(layer)
             if (layer) {
                 if (layer.checked) {
                     this.turnOnLayer()
@@ -292,8 +293,8 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                                     <Glyphicon className="inner-glyph" glyph="console"
                                     />
                                 </Button>
-                                <CustomToolTip target={`openBapWindow${this.props.bapId}`} text="View Bap in new window" ></CustomToolTip>
-                                <CustomToolTip target={`viewJsonWindow${this.props.bapId}`} text="View the raw JSON used for analysis" ></CustomToolTip>
+                                <CustomToolTip placement="top" target={`openBapWindow${this.props.bapId}`} text="View Bap in new window" ></CustomToolTip>
+                                <CustomToolTip placement="top" target={`viewJsonWindow${this.props.bapId}`} text="View the raw JSON used for analysis" ></CustomToolTip>
 
                             </span>
                         </div>
@@ -308,6 +309,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                                                 style={{ display: layer.hideCheckbox ? "none" : "inline-block" }}
                                                 ref={(input) => { that[key] = input; that["inputRefs"][key] = input }}
                                                 onChange={function () { that.toggleLayer(that.state.layers[key]) }}
+                                                onClick={function () { that.toggleLayer(that.state.layers[key]) }}
                                                 checked={that.state.layers[key].checked}
                                                 type="checkbox" />
                                             {' ' + (layer.titlePrefix ? layer.titlePrefix : "") + layer.title}
