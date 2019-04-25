@@ -2,16 +2,12 @@ import React from "react";
 import "./LeftPanel.css";
 import SearchBar from "./searchBar/searchBar.js"
 import PDFReport from "../PDF/PdfReport";
-import { BarLoader } from "react-spinners"
-import * as turf from '@turf/turf'
 import Biogeography from "../Bioscapes/Biogeography";
 import TerrestrialEcosystems2011 from "../Bioscapes/TerrestrialEcosystems2011";
 import CustomToolTip from "../ToolTip/ToolTip";
 import speechBubble from './bubble.png'
+import loadingGif from './ajax-loader.gif'
 
-const numberWithCommas = (x) => {
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
 
 class LeftPanel extends React.Component {
     constructor(props) {
@@ -48,36 +44,13 @@ class LeftPanel extends React.Component {
     componentWillReceiveProps(props) {
         if (props.feature && props.feature.properties) {
 
-            let approxArea = 'Unknown'
-            try {
-                if (props.feature.properties.source_data && props.feature.properties.source_data.value && JSON.parse(props.feature.properties.source_data.value)[0].areasqkm) {
-                    let areaSqMeters = JSON.parse(props.feature.properties.source_data.value)[0].areasqkm
-                    approxArea = numberWithCommas(parseInt(turf.convertArea(areaSqMeters, 'kilometres', 'acres')))
-                }
-                else {
-                    let area = 0
-                    if (props.feature.geometry.type === 'MultiPolygon') {
-                        for (let poly of props.feature.geometry.coordinates) {
-                            area += turf.area(turf.polygon(poly))
-                        }
-                    }
-                    else {
-                        area = turf.area(turf.polygon(props.feature.geometry.coordinates))
-                    }
-                    approxArea = numberWithCommas(parseInt(turf.convertArea(area, 'meters', 'acres')))
-                }
-            }
-            catch (e) {
-
-            }
-
             this.setState({
                 feature: props.feature,
                 feature_id: props.feature.properties.feature_id,
                 feature_name: props.feature.properties.feature_name,
                 feature_class: props.feature.properties.feature_class,
-                feature_area: approxArea
-
+                feature_state: props.feature.properties.state,
+                feature_area: props.feature.properties.approxArea
             })
         }
 
@@ -123,14 +96,14 @@ class LeftPanel extends React.Component {
         else {
             charts = this.Biogeography.report()
         }
-
-        this.PDFReport.generateReport(this.state.feature_name, this.state.feature_class, this.props.point,this.state.feature_area, this.props.map, charts)
+        let name = this.state.feature_name + `${this.state.feature_state ? ", " + this.state.feature_state.abbreviation : ""}`
+        this.PDFReport.generateReport(name, this.state.feature_class, this.props.point, this.state.feature_area, this.props.map, charts)
             .then(() => {
                 setTimeout(() => {
                     this.setState({
                         loading: false
                     })
-                }, 3000);
+                }, 1000);
             }, (error) => {
                 console.log(error)
                 this.setState({
@@ -155,7 +128,7 @@ class LeftPanel extends React.Component {
                 return (
                     <div className="panel-header">
                         <div className="panel-title">
-                            <span>{this.state.feature_name}</span>
+                            <span>{this.state.feature_name}{this.state.feature_state ? ", " + this.state.feature_state.abbreviation : ""}</span>
                         </div>
                         <div className="panel-subtitle">
                             <div className="category-text">Category: <span className="feature-text">  {this.state.feature_class}</span></div>
@@ -179,7 +152,9 @@ class LeftPanel extends React.Component {
                             </button>
                             <CustomToolTip target="ReportTooltip" text={"Only expanded sections will appear in the PDF and all user selections/filters will be reflected."} > </CustomToolTip>
                         </div>
-                        <BarLoader ref={this.loaderRef} width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
+                        {this.state.loading && <div className="pdf-loading-gif">
+                            <img src={loadingGif} alt="Loading..."></img>
+                        </div>}
                     </div>
                 )
             }
