@@ -600,7 +600,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                     </div>
                     <div className="bap-title-content" style={{ width: '20px' }}>
                         <input id={`pBapToolTip${this.props.bapId}`} className="priority-bap-raido" style={{ display: this.state.canOpen ? 'block' : 'none' }} type='radio' readOnly={true} checked={this.props.bapId === this.props.priorityBap} onClick={() => this.setPriorityBap()} ></input>
-                        <CustomToolTip target={`pBapToolTip${this.props.bapId}`} text={this.props.bapId === this.props.priorityBap ? "Deselect Priority Bap" : "Select Priority Bap"} ></CustomToolTip>
+                        <CustomToolTip placement="top" target={`pBapToolTip${this.props.bapId}`} text={this.props.bapId === this.props.priorityBap ? "Deselect Priority Bap" : "Select Priority Bap"} ></CustomToolTip>
                     </div>
                     <Collapse className="settings-dropdown" isOpen={this.state.isOpen && this.state.isEnabled}>
                         <AnalysisPackage

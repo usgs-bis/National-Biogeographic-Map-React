@@ -1,9 +1,7 @@
 import React from "react";
-// import { Button, Tooltip } from "reactstrap";
 import { Button } from "reactstrap";
-
 import { Glyphicon } from "react-bootstrap";
-
+import CustomToolTip from "../ToolTip/ToolTip"
 import CustomDialog from "../CustomDialog/CustomDialog";
 import WmsLegend from "./WmsLegend"
 import ArcgisLegend from "./ArcgisLegend"
@@ -15,14 +13,12 @@ class Legend extends React.Component {
         super(props)
         this.state = {
             isDialogOpen: false,
-            toolTipOpen:false,
             enabledLayers: props.enabledLayers
         }
     }
 
     toggleDialog = () => this.setState({ isDialogOpen: !this.state.isDialogOpen });
 
-    // openDialog = () => this.setState({ isDialogOpen: true });
 
     handleClose = () => {
         this.setState({
@@ -30,11 +26,6 @@ class Legend extends React.Component {
             isDialogOpen: false
         });
     }
-
-    toggleLegendTooltip = () => this.setState({
-        toolTipOpen: !this.state.toolTipOpen
-    });
-
 
     render() {
         const legend = (legend) => {
@@ -49,14 +40,9 @@ class Legend extends React.Component {
         return (
             <div>
                 <Button id={"LegendTooltip"} className='submit-analysis-btn placeholder-button' onClick={this.toggleDialog} >
-                    <Glyphicon className="inner-glyph" glyph="th-list"
-                    data-toggle="tooltip" data-placement="bottom" title="Legend" />
+                    <Glyphicon className="inner-glyph" glyph="th-list" />
                 </Button>
-                {/* <Tooltip
-                    style={{ fontSize: "14px" }} isOpen={this.state.toolTipOpen && !this.state.isDialogOpen}
-                    target="LegendTooltip" toggle={this.toggleLegendTooltip} delay={0}>
-                    Legend
-                </Tooltip> */}
+                <CustomToolTip target={`LegendTooltip`} text="Legend" placement="left" ></CustomToolTip>
                 {
                     this.state.isDialogOpen &&
                     <CustomDialog
@@ -69,13 +55,13 @@ class Legend extends React.Component {
                         body={
                             this.props.enabledLayers.map(function (layer, idx) {
                                 return (
-                                    <div className = "legend" key={"legend" + idx}>
-                                    <div className="legend-holder" >
-                                        <span className="layer-title">{layer.title}</span><br></br>
-                                        {
-                                            layer.legend ? legend(layer.legend) : "No legend info"
-                                        }
-                                    </div>
+                                    <div className="legend" key={"legend" + idx}>
+                                        <div className="legend-holder" >
+                                            <span className="layer-title">{layer.title}</span><br></br>
+                                            {
+                                                layer.legend ? legend(layer.legend) : "No legend info"
+                                            }
+                                        </div>
                                     </div>
                                 )
                             })
