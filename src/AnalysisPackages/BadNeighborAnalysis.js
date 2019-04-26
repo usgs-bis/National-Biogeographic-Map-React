@@ -149,7 +149,7 @@ class BadNeighborAnalysisPackage extends React.Component {
 
                 const chartConfig = {
                     margins: { left: 100, right: 20, top: 20, bottom: 70 },
-                    chart: { title: `Precent Threat of Sample Groupes Bad Neighbors in ${this.props.feature.properties.feature_name}`, subtitle: `` },
+                    chart: { title: `Percent Threat of Sample Groupes Bad Neighbors in ${this.props.feature.properties.feature_name}`, subtitle: `` },
                     xAxis: { key: 'Percent', label: "Realative Contribution", ticks: 5, tickFormat: (d) => { return `${parseInt(d)}%` } },
                     yAxis: { key: 'Group', label: "Bad Neighbor Group", ticks: 5, tickFormat: (d) => { return d } },
                     tooltip: { label: (d) => { return `<div style="text-align:left;"><div><b>Group</b>: ${d.Group}</div><div><b>Contribution</b>: ${d.Percent}%</div><div><b>Count</b>: ${d.Count}</div></div>` } }
