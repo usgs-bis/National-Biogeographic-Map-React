@@ -136,7 +136,7 @@ class LeftPanel extends React.Component {
                             <div className="category-text">Point of Interest: <span className="feature-text">
                                 {this.props.point && this.props.point.elv && this.props.point.lat && this.props.point.lng &&
                                     <span>
-                                        {`${this.props.point.lat.toFixed(5)}°, ${this.props.point.lng.toFixed(5)}° `}  {'\u00A0'}  <span> {` ${this.props.point.elv}ft.`}</span>
+                                        {`${this.props.point.lat.toFixed(5)}°, ${this.props.point.lng.toFixed(5)}° `}  {'\u00A0'}  <span> {` ${this.props.point.elv === "No Data" ? "No Data" : this.props.point.elv + "ft"}.`}</span>
                                     </span>
                                 }
                             </span>

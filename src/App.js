@@ -453,7 +453,7 @@ class App extends React.Component {
                 (result) => {
                     let identifiedElevationValue = result.USGS_Elevation_Point_Query_Service
                     let elev = identifiedElevationValue.Elevation_Query.Elevation;
-                    elev = elev > -20 ? numberWithCommas(parseInt(elev)) : "No Data"
+                    elev = elev > -400 ? numberWithCommas(parseInt(elev)) : "No Data"
                     this.setState({
                         elv: elev
                     })
