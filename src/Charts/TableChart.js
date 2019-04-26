@@ -36,7 +36,7 @@ class TableChart extends React.Component {
 
         const getTable = () => {
             let headers = this.props.data[0]
-            let data = this.props.data.slice(1).sort((a,b)=>{return a[0] >= b[0] ? 1 : -1 } )
+            let data = this.props.data.slice(1).sort((a, b) => { return a[0] >= b[0] ? 1 : -1 })
             return <ReactTable
                 data={data}
                 columns={
@@ -63,7 +63,7 @@ class TableChart extends React.Component {
                 defaultPageSize={data.length}
                 minRows={0}
                 style={{
-                    height: "600px" // This will force the table body to scroll
+                    maxHeight: "600px" // This will force the table body to scroll
                 }}
                 className="-striped -highlight"
             />
@@ -76,7 +76,7 @@ class TableChart extends React.Component {
                     <div>
                         <div id={id + 'ChartContainer'} className="chart-container">
                             <div
-                                style={{ display: this.props.config.chart.title ? "block" : "none" }}
+                                style={{ display: this.props.config.chart.title ? "block" : "none", color: this.props.config.chart.color ? this.props.config.chart.color : "white" }}
                                 id={id + 'Title'} className="title">
                                 <span>{this.props.config.chart.title}</span>
                             </div>

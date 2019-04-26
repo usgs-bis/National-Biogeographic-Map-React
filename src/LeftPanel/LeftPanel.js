@@ -178,7 +178,7 @@ class LeftPanel extends React.Component {
                     <div className="bap-popuptext" id="myPopup">Choose an Analysis</div>
                 </div>}
 
-                <div id='analysis-package-container' className="analysis-package-container" style={{ height: this.props.feature ? 'calc(100% - 212px)' : '100%' }} >
+                <div id='analysis-package-container' className="analysis-package-container" style={{ height: this.props.feature ? 'calc(100% - 250px)' : '100%' }} >
 
                     {this.state.feature_name && <div className="analysis-available">Analyses available for {this.state.feature_name}</div>}
                     {!this.state.feature_name && <div className="analysis-package-text">Analysis Packages {this.state.feature_name}</div>}

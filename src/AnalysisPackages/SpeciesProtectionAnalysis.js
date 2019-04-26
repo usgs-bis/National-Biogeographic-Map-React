@@ -83,6 +83,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
             taxaLetter: "ALL",
             gapStatus: "ALL",
             gapRange: "ALL",
+            gapColor: "white",
             layers: layers,
             value: []
         }
@@ -368,7 +369,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                 }
                 const chartConfig = {
                     margins: { left: 20, right: 20, top: 20, bottom: 125 },
-                    chart: { title: chartTitle, subtitle: `` },
+                    chart: { title: chartTitle, subtitle: ``, color: this.state.gapColor },
                 }
                 charts[chart] = { id: chartId, config: chartConfig, data: chartData }
 
@@ -394,7 +395,9 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
         this.resetRaidoBtn()
         this.setState({
             gapStatus: "ALL",
-            gapRange: "ALL"
+            gapRange: "ALL",
+            gapColor: 'white',
+            taxaLetter: "ALL"
         }, () => {
             const charts = this.getCharts(this.state.data)
             this.setState({
@@ -408,7 +411,8 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
         this.resetRaidoBtn()
         this.setState({
             gapStatus: d.status,
-            gapRange: d.range
+            gapRange: d.range,
+            gapColor: d.color
         }, () => {
             const charts = this.getCharts(this.state.data)
             this.setState({
@@ -541,11 +545,11 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                         <div className="title">Protection Status of Species in {this.props.feature ? this.props.feature.properties.feature_name : ''}</div>
                         <div className="subtitle">(Click on a slice to filter the table and see only species whose habitat falls in that percent of protection. Click on a radio button to see only species of that type.)</div>
                         <div className="spp-radio-btn">
-                            <div><input type="radio" name="species" value={"ALL"} checked={this.state.taxaLetter === "ALL"} onChange={this.onSpeciesChanged} />All</div>
-                            <div><input type="radio" name="species" value={"A"} checked={this.state.taxaLetter === "A"} onChange={this.onSpeciesChanged} />Amphibians</div>
-                            <div><input type="radio" name="species" value={"B"} checked={this.state.taxaLetter === "B"} onChange={this.onSpeciesChanged} />Birds</div>
-                            <div><input type="radio" name="species" value={"M"} checked={this.state.taxaLetter === "M"} onChange={this.onSpeciesChanged} />Mammals</div>
-                            <div><input type="radio" name="species" value={"R"} checked={this.state.taxaLetter === "R"} onChange={this.onSpeciesChanged} />Reptiles</div>
+                            <div><input type="radio" name="species" value={"ALL"} checked={this.state.taxaLetter === "ALL"} onClick={this.onSpeciesChanged} onChange={this.onSpeciesChanged} />All</div>
+                            <div><input type="radio" name="species" value={"A"} checked={this.state.taxaLetter === "A"} onClick={this.onSpeciesChanged} onChange={this.onSpeciesChanged} />Amphibians</div>
+                            <div><input type="radio" name="species" value={"B"} checked={this.state.taxaLetter === "B"} onClick={this.onSpeciesChanged} onChange={this.onSpeciesChanged} />Birds</div>
+                            <div><input type="radio" name="species" value={"M"} checked={this.state.taxaLetter === "M"} onClick={this.onSpeciesChanged} onChange={this.onSpeciesChanged} />Mammals</div>
+                            <div><input type="radio" name="species" value={"R"} checked={this.state.taxaLetter === "R"} onClick={this.onSpeciesChanged} onChange={this.onSpeciesChanged} />Reptiles</div>
                         </div>
                     </div>
                     <div>

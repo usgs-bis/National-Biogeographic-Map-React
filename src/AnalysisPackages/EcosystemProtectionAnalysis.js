@@ -65,6 +65,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
             data: null,
             gapStatus: "ALL",
             gapRange: "ALL",
+            gapColor: "white",
             layers: layers,
             value: []
         }
@@ -178,7 +179,9 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
     resetEcoTable() {
         this.setState({
             gapStatus: "ALL",
-            gapRange: "ALL"
+            gapRange: "ALL",
+            gapColor: 'white',
+
         }, () => {
             const charts = this.getCharts(this.state.data)
             this.setState({
@@ -459,7 +462,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                 }
                 const chartConfig = {
                     margins: { left: 20, right: 20, top: 20, bottom: 125 },
-                    chart: { title: chartTitle, subtitle: `` },
+                    chart: { title: chartTitle, subtitle: ``, color: this.state.gapColor },
                 }
                 charts[chart] = { id: chartId, config: chartConfig, data: chartData }
 
@@ -488,7 +491,9 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
     resetSppTable() {
         this.setState({
             gapStatus: "ALL",
-            gapRange: "ALL"
+            gapRange: "ALL",
+            gapColor: 'white',
+
         }, () => {
             const charts = this.getCharts(this.state.data)
             this.setState({
@@ -502,7 +507,8 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
     filterTableData(d) {
         this.setState({
             gapStatus: d.status,
-            gapRange: d.range
+            gapRange: d.range,
+            gapColor: d.color
         }, () => {
             const charts = this.getCharts(this.state.data)
             this.setState({

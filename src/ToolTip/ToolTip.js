@@ -14,7 +14,9 @@ class CustomToolTip extends React.Component {
 
 
     render() {
-        return (
+        if (this.props.text) {
+            return (
+
                 <Tooltip
                     style={{ fontSize: "14px" }} isOpen={this.state.open}
                     target={this.props.target}
@@ -23,7 +25,10 @@ class CustomToolTip extends React.Component {
                     placement={this.props.placement ? this.props.placement : 'auto'}>
                     {this.props.text}
                 </Tooltip>
-        );
+            );
+        }
+        return null
+         
     }
 }
 export default CustomToolTip;
