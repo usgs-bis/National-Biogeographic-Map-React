@@ -2,7 +2,6 @@ import React from "react";
 import L from "leaflet"
 import { BarLoader } from "react-spinners"
 import { TiledMapLayer } from "esri-leaflet";
-
 import withSharedAnalysisCharacteristics from "./AnalysisPackage"
 import PieChart from "../Charts/PieChart"
 import TableChart from "../Charts/TableChart"
@@ -487,22 +486,6 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
 
     }
 
-
-    resetSppTable() {
-        this.setState({
-            gapStatus: "ALL",
-            gapRange: "ALL",
-            gapColor: 'white',
-
-        }, () => {
-            const charts = this.getCharts(this.state.data)
-            this.setState({
-                charts: charts,
-                submitted: true,
-                loading: false
-            })
-        })
-    }
 
     filterTableData(d) {
         this.setState({

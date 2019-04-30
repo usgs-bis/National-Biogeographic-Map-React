@@ -191,6 +191,12 @@ class HorizontalBarChart extends React.Component {
                     .text(function (d) { return d; });
             }
         }
+        if (config.onClick) {
+            bars.on("click", function (d) {
+                config.onClick(d)
+            })
+        }
+
 
         // Add a div inside chart for tooltips
         const tooltip = d3.select('#d3chartTooltip')

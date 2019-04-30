@@ -21,10 +21,10 @@ class TableChart extends React.Component {
 
     sortTable(a, b, desc) {
 
-        if (parseFloat(a) && a.includes(',')) {
+        if (parseFloat(a) && a.toString().includes(',')) {
             a = parseFloat(a.replace(/,/g, ''))
         }
-        if (parseFloat(b) && b.includes(',')) {
+        if (parseFloat(b) && b.toString().includes(',')) {
             b = parseFloat(b.replace(/,/g, ''))
         }
         return a < b ? 1 : (b < a) ? -1 : 0;

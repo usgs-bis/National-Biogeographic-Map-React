@@ -2,9 +2,10 @@ import React from "react";
 import { BarLoader } from "react-spinners"
 import withSharedAnalysisCharacteristics from "./AnalysisPackage"
 import HorizontalBarChart from "../Charts/HorizontalBarChart";
+import TableChart from "../Charts/TableChart"
+
 import "./AnalysisPackages.css";
 
-//TODO
 const SB_URL = "https://www.sciencebase.gov/catalog/item/5cc34cbae4b09b8c0b7606b9?format=json"
 
 const BADNEIGHBOR_URL = process.env.REACT_APP_BIS_API + "/api/v1/badneighbor/state?fips="
@@ -20,8 +21,10 @@ class BadNeighborAnalysisPackage extends React.Component {
         super(props)
         this.state = {
             charts: {
-                barChart: { id: "", config: {}, data: null }
+                barChart: { id: "", config: {}, data: null },
+                tableChart: { id: "", config: {}, data: null },
             },
+            tableGroup: "All Invasives",
             layersOpen: false,
             value: []
         }
@@ -31,6 +34,8 @@ class BadNeighborAnalysisPackage extends React.Component {
         this.featureChange = this.featureChange.bind(this)
         this.fetch = this.fetch.bind(this)
         this.createUniqueBapContents = this.createUniqueBapContents.bind(this)
+        this.filterTableData = this.filterTableData.bind(this)
+        this.resetTable = this.resetTable.bind(this)
     }
 
     componentDidMount() {
@@ -73,10 +78,11 @@ class BadNeighborAnalysisPackage extends React.Component {
                 (result) => {
                     if (result && result.hits.hits[0]) {
                         this.props.setBapJson(result.hits.hits[0]._source.properties)
-                        const charts = this.getCharts({ barChart: result.hits.hits[0]._source.data })
+                        const charts = this.getCharts(result.hits.hits[0]._source.data)
                         this.setState({
                             charts: charts,
-                            loading: false
+                            loading: false,
+                            data: result.hits.hits[0]._source.data
                         })
                         this.props.isEnabled(true)
                         this.props.canOpen(true)
@@ -85,7 +91,8 @@ class BadNeighborAnalysisPackage extends React.Component {
                         this.setState({
                             charts: {
                                 horizontalBarChart: { id: "", config: {}, data: null }
-                            }
+                            },
+                            data: null
                         })
                         this.props.isEnabled(false)
                         this.props.canOpen(false)
@@ -107,7 +114,7 @@ class BadNeighborAnalysisPackage extends React.Component {
      * Create the chart id, data, and config as documented in the chart type.
      * @param {Object {}} datas - one enrty for each chart named the same as defined in the state
      */
-    getCharts(datas) {
+    getCharts(data) {
 
         const getPercent = (value, total) => {
             value = parseFloat(value)
@@ -118,10 +125,9 @@ class BadNeighborAnalysisPackage extends React.Component {
 
         for (let chart of Object.keys(this.state.charts)) {
 
-            if (chart.toString() === "barChart" && datas[chart]) {
+            if (chart.toString() === "barChart" && data) {
 
                 const chartId = "BadNeighbor_HorizontalBarChart"
-                const data = datas[chart]
                 let formattedData = []
                 let total = 0
                 for (let key of Object.keys(data)) {
@@ -152,16 +158,81 @@ class BadNeighborAnalysisPackage extends React.Component {
                     chart: { title: `Percent Threat of Sample Groups Bad Neighbors in ${this.props.feature.properties.feature_name}`, subtitle: `` },
                     xAxis: { key: 'Percent', label: "Realative Contribution", ticks: 5, tickFormat: (d) => { return `${parseInt(d)}%` } },
                     yAxis: { key: 'Group', label: "Bad Neighbor Group", ticks: 5, tickFormat: (d) => { return d } },
-                    tooltip: { label: (d) => { return `<div style="text-align:left;"><div><b>Group</b>: ${d.Group}</div><div><b>Contribution</b>: ${d.Percent}%</div><div><b>Count</b>: ${d.Count}</div></div>` } }
+                    tooltip: { label: (d) => { return `<div style="text-align:left;"><div><b>Group</b>: ${d.Group}</div><div><b>Contribution</b>: ${d.Percent}%</div><div><b>Count</b>: ${d.Count}</div></div>` } },
+                    onClick: (d) => { this.filterTableData(d) }
                 }
                 formattedData.reverse()
                 charts[chart] = { id: chartId, config: chartConfig, data: formattedData }
+
+            }
+            if (chart.toString() === "tableChart" && data) {
+                const chartId = "BadNeighbor_tableChart"
+                let chartTitle = `${this.props.feature.properties.feature_name} Bad Neighbors : ${this.state.tableGroup}`
+                let formattedData = []
+                for (let key of Object.keys(data)) {
+                    let k = key.split('_').map(a => a.charAt(0).toUpperCase() + a.slice(1)).join(' ')
+                    let list = []
+                    if ('species_list' in data[key]) {
+                        list = data[key]["species_list"].map((d) => {
+                            return [d.name, <a href={`https://bison.usgs.gov/index.jsp?scientificName=${d.name}&ITIS=itis`} target='_blank' rel='noopener noreferrer' > {d.tsn}</a>]
+                        })
+                    }
+                    else {
+                        for (let subkey of Object.keys(data[key])) {
+                            if ('species_list' in data[key][subkey]) {
+                                list = list.concat(data[key][subkey]["species_list"].map((d) => {
+                                    return [d.name, <a href={`https://bison.usgs.gov/index.jsp?scientificName=${d.name}&ITIS=itis`} target='_blank' rel='noopener noreferrer' > {d.tsn}</a>]
+                                }))
+                            }
+                        }
+                    }
+                    formattedData.push({ "Group": k, "List": list })
+                }
+                let chartData = [['Species', 'TSN']]
+                for (let d in formattedData) {
+                    if (this.state.tableGroup === 'All Invasives' || this.state.tableGroup.toString() === formattedData[d].Group.toString()) {
+                        chartData = chartData.concat(formattedData[d].List)
+                    }
+                }
+
+                const chartConfig = {
+                    margins: { left: 20, right: 20, top: 20, bottom: 125 },
+                    chart: { title: chartTitle, subtitle: ``, color: this.state.gapColor },
+                }
+                charts[chart] = { id: chartId, config: chartConfig, data: chartData }
+
+
 
             }
         }
         return charts
     }
 
+
+    filterTableData(d) {
+        this.setState({
+            tableGroup: d.Group,
+        }, () => {
+            const charts = this.getCharts(this.state.data)
+            this.setState({
+                charts: charts,
+                submitted: true,
+                loading: false
+            })
+        })
+    }
+    resetTable() {
+        this.setState({
+            tableGroup: "All Invasives",
+        }, () => {
+            const charts = this.getCharts(this.state.data)
+            this.setState({
+                charts: charts,
+                submitted: true,
+                loading: false
+            })
+        })
+    }
 
     print() {
         if (this.state.charts.barChart.data && this.props.isOpen) {
@@ -187,6 +258,14 @@ class BadNeighborAnalysisPackage extends React.Component {
                 {this.props.handleBapError(this.state.error)}
                 <div className="chartsDiv">
                     <HorizontalBarChart onRef={ref => (this.BarChart = ref)} data={this.state.charts.barChart.data} id={this.state.charts.barChart.id} config={this.state.charts.barChart.config} />
+
+                    <div className="chart-headers">
+                        <button className="submit-analysis-btn" onClick={this.resetTable}>Clear Chart Selection</button>
+                    </div>
+                    <TableChart
+                        data={this.state.charts.tableChart.data}
+                        id={this.state.charts.tableChart.id}
+                        config={this.state.charts.tableChart.config} />
                 </div>
             </div>
         )
