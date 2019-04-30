@@ -337,7 +337,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                         if (this.state.gapStatus === 'status_1_2_group') protectedPercent = `${parseFloat(row.status_1_2).toFixed(2)}%`
                         if (this.state.gapStatus === 'status_1_2_3_group') protectedPercent = `${parseFloat(row.status_1_2_3).toFixed(2)}%`
                     }
-                    const radio1 = <span>
+                    const radio1 = <span className="no-sort">
                         <input
                             id={`Range_${row.sppcode}`}
                             style={{ marginLeft: '10px' }}
@@ -349,7 +349,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                         <CustomToolTip target={`Range_${row.sppcode}`} text={"Known Range Map"} > </CustomToolTip>
 
                     </span>
-                    const radio2 = <span>
+                    const radio2 = <span className="no-sort">
                         <input
                             id={`Habitat_${row.sppcode}`}
                             type="radio"

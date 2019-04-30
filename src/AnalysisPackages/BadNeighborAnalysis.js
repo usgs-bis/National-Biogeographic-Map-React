@@ -167,7 +167,7 @@ class BadNeighborAnalysisPackage extends React.Component {
             }
             if (chart.toString() === "tableChart" && data) {
                 const chartId = "BadNeighbor_tableChart"
-                let chartTitle = `${this.props.feature.properties.feature_name} Bad Neighbors : ${this.state.tableGroup}`
+                let chartTitle = `${this.props.feature.properties.feature_name} Bad Neighbors: ${this.state.tableGroup}`
                 const chartSubTitle = `(Click on a bar above to filter the table and see only neighboring invasive species within a catagory.)`
                 let formattedData = []
                 for (let key of Object.keys(data)) {

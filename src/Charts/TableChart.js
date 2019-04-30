@@ -21,10 +21,20 @@ class TableChart extends React.Component {
 
     sortTable(a, b, desc) {
 
-        if (parseFloat(a) && a.toString().includes(',')) {
+        if(typeof a === 'object' && a.type === 'span' && a.props && a.props.className ==="no-sort"){
+            return  0
+        }
+        if(typeof a === 'object' && a.type === 'span' && a.props.children ){
+            return   a.props.children <  b.props.children ? 1 : ( b.props.children <  a.props.children) ? -1 : 0;
+        }
+        if(typeof a === 'object' && a.type === 'a' && a.props.children && a.props.children.length >=1){
+            return   a.props.children[1] <  b.props.children[1] ? 1 : ( b.props.children[1] <  a.props.children[1]) ? -1 : 0;
+        }
+       
+        if (parseFloat(a) && typeof a === 'string' && a.includes(',')) {
             a = parseFloat(a.replace(/,/g, ''))
         }
-        if (parseFloat(b) && b.toString().includes(',')) {
+        if (parseFloat(b) && typeof b === 'string' && b.includes(',')) {
             b = parseFloat(b.replace(/,/g, ''))
         }
         return a < b ? 1 : (b < a) ? -1 : 0;
@@ -36,7 +46,7 @@ class TableChart extends React.Component {
 
         const getTable = () => {
             let headers = this.props.data[0]
-            let data = this.props.data.slice(1).sort((a, b) => { return a[0] >= b[0] ? 1 : -1 })
+            let data = this.props.data.slice(1).sort((a, b) => { return this.sortTable(b[0],a[0])})
             return <ReactTable
                 data={data}
                 columns={
