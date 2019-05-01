@@ -8,7 +8,7 @@ import "./AnalysisPackages.css";
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/5cc34cbae4b09b8c0b7606b9?format=json"
 
-const BADNEIGHBOR_URL = process.env.REACT_APP_BIS_API + "/api/v1/badneighbor/state?fips="
+const BADNEIGHBOR_URL = process.env.REACT_APP_BIS_API + "/api/v1/nonnativespecies/state?feature_id="
 
 let sb_properties = {
     "title": "Bad Neighbor Invasives"
@@ -71,8 +71,7 @@ class BadNeighborAnalysisPackage extends React.Component {
             loading: true,
             error: false
         })
-        const fips = this.props.feature.properties.feature_id.split("US_States_and_Territories:state_fipscode:")[1]
-        fetch(BADNEIGHBOR_URL + fips)
+        fetch(BADNEIGHBOR_URL + this.props.feature.properties.feature_id)
             .then(res => res.json())
             .then(
                 (result) => {
