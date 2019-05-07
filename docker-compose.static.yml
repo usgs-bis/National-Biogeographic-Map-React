@@ -1,0 +1,11 @@
+version: '3.5'
+
+services:
+
+  nbm-static:
+    container_name: nbm-static
+    build:
+      context: .
+      dockerfile: Dockerfile.static
+    ports:
+      - '80:80'
