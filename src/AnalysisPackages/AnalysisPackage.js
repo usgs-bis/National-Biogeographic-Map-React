@@ -140,7 +140,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 newLayers[key].checked = false
             })
 
-            if (this.props.bapId === this.props.getDefaultPriorityBap()) {
+            if (this.props.bapId === this.props.priorityBap) {
                 this.setPriorityBap()
             }
         }
