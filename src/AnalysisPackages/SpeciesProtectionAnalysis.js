@@ -194,7 +194,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
 
         this.props.inputRefs[layerKey].checked = true
         this.props.inputRefs[otherKey].checked = false
-        this.props.updateBapLayers(layer)
+        this.props.updateBapLayers(layer, this.state.layers[otherKey])
     }
 
     getCharts(data) {
