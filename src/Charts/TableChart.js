@@ -8,6 +8,7 @@ class TableChart extends React.Component {
         super(props)
         this.state = {}
         this.sortTable = this.sortTable.bind(this)
+        this.getNumberOrOriginalValue = this.getNumberOrOriginalValue.bind(this)
     }
 
     componentDidMount() {
@@ -18,9 +19,7 @@ class TableChart extends React.Component {
 
     }
 
-
     sortTable(a, b, desc) {
-
         if(typeof a === 'object' && a.type === 'span' && a.props && a.props.className ==="no-sort"){
             return  0
         }
@@ -30,17 +29,27 @@ class TableChart extends React.Component {
         if(typeof a === 'object' && a.type === 'a' && a.props.children && a.props.children.length >=1){
             return   a.props.children[1] <  b.props.children[1] ? 1 : ( b.props.children[1] <  a.props.children[1]) ? -1 : 0;
         }
-       
-        if (parseFloat(a) && typeof a === 'string' && a.includes(',')) {
-            a = parseFloat(a.replace(/,/g, ''))
-        }
-        if (parseFloat(b) && typeof b === 'string' && b.includes(',')) {
-            b = parseFloat(b.replace(/,/g, ''))
-        }
-        return a < b ? 1 : (b < a) ? -1 : 0;
+        a = this.getNumberOrOriginalValue(a)
+        b = this.getNumberOrOriginalValue(b)
 
+        return a < b ? 1 : (b < a) ? -1 : 0;
     }
 
+    getNumberOrOriginalValue(val) {
+        if (isNaN(parseFloat(val))) {
+            return val
+        }
+
+        if (typeof val !== 'string') {
+            return val
+        }
+
+        if (val.includes(',')) {
+            return parseFloat(val.replace(/,/g, ''))
+        }
+
+        return parseFloat(val)
+    }
 
     render() {
 
@@ -66,10 +75,10 @@ class TableChart extends React.Component {
                             }
                     })
                 }
-
                 showPagination={false}
                 showPageSizeOptions={false}
                 defaultSortMethod={this.sortTable}
+                pageSize={data.length}
                 defaultPageSize={data.length}
                 minRows={0}
                 style={{
