@@ -10,6 +10,7 @@ import cloneLayer from "leaflet-clonelayer"
 import L from "leaflet";
 import "./App.css";
 import * as turf from '@turf/turf'
+import packageJson from '../package.json'
 
 
 const bioscapeMap = {
@@ -26,7 +27,7 @@ const TEXT_SEARCH_API = process.env.REACT_APP_BIS_API + "/api/v1/places/search/t
 const POINT_SEARCH_API = process.env.REACT_APP_BIS_API + "/api/v1/places/search/point?";
 const GET_FEATURE_API = process.env.REACT_APP_BIS_API + "/api/v1/places/search/feature?feature_id=";
 const API_VERSION_URL = process.env.REACT_APP_BIS_API + "/api"
-const REACT_VERSION = process.env.REACT_APP_VERSION
+const REACT_VERSION = "v" + packageJson.version
 
 const numberWithCommas = (x) => {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
