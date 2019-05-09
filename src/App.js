@@ -388,6 +388,9 @@ class App extends React.Component {
             .then(res => res.json())
             .then(
                 (result) => {
+                    if (!result || !result.hits) {
+                        return
+                    }
                     if (this.state.overlay) {
                         this.sendFeatureRequestFromOverlay(result.hits.hits.map(a => a["_source"]["properties"]))
                         this.setState({
