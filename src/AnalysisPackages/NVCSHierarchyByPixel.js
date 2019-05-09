@@ -380,6 +380,6 @@ class NVCSHierarchyByPixelPackage extends React.Component {
     }
 
 }
-const NVCSHierarchyByPixel = withSharedAnalysisCharacteristics(NVCSHierarchyByPixelPackage, layers, sb_properties, SB_URL);
+const NVCSHierarchyByPixel = withSharedAnalysisCharacteristics(NVCSHierarchyByPixelPackage, layers, sb_properties, SB_URL, true);
 
 export default NVCSHierarchyByPixel;
