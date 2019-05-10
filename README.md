@@ -22,19 +22,28 @@ https://www.sciencebase.gov/catalog/
 
 ## To Run:
 
-* yarn 
+* yarn
 
         yarn install
         yarn start
 
-* npm 
+* npm
 
         npm install
         npm start
 
+* docker
+
+        ./run.sh
+
+    To build a static site (`npm run build`) and serve:
+
+        ./run.sh static
+
+
 ## To review and publish
 
-* This project follows a three branch structure. 
+* This project follows a three branch structure.
      * development ->  https://dev-sciencebase.usgs.gov/biogeography
      * beta ->  https://my-beta.usgs.gov/biogeography/
      * master (FUTURE) -> https://maps.usgs.gov/biogeography
@@ -58,8 +67,8 @@ https://www.sciencebase.gov/catalog/
 
 ## Authors
 
-* Ben Gotthold    
-* Jake Juszak  
+* Ben Gotthold
+* Jake Juszak
 
 ## Acknowledgments
 
