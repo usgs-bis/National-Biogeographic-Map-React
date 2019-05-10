@@ -336,6 +336,6 @@ class NVCSSummaryByRegionPackage extends React.Component {
 
 
 }
-const NVCSSummaryByRegion = withSharedAnalysisCharacteristics(NVCSSummaryByRegionPackage, layers, sb_properties, SB_URL);
+const NVCSSummaryByRegion = withSharedAnalysisCharacteristics(NVCSSummaryByRegionPackage, layers, sb_properties, SB_URL, true);
 
 export default NVCSSummaryByRegion;

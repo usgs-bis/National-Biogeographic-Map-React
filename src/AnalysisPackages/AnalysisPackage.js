@@ -10,7 +10,8 @@ import "./AnalysisPackages.css"
 const withSharedAnalysisCharacteristics = (AnalysisPackage,
     layers,
     sb_properties,
-    sb_url) => {
+    sb_url,
+    disableMultipleLayers) => {
     class HOC extends React.Component {
         constructor(props) {
             super(props)
@@ -26,7 +27,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 bapWindowOpen: false,
                 jsonWindowOpen: false,
                 layersOpen: true,
-                prettyJson: false
+                prettyJson: false,
             }
             this.initilized = false
             this.jsonData = null
@@ -218,6 +219,14 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
         toggleLayer(layer) {
             if (!layer || layer.hideCheckbox) {
                 //if the checkbox isn't displayed we don't want to do anything when the user clicks the label
+                return
+            }
+            if (disableMultipleLayers) {
+                if (layer.checked) {
+                    this.turnOffLayer()
+                    return
+                }
+                this.turnOnLayer(layer)
                 return
             }
             if (layer.checked) {
