@@ -161,7 +161,7 @@ class Biogeography extends React.Component {
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
                     />
                 </div>
-                <div className="nbm-flex-row-no-padding">
+                {/* <div className="nbm-flex-row-no-padding">
                     <PhenologyAnalysis
                         onRef={ref => (this.PhenologyAnalysis = ref)}
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
@@ -172,7 +172,7 @@ class Biogeography extends React.Component {
                         initLayerTitle={this.props.initLayerTitle}
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
                     />
-                </div>
+                </div> */}
                 <div className="nbm-flex-row-no-padding">
                     <OBISAnalysis
                         onRef={ref => (this.OBISAnalysis = ref)}
