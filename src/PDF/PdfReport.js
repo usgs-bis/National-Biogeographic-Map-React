@@ -2,6 +2,8 @@ import React from 'react'
 import pdfMake from "pdfmake/build/pdfmake.js"
 import * as pdfFonts from 'pdfmake/build/vfs_fonts.js';
 import html2canvas from 'html2canvas';
+import markerIcon from './marker-icon.png'
+
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
@@ -25,7 +27,7 @@ class PDFReport extends React.Component {
         this.props.onRef(this)
     }
 
-    generateReport(name, type, map, charts) {
+    generateReport(name, type, point, area, map, charts) {
         charts.push(this.getTitleMap(map))
         return Promise.all(charts.flat()).then(contents => {
             var docDefinition = {
@@ -49,8 +51,43 @@ class PDFReport extends React.Component {
                 alignment: 'center',
                 width: 500,
                 margin: [0, 20, 0, 20],
-                pageBreak: 'after'
             });
+            if (point.lat && point.lng && point.elv) {
+                docDefinition.content.push({
+                    text: [
+                        {
+                            text: `Category: `,
+                            style: 'aoiDescription',
+                            alignment: 'left'
+                        },
+                        {
+                            text: ` ${type}\n`,
+                            style: 'chartSubtitle',
+                            alignment: 'left'
+                        },
+                        {
+                            text: `Approximate Area:`,
+                            style: 'aoiDescription',
+                            alignment: 'left'
+                        },
+                        {
+                            text: ` ${area === "Unknown" ? 'Unknown' : area + " acres"} \n`,
+                            style: 'chartSubtitle',
+                            alignment: 'left'
+                        },
+                        {
+                            text: `Point of Interest: `,
+                            style: 'aoiDescription',
+                            alignment: 'left'
+                        },
+                        {
+                            text: ` ${point.lat.toFixed(5)}°, ${point.lng.toFixed(5)}°  ${point.elv}ft.\n`,
+                            style: 'chartSubtitle',
+                            alignment: 'left'
+                        },
+                    ]
+                })
+            }
             docDefinition.content.push({
                 text: [
                     {
@@ -95,22 +132,49 @@ class PDFReport extends React.Component {
             document.getElementsByClassName('global-time-slider')[0].hidden = false
             document.getElementsByClassName('location-overlay')[0].hidden = false
 
-            //     //WORK IN PROGRESS
-            //     map.leafletElement.eachLayer((layer) => {
-            //         if (layer.options.name === 'mapClickedMarker') {
-            //             let destCtx = canvas.getContext('2d');
-            //             let markerEl = layer.getElement();
-            //             const markerRect = markerEl.getBoundingClientRect()
-            //             const mapPaneRect = map.leafletElement.getPane('mapPane').getBoundingClientRect()
-            //             let x = markerRect.x - mapPaneRect.x - markerEl.width
-            //             let y = markerRect.y - mapPaneRect.y - markerEl.height                  
-            //             destCtx.drawImage(markerEl, x,y);
-            //         }
-            //    });
 
-            return canvas.toDataURL()
-        });
-    }
+            // create a promise so the marker image can load
+            // we store the marker png locally so the canvas does not become 'tainted' (CORS)
+            // calculate its position on the map and draw it to the canvas
+            let p = new Promise(function (resolve, reject) {
+                map.leafletElement.eachLayer((layer) => {
+                    if (layer.options.name === 'mapClickedMarker') {
+                        const markerEl = layer.getElement();
+                        const markerRect = markerEl.getBoundingClientRect()
+                        const leftPannel = document.getElementsByClassName('panel-area')
+                        let offset = 0
+                        let x = 0
+                        let y = 0
+
+                        // mobile layout 
+                        if (window.innerWidth <= 700) {
+                            if (leftPannel.length) offset = leftPannel[0].clientHeight
+                            x = markerRect.x
+                            y = markerRect.y - markerEl.height - 15 - offset
+                        }
+                        // normal layout
+                        else {
+                            if (leftPannel.length) offset = leftPannel[0].clientWidth
+                            x = markerRect.x - offset
+                            y = markerRect.y - markerEl.height - 15
+                        }
+
+                        let context = canvas.getContext("2d");
+                        let img = new Image();
+                        img.onload = function () {
+                            context.drawImage(img, x, y);
+                            resolve(canvas)
+                        }
+                        img.src = markerIcon
+                    }
+                })
+            })
+
+            return p.then(function (c) {
+                return c.toDataURL()
+            })
+        })
+    } s
 
     getStyles() {
         return {
@@ -129,6 +193,12 @@ class PDFReport extends React.Component {
                 fontSize: 12,
                 alignment: 'center',
                 margin: [5, 2, 5, 10]
+            },
+            aoiDescription: {
+                fontSize: 14,
+                alignment: 'center',
+                bold: true,
+                margin: [5, 2, 5, 2],
             },
             annotation: {
                 fontSize: 10,

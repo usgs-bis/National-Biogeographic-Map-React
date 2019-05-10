@@ -2,7 +2,6 @@ import React from "react";
 import L from "leaflet"
 import { BarLoader } from "react-spinners"
 import { TiledMapLayer } from "esri-leaflet";
-
 import withSharedAnalysisCharacteristics from "./AnalysisPackage"
 import PieChart from "../Charts/PieChart"
 import TableChart from "../Charts/TableChart"
@@ -65,6 +64,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
             data: null,
             gapStatus: "ALL",
             gapRange: "ALL",
+            gapColor: "white",
             layers: layers,
             value: []
         }
@@ -178,7 +178,9 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
     resetEcoTable() {
         this.setState({
             gapStatus: "ALL",
-            gapRange: "ALL"
+            gapRange: "ALL",
+            gapColor: 'white',
+
         }, () => {
             const charts = this.getCharts(this.state.data)
             this.setState({
@@ -459,7 +461,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                 }
                 const chartConfig = {
                     margins: { left: 20, right: 20, top: 20, bottom: 125 },
-                    chart: { title: chartTitle, subtitle: `` },
+                    chart: { title: chartTitle, subtitle: ``, color: this.state.gapColor },
                 }
                 charts[chart] = { id: chartId, config: chartConfig, data: chartData }
 
@@ -485,24 +487,11 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
     }
 
 
-    resetSppTable() {
-        this.setState({
-            gapStatus: "ALL",
-            gapRange: "ALL"
-        }, () => {
-            const charts = this.getCharts(this.state.data)
-            this.setState({
-                charts: charts,
-                submitted: true,
-                loading: false
-            })
-        })
-    }
-
     filterTableData(d) {
         this.setState({
             gapStatus: d.status,
-            gapRange: d.range
+            gapRange: d.range,
+            gapColor: d.color
         }, () => {
             const charts = this.getCharts(this.state.data)
             this.setState({
@@ -565,6 +554,9 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                                             widths: ['40%', '30%', '30%'],
                                             heights: 50,
                                             body: this.state.charts.gapTable.data.slice(0, Math.floor(this.state.charts.gapTable.data.length / 3))
+                                                .map(elm => {
+                                                    return [elm[0], elm[1], elm[2]]
+                                                })
                                         }
                                     },
                                 ]
@@ -579,6 +571,9 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                                             widths: ['40%', '30%', '30%'],
                                             heights: 50,
                                             body: this.state.charts.gapTable.data.slice(Math.floor(this.state.charts.gapTable.data.length / 3), Math.floor((this.state.charts.gapTable.data.length / 3) * 2))
+                                                .map(elm => {
+                                                    return [elm[0], elm[1], elm[2]]
+                                                })
                                         }
                                     },
                                 ]
@@ -593,6 +588,9 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                                             widths: ['40%', '30%', '30%'],
                                             heights: 50,
                                             body: this.state.charts.gapTable.data.slice(Math.floor((this.state.charts.gapTable.data.length / 3) * 2), this.state.charts.gapTable.data.length)
+                                                .map(elm => {
+                                                    return [elm[0], elm[1], elm[2]]
+                                                })
                                         }
                                     },
                                 ]
@@ -627,7 +625,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                     <div>
                         <div className="chart-titles">
                             <div className="title">Protection Status of {this.props.feature ? this.props.feature.properties.feature_name : ''}</div>
-                            <div className="subtitle">Click on a slice to filter the table and see only systems with that percent of protection.)</div>
+                            <div className="subtitle">(Click on a slice to filter the table and see only systems with that percent of protection.)</div>
                         </div>
                         <div className="half-chart">
                             <PieChart
@@ -649,7 +647,6 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                         <button className="submit-analysis-btn" onClick={this.resetEcoTable}>Clear Chart Selection</button>
                     </div>
                     <TableChart
-                        onRef={ref => (this.TableChart = ref)}
                         data={this.state.charts.gapTable.data}
                         id={this.state.charts.gapTable.id}
                         config={this.state.charts.gapTable.config} />

@@ -1,13 +1,12 @@
 import React from "react";
 import "./searchBar.css";
-// import { Button, ButtonGroup, Tooltip } from "reactstrap";
 import { Button, ButtonGroup } from "reactstrap";
-
 import { Glyphicon } from "react-bootstrap";
 import Legend from "../../Legend/Legend";
 import { RadioGroup } from "../../CustomRadio/CustomRadio";
 import { Collapse, CardBody, Card } from "reactstrap";
 import speechBubble from '../bubble.png'
+import CustomToolTip from "../../ToolTip/ToolTip"
 
 
 class SearchBar extends React.Component {
@@ -16,7 +15,6 @@ class SearchBar extends React.Component {
 
         this.state = {
             focused: false,
-            basemapTooltipOpen: false,
             layersDropdownOpen: false,
             displayHelp: true
         }
@@ -26,7 +24,6 @@ class SearchBar extends React.Component {
         this.onBlur = this.onBlur.bind(this)
         this.submit = this.submit.bind(this)
         this.toggleBasemapDropdown = this.toggleBasemapDropdown.bind(this)
-        this.toggleSettingsTooltip = this.toggleSettingsTooltip.bind(this)
         this.basemapChanged = this.basemapChanged.bind(this)
         this.textInput = ""
     }
@@ -74,11 +71,6 @@ class SearchBar extends React.Component {
         this.props.submitHandler(e)
     }
 
-    toggleSettingsTooltip() {
-        this.setState({
-            basemapTooltipOpen: !this.state.basemapTooltipOpen
-        })
-    };
 
     toggleBasemapDropdown() {
         this.setState({ layersDropdownOpen: !this.state.layersDropdownOpen });
@@ -98,14 +90,9 @@ class SearchBar extends React.Component {
                 <div className="nbm-flex-row">
                     <div className="settings-btn-group nbm-flex-column">
                         <Button id={"SettingsTooltip"} onClick={this.toggleBasemapDropdown} className='submit-analysis-btn placeholder-button' >
-                            <Glyphicon className="inner-glyph" glyph="menu-hamburger"
-                                data-toggle="tooltip" data-placement="bottom" title="Settings" />
+                            <Glyphicon className="inner-glyph" glyph="menu-hamburger"/>
                         </Button>
-                        {/* <Tooltip
-                            style={{ fontSize: "14px", pointerEvents:'none'}} isOpen={this.state.basemapTooltipOpen && !this.state.layersDropdownOpen}
-                            target="SettingsTooltip" toggle={this.toggleSettingsTooltip} delay={0}>
-                            Settings
-                </Tooltip> */}
+                        <CustomToolTip target={`SettingsTooltip`} text="Settings" placement="right" ></CustomToolTip>
                     </div>
                     <div className="settings-btn-group nbm-flex-column">
                         <Legend
@@ -132,7 +119,7 @@ class SearchBar extends React.Component {
                                         onClick={function () { that.submit(this) }}
                                         id={d.feature_id}
                                         key={d.feature_id}>
-                                        {d.feature_name} ({d.feature_class})
+                                        {d.feature_name}{d.state ? ", " + d.state.name : ""} ({d.feature_class})
                             </Button>)
                             })}
                         </ButtonGroup> : null}

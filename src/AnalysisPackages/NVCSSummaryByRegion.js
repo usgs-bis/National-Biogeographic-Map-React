@@ -265,6 +265,7 @@ class NVCSSummaryByRegionPackage extends React.Component {
     }
 
 
+
     print() {
         if (this.state.charts.nvcsSummTable.data && this.props.isOpen) {
 
@@ -275,47 +276,25 @@ class NVCSSummaryByRegionPackage extends React.Component {
                 {
                     columns: [
                         {
-                            width: 175,
+                            width: 600,
                             margin: [3, 0],
                             stack: [
                                 {
                                     style: 'tableStyle',
                                     table: {
-                                        widths: ['40%', '30%', '30%'],
-                                        heights: 50,
-                                        body: this.state.charts.nvcsSummTable.data.slice(0, Math.floor(this.state.charts.nvcsSummTable.data.length / 3))
+                                        widths: ['50%', '30%'],
+                                        heights: 12,
+                                        body: this.state.charts.nvcsSummTable.data
+                                            .map((elm, i) => {
+                                                if (i === 0) {
+                                                    return [{ text: elm[0], bold: true, fontSize: 12 }, { text: elm[1], bold: true, fontSize: 12 }]
+                                                }
+                                                return [{ text: elm[0], bold: true }, elm[1]]
+                                            })
                                     }
                                 },
                             ]
-                        },
-                        {
-                            width: 175,
-                            margin: [3, 0],
-                            stack: [
-                                {
-                                    style: 'tableStyle',
-                                    table: {
-                                        widths: ['40%', '30%', '30%'],
-                                        heights: 50,
-                                        body: this.state.charts.nvcsSummTable.data.slice(Math.floor(this.state.charts.nvcsSummTable.data.length / 3), Math.floor((this.state.charts.nvcsSummTable.data.length / 3) * 2))
-                                    }
-                                },
-                            ]
-                        },
-                        {
-                            width: 175,
-                            margin: [3, 0],
-                            stack: [
-                                {
-                                    style: 'tableStyle',
-                                    table: {
-                                        widths: ['40%', '30%', '30%'],
-                                        heights: 50,
-                                        body: this.state.charts.nvcsSummTable.data.slice(Math.floor((this.state.charts.nvcsSummTable.data.length / 3) * 2), this.state.charts.nvcsSummTable.data.length)
-                                    }
-                                },
-                            ]
-                        },
+                        }
                     ]
                 },
             ]
@@ -357,6 +336,6 @@ class NVCSSummaryByRegionPackage extends React.Component {
 
 
 }
-const NVCSSummaryByRegion = withSharedAnalysisCharacteristics(NVCSSummaryByRegionPackage, layers, sb_properties, SB_URL);
+const NVCSSummaryByRegion = withSharedAnalysisCharacteristics(NVCSSummaryByRegionPackage, layers, sb_properties, SB_URL, true);
 
 export default NVCSSummaryByRegion;

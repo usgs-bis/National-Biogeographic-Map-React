@@ -83,6 +83,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
             taxaLetter: "ALL",
             gapStatus: "ALL",
             gapRange: "ALL",
+            gapColor: "white",
             layers: layers,
             value: []
         }
@@ -193,7 +194,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
 
         this.props.inputRefs[layerKey].checked = true
         this.props.inputRefs[otherKey].checked = false
-        this.props.updateBapLayers(layer)
+        this.props.updateBapLayers(layer, this.state.layers[otherKey])
     }
 
     getCharts(data) {
@@ -311,14 +312,23 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                 }
 
                 let chartTitle = `${tableType} in ${this.props.feature.properties.feature_name} (${preData.length})`
-                let chartData = [['Species Name', 'Range', 'Habitat']]
+                let chartData = [
+                    ['Species Name',
+                        <span id="Range_Title_Target">Range  <CustomToolTip target="Range_Title_Target" text={"Known Range Map"} > </CustomToolTip></span>,
+                        <span id="Habitat_Title_Target">Habitat <CustomToolTip target="Habitat_Title_Target" text={"Predicted Habitat Map"} > </CustomToolTip></span>,
+                    ]]
                 let protectedPercent = ''
 
                 if (this.state.gapRange !== 'ALL') {
                     preData = preData.filter((d) => { return d[this.state.gapStatus] === this.state.gapRange })
                     if (this.state.gapStatus === 'status_1_2_group') chartTitle = `${preData.length} ${tableType} with ${this.state.gapRange}% within GAP Status 1 & 2 in ${this.props.feature.properties.feature_name}`
                     if (this.state.gapStatus === 'status_1_2_3_group') chartTitle = `${preData.length} ${tableType} with ${this.state.gapRange}% within GAP Status 1, 2 & 3 in ${this.props.feature.properties.feature_name}`
-                    chartData = [['Species Name', 'Protected', 'Range', 'Habitat']]
+                    chartData = [
+                        ['Species Name',
+                            'Protected',
+                            <span id="Range_Title_Target">Range  <CustomToolTip target="Range_Title_Target" text={"Known Range Map"} > </CustomToolTip></span>,
+                            <span id="Habitat_Title_Target">Habitat <CustomToolTip target="Habitat_Title_Target" text={"Predicted Habitat Map"} > </CustomToolTip></span>,
+                        ]]
                 }
 
                 for (let row of preData) {
@@ -327,7 +337,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                         if (this.state.gapStatus === 'status_1_2_group') protectedPercent = `${parseFloat(row.status_1_2).toFixed(2)}%`
                         if (this.state.gapStatus === 'status_1_2_3_group') protectedPercent = `${parseFloat(row.status_1_2_3).toFixed(2)}%`
                     }
-                    const radio1 = <span>
+                    const radio1 = <span className="no-sort">
                         <input
                             id={`Range_${row.sppcode}`}
                             style={{ marginLeft: '10px' }}
@@ -339,7 +349,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                         <CustomToolTip target={`Range_${row.sppcode}`} text={"Known Range Map"} > </CustomToolTip>
 
                     </span>
-                    const radio2 = <span>
+                    const radio2 = <span className="no-sort">
                         <input
                             id={`Habitat_${row.sppcode}`}
                             type="radio"
@@ -359,7 +369,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                 }
                 const chartConfig = {
                     margins: { left: 20, right: 20, top: 20, bottom: 125 },
-                    chart: { title: chartTitle, subtitle: `` },
+                    chart: { title: chartTitle, subtitle: ``, color: this.state.gapColor },
                 }
                 charts[chart] = { id: chartId, config: chartConfig, data: chartData }
 
@@ -385,7 +395,9 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
         this.resetRaidoBtn()
         this.setState({
             gapStatus: "ALL",
-            gapRange: "ALL"
+            gapRange: "ALL",
+            gapColor: 'white',
+            taxaLetter: "ALL"
         }, () => {
             const charts = this.getCharts(this.state.data)
             this.setState({
@@ -399,7 +411,8 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
         this.resetRaidoBtn()
         this.setState({
             gapStatus: d.status,
-            gapRange: d.range
+            gapRange: d.range,
+            gapColor: d.color
         }, () => {
             const charts = this.getCharts(this.state.data)
             this.setState({
@@ -462,7 +475,12 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                                             // widths: ['*','auto'],
                                             heights: 15,
                                             body: this.state.charts.gapTable.data.slice(0, Math.floor(this.state.charts.gapTable.data.length / 3))
-                                                .map(elm => { return elm[1] ? [elm[0], elm[1]] : [elm[0]] })
+                                                .map(elm => {
+                                                    if (elm.length === 3) {
+                                                        return elm[0].props ? [elm[0].props.children] : [elm[0]]
+                                                    }
+                                                    return [elm[0].props ? elm[0].props.children : elm[0], elm[1].props ? elm[1].props.children : elm[1]]
+                                                })
                                         }
                                     },
                                 ]
@@ -477,7 +495,12 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                                             // widths: ['*','auto'],
                                             heights: 15,
                                             body: this.state.charts.gapTable.data.slice(Math.floor(this.state.charts.gapTable.data.length / 3), Math.floor((this.state.charts.gapTable.data.length / 3) * 2))
-                                                .map(elm => { return elm[1] ? [elm[0], elm[1]] : [elm[0]] })
+                                                .map(elm => {
+                                                    if (elm.length === 3) {
+                                                        return elm[0].props ? [elm[0].props.children] : [elm[0]]
+                                                    }
+                                                    return [elm[0].props ? elm[0].props.children : elm[0], elm[1].props ? elm[1].props.children : elm[1]]
+                                                })
                                         }
                                     },
                                 ]
@@ -492,7 +515,12 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                                             //widths: ['*','auto'],
                                             heights: 15,
                                             body: this.state.charts.gapTable.data.slice(Math.floor((this.state.charts.gapTable.data.length / 3) * 2), this.state.charts.gapTable.data.length)
-                                                .map(elm => { return elm[1] ? [elm[0], elm[1]] : [elm[0]] })
+                                                .map(elm => {
+                                                    if (elm.length === 3) {
+                                                        return elm[0].props ? [elm[0].props.children] : [elm[0]]
+                                                    }
+                                                    return [elm[0].props ? elm[0].props.children : elm[0], elm[1].props ? elm[1].props.children : elm[1]]
+                                                })
                                         }
                                     },
                                 ]
@@ -517,11 +545,11 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                         <div className="title">Protection Status of Species in {this.props.feature ? this.props.feature.properties.feature_name : ''}</div>
                         <div className="subtitle">(Click on a slice to filter the table and see only species whose habitat falls in that percent of protection. Click on a radio button to see only species of that type.)</div>
                         <div className="spp-radio-btn">
-                            <div><input type="radio" name="species" value={"ALL"} checked={this.state.taxaLetter === "ALL"} onChange={this.onSpeciesChanged} />All</div>
-                            <div><input type="radio" name="species" value={"A"} checked={this.state.taxaLetter === "A"} onChange={this.onSpeciesChanged} />Amphibians</div>
-                            <div><input type="radio" name="species" value={"B"} checked={this.state.taxaLetter === "B"} onChange={this.onSpeciesChanged} />Birds</div>
-                            <div><input type="radio" name="species" value={"M"} checked={this.state.taxaLetter === "M"} onChange={this.onSpeciesChanged} />Mammals</div>
-                            <div><input type="radio" name="species" value={"R"} checked={this.state.taxaLetter === "R"} onChange={this.onSpeciesChanged} />Reptiles</div>
+                            <div><input type="radio" name="species" value={"ALL"} checked={this.state.taxaLetter === "ALL"} onClick={this.onSpeciesChanged} onChange={this.onSpeciesChanged} />All</div>
+                            <div><input type="radio" name="species" value={"A"} checked={this.state.taxaLetter === "A"} onClick={this.onSpeciesChanged} onChange={this.onSpeciesChanged} />Amphibians</div>
+                            <div><input type="radio" name="species" value={"B"} checked={this.state.taxaLetter === "B"} onClick={this.onSpeciesChanged} onChange={this.onSpeciesChanged} />Birds</div>
+                            <div><input type="radio" name="species" value={"M"} checked={this.state.taxaLetter === "M"} onClick={this.onSpeciesChanged} onChange={this.onSpeciesChanged} />Mammals</div>
+                            <div><input type="radio" name="species" value={"R"} checked={this.state.taxaLetter === "R"} onClick={this.onSpeciesChanged} onChange={this.onSpeciesChanged} />Reptiles</div>
                         </div>
                     </div>
                     <div>
@@ -541,7 +569,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                         </div>
                     </div>
                     <div className="chart-headers">
-                        <button className="submit-analysis-btn" onClick={this.resetSppTable}>Clear Chart Selection</button>
+                        <button className="submit-analysis-btn" onClick={this.resetSppTable}>Clear Selection</button>
                     </div>
                     <TableChart
                         data={this.state.charts.gapTable.data}

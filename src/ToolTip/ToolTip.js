@@ -14,16 +14,21 @@ class CustomToolTip extends React.Component {
 
 
     render() {
+        if (this.props.text) {
+            return (
 
-        return (
                 <Tooltip
                     style={{ fontSize: "14px" }} isOpen={this.state.open}
                     target={this.props.target}
                     toggle={() => this.setState({ open: !this.state.open })}
-                    delay={0}>
+                    delay={0}
+                    placement={this.props.placement ? this.props.placement : 'auto'}>
                     {this.props.text}
                 </Tooltip>
-        );
+            );
+        }
+        return null
+         
     }
 }
 export default CustomToolTip;

@@ -27,7 +27,7 @@ class LocationOverlay extends React.Component {
         this.props.onRef(this)
     }
 
-    componentWillUnmount(){
+    componentWillUnmount() {
         this.map.off('zoomend', this.updateOffset)
     }
 
@@ -69,7 +69,7 @@ class LocationOverlay extends React.Component {
                         (result) => {
                             let identifiedElevationValue = result.USGS_Elevation_Point_Query_Service
                             let elev = identifiedElevationValue.Elevation_Query.Elevation;
-                            elev = elev > -20 ? numberWithCommas(parseInt(elev)) + 'ft' : "No Data"
+                            elev = elev > -400 ? numberWithCommas(parseInt(elev)) + 'ft' : "No Data"
                             this.setState({
                                 elv: elev
                             })
@@ -92,14 +92,13 @@ class LocationOverlay extends React.Component {
     render() {
 
         return (
-            <div className={ this.props.bioscapeName !== "terrestrial-ecosystems-2011" ? "location-overlay" : "no-time-slider location-overlay"} style={{ left: this.state.leftOffset }}>
-                <span><label>Lat:</label>   {this.state.lat},</span>
-                <span><label>Long:</label>  {this.state.lng},</span>
-                <span><label>Elev:</label>  {this.state.elv}</span>
+            <div className={this.props.bioscapeName !== "terrestrial-ecosystems-2011" ? "location-overlay" : "no-time-slider location-overlay"} style={{ left: this.state.leftOffset }}>
+                {this.state.lat && this.state.lat !== "No Data" && <span>{this.state.lat}°,</span>}
+                {this.state.lng && this.state.lng !== "No Data" && <span>{this.state.lng}°,</span>}
+                {this.state.elv && <span>{this.state.elv}.</span>}
             </div>
         );
     }
-
 
 }
 export default LocationOverlay;

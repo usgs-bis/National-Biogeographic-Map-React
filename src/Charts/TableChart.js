@@ -8,6 +8,7 @@ class TableChart extends React.Component {
         super(props)
         this.state = {}
         this.sortTable = this.sortTable.bind(this)
+        this.getNumberOrOriginalValue = this.getNumberOrOriginalValue.bind(this)
     }
 
     componentDidMount() {
@@ -18,25 +19,43 @@ class TableChart extends React.Component {
 
     }
 
-
     sortTable(a, b, desc) {
+        if(typeof a === 'object' && a.type === 'span' && a.props && a.props.className ==="no-sort"){
+            return  0
+        }
+        if(typeof a === 'object' && a.type === 'span' && a.props.children ){
+            return   a.props.children <  b.props.children ? 1 : ( b.props.children <  a.props.children) ? -1 : 0;
+        }
+        if(typeof a === 'object' && a.type === 'a' && a.props.children && a.props.children.length >=1){
+            return   a.props.children[1] <  b.props.children[1] ? 1 : ( b.props.children[1] <  a.props.children[1]) ? -1 : 0;
+        }
+        a = this.getNumberOrOriginalValue(a)
+        b = this.getNumberOrOriginalValue(b)
 
-        if (parseFloat(a) && a.includes(',')) {
-            a = parseFloat(a.replace(/,/g, ''))
-        }
-        if (parseFloat(b) && b.includes(',')) {
-            b = parseFloat(b.replace(/,/g, ''))
-        }
         return a < b ? 1 : (b < a) ? -1 : 0;
-
     }
 
+    getNumberOrOriginalValue(val) {
+        if (isNaN(parseFloat(val))) {
+            return val
+        }
+
+        if (typeof val !== 'string') {
+            return val
+        }
+
+        if (val.includes(',')) {
+            return parseFloat(val.replace(/,/g, ''))
+        }
+
+        return parseFloat(val)
+    }
 
     render() {
 
         const getTable = () => {
             let headers = this.props.data[0]
-            let data = this.props.data.slice(1).sort((a,b)=>{return a[0] >= b[0] ? 1 : -1 } )
+            let data = this.props.data.slice(1).sort((a, b) => { return this.sortTable(b[0],a[0])})
             return <ReactTable
                 data={data}
                 columns={
@@ -56,14 +75,14 @@ class TableChart extends React.Component {
                             }
                     })
                 }
-
                 showPagination={false}
                 showPageSizeOptions={false}
                 defaultSortMethod={this.sortTable}
+                pageSize={data.length}
                 defaultPageSize={data.length}
                 minRows={0}
                 style={{
-                    height: "600px" // This will force the table body to scroll
+                    maxHeight: "600px" // This will force the table body to scroll
                 }}
                 className="-striped -highlight"
             />
@@ -76,7 +95,7 @@ class TableChart extends React.Component {
                     <div>
                         <div id={id + 'ChartContainer'} className="chart-container">
                             <div
-                                style={{ display: this.props.config.chart.title ? "block" : "none" }}
+                                style={{ display: this.props.config.chart.title ? "block" : "none", color: this.props.config.chart.color ? this.props.config.chart.color : "white" }}
                                 id={id + 'Title'} className="title">
                                 <span>{this.props.config.chart.title}</span>
                             </div>

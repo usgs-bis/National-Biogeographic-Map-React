@@ -8,6 +8,7 @@ import SpeciesProtectionAnalysis from "../AnalysisPackages/SpeciesProtectionAnal
 import EcosystemProtectionAnalysis from "../AnalysisPackages/EcosystemProtectionAnalysis";
 import PhenologyAnalysis from "../AnalysisPackages/PhenologyAnalysis";
 import OBISAnalysis from "../AnalysisPackages/OBISAnalysis";
+import BadNeighborAnalysis from "../AnalysisPackages/BadNeighborAnalysis";
 
 class Biogeography extends React.Component {
     constructor(props) {
@@ -56,6 +57,8 @@ class Biogeography extends React.Component {
         charts.push(this.SpeciesProtectionAnalysis.print())
         charts.push(this.PhenologyAnalysis.print())
         charts.push(this.OBISAnalysis.print())
+        charts.push(this.BadNeighborAnalysis.print())
+
 
         return charts
     }
@@ -158,7 +161,7 @@ class Biogeography extends React.Component {
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
                     />
                 </div>
-                <div className="nbm-flex-row-no-padding">
+                {/* <div className="nbm-flex-row-no-padding">
                     <PhenologyAnalysis
                         onRef={ref => (this.PhenologyAnalysis = ref)}
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
@@ -169,7 +172,7 @@ class Biogeography extends React.Component {
                         initLayerTitle={this.props.initLayerTitle}
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
                     />
-                </div>
+                </div> */}
                 <div className="nbm-flex-row-no-padding">
                     <OBISAnalysis
                         onRef={ref => (this.OBISAnalysis = ref)}
@@ -182,6 +185,18 @@ class Biogeography extends React.Component {
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
                     />
                 </div>
+                {/* <div className="nbm-flex-row-no-padding">
+                    <BadNeighborAnalysis
+                        onRef={ref => (this.BadNeighborAnalysis = ref)}
+                        updateAnalysisLayers={this.props.updateAnalysisLayers}
+                        setPriorityBap={this.props.setPriorityBap}
+                        feature={this.props.feature}
+                        priorityBap={this.props.priorityBap}
+                        bapId={`bap9`}
+                        initLayerTitle={this.props.initLayerTitle}
+                        getDefaultPriorityBap={this.getDefaultPriorityBap}
+                    />
+                </div> */}
             </div>
         );
     }
