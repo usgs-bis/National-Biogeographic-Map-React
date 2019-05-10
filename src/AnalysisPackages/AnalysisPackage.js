@@ -28,7 +28,6 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 jsonWindowOpen: false,
                 layersOpen: true,
                 prettyJson: false,
-                disableMultipleLayers: disableMultipleLayers
             }
             this.initilized = false
             this.jsonData = null
