@@ -569,7 +569,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                         </div>
                     </div>
                     <div className="chart-headers">
-                        <button className="submit-analysis-btn" onClick={this.resetSppTable}>Clear Chart Selection</button>
+                        <button className="submit-analysis-btn" onClick={this.resetSppTable}>Clear Selection</button>
                     </div>
                     <TableChart
                         data={this.state.charts.gapTable.data}
