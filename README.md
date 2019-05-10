@@ -31,6 +31,17 @@ https://www.sciencebase.gov/catalog/
 
         npm install
         npm start
+
+## To review and publish
+
+* This project follows a three branch structure. 
+     * development ->  https://dev-sciencebase.usgs.gov/biogeography
+     * beta ->  https://my-beta.usgs.gov/biogeography/
+     * master (FUTURE) -> https://maps.usgs.gov/biogeography
+* Merge code into development branch for review
+* Open a PR to beta branch for further review and testing
+* After code is reviewed and tested, open a pr to master branch to deploy to production
+
 ## Current Deploys:
 
 * ### Biogeography

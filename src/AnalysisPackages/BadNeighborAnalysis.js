@@ -8,7 +8,7 @@ import "./AnalysisPackages.css";
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/5cc34cbae4b09b8c0b7606b9?format=json"
 
-const BADNEIGHBOR_URL = process.env.REACT_APP_BIS_API + "/api/v1/badneighbor/state?fips="
+const BADNEIGHBOR_URL = process.env.REACT_APP_BIS_API + "/api/v1/nonnativespecies/"
 
 let sb_properties = {
     "title": "Bad Neighbor Invasives"
@@ -71,8 +71,7 @@ class BadNeighborAnalysisPackage extends React.Component {
             loading: true,
             error: false
         })
-        const fips = this.props.feature.properties.feature_id.split("US_States_and_Territories:state_fipscode:")[1]
-        fetch(BADNEIGHBOR_URL + fips)
+        fetch(BADNEIGHBOR_URL + this.props.feature.properties.feature_id)
             .then(res => res.json())
             .then(
                 (result) => {
@@ -167,7 +166,8 @@ class BadNeighborAnalysisPackage extends React.Component {
             }
             if (chart.toString() === "tableChart" && data) {
                 const chartId = "BadNeighbor_tableChart"
-                let chartTitle = `${this.props.feature.properties.feature_name} Bad Neighbors : ${this.state.tableGroup}`
+                let chartTitle = `${this.props.feature.properties.feature_name} Bad Neighbors: ${this.state.tableGroup}`
+                const chartSubTitle = `(Click on a bar above to filter the table and see only neighboring invasive species within a catagory.)`
                 let formattedData = []
                 for (let key of Object.keys(data)) {
                     let k = key.split('_').map(a => a.charAt(0).toUpperCase() + a.slice(1)).join(' ')
@@ -197,7 +197,7 @@ class BadNeighborAnalysisPackage extends React.Component {
 
                 const chartConfig = {
                     margins: { left: 20, right: 20, top: 20, bottom: 125 },
-                    chart: { title: chartTitle, subtitle: ``, color: this.state.gapColor },
+                    chart: { title: chartTitle, subtitle: chartSubTitle, color: this.state.gapColor },
                 }
                 charts[chart] = { id: chartId, config: chartConfig, data: chartData }
 

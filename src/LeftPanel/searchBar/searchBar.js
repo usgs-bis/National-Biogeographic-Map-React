@@ -119,7 +119,7 @@ class SearchBar extends React.Component {
                                         onClick={function () { that.submit(this) }}
                                         id={d.feature_id}
                                         key={d.feature_id}>
-                                        {d.feature_name}{d.state ? ", " + d.state.abbreviation : ""} ({d.feature_class})
+                                        {d.feature_name}{d.state ? ", " + d.state.name : ""} ({d.feature_class})
                             </Button>)
                             })}
                         </ButtonGroup> : null}

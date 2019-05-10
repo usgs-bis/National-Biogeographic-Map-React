@@ -625,7 +625,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                     <div>
                         <div className="chart-titles">
                             <div className="title">Protection Status of {this.props.feature ? this.props.feature.properties.feature_name : ''}</div>
-                            <div className="subtitle">Click on a slice to filter the table and see only systems with that percent of protection.)</div>
+                            <div className="subtitle">(Click on a slice to filter the table and see only systems with that percent of protection.)</div>
                         </div>
                         <div className="half-chart">
                             <PieChart
