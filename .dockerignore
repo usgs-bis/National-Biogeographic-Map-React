@@ -3,3 +3,4 @@
 !public
 !src
 !conf
+!.env.production
