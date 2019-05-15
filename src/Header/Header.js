@@ -3,6 +3,8 @@ import "./Header.css"
 import CustomDialog from "../CustomDialog/CustomDialog";
 import InfoSign from "../ InfoSign/InfoSign"
 
+const ENV = process.env.REACT_APP_ENV
+
 class Header extends React.Component {
     constructor(props) {
         super(props)
@@ -17,22 +19,10 @@ class Header extends React.Component {
 
     // display the beta banner for non production deploys
     componentDidMount() {
-        if (document.location.host === "localhost:3000") {
+        if (ENV && ENV !== 'prod') {
             this.setState({
                 showBetaBanner: true,
-                betaBannerText: 'Local'
-            })
-        }
-        else if (document.location.host === "dev-sciencebase.usgs.gov") {
-            this.setState({
-                showBetaBanner: true,
-                betaBannerText: 'Dev-IS'
-            })
-        }
-        else if (document.location.host === "my-beta.usgs.gov") {
-            this.setState({
-                showBetaBanner: true,
-                betaBannerText: 'My-Beta'
+                betaBannerText: ENV
             })
         }
     }

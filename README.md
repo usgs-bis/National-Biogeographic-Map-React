@@ -22,12 +22,12 @@ https://www.sciencebase.gov/catalog/
 
 ## To Run:
 
-* yarn
+* yarn (uses `.env.dev-local`)
 
         yarn install
         yarn start
 
-* npm
+* npm (uses `.env.dev-local`)
 
         npm install
         npm start
@@ -39,6 +39,17 @@ https://www.sciencebase.gov/catalog/
     To build a static site (`npm run build`) and serve:
 
         ./run.sh static
+
+## Building:
+
+* `npm run build`
+  * builds the app for production deploy using `.env.production`
+
+* `npm run build:beta`
+  * builds the app for beta deploy using `.env.beta` to override values in `.env.production`
+
+* `npm run build:dev`
+  * builds the app for development deploy using `.env.dev` to override values in `.env.production`
 
 
 ## To review and publish
