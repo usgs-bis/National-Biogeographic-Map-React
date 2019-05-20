@@ -244,17 +244,48 @@ class BadNeighborAnalysisPackage extends React.Component {
 
     print() {
         if (this.state.charts.donutChart.data && this.props.isOpen) {
-            return [
-                this.donutChart.current.print(this.state.charts.donutChart.id)
-                    .then(img => {
-                        return [
-                            { stack: this.props.getSBItemForPrint() },
-                            { text: this.state.charts.donutChart.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
-                            { text: this.state.charts.donutChart.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
-                            { image: img, alignment: 'center', width: 250 },
+            const tableData = this.state.charts.tableChart.data
+            function getRow(elm) {
+                const species = elm[0]
+                const val = elm[1]
+                if (typeof val === 'string' ) {
+                    return [species, val]
+                }
+                return [species, { text: val.props.children[1], link: val.props.href }]
+            }
+            function getColumn(startIdx, endIdx) {
+                return {
+                    width: 175,
+                    margin: [3, 0],
+                    stack: [
+                        {
+                            style: 'tableStyle',
+                            table: {
+                                widths: ['50%', '50%'],
+                                heights: 20,
+                                body: tableData.slice(startIdx, endIdx)
+                                    .map(getRow)
+                            }
+                        },
+                    ]
+                }
+            }
+            return this.donutChart.current.print(this.state.charts.donutChart.id).then(img => {
+                return [
+                    { stack: this.props.getSBItemForPrint() },
+                    { text: this.state.charts.donutChart.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
+                    { text: this.state.charts.donutChart.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
+                    { image: img, alignment: 'center', width: 250 },
+                    { text: this.state.charts.tableChart.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 10] },
+                    {
+                        columns: [
+                            getColumn(0, Math.floor(tableData.length / 3)),
+                            getColumn(Math.floor(tableData.length / 3), Math.floor(tableData.length / 3) * 2),
+                            getColumn(Math.floor(tableData.length / 3) * 2, tableData.length)
                         ]
-                    })
-            ]
+                    }
+                ]
+            })
         }
         return []
     }
