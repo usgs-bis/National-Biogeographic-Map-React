@@ -2,6 +2,13 @@ import React from "react";
 import * as d3 from "d3";
 import "./Chart.css"
 
+function getColor(color, i) {
+    const colors = d3.schemeCategory10
+    const length = colors.length
+    const start = Math.floor((i % (length * length))/length)
+    return color === 'random' ? colors[(i + start) % length] : color
+}
+
 class PieChart extends React.Component {
     constructor(props) {
         super(props)
@@ -43,6 +50,8 @@ class PieChart extends React.Component {
     *        tooltip:{label:(d)=>{return 'label'}},
     *        legend:{rectSize:12,spacing:4,leftOffset:6,fontSize:'smaller'}
     *        onClick: (d)=>{this.doSomthing()}
+    *        width: 200
+    *        height: 200
     *       }
     * ex. data = [
     *        { "name": "Delaware", "percent": 10.4, "color": "#FF0000" },
@@ -96,8 +105,13 @@ class PieChart extends React.Component {
             .attr('transform', 'translate(' + ((width + config.margins.left + config.margins.right) / 2) + ',' + ((height / 2) + config.margins.top) + ')');
 
         const arc = d3.arc()
-            .innerRadius(0)
-            .outerRadius(radius);
+            .innerRadius(config.innerRadius ? radius * config.innerRadius : 0)
+            .outerRadius(config.outerRadius ? radius * config.outerRadius : radius);
+        if (config.innerRadius) {
+            arc
+                .cornerRadius(1)
+                .padAngle(0.01);
+        }
 
         var outerArc = d3.arc()
             .outerRadius(radius * 1.2)
@@ -114,9 +128,8 @@ class PieChart extends React.Component {
             .append("g")
             .append('path')
             .attr('d', arc)
-            .attr('fill', function (d) { return d.data.color })
+            .attr('fill', function (d, i) { return getColor(d.data.color, i) })
             .style('opacity', opacity);
-
 
         path.on("click", function (d) {
             config.onClick(d.data)
@@ -131,14 +144,33 @@ class PieChart extends React.Component {
                 .style("opacity", otherOpacityOnHover);
             d3.select(this)
                 .style("opacity", opacityHover);
+            if (config.tooltip.center) {
+                centerTooltip(d)
+                return
+            }
             tooltip.transition()
                 .duration(200)
                 .style("opacity", .9);
             tooltip.html(config.tooltip.label(d))
                 .style("left", (d3.event.pageX) + "px")
                 .style("top", (d3.event.pageY - 28) + "px")
-                .style("border", `3px solid ${d.data.color}`);
+                .style("border", `3px solid ${getColor(d.data.color, d.index)}`);
         });
+
+        function centerTooltip(d) {
+            svg.append('text')
+                .attr('class', 'toolCircle')
+                .attr('dy', -15) // hard-coded. can adjust this to adjust text vertical alignment in tooltip
+                .html(config.tooltip.label(d)) // add text to the circle.
+                .style('font-size', '.7em')
+                .style('text-anchor', 'middle'); // centres text in tooltip
+
+            svg.append('circle')
+                .attr('class', 'toolCircle')
+                .attr('r', radius * 0.55) // radius of tooltip circle
+                .style('fill', getColor(d.data.color, d.index)) // colour based on category mouse is over
+                .style('fill-opacity', 0.35);
+        }
 
         // Add tooltip functionality on mouseOut
         path.on("mouseout", function (d) {
@@ -147,6 +179,9 @@ class PieChart extends React.Component {
             tooltip.transition()
                 .duration(500)
                 .style("opacity", 0);
+            if (config.tooltip.center) {
+                d3.selectAll('.toolCircle').remove();
+            }
         });
 
         svg.append('g').classed('labels', true);
@@ -156,19 +191,20 @@ class PieChart extends React.Component {
 
             function midAngle(d) { return d.startAngle + (d.endAngle - d.startAngle) / 2; }
 
-            let labelCount = 1
+            let labelCount = 0
+            const staggerAmt = [5, 15, 25, 35, 45, 55, 65, 75, 85]
+            const staggerAmtLength = staggerAmt.length
             svg.select('.lines')
                 .selectAll('polyline')
                 .data(pie(data))
                 .enter().append('polyline')
                 .attr('points', (d) => {
-                    const staggerAmt = [5, 15, 25, 35, 45, 55, 65, 75, 85]
                     let stagger = outerArc.centroid(d)
+                    if (d.value < 0.1) return []
                     if (d.value < 3) {
-                        stagger[1] = stagger[1] > 0 ? stagger[1] + staggerAmt[labelCount % 8] : stagger[1] - staggerAmt[labelCount % 8]
+                        stagger[1] = stagger[1] > 0 ? stagger[1] + staggerAmt[labelCount % staggerAmtLength] : stagger[1] - staggerAmt[labelCount % staggerAmtLength]
                         labelCount++
                     }
-                    if (d.value < 0.1) return []
                     let finalPos = stagger[0] >= 0 ? [stagger[0] + 10, stagger[1]] : [stagger[0] - 10, stagger[1]]
                     return [arc.centroid(d), stagger, finalPos]
                 })
@@ -178,20 +214,19 @@ class PieChart extends React.Component {
                 .style("fill", `none`);
 
 
-            labelCount = 1
-            svg.select('.labels').selectAll('text')
+            labelCount = 0
+            const labels = svg.select('.labels').selectAll('text')
                 .data(pie(data))
                 .enter().append('text')
                 .attr('dy', '.35em')
                 .html((d) => {
                     if (d.value < 0.1) return ''
-                    return (parseFloat(d.data.percent)).toFixed(2).toString() + '%';
+                    return config.lables.label ? config.lables.label(d) : (parseFloat(d.data.percent)).toFixed(2).toString() + '%';
                 })
                 .attr('transform', function (d) {
-                    const staggerAmt = [5, 15, 25, 35, 45, 55, 65, 75, 85]
                     let stagger = outerArc.centroid(d)
                     if (d.value < 3) {
-                        stagger[1] = stagger[1] > 0 ? stagger[1] + staggerAmt[labelCount % 8] : stagger[1] - staggerAmt[labelCount % 8]
+                        stagger[1] = stagger[1] > 0 ? stagger[1] + staggerAmt[labelCount % staggerAmtLength] : stagger[1] - staggerAmt[labelCount % staggerAmtLength]
                         labelCount++
                     }
                     let finalPos = stagger[0] >= 0 ? [stagger[0] + 13, stagger[1]] : [stagger[0] - 13, stagger[1]]
@@ -203,31 +238,38 @@ class PieChart extends React.Component {
                 })
                 .style("font-size", config.lables.fontSize);
 
+            if (config.tooltip.center) {
+                labels
+                    .style('cursor', 'pointer')
+                    .on('click', ({data}) => config.onClick(data))
+                    .on('mouseover', centerTooltip)
+                    .on('mouseout', () => d3.selectAll('.toolCircle').remove());
+            }
         }
 
-        const legend = svg.selectAll('.legend')
-            .data(data)
-            .enter()
-            .append('g')
-            .attr('class', 'legend')
-            .attr('transform', (d, i) => {
-                return 'translate(' + ((-1 * (width / config.legend.leftOffset))) + ',' + (height / 2 + 20 + ((config.legend.verticalSpacing ? config.legend.verticalSpacing : 15) * i)) + ')';
-            });
-
-        legend.append('rect')
-            .attr('width', config.legend.rectSize)
-            .attr('height', config.legend.rectSize)
-            .style('fill', (d, i) => {
-                return d.color
-            })
-
-        legend.append('text')
-            .attr('x', config.legend.rectSize + config.legend.spacing + 2)
-            .attr('y', config.legend.rectSize - config.legend.spacing + 2)
-            .style('font-size', config.legend.fontSize)
-            .text((d) => { return d.name; });
-
-
+        if (config.legend) {
+            const legend = svg.selectAll('.legend')
+                .data(data)
+                .enter()
+                .append('g')
+                .attr('class', 'legend')
+                .attr('transform', (d, i) => {
+                    return 'translate(' + ((-1 * (width / config.legend.leftOffset))) + ',' + (height / 2 + 20 + ((config.legend.verticalSpacing ? config.legend.verticalSpacing : 15) * i)) + ')';
+                });
+            
+            legend.append('rect')
+                .attr('width', config.legend.rectSize)
+                .attr('height', config.legend.rectSize)
+                .style('fill', (d, i) => {
+                    return getColor(d.color, i)
+                })
+            
+            legend.append('text')
+                .attr('x', config.legend.rectSize + config.legend.spacing + 2)
+                .attr('y', config.legend.rectSize - config.legend.spacing + 2)
+                .style('font-size', config.legend.fontSize)
+                .text((d) => { return d.name; });
+        }
     }
 
     // returns a promise with a dataURI - i.e. base 64 encoded PNG
@@ -260,7 +302,9 @@ class PieChart extends React.Component {
                 const svg = "data:image/svg+xml," + d3.select(`#${id}ChartContainer .svg-container-chart`).html().replace(/#/g, '%23')
                 image.src = svg
             }
-            catch (error) { reject(error) }
+            catch (error) {
+                reject(error)
+            }
         })
     }
 

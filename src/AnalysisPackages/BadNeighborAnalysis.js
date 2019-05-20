@@ -1,7 +1,7 @@
 import React from "react";
 import { BarLoader } from "react-spinners"
 import withSharedAnalysisCharacteristics from "./AnalysisPackage"
-import HorizontalBarChart from "../Charts/HorizontalBarChart";
+import DonutChart from "../Charts/DonutChart";
 import TableChart from "../Charts/TableChart"
 
 import "./AnalysisPackages.css";
@@ -22,13 +22,15 @@ class BadNeighborAnalysisPackage extends React.Component {
         super(props)
         this.state = {
             charts: {
-                barChart: { id: "", config: {}, data: null },
+                donutChart: { id: "", config: {}, data: null },
                 tableChart: { id: "", config: {}, data: null },
             },
             tableGroup: "All Invasives",
             layersOpen: false,
             value: []
         }
+
+        this.donutChart = React.createRef()
 
         this.getCharts = this.getCharts.bind(this)
         this.print = this.print.bind(this)
@@ -71,7 +73,6 @@ class BadNeighborAnalysisPackage extends React.Component {
             this.props.canOpen(false)
             this.props.isEnabled(true)
         }
-
     }
 
     fetch() {
@@ -97,7 +98,7 @@ class BadNeighborAnalysisPackage extends React.Component {
                     } else {
                         this.setState({
                             charts: {
-                                horizontalBarChart: { id: "", config: {}, data: null }
+                                donutChart: { id: "", config: {}, data: null }
                             },
                             data: null
                         })
@@ -114,8 +115,6 @@ class BadNeighborAnalysisPackage extends React.Component {
             )
     }
 
-
-
     /**
      * Loop through the charts defined in the state and look for a data object in datas that matches.
      * Create the chart id, data, and config as documented in the chart type.
@@ -131,10 +130,9 @@ class BadNeighborAnalysisPackage extends React.Component {
         let charts = {}
 
         for (let chart of Object.keys(this.state.charts)) {
+            if (chart.toString() === "donutChart" && data) {
 
-            if (chart.toString() === "barChart" && data) {
-
-                const chartId = "BadNeighbor_HorizontalBarChart"
+                const chartId = "BadNeighbor_DonutChart"
                 let formattedData = []
                 let total = 0
                 for (let key of Object.keys(data)) {
@@ -151,26 +149,28 @@ class BadNeighborAnalysisPackage extends React.Component {
                         }
                     }
                     total += count
-                    formattedData.push({ "Group": k, "Percent": 0, "Count": count, "color": "rgb(100,100,100)" })
-
+                    formattedData.push({ "name": k, "percent": 0, "Count": count, "color": "random" })
                 }
                 formattedData = formattedData.map(d => {
-                    d["Percent"] = getPercent(d["Count"], total)
+                    d["percent"] = getPercent(d["Count"], total)
                     return d
                 })
 
 
                 const chartConfig = {
-                    margins: { left: 100, right: 20, top: 20, bottom: 70 },
+                    margins: { left: 75, right: 80, top: 100, bottom: 0 },
                     chart: { title: `Percent Threat of Sample Groups Bad Neighbors in ${this.props.feature.properties.feature_name}`, subtitle: `` },
-                    xAxis: { key: 'Percent', label: "Realative Contribution", ticks: 5, tickFormat: (d) => { return `${parseInt(d)}%` } },
-                    yAxis: { key: 'Group', label: "Bad Neighbor Group", ticks: 5, tickFormat: (d) => { return d } },
-                    tooltip: { label: (d) => { return `<div style="text-align:left;"><div><b>Group</b>: ${d.Group}</div><div><b>Contribution</b>: ${d.Percent}%</div><div><b>Count</b>: ${d.Count}</div></div>` } },
+                    tooltip: { data: { name: "Group", percent: "Contribution", Count: "Count" } },
+                    lables: { fontSize: '8px', label: ({data}) => `${data.name} ${(parseFloat(data.percent)).toFixed(2).toString()}%` },
                     onClick: (d) => { this.filterTableData(d) }
                 }
-                formattedData.reverse()
+                formattedData.sort((a, b) => {
+                    if(a.percent < b.percent) {
+                        return -1
+                    }
+                    return a.percent > b.percent ? 1 : 0
+                }).reverse()
                 charts[chart] = { id: chartId, config: chartConfig, data: formattedData }
-
             }
             if (chart.toString() === "tableChart" && data) {
                 const chartId = "BadNeighbor_tableChart"
@@ -219,7 +219,7 @@ class BadNeighborAnalysisPackage extends React.Component {
 
     filterTableData(d) {
         this.setState({
-            tableGroup: d.Group,
+            tableGroup: d.name,
         }, () => {
             const charts = this.getCharts(this.state.data)
             this.setState({
@@ -243,18 +243,49 @@ class BadNeighborAnalysisPackage extends React.Component {
     }
 
     print() {
-        if (this.state.charts.barChart.data && this.props.isOpen) {
-            return [
-                this.BarChart.print(this.state.charts.barChart.id)
-                    .then(img => {
-                        return [
-                            { stack: this.props.getSBItemForPrint() },
-                            { text: this.BarChart.props.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
-                            { text: this.BarChart.props.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
-                            { image: img, alignment: 'center', width: 250 },
+        if (this.state.charts.donutChart.data && this.props.isOpen) {
+            const tableData = this.state.charts.tableChart.data
+            function getRow(elm) {
+                const species = elm[0]
+                const val = elm[1]
+                if (typeof val === 'string' ) {
+                    return [species, val]
+                }
+                return [species, { text: val.props.children[1], link: val.props.href }]
+            }
+            function getColumn(startIdx, endIdx) {
+                return {
+                    width: 175,
+                    margin: [3, 0],
+                    stack: [
+                        {
+                            style: 'tableStyle',
+                            table: {
+                                widths: ['50%', '50%'],
+                                heights: 20,
+                                body: tableData.slice(startIdx, endIdx)
+                                    .map(getRow)
+                            }
+                        },
+                    ]
+                }
+            }
+            return this.donutChart.current.print(this.state.charts.donutChart.id).then(img => {
+                return [
+                    { stack: this.props.getSBItemForPrint() },
+                    { text: this.state.charts.donutChart.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
+                    { text: this.state.charts.donutChart.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
+                    { image: img, alignment: 'center', width: 250 },
+                    { text: this.state.charts.tableChart.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 10] },
+                    {
+                        columns: [
+                            getColumn(0, Math.floor(tableData.length / 3)),
+                            getColumn(Math.floor(tableData.length / 3), Math.floor(tableData.length / 3) * 2),
+                            getColumn(Math.floor(tableData.length / 3) * 2, tableData.length)
                         ]
-                    })
-            ]
+                    }
+                ]
+            })
         }
         return []
     }
@@ -265,8 +296,7 @@ class BadNeighborAnalysisPackage extends React.Component {
                 {this.props.getAnalysisLayers()}
                 {this.props.handleBapError(this.state.error)}
                 <div className="chartsDiv">
-                    <HorizontalBarChart onRef={ref => (this.BarChart = ref)} data={this.state.charts.barChart.data} id={this.state.charts.barChart.id} config={this.state.charts.barChart.config} />
-
+                    <DonutChart ref={this.donutChart} data={this.state.charts.donutChart.data} id={this.state.charts.donutChart.id} config={this.state.charts.donutChart.config} />
                     <div className="chart-headers">
                         <button className="submit-analysis-btn" onClick={this.resetTable}>Clear Chart Selection</button>
                     </div>
@@ -285,7 +315,6 @@ class BadNeighborAnalysisPackage extends React.Component {
                 <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
                 {this.props.getBapContents(this.createUniqueBapContents)}
             </div>
-
         )
     }
 }
