@@ -67,6 +67,7 @@ class App extends React.Component {
         this.setMapDisplayYearFade = this.setMapDisplayYearFade.bind(this)
         this.updateAnalysisLayers = this.updateAnalysisLayers.bind(this)
         this.setMap = this.setMap.bind(this)
+        this.getHash = this.getHash.bind(this)
         this.shareState = this.shareState.bind(this)
         this.loadState = this.loadState.bind(this)
         this.handelDrawnPolygon = this.handelDrawnPolygon.bind(this)
@@ -101,20 +102,28 @@ class App extends React.Component {
             )
     }
 
-    shareState() {
-
+    componentDidUpdate() {
         if (this.state.feature && !this.state.feature.properties.userDefined) {
-            let state = {
-                feature: { id: this.state.feature.properties.feature_id },
-                basemap: this.state.basemap,
-                timeSlider: { rangeYearMin: this.state.rangeYearMin, rangeYearMax: this.state.rangeYearMax, mapDisplayYear: this.state.mapDisplayYear },
-                bap: { activeLayerTitle: this.state.analysisLayers && this.state.analysisLayers.length ? this.state.analysisLayers[0].title : '', priorityBap: this.state.priorityBap },
-                point: { lat: this.state.lat, lng: this.state.lng, elv: this.state.elv }
-            }
-            let objJsonB64 = Buffer.from(JSON.stringify(state)).toString("base64");
+            window.location.hash = this.getHash()
+        }
+    }
+
+    getHash() {
+        let state = {
+            feature: { id: this.state.feature.properties.feature_id },
+            basemap: this.state.basemap,
+            timeSlider: { rangeYearMin: this.state.rangeYearMin, rangeYearMax: this.state.rangeYearMax, mapDisplayYear: this.state.mapDisplayYear },
+            bap: { activeLayerTitle: this.state.analysisLayers && this.state.analysisLayers.length ? this.state.analysisLayers[0].title : '', priorityBap: this.state.priorityBap },
+            point: { lat: this.state.lat, lng: this.state.lng, elv: this.state.elv }
+        }
+        return Buffer.from(JSON.stringify(state)).toString("base64")
+    }
+
+    shareState() {
+        if (this.state.feature && !this.state.feature.properties.userDefined) {
             let copyText = document.getElementsByClassName('share-url-input')[0]
             copyText.style.display = 'inline-block'
-            copyText.value = window.location.href.split('#')[0] + '#' + objJsonB64
+            copyText.value = window.location
             copyText.select()
             document.execCommand("copy")
             copyText.style.display = 'none'
@@ -128,7 +137,6 @@ class App extends React.Component {
         let loc = window.location.href
         let split = loc.split('#')
         if (split.length === 2 && split[1]) {
-            window.location.hash = ''
             let initState = JSON.parse(atob(split[1]))
             this.initFeatureId = initState.feature
             this.initLayerTitle = initState.bap.activeLayerTitle
@@ -181,7 +189,7 @@ class App extends React.Component {
     }
 
     parseBioscape() {
-        let basemap = this.state.bioscape.basemaps.find(function (obj) {
+        let basemap = this.state.basemap ? this.state.basemap : this.state.bioscape.basemaps.find(function (obj) {
             return obj.selected === true;
         })
 
