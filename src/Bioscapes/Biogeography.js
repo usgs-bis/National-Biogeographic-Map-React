@@ -186,7 +186,7 @@ class Biogeography extends React.Component {
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
                     />
                 </div>
-                { (!ENV || ENV === 'prod') && <div className="nbm-flex-row-no-padding">
+                { (ENV && ENV !== 'prod') && <div className="nbm-flex-row-no-padding">
                     <BadNeighborAnalysis
                         onRef={ref => (this.BadNeighborAnalysis = ref)}
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
