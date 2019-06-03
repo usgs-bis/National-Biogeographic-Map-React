@@ -9,6 +9,7 @@ import EcosystemProtectionAnalysis from "../AnalysisPackages/EcosystemProtection
 import PhenologyAnalysis from "../AnalysisPackages/PhenologyAnalysis";
 import OBISAnalysis from "../AnalysisPackages/OBISAnalysis";
 import BadNeighborAnalysis from "../AnalysisPackages/BadNeighborAnalysis";
+const ENV = process.env.REACT_APP_ENV;
 
 class Biogeography extends React.Component {
     constructor(props) {
@@ -185,7 +186,7 @@ class Biogeography extends React.Component {
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
                     />
                 </div>
-                <div className="nbm-flex-row-no-padding">
+                { (ENV && ENV !== 'prod') && <div className="nbm-flex-row-no-padding">
                     <BadNeighborAnalysis
                         onRef={ref => (this.BadNeighborAnalysis = ref)}
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
@@ -196,7 +197,7 @@ class Biogeography extends React.Component {
                         initLayerTitle={this.props.initLayerTitle}
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
                     />
-                </div>
+                </div> }
             </div>
         );
     }
