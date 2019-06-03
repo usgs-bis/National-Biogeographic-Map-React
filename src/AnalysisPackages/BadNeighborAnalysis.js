@@ -9,7 +9,7 @@ import "./AnalysisPackages.css";
 const SB_URL = "https://www.sciencebase.gov/catalog/item/5cc34cbae4b09b8c0b7606b9?format=json"
 
 const BADNEIGHBOR_URL = process.env.REACT_APP_BIS_API + "/api/v1/nonnativespecies/"
-const DEV_MODE = process.env.REACT_APP_DEV
+const ENV = process.env.REACT_APP_ENV
 
 let sb_properties = {
     "title": "Bad Neighbor Invasives"
@@ -53,8 +53,8 @@ class BadNeighborAnalysisPackage extends React.Component {
     }
 
     featureChange() {
-        // This BAP is experimental, display in development only
-        if (!DEV_MODE) {
+        // This BAP is experimental, don't display in production
+        if (!ENV || ENV === 'prod') {
             this.props.isEnabled(false)
             this.props.canOpen(false)
             return
