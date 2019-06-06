@@ -14,7 +14,6 @@ const PHENO32_POLY_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenocast/poly
 const PHENO50_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenocast/place/agdd_50";
 const PHENO50_POLY_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenocast/polygon/agdd_50";
 const PUBLIC_TOKEN = process.env.REACT_APP_PUBLIC_TOKEN
-const DEV_MODE = process.env.REACT_APP_DEV
 
 
 let sb_properties = {
@@ -87,13 +86,6 @@ class PhenologyAnalysisPackage extends React.Component {
     }
 
     featureChange() {
-        // This BAP is experimental, display in development only
-        if (!DEV_MODE) {
-            this.props.isEnabled(false)
-            this.props.canOpen(false)
-            return
-        }
-
         if (this.props.feature) {
             if(this.props.feature.properties.feature_id.includes('OBIS_Areas')){
                 this.props.isEnabled(false)
