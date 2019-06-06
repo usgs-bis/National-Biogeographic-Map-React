@@ -167,6 +167,7 @@ class LeftPanel extends React.Component {
                         textSearchHandler={this.props.textSearchHandler}
                         submitHandler={this.props.submitHandler}
                         mapClicked={this.props.mapClicked}
+                        point={this.props.point}
                         enabledLayers={this.state.enabledLayers}
                         bioscape={this.state.bioscape}
                         overlayChanged={this.props.overlayChanged}
