@@ -145,7 +145,7 @@ class LeftPanel extends React.Component {
                         <div className="panel-buttons">
                             <button id="ShareTooltip" className="submit-analysis-btn" onClick={this.share}>{this.state.shareText}</button>
                             <input className="share-url-input" type="text"></input>
-                            <CustomToolTip target="ShareTooltip" placement="top" text={this.props.feature && this.props.feature.properties.userDefined ? 'Unable to share a user drawn polygon.' : 'Share this map by copying a url to your clipboard.'} > </CustomToolTip>
+                            <CustomToolTip target="ShareTooltip" placement="top" text={'Share this map by copying a url to your clipboard.'} > </CustomToolTip>
 
                             <button id="ReportTooltip" className="submit-analysis-btn" onClick={this.report}>
                                 <PDFReport onRef={ref => (this.PDFReport = ref)} getShareUrl={this.props.shareState}></PDFReport>
