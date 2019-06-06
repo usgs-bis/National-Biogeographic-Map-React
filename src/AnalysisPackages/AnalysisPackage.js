@@ -484,6 +484,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                                         <label htmlFor="prettyCheckbox">{"Pretty JSON "}  </label>
                                         <input checked={this.state.prettyJson}
                                             onChange={() => this.setState({ prettyJson: !this.state.prettyJson })}
+                                            onClick={() => this.setState({ prettyJson: !this.state.prettyJson })}
                                             type="checkbox" id="prettyCheckbox" name="prettyCheckbox" />
                                     </div>
                                     <div className="JSON-text-container">
