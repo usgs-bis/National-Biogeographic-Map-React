@@ -9,7 +9,7 @@ import EcosystemProtectionAnalysis from "../AnalysisPackages/EcosystemProtection
 import PhenologyAnalysis from "../AnalysisPackages/PhenologyAnalysis";
 import OBISAnalysis from "../AnalysisPackages/OBISAnalysis";
 import BadNeighborAnalysis from "../AnalysisPackages/BadNeighborAnalysis";
-const ENV = process.env.REACT_APP_ENV;
+const DEV_MODE = process.env.REACT_APP_DEV;
 
 class Biogeography extends React.Component {
     constructor(props) {
@@ -162,7 +162,7 @@ class Biogeography extends React.Component {
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
                     />
                 </div>
-                <div className="nbm-flex-row-no-padding">
+                { DEV_MODE && <div className="nbm-flex-row-no-padding">
                     <PhenologyAnalysis
                         onRef={ref => (this.PhenologyAnalysis = ref)}
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
@@ -173,7 +173,7 @@ class Biogeography extends React.Component {
                         initLayerTitle={this.props.initLayerTitle}
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
                     />
-                </div>
+                </div> }
                 <div className="nbm-flex-row-no-padding">
                     <OBISAnalysis
                         onRef={ref => (this.OBISAnalysis = ref)}
@@ -186,7 +186,7 @@ class Biogeography extends React.Component {
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
                     />
                 </div>
-                { (ENV && ENV !== 'prod') && <div className="nbm-flex-row-no-padding">
+                { DEV_MODE && <div className="nbm-flex-row-no-padding">
                     <BadNeighborAnalysis
                         onRef={ref => (this.BadNeighborAnalysis = ref)}
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
