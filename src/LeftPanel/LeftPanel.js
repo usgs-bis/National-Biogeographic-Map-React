@@ -167,18 +167,8 @@ class LeftPanel extends React.Component {
 
                     <SearchBar
                        {...this.props}
-                       enabledLayers={this.state.enabledLayers}
-                        // results={this.props.results}
-                        // textSearchHandler={this.props.textSearchHandler}
-                        // submitHandler={this.props.submitHandler}
-                        // mapClicked={this.props.mapClicked}
-                        // point={this.props.point}
-                        // enabledLayers={this.state.enabledLayers}
-                        // bioscape={this.state.bioscape}
-                        // overlayChanged={this.props.overlayChanged}
-                        // basemapChanged={this.props.basemapChanged}
-                        // initLayerTitle={this.props.initLayerTitle}
-                        ></SearchBar>
+                       enabledLayers={this.state.enabledLayers}>
+                    </SearchBar>
                     {featureText()}
                 </div>
                 {!this.props.priorityBap && this.state.feature_name && this.state.displayHelp && <div className="bap-popup" id="baphHelpPopup">

@@ -111,7 +111,7 @@ class App extends React.Component {
 
     getHash() {
         let state = {
-            feature: { feature_id: this.state.feature.properties.feature_id },
+            feature: { id: this.state.feature.properties.feature_id },
             basemap: this.state.basemap,
             timeSlider: { rangeYearMin: this.state.rangeYearMin, rangeYearMax: this.state.rangeYearMax, mapDisplayYear: this.state.mapDisplayYear },
             bap: { activeLayerTitle: this.state.analysisLayers && this.state.analysisLayers.length ? this.state.analysisLayers[0].title : '', priorityBap: this.state.priorityBap },
@@ -405,7 +405,7 @@ class App extends React.Component {
             if (feature["feature_class"] === overlay.featureClass) {
                 i = results.length
                 this.submitHandler({
-                    feature_id: feature.feature_id
+                    id: feature.feature_id
                 })
             }
         }
