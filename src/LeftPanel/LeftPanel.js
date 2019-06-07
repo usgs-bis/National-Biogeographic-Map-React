@@ -15,11 +15,12 @@ class LeftPanel extends React.Component {
         this.state = {
             results: props.results,
             bioscape: props.bioscape,
-            updateAnalysisLayers: props.updateAnalysisLayers,
             loading: false,
             enabledLayers: [],
             shareText: 'Share',
-            displayHelp: true
+             // if there is a layer or the layer is empty string then we are loading state
+             displayHelp: this.props.initLayerTitle
+             || this.props.initLayerTitle === '' ? false : true
         }
 
         this.share = this.share.bind(this);
@@ -54,7 +55,8 @@ class LeftPanel extends React.Component {
             })
         }
 
-        if (!this.props.priorityBap && props.feature && !this.listnerAdded) {
+        // only add the event listner when we are ready to remove it
+        if (!this.props.priorityBap && props.feature && !this.listnerAdded && this.state.displayHelp) {
             this.listnerAdded = true
             document.body.addEventListener('click', () => { this.setState({ displayHelp: false }) }, true);
             document.body.addEventListener('keydown', () => { this.setState({ displayHelp: false }) }, true);
@@ -117,7 +119,7 @@ class LeftPanel extends React.Component {
             enabledLayers: enabledLayers
         })
 
-        this.state.updateAnalysisLayers(enabledLayers, bapId)
+        this.props.updateAnalysisLayers(enabledLayers, bapId)
     }
 
 
@@ -163,15 +165,20 @@ class LeftPanel extends React.Component {
             <div className="left-panel">
                 <div id='left-panel-header' className="left-panel-header">
 
-                    <SearchBar results={this.props.results}
-                        textSearchHandler={this.props.textSearchHandler}
-                        submitHandler={this.props.submitHandler}
-                        mapClicked={this.props.mapClicked}
-                        point={this.props.point}
-                        enabledLayers={this.state.enabledLayers}
-                        bioscape={this.state.bioscape}
-                        overlayChanged={this.props.overlayChanged}
-                        basemapChanged={this.props.basemapChanged}></SearchBar>
+                    <SearchBar
+                       {...this.props}
+                       enabledLayers={this.state.enabledLayers}
+                        // results={this.props.results}
+                        // textSearchHandler={this.props.textSearchHandler}
+                        // submitHandler={this.props.submitHandler}
+                        // mapClicked={this.props.mapClicked}
+                        // point={this.props.point}
+                        // enabledLayers={this.state.enabledLayers}
+                        // bioscape={this.state.bioscape}
+                        // overlayChanged={this.props.overlayChanged}
+                        // basemapChanged={this.props.basemapChanged}
+                        // initLayerTitle={this.props.initLayerTitle}
+                        ></SearchBar>
                     {featureText()}
                 </div>
                 {!this.props.priorityBap && this.state.feature_name && this.state.displayHelp && <div className="bap-popup" id="baphHelpPopup">

@@ -16,7 +16,9 @@ class SearchBar extends React.Component {
         this.state = {
             focused: false,
             layersDropdownOpen: false,
-            displayHelp: true
+            // if there is a layer or the layer is empty string then we are loading state
+            displayHelp: this.props.initLayerTitle
+                || this.props.initLayerTitle === '' ? false : true
         }
 
         this.handleKeyUp = this.handleKeyUp.bind(this);
@@ -25,15 +27,22 @@ class SearchBar extends React.Component {
         this.toggleBasemapDropdown = this.toggleBasemapDropdown.bind(this)
         this.basemapChanged = this.basemapChanged.bind(this)
         this.textInput = ""
+        this.listnerAdded = false
     }
 
+
     componentDidMount() {
-        document.body.addEventListener('click', () => { this.setState({ displayHelp: false }) }, true);
-        document.body.addEventListener('keydown', () => { this.setState({ displayHelp: false }) }, true);
+        if (this.state.displayHelp) {
+            this.listnerAdded = true
+            document.body.addEventListener('click', () => { this.setState({ displayHelp: false }) }, true);
+            document.body.addEventListener('keydown', () => { this.setState({ displayHelp: false }) }, true);
+        }
     }
     componentWillUnmount() {
-        document.body.removeEventListener('click', () => { this.setState({ displayHelp: false }) }, true);
-        document.body.removeEventListener('keydown', () => { this.setState({ displayHelp: false }) }, true);
+        if (this.listnerAdded) {
+            document.body.removeEventListener('click', () => { this.setState({ displayHelp: false }) }, true);
+            document.body.removeEventListener('keydown', () => { this.setState({ displayHelp: false }) }, true);
+        }
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {

@@ -9,7 +9,7 @@ import L from 'leaflet';
 import InfoSign from '../ InfoSign/InfoSign';
 
 
-
+const ENV = process.env.REACT_APP_ENV;
 const BUFFER = .5;
 
 class NBM extends React.PureComponent {
@@ -49,13 +49,14 @@ class NBM extends React.PureComponent {
     }
 
     componentDidMount() {
+        // this is a hack that others have suggested because react leaflet
+        // does not support leaflet onLoad event.
         setTimeout(() => {
             this.refs.map.leafletElement.invalidateSize()
             this.refs.map.leafletElement.fitBounds(this.bounds)
             L.control.scale({ metric: false, imperial: true, position: 'bottomleft' }).addTo(this.refs.map.leafletElement)
             this.refs.map.leafletElement.removeControl(this.refs.map.leafletElement.attributionControl);
-        }, 250)
-
+        }, ENV === 'Local' ? 1000 : 250)
         this.props.setMap(this.refs.map)
 
         if (this.props.initPoint && this.props.initPoint.elv) {

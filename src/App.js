@@ -54,9 +54,6 @@ class App extends React.Component {
             clickDrivenEvent: false
 
         }
-        //this.initFeature = null
-        //this.initLayerTitle = null
-        //this.initPoint = null
         this.initState = null
         this.parseBioscape = this.parseBioscape.bind(this)
         this.handleSearchBox = this.handleSearchBox.bind(this)
@@ -78,6 +75,7 @@ class App extends React.Component {
         this.setPriorityBap = this.setPriorityBap.bind(this)
         this.getElevationFromPoint = this.getElevationFromPoint.bind(this)
         this.countyStateLookup = this.countyStateLookup.bind(this)
+        this.getApproxArea = this.getApproxArea.bind(this)
         this.state = this.loadState(this.state)
 
     }
@@ -85,10 +83,10 @@ class App extends React.Component {
     componentDidMount() {
         this.parseBioscape()
         document.title = this.state.bioscape.title
-        if(this.initState && this.initState.userDefined){
-            this.handelDrawnPolygon(this.initState.userDefined.geom)
+        if (this.initState && this.initState.userDefined) {
+            this.handelDrawnPolygon(this.initState.userDefined.geom, true)
         }
-        else if (this.initState) this.submitHandler(this.initState.feature)
+        else if (this.initState) this.submitHandler(this.initState.feature, true)
         fetch(API_VERSION_URL)
             .then(res => res.json())
             .then(
@@ -218,12 +216,13 @@ class App extends React.Component {
 
     }
 
-    handelDrawnPolygon(geom) {
+    handelDrawnPolygon(geom, init) {
         if (geom) {
             this.setState({
                 feature: {
                     geometry: geom,
                     properties: {
+                        approxArea: this.getApproxArea(geom),
                         userDefined: true,
                         feature_class: "Polygon",
                         gid: null,
@@ -235,6 +234,12 @@ class App extends React.Component {
                     type: "Feature"
                 }
             })
+            if (!init) {
+                this.setState({
+                    priorityBap: null,
+                    analysisLayers: []
+                })
+            }
         }
         else {
             this.setState({
@@ -330,42 +335,54 @@ class App extends React.Component {
         return result
     }
 
-    submitHandler(feature) {
-        if(!feature.feature_id) return 
+
+    getApproxArea(geom) {
+        let approxArea = 'Unknown'
+        try {
+            let area = 0
+            if (geom.type === 'MultiPolygon') {
+                for (let poly of geom.coordinates) {
+                    area += turf.area(turf.polygon(poly))
+                }
+            }
+            else {
+                area = turf.area(turf.polygon(geom.coordinates))
+            }
+            approxArea = numberWithCommas(parseInt(turf.convertArea(area, 'meters', 'acres')))
+        }
+        catch (e) {
+            console.log(e)
+        }
+        return approxArea
+    }
+
+    submitHandler(feature, init) {
+        if (!feature.feature_id) return
         fetch(GET_FEATURE_API + feature.feature_id)
             .then(res => res.json())
             .then(
                 (data) => {
                     if (data && data.hits.hits.length && data.hits.hits[0]["_source"]) {
                         let result = data.hits.hits[0]["_source"]
-                        let approxArea = 'Unknown'
-                        try {
-                            let area = 0
-                            if (result.geometry.type === 'MultiPolygon') {
-                                for (let poly of result.geometry.coordinates) {
-                                    area += turf.area(turf.polygon(poly))
-                                }
-                            }
-                            else {
-                                area = turf.area(turf.polygon(result.geometry.coordinates))
-                            }
-                            approxArea = numberWithCommas(parseInt(turf.convertArea(area, 'meters', 'acres')))
-                        }
-                        catch (e) {
-                            console.log(e)
-                        }
-                        result.properties.approxArea = approxArea
+                        result.properties.approxArea = this.getApproxArea(result.geometry)
                         result.geometry = this.parseGeom(result.geometry)
                         result.properties = this.countyStateLookup([result.properties])[0]
                         this.setState({
                             feature: result,
                             mapClicked: false
                         })
+
                     }
                     else {
                         this.setState({
                             feature: null,
                             mapClicked: false
+                        })
+                    }
+                    if (!init) {
+                        this.setState({
+                            priorityBap: null,
+                            analysisLayers: []
                         })
                     }
                 },
