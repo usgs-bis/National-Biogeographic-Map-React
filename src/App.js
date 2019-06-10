@@ -111,7 +111,7 @@ class App extends React.Component {
 
     getHash() {
         let state = {
-            feature: { id: this.state.feature.properties.feature_id },
+            feature: { feature_id: this.state.feature.properties.feature_id },
             basemap: this.state.basemap,
             timeSlider: { rangeYearMin: this.state.rangeYearMin, rangeYearMax: this.state.rangeYearMax, mapDisplayYear: this.state.mapDisplayYear },
             bap: { activeLayerTitle: this.state.analysisLayers && this.state.analysisLayers.length ? this.state.analysisLayers[0].title : '', priorityBap: this.state.priorityBap },

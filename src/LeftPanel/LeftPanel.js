@@ -18,11 +18,7 @@ class LeftPanel extends React.Component {
             loading: false,
             enabledLayers: [],
             shareText: 'Share',
-            // If there is a layer or the layer is empty string then we are loading state
-            // and do not what to display the help popup after the user selects a feature
-            willDisplayHelpPopup: this.props.initLayerTitle
-                || this.props.initLayerTitle === '' ? false : true
-            // ------------------------------------------------
+            displayHelpPopup: false
         }
 
         this.share = this.share.bind(this);
@@ -38,8 +34,8 @@ class LeftPanel extends React.Component {
     }
     componentWillUnmount() {
         if (this.listnerAdded) {
-            document.body.removeEventListener('click', () => { this.setState({ willDisplayHelpPopup: false }) }, true);
-            document.body.removeEventListener('keydown', () => { this.setState({ willDisplayHelpPopup: false }) }, true);
+            document.body.removeEventListener('click', () => { this.setState({ displayHelpPopup: false }) }, true);
+            document.body.removeEventListener('keydown', () => { this.setState({ displayHelpPopup: false }) }, true);
         }
     }
 
@@ -57,11 +53,19 @@ class LeftPanel extends React.Component {
             })
         }
 
-        // only add the event listner when we are ready to remove it
-        if (!this.props.priorityBap && props.feature && !this.listnerAdded && this.state.willDisplayHelpPopup) {
+        // only add the event listner when we are ready to remove it.
+        // If there is a layer or the layer is empty string then we are loading a
+        // previous state and do not want to display the help popup ever. Otherwise,
+        // we want to display it after a suer has selected a feature but before they
+        // pick a bap.
+        if (!this.listnerAdded &&
+            !this.props.priorityBap &&
+            props.feature &&
+            !(this.props.initLayerTitle || this.props.initLayerTitle === '')) {
             this.listnerAdded = true
-            document.body.addEventListener('click', () => { this.setState({ willDisplayHelpPopup: false }) }, true);
-            document.body.addEventListener('keydown', () => { this.setState({ willDisplayHelpPopup: false }) }, true);
+            this.setState({ displayHelpPopup: true })
+            document.body.addEventListener('click', () => { this.setState({ displayHelpPopup: false }) }, true);
+            document.body.addEventListener('keydown', () => { this.setState({ displayHelpPopup: false }) }, true);
         }
 
     }
@@ -168,12 +172,12 @@ class LeftPanel extends React.Component {
                 <div id='left-panel-header' className="left-panel-header">
 
                     <SearchBar
-                       {...this.props}
-                       enabledLayers={this.state.enabledLayers}>
+                        {...this.props}
+                        enabledLayers={this.state.enabledLayers}>
                     </SearchBar>
                     {featureText()}
                 </div>
-                {!this.props.priorityBap && this.state.feature_name && this.state.willDisplayHelpPopup && <div className="bap-popup" id="baphHelpPopup">
+                {this.state.displayHelpPopup && <div className="bap-popup" id="baphHelpPopup">
                     <img src={speechBubble} alt="Speech Bubble"></img>
                     <div className="bap-popuptext" id="myPopup">Choose an Analysis</div>
                 </div>}

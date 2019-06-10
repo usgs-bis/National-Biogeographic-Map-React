@@ -139,7 +139,6 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
 
         resetBap() {
             this.jsonData = null
-
         }
 
 
