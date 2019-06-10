@@ -56,7 +56,7 @@ class NBM extends React.PureComponent {
             this.refs.map.leafletElement.fitBounds(this.bounds)
             L.control.scale({ metric: false, imperial: true, position: 'bottomleft' }).addTo(this.refs.map.leafletElement)
             this.refs.map.leafletElement.removeControl(this.refs.map.leafletElement.attributionControl);
-        }, ENV === 'Local' ? 1000 : 250)
+        }, ENV === 'Local' ? 1500 : 250)
         this.props.setMap(this.refs.map)
 
         if (this.props.initPoint && this.props.initPoint.elv) {
