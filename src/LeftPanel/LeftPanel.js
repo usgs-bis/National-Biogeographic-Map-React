@@ -18,9 +18,11 @@ class LeftPanel extends React.Component {
             loading: false,
             enabledLayers: [],
             shareText: 'Share',
-             // if there is a layer or the layer is empty string then we are loading state
-             displayHelp: this.props.initLayerTitle
-             || this.props.initLayerTitle === '' ? false : true
+            // If there is a layer or the layer is empty string then we are loading state
+            // and do not what to display the help popup after the user selects a feature
+            willDisplayHelpPopup: this.props.initLayerTitle
+                || this.props.initLayerTitle === '' ? false : true
+            // ------------------------------------------------
         }
 
         this.share = this.share.bind(this);
@@ -36,8 +38,8 @@ class LeftPanel extends React.Component {
     }
     componentWillUnmount() {
         if (this.listnerAdded) {
-            document.body.removeEventListener('click', () => { this.setState({ displayHelp: false }) }, true);
-            document.body.removeEventListener('keydown', () => { this.setState({ displayHelp: false }) }, true);
+            document.body.removeEventListener('click', () => { this.setState({ willDisplayHelpPopup: false }) }, true);
+            document.body.removeEventListener('keydown', () => { this.setState({ willDisplayHelpPopup: false }) }, true);
         }
     }
 
@@ -56,10 +58,10 @@ class LeftPanel extends React.Component {
         }
 
         // only add the event listner when we are ready to remove it
-        if (!this.props.priorityBap && props.feature && !this.listnerAdded && this.state.displayHelp) {
+        if (!this.props.priorityBap && props.feature && !this.listnerAdded && this.state.willDisplayHelpPopup) {
             this.listnerAdded = true
-            document.body.addEventListener('click', () => { this.setState({ displayHelp: false }) }, true);
-            document.body.addEventListener('keydown', () => { this.setState({ displayHelp: false }) }, true);
+            document.body.addEventListener('click', () => { this.setState({ willDisplayHelpPopup: false }) }, true);
+            document.body.addEventListener('keydown', () => { this.setState({ willDisplayHelpPopup: false }) }, true);
         }
 
     }
@@ -171,7 +173,7 @@ class LeftPanel extends React.Component {
                     </SearchBar>
                     {featureText()}
                 </div>
-                {!this.props.priorityBap && this.state.feature_name && this.state.displayHelp && <div className="bap-popup" id="baphHelpPopup">
+                {!this.props.priorityBap && this.state.feature_name && this.state.willDisplayHelpPopup && <div className="bap-popup" id="baphHelpPopup">
                     <img src={speechBubble} alt="Speech Bubble"></img>
                     <div className="bap-popuptext" id="myPopup">Choose an Analysis</div>
                 </div>}

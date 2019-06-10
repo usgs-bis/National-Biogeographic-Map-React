@@ -16,9 +16,11 @@ class SearchBar extends React.Component {
         this.state = {
             focused: false,
             layersDropdownOpen: false,
-            // if there is a layer or the layer is empty string then we are loading state
-            displayHelp: this.props.initLayerTitle
+            // If there is a layer or the layer is empty string then we are loading state
+            // and do not what to display the help popup immediately 
+            displayHelpPopup: this.props.initLayerTitle
                 || this.props.initLayerTitle === '' ? false : true
+            // ------------------------------------------------
         }
 
         this.handleKeyUp = this.handleKeyUp.bind(this);
@@ -33,16 +35,16 @@ class SearchBar extends React.Component {
 
 
     componentDidMount() {
-        if (this.state.displayHelp) {
+        if (this.state.displayHelpPopup) {
             this.listnerAdded = true
-            document.body.addEventListener('click', () => { this.setState({ displayHelp: false }) }, true);
-            document.body.addEventListener('keydown', () => { this.setState({ displayHelp: false }) }, true);
+            document.body.addEventListener('click', () => { this.setState({ displayHelpPopup: false }) }, true);
+            document.body.addEventListener('keydown', () => { this.setState({ displayHelpPopup: false }) }, true);
         }
     }
     componentWillUnmount() {
         if (this.listnerAdded) {
-            document.body.removeEventListener('click', () => { this.setState({ displayHelp: false }) }, true);
-            document.body.removeEventListener('keydown', () => { this.setState({ displayHelp: false }) }, true);
+            document.body.removeEventListener('click', () => { this.setState({ displayHelpPopup: false }) }, true);
+            document.body.removeEventListener('keydown', () => { this.setState({ displayHelpPopup: false }) }, true);
         }
     }
 
@@ -93,7 +95,6 @@ class SearchBar extends React.Component {
     }
 
     render() {
-        let that = this;
         return (
             <div>
                 <div className="nbm-flex-row">
@@ -122,10 +123,10 @@ class SearchBar extends React.Component {
                 <div className="nbm-flex-row" >
                     <div className="button-group" style={this.props.results.length > 0 && this.state.focused ? {} : { height: '0px' }}>
                         {(this.props.results.length > 0 && this.state.focused) ? <ButtonGroup vertical>
-                            {this.props.results.map(function (d, idx) {
+                            {this.props.results.map( (d, idx) => {
                                 return (
                                     <Button className="sfr-button" style={{ whiteSpace: 'normal' }}
-                                        onClick={function () { that.submit(this) }}
+                                        onClick={ () => { this.submit(d) }}
                                         id={d.feature_id}
                                         key={d.feature_id}>
                                         {d.feature_name}{d.state ? ", " + d.state.name : ""} ({d.feature_class})
@@ -163,7 +164,7 @@ class SearchBar extends React.Component {
                 </div>
 
 
-                {this.state.displayHelp && <div className="popup" id="helpPopup">
+                {this.state.displayHelpPopup && <div className="popup" id="helpPopup">
                     <img src={speechBubble} alt="Speech Bubble"></img>
                     <div className="popuptext" id="myPopup">Search for a place of interest or click on the map</div>
                 </div>}
