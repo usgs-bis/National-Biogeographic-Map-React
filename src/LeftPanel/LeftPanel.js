@@ -15,11 +15,10 @@ class LeftPanel extends React.Component {
         this.state = {
             results: props.results,
             bioscape: props.bioscape,
-            updateAnalysisLayers: props.updateAnalysisLayers,
             loading: false,
             enabledLayers: [],
             shareText: 'Share',
-            displayHelp: true
+            displayHelpPopup: false
         }
 
         this.share = this.share.bind(this);
@@ -35,8 +34,8 @@ class LeftPanel extends React.Component {
     }
     componentWillUnmount() {
         if (this.listnerAdded) {
-            document.body.removeEventListener('click', () => { this.setState({ displayHelp: false }) }, true);
-            document.body.removeEventListener('keydown', () => { this.setState({ displayHelp: false }) }, true);
+            document.body.removeEventListener('click', () => { this.setState({ displayHelpPopup: false }) }, true);
+            document.body.removeEventListener('keydown', () => { this.setState({ displayHelpPopup: false }) }, true);
         }
     }
 
@@ -54,10 +53,19 @@ class LeftPanel extends React.Component {
             })
         }
 
-        if (!this.props.priorityBap && props.feature && !this.listnerAdded) {
+        // only add the event listner when we are ready to remove it.
+        // If there is a layer or the layer is empty string then we are loading a
+        // previous state and do not want to display the help popup ever. Otherwise,
+        // we want to display it after a suer has selected a feature but before they
+        // pick a bap.
+        if (!this.listnerAdded &&
+            !this.props.priorityBap &&
+            props.feature &&
+            !(this.props.initLayerTitle || this.props.initLayerTitle === '')) {
             this.listnerAdded = true
-            document.body.addEventListener('click', () => { this.setState({ displayHelp: false }) }, true);
-            document.body.addEventListener('keydown', () => { this.setState({ displayHelp: false }) }, true);
+            this.setState({ displayHelpPopup: true })
+            document.body.addEventListener('click', () => { this.setState({ displayHelpPopup: false }) }, true);
+            document.body.addEventListener('keydown', () => { this.setState({ displayHelpPopup: false }) }, true);
         }
 
     }
@@ -117,7 +125,7 @@ class LeftPanel extends React.Component {
             enabledLayers: enabledLayers
         })
 
-        this.state.updateAnalysisLayers(enabledLayers, bapId)
+        this.props.updateAnalysisLayers(enabledLayers, bapId)
     }
 
 
@@ -145,7 +153,7 @@ class LeftPanel extends React.Component {
                         <div className="panel-buttons">
                             <button id="ShareTooltip" className="submit-analysis-btn" onClick={this.share}>{this.state.shareText}</button>
                             <input className="share-url-input" type="text"></input>
-                            <CustomToolTip target="ShareTooltip" placement="top" text={this.props.feature && this.props.feature.properties.userDefined ? 'Unable to share a user drawn polygon.' : 'Share this map by copying a url to your clipboard.'} > </CustomToolTip>
+                            <CustomToolTip target="ShareTooltip" placement="top" text={'Share this map by copying a url to your clipboard.'} > </CustomToolTip>
 
                             <button id="ReportTooltip" className="submit-analysis-btn" onClick={this.report}>
                                 <PDFReport onRef={ref => (this.PDFReport = ref)} getShareUrl={this.props.shareState}></PDFReport>
@@ -163,17 +171,13 @@ class LeftPanel extends React.Component {
             <div className="left-panel">
                 <div id='left-panel-header' className="left-panel-header">
 
-                    <SearchBar results={this.props.results}
-                        textSearchHandler={this.props.textSearchHandler}
-                        submitHandler={this.props.submitHandler}
-                        mapClicked={this.props.mapClicked}
-                        enabledLayers={this.state.enabledLayers}
-                        bioscape={this.state.bioscape}
-                        overlayChanged={this.props.overlayChanged}
-                        basemapChanged={this.props.basemapChanged}></SearchBar>
+                    <SearchBar
+                        {...this.props}
+                        enabledLayers={this.state.enabledLayers}>
+                    </SearchBar>
                     {featureText()}
                 </div>
-                {!this.props.priorityBap && this.state.feature_name && this.state.displayHelp && <div className="bap-popup" id="baphHelpPopup">
+                {this.state.displayHelpPopup && <div className="bap-popup" id="baphHelpPopup">
                     <img src={speechBubble} alt="Speech Bubble"></img>
                     <div className="bap-popuptext" id="myPopup">Choose an Analysis</div>
                 </div>}

@@ -16,29 +16,41 @@ class SearchBar extends React.Component {
         this.state = {
             focused: false,
             layersDropdownOpen: false,
-            displayHelp: true
+            // If there is a layer or the layer is empty string then we are loading state
+            // and do not what to display the help popup immediately 
+            displayHelpPopup: this.props.initLayerTitle
+                || this.props.initLayerTitle === '' ? false : true
+            // ------------------------------------------------
         }
 
         this.handleKeyUp = this.handleKeyUp.bind(this);
         this.onFocus = this.onFocus.bind(this)
         this.onBlur = this.onBlur.bind(this)
-        this.submit = this.submit.bind(this)
         this.toggleBasemapDropdown = this.toggleBasemapDropdown.bind(this)
         this.basemapChanged = this.basemapChanged.bind(this)
         this.textInput = ""
+        this.listnerAdded = false
     }
+
 
     componentDidMount() {
-        document.body.addEventListener('click', () => { this.setState({ displayHelp: false }) }, true);
-        document.body.addEventListener('keydown', () => { this.setState({ displayHelp: false }) }, true);
+        if (this.state.displayHelpPopup) {
+            this.listnerAdded = true
+            document.body.addEventListener('click', () => { this.setState({ displayHelpPopup: false }) }, true);
+            document.body.addEventListener('keydown', () => { this.setState({ displayHelpPopup: false }) }, true);
+        }
     }
     componentWillUnmount() {
-        document.body.removeEventListener('click', () => { this.setState({ displayHelp: false }) }, true);
-        document.body.removeEventListener('keydown', () => { this.setState({ displayHelp: false }) }, true);
+        if (this.listnerAdded) {
+            document.body.removeEventListener('click', () => { this.setState({ displayHelpPopup: false }) }, true);
+            document.body.removeEventListener('keydown', () => { this.setState({ displayHelpPopup: false }) }, true);
+        }
     }
 
-    componentWillReceiveProps(props) {
-        if (props.mapClicked) {
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (this.props.mapClicked
+            && this.props.point.lat !== prevProps.point.lat
+            && this.props.point.lng !== prevProps.point.lng) {
             this.textInput.focus();
             this.setState({
                 focused: true
@@ -67,10 +79,6 @@ class SearchBar extends React.Component {
         }, 150)
     }
 
-    submit(e) {
-        this.props.submitHandler(e)
-    }
-
 
     toggleBasemapDropdown() {
         this.setState({ layersDropdownOpen: !this.state.layersDropdownOpen });
@@ -79,18 +87,16 @@ class SearchBar extends React.Component {
     basemapChanged(e) {
         // Fixes bug in FF where search bar gains focus
         this.setState({ focused: false })
-
         this.props.basemapChanged(e)
     }
 
     render() {
-        let that = this;
         return (
             <div>
                 <div className="nbm-flex-row">
                     <div className="settings-btn-group nbm-flex-column">
                         <Button id={"SettingsTooltip"} onClick={this.toggleBasemapDropdown} className='submit-analysis-btn placeholder-button' >
-                            <Glyphicon className="inner-glyph" glyph="menu-hamburger"/>
+                            <Glyphicon className="inner-glyph" glyph="menu-hamburger" />
                         </Button>
                         <CustomToolTip target={`SettingsTooltip`} text="Settings" placement="right" ></CustomToolTip>
                     </div>
@@ -113,10 +119,10 @@ class SearchBar extends React.Component {
                 <div className="nbm-flex-row" >
                     <div className="button-group" style={this.props.results.length > 0 && this.state.focused ? {} : { height: '0px' }}>
                         {(this.props.results.length > 0 && this.state.focused) ? <ButtonGroup vertical>
-                            {this.props.results.map(function (d, idx) {
+                            {this.props.results.map((d, idx) => {
                                 return (
                                     <Button className="sfr-button" style={{ whiteSpace: 'normal' }}
-                                        onClick={function () { that.submit(this) }}
+                                        onClick={() => { this.props.submitHandler(d) }}
                                         id={d.feature_id}
                                         key={d.feature_id}>
                                         {d.feature_name}{d.state ? ", " + d.state.name : ""} ({d.feature_class})
@@ -154,7 +160,7 @@ class SearchBar extends React.Component {
                 </div>
 
 
-                {this.state.displayHelp && <div className="popup" id="helpPopup">
+                {this.state.displayHelpPopup && <div className="popup" id="helpPopup">
                     <img src={speechBubble} alt="Speech Bubble"></img>
                     <div className="popuptext" id="myPopup">Search for a place of interest or click on the map</div>
                 </div>}

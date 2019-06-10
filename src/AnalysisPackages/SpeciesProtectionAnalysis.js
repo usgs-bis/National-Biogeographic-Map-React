@@ -194,7 +194,8 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
 
         this.props.inputRefs[layerKey].checked = true
         this.props.inputRefs[otherKey].checked = false
-        this.props.updateBapLayers(layer, this.state.layers[otherKey])
+        this.props.toggleLayer(null)
+        this.props.toggleLayer(layer)
     }
 
     getCharts(data) {
@@ -426,7 +427,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
         this.previous_row_sppcode = ""
         this.previous_type = ""
         if (this.props.bapId === this.props.priorityBap) {
-            this.props.updateBapLayers()
+            this.props.toggleLayer(null)
         }
     }
 
