@@ -26,7 +26,6 @@ class SearchBar extends React.Component {
         this.handleKeyUp = this.handleKeyUp.bind(this);
         this.onFocus = this.onFocus.bind(this)
         this.onBlur = this.onBlur.bind(this)
-        this.submit = this.submit.bind(this)
         this.toggleBasemapDropdown = this.toggleBasemapDropdown.bind(this)
         this.basemapChanged = this.basemapChanged.bind(this)
         this.textInput = ""
@@ -48,8 +47,10 @@ class SearchBar extends React.Component {
         }
     }
 
-    componentWillReceiveProps(props) {
-        if (props.mapClicked) {
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (this.props.mapClicked
+            && this.props.point.lat !== prevProps.point.lat
+            && this.props.point.lng !== prevProps.point.lng) {
             this.textInput.focus();
             this.setState({
                 focused: true
@@ -78,10 +79,6 @@ class SearchBar extends React.Component {
         }, 150)
     }
 
-    submit(e) {
-        this.props.submitHandler(e)
-    }
-
 
     toggleBasemapDropdown() {
         this.setState({ layersDropdownOpen: !this.state.layersDropdownOpen });
@@ -90,7 +87,6 @@ class SearchBar extends React.Component {
     basemapChanged(e) {
         // Fixes bug in FF where search bar gains focus
         this.setState({ focused: false })
-
         this.props.basemapChanged(e)
     }
 
@@ -100,7 +96,7 @@ class SearchBar extends React.Component {
                 <div className="nbm-flex-row">
                     <div className="settings-btn-group nbm-flex-column">
                         <Button id={"SettingsTooltip"} onClick={this.toggleBasemapDropdown} className='submit-analysis-btn placeholder-button' >
-                            <Glyphicon className="inner-glyph" glyph="menu-hamburger"/>
+                            <Glyphicon className="inner-glyph" glyph="menu-hamburger" />
                         </Button>
                         <CustomToolTip target={`SettingsTooltip`} text="Settings" placement="right" ></CustomToolTip>
                     </div>
@@ -123,10 +119,10 @@ class SearchBar extends React.Component {
                 <div className="nbm-flex-row" >
                     <div className="button-group" style={this.props.results.length > 0 && this.state.focused ? {} : { height: '0px' }}>
                         {(this.props.results.length > 0 && this.state.focused) ? <ButtonGroup vertical>
-                            {this.props.results.map( (d, idx) => {
+                            {this.props.results.map((d, idx) => {
                                 return (
                                     <Button className="sfr-button" style={{ whiteSpace: 'normal' }}
-                                        onClick={ () => { this.submit(d) }}
+                                        onClick={() => { this.props.submitHandler(d) }}
                                         id={d.feature_id}
                                         key={d.feature_id}>
                                         {d.feature_name}{d.state ? ", " + d.state.name : ""} ({d.feature_class})

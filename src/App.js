@@ -405,7 +405,7 @@ class App extends React.Component {
             if (feature["feature_class"] === overlay.featureClass) {
                 i = results.length
                 this.submitHandler({
-                    id: feature.feature_id
+                    feature_id: feature.feature_id
                 })
             }
         }

@@ -92,6 +92,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                     && Object.keys(this.state.layers).length) {
                     let firstLayer = this.state.layers[Object.keys(this.state.layers)[0]]
                     this.toggleLayer(firstLayer)
+                    this.setState({isOpen : true})
                 }
 
                 // forcing a rerender so the bapwindow will populate
@@ -549,7 +550,10 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                         </span>
                     </div>
                     <div className="bap-title-content" style={{ width: '20px' }}>
-                        <input id={`pBapToolTip${this.props.bapId}`} className="priority-bap-raido" style={{ display: this.state.canOpen ? 'block' : 'none' }} type='radio' readOnly={true} checked={this.props.bapId === this.props.priorityBap} onClick={() => this.props.setPriorityBap(this.props.bapId)} ></input>
+                        <input id={`pBapToolTip${this.props.bapId}`} className="priority-bap-raido"
+                            style={{ display: this.state.canOpen ? 'block' : 'none' }} type='radio'
+                            readOnly={true} checked={this.props.bapId === this.props.priorityBap}
+                            onClick={() => { this.props.setPriorityBap(this.props.bapId) }} ></input>
                         <CustomToolTip placement="top" target={`pBapToolTip${this.props.bapId}`} text={this.props.bapId === this.props.priorityBap ? "" : "Select Priority Bap"} ></CustomToolTip>
                     </div>
                     <Collapse className="settings-dropdown" isOpen={this.state.isOpen && this.state.isEnabled}>
