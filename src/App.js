@@ -124,7 +124,7 @@ class App extends React.Component {
     }
 
     shareState() {
-        if (this.state.feature && !this.state.feature.properties.userDefined) {
+        if (this.state.feature) {
             let copyText = document.getElementsByClassName('share-url-input')[0]
             copyText.style.display = 'inline-block'
             copyText.value = window.location

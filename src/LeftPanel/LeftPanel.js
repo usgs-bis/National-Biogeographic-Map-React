@@ -73,7 +73,7 @@ class LeftPanel extends React.Component {
 
     share() {
         this.props.shareState()
-        if (this.props.feature && this.props.feature.properties.userDefined) {
+        if (!this.props.feature) {
             this.setState({
                 shareText: "Error!",
                 shareToolTipOpen: true
