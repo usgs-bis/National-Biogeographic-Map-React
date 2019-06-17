@@ -54,20 +54,13 @@ class DonutChart extends React.Component {
       ...config.tooltip,
       center: true,
       label: ({data}) => {
-        var tip = '',
-            i   = 0;
+        var tip = '<div xmlns="http://www.w3.org/1999/xhtml">';
         for (var key in tooltip.data) {
             var value = key === 'percent' ? `${(parseFloat(data[key])).toFixed(2).toString()}%` : data[key];
-
-            // leave off 'dy' attr for first tspan so the 'dy' attr on text element works. The 'dy' attr on
-            // tspan effectively imitates a line break.
-            // Used from https://bl.ocks.org/mbhall88/b2504f8f3e384de4ff2b9dfa60f325e2
-            if (i === 0) tip += `<tspan x="0">${getLabel(tooltip.data[key])} ${value}</tspan>`;
-            else tip += `<tspan x="0" dy="1.2em">${getLabel(tooltip.data[key])} ${value}</tspan>`;
-            i++;
+            tip += `<div>${getLabel(tooltip.data[key])} ${value}</div>`
         }
 
-        return tip;
+        return tip += '</div>';
       }
     }
     return config
