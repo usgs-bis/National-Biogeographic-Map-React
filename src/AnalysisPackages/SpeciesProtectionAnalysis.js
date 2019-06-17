@@ -4,7 +4,7 @@ import { BarLoader } from "react-spinners"
 import { TiledMapLayer } from "esri-leaflet";
 
 import withSharedAnalysisCharacteristics from "./AnalysisPackage"
-import PieChart from "../Charts/PieChart"
+import DonutChart from "../Charts/DonutChart";
 import TableChart from "../Charts/TableChart"
 import CustomToolTip from "../ToolTip/ToolTip"
 import "./AnalysisPackages.css";
@@ -87,6 +87,9 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
             layers: layers,
             value: []
         }
+
+        this.gap12 = React.createRef()
+        this.gap123 = React.createRef()
 
         this.getCharts = this.getCharts.bind(this)
         this.onSpeciesChanged = this.onSpeciesChanged.bind(this)
@@ -270,7 +273,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                 const chartConfig = {
                     margins: { left: 0, right: 0, top: 20, bottom: 125 },
                     chart: { title: `GAP Status 1 & 2`, subtitle: `` },
-                    tooltip: { label: (d) => { return `<p><div>${d.data.name}</div><div>${d.data.count} species</div></p>` } },
+                    tooltip: { data: { name: "", count: "Species" } },
                     legend: { rectSize: 16, spacing: 4, leftOffset: 6, verticalSpacing: 20, fontSize: '13px' },
                     width: 225,
                     height: 225,
@@ -284,7 +287,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                 const chartConfig = {
                     margins: { left: 0, right: 0, top: 20, bottom: 125 },
                     chart: { title: `GAP Status 1, 2 & 3`, subtitle: `` },
-                    tooltip: { label: (d) => { return `<p><div>${d.data.name}</div><div>${d.data.count} species</div></p>` } },
+                    tooltip: { data: { name: "", count: "Species" } },
                     legend: { rectSize: 16, spacing: 4, leftOffset: 6, verticalSpacing: 20, fontSize: '13px' },
                     width: 225,
                     height: 225,
@@ -434,8 +437,8 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
     print() {
         if (this.state.charts.gap12.data && this.props.isOpen) {
             let charts = []
-            charts.push(this.PieChart.print(this.state.charts.gap12.id))
-            charts.push(this.PieChart.print(this.state.charts.gap123.id))
+            charts.push(this.gap12.current.print())
+            charts.push(this.gap123.current.print())
 
             return Promise.all(charts.flat()).then(contents => {
                 return [
@@ -555,15 +558,15 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                     </div>
                     <div>
                         <div className="half-chart">
-                            <PieChart
-                                onRef={ref => (this.PieChart = ref)}
+                            <DonutChart
+                                ref={this.gap12}
                                 data={this.state.charts.gap12.data}
                                 id={this.state.charts.gap12.id}
                                 config={this.state.charts.gap12.config} />
                         </div>
                         <div className="half-chart">
-                            <PieChart
-                                onRef={ref => (this.PieChart = ref)}
+                            <DonutChart
+                                ref={this.gap123}
                                 data={this.state.charts.gap123.data}
                                 id={this.state.charts.gap123.id}
                                 config={this.state.charts.gap123.config} />

@@ -45,8 +45,13 @@ class DonutChart extends React.Component {
     config.innerRadius = 0.6
     config.outerRadius = 0.8
 
+    function getLabel(key) {
+      return key ? key + ': ' : ''
+    }
+
     const tooltip = config.tooltip
-    config.tooltip = { ...config.tooltip,
+    config.tooltip = {
+      ...config.tooltip,
       center: true,
       label: ({data}) => {
         var tip = '',
@@ -57,8 +62,8 @@ class DonutChart extends React.Component {
             // leave off 'dy' attr for first tspan so the 'dy' attr on text element works. The 'dy' attr on
             // tspan effectively imitates a line break.
             // Used from https://bl.ocks.org/mbhall88/b2504f8f3e384de4ff2b9dfa60f325e2
-            if (i === 0) tip += '<tspan x="0">' + tooltip.data[key] + ': ' + value + '</tspan>';
-            else tip += '<tspan x="0" dy="1.2em">' + tooltip.data[key] + ': ' + value + '</tspan>';
+            if (i === 0) tip += `<tspan x="0">${getLabel(tooltip.data[key])} ${value}</tspan>`;
+            else tip += `<tspan x="0" dy="1.2em">${getLabel(tooltip.data[key])} ${value}</tspan>`;
             i++;
         }
 
@@ -74,7 +79,11 @@ class DonutChart extends React.Component {
 
   render() {
     return (
-      <PieChart onRef={ref => (this.pieChart = ref)} data={this.state.data} id={this.state.id} config={this.state.config} />
+      <PieChart
+        onRef={ref => (this.pieChart = ref)}
+        data={this.state.data}
+        id={this.state.id}
+        config={this.state.config} />
     );
   }
 }
