@@ -262,7 +262,7 @@ class BadNeighborAnalysisPackage extends React.Component {
                     ]
                 }
             }
-            return this.donutChart.current.print(this.state.charts.donutChart.id).then(img => {
+            return this.donutChart.current.print().then(img => {
                 return [
                     { stack: this.props.getSBItemForPrint() },
                     { text: this.state.charts.donutChart.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
@@ -288,7 +288,11 @@ class BadNeighborAnalysisPackage extends React.Component {
                 {this.props.getAnalysisLayers()}
                 {this.props.handleBapError(this.state.error)}
                 <div className="chartsDiv">
-                    <DonutChart ref={this.donutChart} data={this.state.charts.donutChart.data} id={this.state.charts.donutChart.id} config={this.state.charts.donutChart.config} />
+                    <DonutChart
+                        ref={this.donutChart}
+                        data={this.state.charts.donutChart.data}
+                        id={this.state.charts.donutChart.id}
+                        config={this.state.charts.donutChart.config} />
                     <div className="chart-headers">
                         <button className="submit-analysis-btn" onClick={this.resetTable}>Clear Chart Selection</button>
                     </div>
