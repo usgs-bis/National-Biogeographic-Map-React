@@ -158,12 +158,16 @@ class PieChart extends React.Component {
         });
 
         function centerTooltip(d) {
-            svg.append('text')
+            const width = radius * .95;
+            const height = radius * .7;
+            svg.append('foreignObject')
                 .attr('class', 'toolCircle')
-                .attr('dy', -15) // hard-coded. can adjust this to adjust text vertical alignment in tooltip
-                .html(config.tooltip.label(d)) // add text to the circle.
-                .style('font-size', '.7em')
-                .style('text-anchor', 'middle'); // centres text in tooltip
+                .attr('width', width)
+                .attr('height', height)
+                .attr('x', -(width/2))
+                .attr('y', -(height/2))
+                .html(config.tooltip.label(d))
+                .style('font-size', '.7em');
 
             svg.append('circle')
                 .attr('class', 'toolCircle')
