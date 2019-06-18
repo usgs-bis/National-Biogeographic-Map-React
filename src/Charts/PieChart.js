@@ -104,9 +104,12 @@ class PieChart extends React.Component {
             .append("g")
             .attr('transform', 'translate(' + ((width + config.margins.left + config.margins.right) / 2) + ',' + ((height / 2) + config.margins.top) + ')');
 
+        const innerRadius = config.innerRadius ? radius * config.innerRadius : 0;
+        const outerRadius = config.outerRadius ? radius * config.outerRadius : radius
+
         const arc = d3.arc()
-            .innerRadius(config.innerRadius ? radius * config.innerRadius : 0)
-            .outerRadius(config.outerRadius ? radius * config.outerRadius : radius);
+            .innerRadius(innerRadius)
+            .outerRadius(outerRadius);
         if (config.innerRadius) {
             arc
                 .cornerRadius(1)
@@ -114,8 +117,8 @@ class PieChart extends React.Component {
         }
 
         var outerArc = d3.arc()
-            .outerRadius(radius * 1.2)
-            .innerRadius(radius * 1.2);
+            .outerRadius(outerRadius * 1.2)
+            .innerRadius(outerRadius * 1.2);
 
 
         const pie = d3.pie()
