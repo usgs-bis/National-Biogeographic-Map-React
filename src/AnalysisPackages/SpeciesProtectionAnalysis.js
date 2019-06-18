@@ -348,7 +348,8 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                             type="radio"
                             name={`sp_radio`}
                             checked={this.previous_row_sppcode === row.sppcode && this.previous_type === 'species_range'}
-                            onChange={function (e) { that.changeFilter(e, "species_range", row.sppcode) }}
+                            onClick={(e) => { that.changeFilter(e, "species_range", row.sppcode) }}
+                            onChange={()=>{}}
                             value={`${row.common_name} (${row.scientific_name}) ${row.sppcode} v1`} />
                         <CustomToolTip target={`Range_${row.sppcode}`} text={"Known Range Map"} > </CustomToolTip>
 
@@ -359,7 +360,8 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                             type="radio"
                             name={`sp_radio`}
                             checked={this.previous_row_sppcode === row.sppcode && this.previous_type === 'habitat_map'}
-                            onChange={function (e) { that.changeFilter(e, "habitat_map", row.sppcode) }}
+                            onClick={(e) => { that.changeFilter(e, "habitat_map", row.sppcode) }}
+                            onChange={()=>{}}
                             value={`${row.common_name} (${row.scientific_name}) ${row.sppcode} v1`} />
                         <CustomToolTip target={`Habitat_${row.sppcode}`} text={"Predicted Habitat Map"} > </CustomToolTip>
                     </span>
@@ -549,11 +551,11 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                         <div className="title">Protection Status of Species in {this.props.feature ? this.props.feature.properties.feature_name : ''}</div>
                         <div className="subtitle">(Click on a slice to filter the table and see only species whose habitat falls in that percent of protection. Click on a radio button to see only species of that type.)</div>
                         <div className="spp-radio-btn">
-                            <div><input type="radio" name="species" value={"ALL"} checked={this.state.taxaLetter === "ALL"} onClick={this.onSpeciesChanged} onChange={this.onSpeciesChanged} />All</div>
-                            <div><input type="radio" name="species" value={"A"} checked={this.state.taxaLetter === "A"} onClick={this.onSpeciesChanged} onChange={this.onSpeciesChanged} />Amphibians</div>
-                            <div><input type="radio" name="species" value={"B"} checked={this.state.taxaLetter === "B"} onClick={this.onSpeciesChanged} onChange={this.onSpeciesChanged} />Birds</div>
-                            <div><input type="radio" name="species" value={"M"} checked={this.state.taxaLetter === "M"} onClick={this.onSpeciesChanged} onChange={this.onSpeciesChanged} />Mammals</div>
-                            <div><input type="radio" name="species" value={"R"} checked={this.state.taxaLetter === "R"} onClick={this.onSpeciesChanged} onChange={this.onSpeciesChanged} />Reptiles</div>
+                            <div><input type="radio" name="species" value={"ALL"} checked={this.state.taxaLetter === "ALL"} onClick={this.onSpeciesChanged} onChange={()=>{}} />All</div>
+                            <div><input type="radio" name="species" value={"A"} checked={this.state.taxaLetter === "A"} onClick={this.onSpeciesChanged} onChange={()=>{}} />Amphibians</div>
+                            <div><input type="radio" name="species" value={"B"} checked={this.state.taxaLetter === "B"} onClick={this.onSpeciesChanged} onChange={()=>{}} />Birds</div>
+                            <div><input type="radio" name="species" value={"M"} checked={this.state.taxaLetter === "M"} onClick={this.onSpeciesChanged} onChange={()=>{}} />Mammals</div>
+                            <div><input type="radio" name="species" value={"R"} checked={this.state.taxaLetter === "R"} onClick={this.onSpeciesChanged} onChange={()=>{}} />Reptiles</div>
                         </div>
                     </div>
                     <div>
