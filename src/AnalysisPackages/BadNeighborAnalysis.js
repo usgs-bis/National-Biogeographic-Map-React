@@ -76,7 +76,7 @@ class BadNeighborAnalysisPackage extends React.Component {
             .then(res => res.json())
             .then(
                 (result) => {
-                    if (result && result.hits.hits[0]) {
+                    if (result && result.hits.hits[0] && result.hits.hits[0]._source.data) {
                         this.props.setBapJson(result.hits.hits[0]._source.properties)
                         const charts = this.getCharts(result.hits.hits[0]._source.data)
                         this.setState({
@@ -90,7 +90,8 @@ class BadNeighborAnalysisPackage extends React.Component {
                     } else {
                         this.setState({
                             charts: {
-                                donutChart: { id: "", config: {}, data: null }
+                                donutChart: { id: "", config: {}, data: null },
+                                tableChart: { id: "", config: {}, data: null }
                             },
                             data: null
                         })
