@@ -54,13 +54,13 @@ class DonutChart extends React.Component {
       ...config.tooltip,
       center: true,
       label: ({data}) => {
-        var tip = '<div xmlns="http://www.w3.org/1999/xhtml">';
+        var tip = '<div xmlns="http://www.w3.org/1999/xhtml" style="display:table;width:100%;"><div style="display:table-cell;">';
         for (var key in tooltip.data) {
             var value = key === 'percent' ? `${(parseFloat(data[key])).toFixed(2).toString()}%` : data[key];
             tip += `<div>${getLabel(tooltip.data[key])} ${value}</div>`
         }
 
-        return tip += '</div>';
+        return tip += '</div></div>';
       }
     }
     return config

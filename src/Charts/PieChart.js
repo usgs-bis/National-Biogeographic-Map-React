@@ -168,7 +168,7 @@ class PieChart extends React.Component {
                 .attr('width', width)
                 .attr('height', height)
                 .attr('x', -(width/2))
-                .attr('y', -(height/2))
+                .attr('y', -(height/2 - 5))
                 .html(config.tooltip.label(d))
                 .style('font-size', '.7em');
 
