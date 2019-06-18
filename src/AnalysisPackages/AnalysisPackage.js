@@ -253,7 +253,8 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                                             <input
                                                 style={{ display: layer.hideCheckbox ? "none" : "inline-block" }}
                                                 ref={(input) => { this[key] = input; this["inputRefs"][key] = input }}
-                                                onChange={() => this.toggleLayer(layer)}
+                                                onClick={() => this.toggleLayer(layer)}
+                                                onChange={()=>{}}
                                                 checked={layer.checked}
                                                 type="checkbox" />
                                             {' ' + (layer.titlePrefix ? layer.titlePrefix : "") + layer.title}
@@ -384,7 +385,8 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                                         <a className="download-json-link" href={getDownloadLink()} download={"JSON_" + this.state.sb_properties.title} >Download</a>
                                         <label htmlFor="prettyCheckbox">{"Pretty JSON "}  </label>
                                         <input checked={this.state.prettyJson}
-                                            onChange={() => this.setState({ prettyJson: !this.state.prettyJson })}
+                                            onClick={() => this.setState({ prettyJson: !this.state.prettyJson })}
+                                            onChange={()=>{}}
                                             type="checkbox" id="prettyCheckbox" name="prettyCheckbox" />
                                     </div>
                                     <div className="JSON-text-container">
