@@ -88,6 +88,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
             value: []
         }
 
+        this.currentSppLayer = null
         this.gap12 = React.createRef()
         this.gap123 = React.createRef()
 
@@ -197,8 +198,12 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
 
         this.props.inputRefs[layerKey].checked = true
         this.props.inputRefs[otherKey].checked = false
-        this.props.toggleLayer(null)
+        if (this.currentSppLayer){
+            this.props.toggleLayer(this.currentSppLayer)
+            this.currentSppLayer=null
+        }
         this.props.toggleLayer(layer)
+        this.currentSppLayer = layer
     }
 
     getCharts(data) {
@@ -432,7 +437,10 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
         this.previous_row_sppcode = ""
         this.previous_type = ""
         if (this.props.bapId === this.props.priorityBap) {
-            this.props.toggleLayer(null)
+            if (this.currentSppLayer){
+                this.props.toggleLayer(this.currentSppLayer)
+                this.currentSppLayer = null
+            }
         }
     }
 
