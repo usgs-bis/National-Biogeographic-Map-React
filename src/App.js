@@ -48,13 +48,13 @@ class App extends React.Component {
             mapDisplayYear: 2005,
             map: null,
             analysisLayers: null,
-            activeLayerTitle: '',
             priorityBap: null,
             APIVersion: '',
             clickDrivenEvent: false
 
         }
         this.initState = null
+        this.shareStateBeforeHash = null
         this.parseBioscape = this.parseBioscape.bind(this)
         this.handleSearchBox = this.handleSearchBox.bind(this)
         this.submitHandler = this.submitHandler.bind(this)
@@ -76,6 +76,7 @@ class App extends React.Component {
         this.getElevationFromPoint = this.getElevationFromPoint.bind(this)
         this.countyStateLookup = this.countyStateLookup.bind(this)
         this.getApproxArea = this.getApproxArea.bind(this)
+        this.setBapState = this.setBapState.bind(this)
         this.state = this.loadState(this.state)
 
     }
@@ -110,17 +111,19 @@ class App extends React.Component {
     }
 
     getHash() {
-        let state = {
+        this.shareStateBeforeHash = {
             feature: { feature_id: this.state.feature.properties.feature_id },
             basemap: this.state.basemap,
             timeSlider: { rangeYearMin: this.state.rangeYearMin, rangeYearMax: this.state.rangeYearMax, mapDisplayYear: this.state.mapDisplayYear },
-            bap: { activeLayerTitle: this.state.analysisLayers && this.state.analysisLayers.length ? this.state.analysisLayers[0].title : '', priorityBap: this.state.priorityBap },
+            priorityBap: this.state.priorityBap,
+            baps: this.shareStateBeforeHash ? this.shareStateBeforeHash.baps : this.initState ? this.initState.baps : {},
             point: { lat: this.state.lat, lng: this.state.lng, elv: this.state.elv }
         }
         if (this.state.feature.properties.userDefined) {
-            state.userDefined = { geom: this.state.feature.geometry }
+            this.shareStateBeforeHash.userDefined = { geom: this.state.feature.geometry }
         }
-        return Buffer.from(JSON.stringify(state)).toString("base64")
+        console.log(this.shareStateBeforeHash)
+        return Buffer.from(JSON.stringify(this.shareStateBeforeHash)).toString("base64")
     }
 
     shareState() {
@@ -146,7 +149,7 @@ class App extends React.Component {
             s.rangeYearMin = this.initState.timeSlider.rangeYearMin
             s.rangeYearMax = this.initState.timeSlider.rangeYearMax
             s.mapDisplayYear = this.initState.timeSlider.mapDisplayYear
-            s.priorityBap = this.initState.bap.priorityBap
+            s.priorityBap = this.initState.priorityBap
             s.lat = this.initState.point.lat
             s.lng = this.initState.point.lng
             s.elv = this.initState.point.elv
@@ -157,6 +160,12 @@ class App extends React.Component {
         return s
     }
 
+    setBapState(bapId, bapState) {
+        if(this.shareStateBeforeHash && this.shareStateBeforeHash.baps){
+            this.shareStateBeforeHash.baps[bapId] = bapState
+            this.getHash()
+        }
+    }
 
 
     basemapChanged(e) {
@@ -657,8 +666,9 @@ class App extends React.Component {
                             updateAnalysisLayers={this.updateAnalysisLayers}
                             setPriorityBap={this.setPriorityBap}
                             shareState={this.shareState}
+                            setBapState={this.setBapState}
                             map={this.state.map}
-                            initLayerTitle={((this.initState || {}).bap || {}).activeLayerTitle}
+                            initBaps={(this.initState || {}).baps}
                             priorityBap={this.state.priorityBap}
                             bioscapeName={this.state.bioscapeName}
                             point={{ lat: this.state.lat, lng: this.state.lng, elv: this.state.elv }}

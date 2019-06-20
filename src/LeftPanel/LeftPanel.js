@@ -61,7 +61,7 @@ class LeftPanel extends React.Component {
         if (!this.listnerAdded &&
             !this.props.priorityBap &&
             props.feature &&
-            !(this.props.initLayerTitle || this.props.initLayerTitle === '')) {
+            !this.props.initBaps) {
             this.listnerAdded = true
             this.setState({ displayHelpPopup: true })
             document.body.addEventListener('click', () => { this.setState({ displayHelpPopup: false }) }, true);

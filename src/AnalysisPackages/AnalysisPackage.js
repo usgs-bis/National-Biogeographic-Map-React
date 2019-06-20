@@ -32,6 +32,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             this.initilized = false
             this.jsonData = null
             this.inputRefs = {}
+            this.shareState = {}
             this.toggleDropdown = this.toggleDropdown.bind(this)
             this.toggleLayerDropdown = this.toggleLayerDropdown.bind(this)
             this.setOpacity = this.setOpacity.bind(this)
@@ -50,6 +51,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             this.setBapJson = this.setBapJson.bind(this)
             this.toggleLayer = this.toggleLayer.bind(this)
             this.getOnLayers = this.getOnLayers.bind(this)
+            this.setShareState = this.setShareState.bind(this)
         }
 
 
@@ -126,9 +128,10 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                         )
                 }
             })
-            if (this.props.priorityBap === this.props.bapId && this.props.initLayerTitle) {
+            // turn on the layers saved in the state
+            if (this.props.priorityBap === this.props.bapId && this.props.initBap) {
                 Object.keys(this.state.layers).forEach((key) => {
-                    if (this.state.layers[key].title === this.props.initLayerTitle) {
+                    if (this.props.initBap.enabledLayers.indexOf(this.state.layers[key].title) > -1) {
                         this.toggleLayer(this.state.layers[key])
                     }
                 })
@@ -140,6 +143,16 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
 
         resetBap() {
             this.jsonData = null
+        }
+
+        // anything common (enabledLayers) among all baps gets set here.
+        // specific things get set in bap themselves
+        setShareState(state){
+            this.shareState = state
+            if(this.props.bapId === this.props.priorityBap){
+                this.shareState.enabledLayers = this.getOnLayers().map(a=>a.title)
+            }
+            this.props.setBapState(this.props.bapId,this.shareState)
         }
 
 
@@ -164,6 +177,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                     this.props.setPriorityBap(this.props.bapId)
                 }
                 this.props.updateAnalysisLayers(this.getOnLayers())
+                this.setShareState(this.shareState)
             }
             else {
                 for (let key of Object.keys(newLayers)) {
