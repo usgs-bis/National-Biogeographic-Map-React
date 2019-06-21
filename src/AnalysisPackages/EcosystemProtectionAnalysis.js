@@ -6,7 +6,6 @@ import withSharedAnalysisCharacteristics from "./AnalysisPackage"
 import DonutChart from "../Charts/DonutChart";
 import TableChart from "../Charts/TableChart"
 import HorizontalBarChart from "../Charts/HorizontalBarChart";
-
 import "./AnalysisPackages.css";
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/5b747802e4b0f5d5787ed299?format=json"
@@ -65,8 +64,6 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
             gapStatus: "ALL",
             gapRange: "ALL",
             gapColor: "white",
-            layers: layers,
-            value: []
         }
 
         this.gap12 = React.createRef()
@@ -86,6 +83,13 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
     componentDidMount() {
         this.props.onRef(this)
         this.featureChange()
+        if (this.props.initBap) {
+            this.setState({
+                gapStatus: this.props.initBap.gapStatus,
+                gapRange: this.props.initBap.gapRange,
+                gapColor: this.props.initBap.gapColor
+            })
+        }
     }
 
 
@@ -93,6 +97,11 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
         if (prevProps.feature !== this.props.feature) {
             this.featureChange()
         }
+        this.props.setShareState({
+            gapStatus: this.state.gapStatus,
+            gapRange: this.state.gapRange,
+            gapColor: this.state.gapColor
+        })
     }
 
     featureChange() {
