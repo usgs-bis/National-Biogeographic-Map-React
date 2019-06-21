@@ -14,8 +14,8 @@ let sb_properties = {
     "title": "Fish Habitat Condition and Disturbance Summaries"
 }
 
-const layers = {
-    nfhp_service: {
+const layers = [
+     {
         title: "Risk to Fish Habitat Degradation",
         layer: new DynamicMapLayer({
             url: "https://gis1.usgs.gov/arcgis/rest/services/nfhp2015/HCI_Dissolved_NFHP2015_v20160907/MapServer",
@@ -28,7 +28,7 @@ const layers = {
         checked: false,
         sb_item:'58c8542ce4b0849ce97961e4'
     }
-}
+]
 
 class NFHPAnalysisPackage extends React.Component {
     constructor(props) {

@@ -17,8 +17,8 @@ let sb_properties = {
     "title": "First Bloom Spring Index"
 }
 
-const layers = {
-    first_bloom_service: {
+const layers = [
+     {
         title: "Average Bloom PRISM",
         layer: L.tileLayer.wms(
             "https://geoserver.usanpn.org/geoserver/si-x/wms",
@@ -36,7 +36,7 @@ const layers = {
         checked: false,
         sb_item:'5ac3b12ee4b0e2c2dd0c2b95'
     }
-}
+]
 
 class FirstBloomAnalysisPackage extends React.Component {
     constructor(props) {

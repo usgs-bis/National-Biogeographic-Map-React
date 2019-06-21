@@ -16,8 +16,8 @@ let sb_properties = {
     "title": "Protection Status of Terrestrial Vertebrate Species"
 }
 
-const layers = {
-    gap_status: {
+const layers = [
+     {
         title: "PAD-US v1.4 GAP Status Code",
         layer: new TiledMapLayer({
             url: "https://gis1.usgs.gov/arcgis/rest/services/PADUS1_4/GAP_Status_Code/MapServer",
@@ -30,7 +30,7 @@ const layers = {
         checked: false,
         sb_item: "56bba50ce4b08d617f657956"
     },
-    species_range: {
+     {
         title: "Species Range",
         layer: L.tileLayer.wms(
             "https://www.sciencebase.gov/geoserver/CONUS_Range_2001/wms",
@@ -49,7 +49,7 @@ const layers = {
         hideCheckbox: true,
         sb_item: "5951527de4b062508e3b1e79"
     },
-    habitat_map: {
+     {
         title: "Habitat Map",
         layer: L.tileLayer.wms(
             "https://www.sciencebase.gov/geoserver/CONUS_HabMap_2001/wms",
@@ -68,7 +68,7 @@ const layers = {
         hideCheckbox: true,
         sb_item: "527d0a83e4b0850ea0518326"
     }
-}
+]
 
 class SpeciesProtectionAnalysisPackage extends React.Component {
     constructor(props) {

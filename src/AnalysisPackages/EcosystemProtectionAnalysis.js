@@ -16,8 +16,8 @@ let sb_properties = {
     "title": "Protection Status of Ecological Systems"
 }
 
-const layers = {
-    gap_status: {
+const layers = [
+    {
         title: "PAD-US v1.4 GAP Status Code",
         layer: new TiledMapLayer({
             url: "https://gis1.usgs.gov/arcgis/rest/services/PADUS1_4/GAP_Status_Code/MapServer",
@@ -30,7 +30,7 @@ const layers = {
         checked: false,
         sb_item: '56bba50ce4b08d617f657956'
     },
-    ecological_systems: {
+    {
         title: "GAP Landcover 2011 Ecological System",
         layer: L.tileLayer.wms(
             "https://www.sciencebase.gov/geoserver/nvcs/wms",
@@ -48,7 +48,7 @@ const layers = {
         checked: false,
         sb_item: '58d1bb47e4b0236b68f6b8a7'
     }
-}
+]
 
 class EcosystemProtectionAnalysisPackage extends React.Component {
     constructor(props) {

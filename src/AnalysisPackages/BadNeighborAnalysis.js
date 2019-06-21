@@ -14,7 +14,7 @@ let sb_properties = {
     "title": "Bad Neighbor Invasives"
 }
 
-const layers = {}
+const layers = []
 
 class BadNeighborAnalysisPackage extends React.Component {
     constructor(props) {

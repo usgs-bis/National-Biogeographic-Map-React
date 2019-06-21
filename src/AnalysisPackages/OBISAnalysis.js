@@ -14,17 +14,8 @@ let sb_properties = {
     "title": "Most Reported Marine Species per Exclusive Economic Zone"
 }
 
-const layers = {
-    // nfhp_service: {
-    //     title: "Risk to Fish Habitat Degradation",
-    //     layer: new DynamicMapLayer({
-    //         url: "https://gis1.usgs.gov/arcgis/rest/services/nfhp2015/HCI_Dissolved_NFHP2015_v20160907/MapServer",
-    //         opacity: .5
-    //     }),
-    //     checked: false,
-    //     loading: false,
-    // }
-}
+const layers = []
+
 
 class OBISAnalysisPackage extends React.Component {
     constructor(props) {

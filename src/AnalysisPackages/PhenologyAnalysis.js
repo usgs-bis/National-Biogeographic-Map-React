@@ -22,8 +22,8 @@ let sb_properties = {
 
 let baseLegendUrl = "https://geoserver.usanpn.org/geoserver/gdd/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng"
 
-let layers = {
-    phenology_service: {
+let layers = [
+     {
         title: "Phenocasts",
         layer: L.tileLayer.wms(
             "https://geoserver.usanpn.org/geoserver/gdd/wms",
@@ -39,7 +39,7 @@ let layers = {
         checked: true,
         hideCheckbox: true
     }
-}
+]
 
 class PhenologyAnalysisPackage extends React.Component {
     constructor(props) {

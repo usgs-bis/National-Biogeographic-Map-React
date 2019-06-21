@@ -91,8 +91,8 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 else if (prevProps.priorityBap !== this.props.priorityBap
                     && this.props.priorityBap === this.props.bapId
                     && !this.getOnLayers().length
-                    && Object.keys(this.state.layers).length) {
-                    let firstLayer = this.state.layers[Object.keys(this.state.layers)[0]]
+                    && this.state.layers.length) {
+                    let firstLayer = this.state.layers[0]
                     this.toggleLayer(firstLayer)
                     this.setState({isOpen : true})
                 }
@@ -105,17 +105,15 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
         }
 
         initilize() {
-            let newLayers = {}
-            Object.keys(this.state.layers).forEach((key) => {
-                newLayers[key] = this.state.layers[key]
-            })
-            Object.keys(newLayers).forEach((key) => {
-                if (newLayers[key].sb_item) {
-                    fetch(`https://www.sciencebase.gov/catalog/item/${newLayers[key].sb_item}?format=json`)
+            let newLayers = this.state.layers
+
+            newLayers.forEach((layer) => {
+                if (layer.sb_item) {
+                    fetch(`https://www.sciencebase.gov/catalog/item/${layer.sb_item}?format=json`)
                         .then(res => res.json())
                         .then(
                             (result) => {
-                                newLayers[key].sb_properties = result
+                                layer.sb_properties = result
                                 this.setState({
                                     layers: newLayers
                                 })
@@ -130,12 +128,12 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             })
             // turn on the layers saved in the state
             if (this.props.priorityBap === this.props.bapId && this.props.initBap) {
-                Object.keys(this.state.layers).forEach((key) => {
+                this.state.layers.forEach((layer) => {
                     let enabledLayer = this.props.initBap.enabledLayers.find((l)=>{
-                        return l.t === this.state.layers[key].title
+                        return l.t === layer.title
                     })
                     if(enabledLayer){
-                        this.toggleLayer(this.state.layers[key],enabledLayer.o)
+                        this.toggleLayer(layer,enabledLayer.o)
                     }
                 })
 
@@ -165,18 +163,18 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
 
             let newLayers = this.state.layers
             if (layer) {
-                for (let key of Object.keys(newLayers)) {
+                for (let l of newLayers) {
                     // always toggle the layer clicked
-                    if (newLayers[key].title === layer.title) {
-                        newLayers[key].checked = !newLayers[key].checked
+                    if (l.title === layer.title) {
+                        l.checked = !l.checked
                         if(opacity){
-                            newLayers[key].layer.options.opacity = opacity
+                            l.layer.options.opacity = opacity
                         }
                     }
                     else {
                         // if disableMultipleLayers then be sure to turn off all others
                         if (disableMultipleLayers) {
-                            newLayers[key].checked = false
+                            l.checked = false
                         }
                     }
                 }
@@ -188,8 +186,8 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 this.setShareState(this.shareState)
             }
             else {
-                for (let key of Object.keys(newLayers)) {
-                    newLayers[key].checked = false
+                for (let l of newLayers) {
+                    l.checked = false
                 }
                 // turning off layers, only replace on layers if priority bap
                 if (this.props.bapId === this.props.priorityBap) {
@@ -202,9 +200,9 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
 
         getOnLayers() {
             let layersOn = []
-            for (let key of Object.keys(this.state.layers)) {
-                if (this.state.layers[key].checked) {
-                    layersOn.push(this.state.layers[key])
+            for (let l of this.state.layers) {
+                if (l.checked) {
+                    layersOn.push(l)
                 }
             }
             return layersOn
@@ -215,11 +213,10 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             this.setState({ layersOpen: !this.state.layersOpen })
         }
 
-        setOpacity(key,event){
-            console.log(key,event)
-            this.state.layers[key].layer.setOpacity(event.target.value)
+        setOpacity(layer,event){
+            layer.layer.setOpacity(event.target.value)
+            layer.layer.options.opacity = event.target.value
             let newLayers = this.state.layers
-            newLayers[key].layer.options.opacity = event.target.value
             this.setState({ layers: newLayers })
             this.setShareState(this.shareState)
         }
@@ -272,14 +269,14 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                         </div>
 
                         <Collapse className='analysis-dropdown-content' isOpen={this.state.layersOpen}>
-                            {Object.keys(this.state.layers).map((key) => {
-                                let layer = this.state.layers[key]
+                            {this.state.layers.map((l) => {
+                                let layer = l
+                                let key = l.title
                                 return (
                                     <FormGroup key={key} check>
                                         <Label check>
                                             <input
                                                 style={{ display: layer.hideCheckbox ? "none" : "inline-block" }}
-                                                ref={(input) => { this[key] = input; this["inputRefs"][key] = input }}
                                                 onClick={() => this.toggleLayer(layer)}
                                                 onChange={()=>{}}
                                                 checked={layer.checked}
@@ -321,7 +318,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                                             }
                                         </Label>
                                         <input style={{ width: "50%" }}
-                                            onChange={(event) => this.setOpacity(key,event)}
+                                            onChange={(event) => this.setOpacity(layer,event)}
                                             type="range"
                                             step=".05"
                                             min="0"

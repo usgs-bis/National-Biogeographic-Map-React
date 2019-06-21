@@ -17,8 +17,8 @@ let sb_properties = {
     "title": "First Leaf Spring Index"
 }
 
-const layers = {
-    first_leaf_service: {
+const layers = [
+     {
         title: "Average Leaf PRISM",
         layer: L.tileLayer.wms(
             "https://geoserver.usanpn.org/geoserver/si-x/wms",
@@ -37,7 +37,7 @@ const layers = {
         checked: false,
         sb_item:'591c6ec6e4b0a7fdb43dea8a'
     }
-}
+]
 
 class FirstLeafAnalysisPackage extends React.Component {
     constructor(props) {

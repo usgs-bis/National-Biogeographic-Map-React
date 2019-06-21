@@ -15,8 +15,8 @@ let sb_properties = {
 const HBP_URL = process.env.REACT_APP_BIS_API + "/api/v1/nvcs/hierarchy_by_pixel?pixel_value=";
 
 
-const layers = {
-    class_service: {
+const layers = [
+     {
         title: "Class",
         titlePrefix: "GAP Landcover 2011 ",
         layer: L.tileLayer.wms(
@@ -36,7 +36,7 @@ const layers = {
         sb_item: '58d1b8ade4b0236b68f6b88e'
 
     },
-    subclass_service: {
+     {
         title: "Subclass",
         titlePrefix: "GAP Landcover 2011 ",
         layer: L.tileLayer.wms(
@@ -56,7 +56,7 @@ const layers = {
         sb_item: '58d2b96ce4b0236b68f84d9f'
 
     },
-    formation_service: {
+     {
         title: "Formation",
         titlePrefix: "GAP Landcover 2011 ",
         layer: L.tileLayer.wms(
@@ -76,7 +76,7 @@ const layers = {
         sb_item: '58d1ba7ae4b0236b68f6b8a3'
 
     },
-    division_service: {
+     {
         title: "Division",
         titlePrefix: "GAP Landcover 2011 ",
         layer: L.tileLayer.wms(
@@ -96,7 +96,7 @@ const layers = {
         sb_item: '58d2ba5ae4b0236b68f84db5'
 
     },
-    macrogroup_service: {
+     {
         title: "Macrogroup",
         titlePrefix: "GAP Landcover 2011 ",
         layer: L.tileLayer.wms(
@@ -116,7 +116,7 @@ const layers = {
         sb_item: '58d1bad8e4b0236b68f6b8a5'
 
     },
-    nvc_group_service: {
+     {
         title: "Group",
         titlePrefix: "GAP Landcover 2011 ",
         layer: L.tileLayer.wms(
@@ -136,7 +136,7 @@ const layers = {
         sb_item: '58d2bab6e4b0236b68f84dba'
 
     },
-    ecosys_lu_service: {
+     {
         title: "Ecological System",
         titlePrefix: "GAP Landcover 2011 ",
         layer: L.tileLayer.wms(
@@ -155,9 +155,9 @@ const layers = {
         checked: false,
         sb_item: '58d1bb47e4b0236b68f6b8a7'
 
-    },
+    }
 
-}
+]
 class NVCSHierarchyByPixelPackage extends React.Component {
     constructor(props) {
         super(props)
