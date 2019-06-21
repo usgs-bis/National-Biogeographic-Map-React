@@ -31,7 +31,6 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             }
             this.initilized = false
             this.jsonData = null
-            this.inputRefs = {}
             this.shareState = {}
             this.toggleDropdown = this.toggleDropdown.bind(this)
             this.toggleLayerDropdown = this.toggleLayerDropdown.bind(this)
@@ -596,7 +595,6 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                             isEnabled={this.updateEnabled}
                             canOpen={this.canOpen}
                             setShareState={this.setShareState}
-                            inputRefs={this.inputRefs}
                             layers={this.state.layers}
                             handleBapError={this.handleBapError}
                             isOpen={this.state.isOpen}

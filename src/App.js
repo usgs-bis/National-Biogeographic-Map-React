@@ -122,7 +122,6 @@ class App extends React.Component {
         if (this.state.feature.properties.userDefined) {
             this.shareStateBeforeHash.userDefined = { geom: this.state.feature.geometry }
         }
-        console.log(this.shareStateBeforeHash)
         window.location.hash = Buffer.from(JSON.stringify(this.shareStateBeforeHash)).toString("base64")
     }
 
