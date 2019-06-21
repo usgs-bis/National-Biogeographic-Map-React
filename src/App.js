@@ -106,7 +106,7 @@ class App extends React.Component {
 
     componentDidUpdate() {
         if (this.state.feature) {
-            window.location.hash = this.getHash()
+             this.getHash()
         }
     }
 
@@ -123,7 +123,7 @@ class App extends React.Component {
             this.shareStateBeforeHash.userDefined = { geom: this.state.feature.geometry }
         }
         console.log(this.shareStateBeforeHash)
-        return Buffer.from(JSON.stringify(this.shareStateBeforeHash)).toString("base64")
+        window.location.hash = Buffer.from(JSON.stringify(this.shareStateBeforeHash)).toString("base64")
     }
 
     shareState() {
@@ -578,7 +578,7 @@ class App extends React.Component {
                     clone.setParams({ time: item.layer.wmsParams.time })
                     clone.setOpacity(0)
                     clone.addTo(this.state.map.leafletElement)
-                    // weird case where layer 'lode' doesent fire and clone doesnt get removed. 
+                    // weird case where layer 'load' doesent fire and clone doesnt get removed. 
                     setTimeout(() => { this.state.map.leafletElement.removeLayer(clone) }, 2000)
                     clone.on('load', (event) => {
                         setTimeout(() => {

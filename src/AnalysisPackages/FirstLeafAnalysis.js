@@ -50,8 +50,9 @@ class FirstLeafAnalysisPackage extends React.Component {
             },
             layers: layers,
             loading: false,
-            bucketSize: { value: 3 },
-            canSubmit: false
+            bucketSize: 3,
+            canSubmit: false,
+            didSubmit: false
         }
 
         this.toggleDropdown = this.toggleDropdown.bind(this)
@@ -67,11 +68,14 @@ class FirstLeafAnalysisPackage extends React.Component {
     componentDidMount() {
         this.props.onRef(this)
         this.featureChange()
-        if(this.props.bapId === this.props.priorityBap){
-            // try to let the feature load before submitting
-            // could change to willRecieveProps with a flag for init
-            setTimeout(()=>{this.submitAnalysis()},3000) 
-        } 
+        if(this.props.initBap){
+            this.setState({
+                bucketSize: this.props.initBap.bucketSize,
+            })
+            if(this.props.initBap.didSubmit){
+                setTimeout(()=>this.submitAnalysis(),3000)
+            }
+        }
     }
 
 
@@ -89,7 +93,10 @@ class FirstLeafAnalysisPackage extends React.Component {
         }
         this.setState({
             charts: charts,
+            canSubmit: false,
+            didSubmit: false
         })
+
     }
 
     componentDidUpdate(prevProps) {
@@ -97,6 +104,10 @@ class FirstLeafAnalysisPackage extends React.Component {
             this.clearCharts()
             this.featureChange()
         }
+        this.props.setShareState({
+            bucketSize: this.state.bucketSize,
+            didSubmit : this.state.didSubmit
+        })
     }
 
     featureChange() {
@@ -145,7 +156,8 @@ class FirstLeafAnalysisPackage extends React.Component {
                             const charts = this.getCharts({ histogram: result, ridgelinePlot: result, boxAndWhisker: result })
                             this.setState({
                                 charts: charts,
-                                loading: false
+                                loading: false,
+                                didSubmit: true
                             })
                             this.props.isEnabled(true)
                             this.props.canOpen(true)
@@ -259,9 +271,9 @@ class FirstLeafAnalysisPackage extends React.Component {
         return charts
     }
 
-    setBucketSize() {
+    setBucketSize(e) {
         this.setState({
-            bucketSize: this.bucketSize
+            bucketSize: e.currentTarget.valueAsNumber
         })
     }
 
@@ -321,17 +333,16 @@ class FirstLeafAnalysisPackage extends React.Component {
                         <div className="bucket-size-div" style={{ display: this.state.charts.histogram.data ? "block" : "none" }}>
                             <span>Binwidth: {this.state.bucketSize.value}</span>
                             <input
-                                ref={(input) => { this.bucketSize = input; }}
-                                onChange={this.setBucketSize}
-                                defaultValue={this.state.bucketSize.value}
+                                onChange={(e)=>this.setBucketSize(e)}
+                                defaultValue={this.state.bucketSize}
                                 min={1}
                                 max={5}
                                 step="1"
                                 type="range" />
                         </div>
                     </div>
-                    <HistogramChart onRef={ref => (this.HistogramChart = ref)} data={this.state.charts.histogram.data} id={this.state.charts.histogram.id} config={this.state.charts.histogram.config} bucketSize={this.state.bucketSize.value} />
-                    <RidgelinePlotChart onRef={ref => (this.RidgelinePlotChart = ref)} data={this.state.charts.ridgelinePlot.data} id={this.state.charts.ridgelinePlot.id} config={this.state.charts.ridgelinePlot.config} bucketSize={this.state.bucketSize.value} />
+                    <HistogramChart onRef={ref => (this.HistogramChart = ref)} data={this.state.charts.histogram.data} id={this.state.charts.histogram.id} config={this.state.charts.histogram.config} bucketSize={this.state.bucketSize} />
+                    <RidgelinePlotChart onRef={ref => (this.RidgelinePlotChart = ref)} data={this.state.charts.ridgelinePlot.data} id={this.state.charts.ridgelinePlot.id} config={this.state.charts.ridgelinePlot.config} bucketSize={this.state.bucketSize} />
                     <BoxAndWhiskerChart onRef={ref => (this.BoxAndWhiskerChart = ref)} data={this.state.charts.boxAndWhisker.data} id={this.state.charts.boxAndWhisker.id} config={this.state.charts.boxAndWhisker.config} />
                     <div className="chart-footers" >
                         <div className="anotations">
