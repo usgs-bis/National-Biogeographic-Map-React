@@ -24,8 +24,6 @@ class OBISAnalysisPackage extends React.Component {
             charts: {
                 speciesCountChart: { id: "", config: {}, data: null }
             },
-            layersOpen: false,
-            value: [],
             loading: false
         }
 
@@ -40,12 +38,16 @@ class OBISAnalysisPackage extends React.Component {
     componentDidMount() {
         this.props.onRef(this)
         this.featureChange()
+        if (this.props.initBap) {
+            // do any initlizing here
+        }
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.feature !== this.props.feature) {
             this.featureChange()
         }
+        this.props.setShareState({})
     }
 
     featureChange() {

@@ -1,7 +1,6 @@
 import React from "react";
 import L from "leaflet"
 import { BarLoader } from "react-spinners"
-
 import withSharedAnalysisCharacteristics from "./AnalysisPackage"
 import BoxAndWhiskerChart from "../Charts/BoxAndWhiskerChart";
 import HistogramChart from "../Charts/HistogramChart";
@@ -18,7 +17,7 @@ let sb_properties = {
 }
 
 const layers = [
-     {
+    {
         title: "Average Leaf PRISM",
         layer: L.tileLayer.wms(
             "https://geoserver.usanpn.org/geoserver/si-x/wms",
@@ -35,7 +34,7 @@ const layers = [
         },
         timeEnabled: true,
         checked: false,
-        sb_item:'591c6ec6e4b0a7fdb43dea8a'
+        sb_item: '591c6ec6e4b0a7fdb43dea8a'
     }
 ]
 
@@ -48,7 +47,6 @@ class FirstLeafAnalysisPackage extends React.Component {
                 ridgelinePlot: { id: "", config: {}, data: null },
                 boxAndWhisker: { id: "", config: {}, data: null }
             },
-            layers: layers,
             loading: false,
             bucketSize: 3,
             canSubmit: false,
@@ -68,12 +66,14 @@ class FirstLeafAnalysisPackage extends React.Component {
     componentDidMount() {
         this.props.onRef(this)
         this.featureChange()
-        if(this.props.initBap){
+        if (this.props.initBap) {
             this.setState({
                 bucketSize: this.props.initBap.bucketSize,
+                didSubmit: this.props.initBap.didSubmit
+
             })
-            if(this.props.initBap.didSubmit){
-                setTimeout(()=>this.submitAnalysis(),3000)
+            if (this.props.initBap.didSubmit) {
+                setTimeout(() => this.submitAnalysis(), 3000)
             }
         }
     }
@@ -106,13 +106,13 @@ class FirstLeafAnalysisPackage extends React.Component {
         }
         this.props.setShareState({
             bucketSize: this.state.bucketSize,
-            didSubmit : this.state.didSubmit
+            didSubmit: this.state.didSubmit
         })
     }
 
     featureChange() {
         if (this.props.feature) {
-            if(this.props.feature.properties.feature_id.includes('OBIS_Areas')){
+            if (this.props.feature.properties.feature_id.includes('OBIS_Areas')) {
                 this.props.isEnabled(false)
                 this.props.canOpen(false)
             }
@@ -193,6 +193,7 @@ class FirstLeafAnalysisPackage extends React.Component {
                             this.setState({
                                 charts: charts,
                                 loading: false,
+                                didSubmit: true
                             })
                             this.props.isEnabled(true)
                             this.props.canOpen(true)
@@ -331,9 +332,9 @@ class FirstLeafAnalysisPackage extends React.Component {
                     <div className="chart-headers" >
                         <button className="submit-analysis-btn" onClick={this.submitAnalysis}>Analyze Time Period: {this.props.yearMin} to  {this.props.yearMax}</button>
                         <div className="bucket-size-div" style={{ display: this.state.charts.histogram.data ? "block" : "none" }}>
-                            <span>Binwidth: {this.state.bucketSize.value}</span>
+                            <span>Binwidth: {this.state.bucketSize}</span>
                             <input
-                                onChange={(e)=>this.setBucketSize(e)}
+                                onChange={(e) => this.setBucketSize(e)}
                                 defaultValue={this.state.bucketSize}
                                 min={1}
                                 max={5}

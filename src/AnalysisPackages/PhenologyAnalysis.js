@@ -1,11 +1,9 @@
 import React from "react";
 import L from "leaflet"
 import { BarLoader } from "react-spinners"
-
 import { RadioButton } from "../CustomRadio/CustomRadio"
 import HorizontalBarChart from "../Charts/HorizontalBarChart";
 import "./AnalysisPackages.css";
-
 import withSharedAnalysisCharacteristics from "./AnalysisPackage"
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/5b96d589e4b0702d0e82700a?format=json"
@@ -47,11 +45,11 @@ class PhenologyAnalysisPackage extends React.Component {
         this.state = {
             data: null,
             dates: [{ name: 'Current', date: new Date() }, { name: 'Six-Day', date: new Date(new Date().getTime() + 6 * 86400000) }],
-            canSubmit: false,
-            loading: false,
             charts: [],
             refs: [],
-            selectedIndex: 0
+            loading: false,
+            canSubmit: false,
+            didSubmit: false
         }
 
 
@@ -70,11 +68,15 @@ class PhenologyAnalysisPackage extends React.Component {
     componentDidMount() {
         this.props.onRef(this)
         this.featureChange()
-        if(this.props.bapId === this.props.priorityBap){
-            // try to let the feature load before submitting
-            // could change to willRecieveProps with a flag for init
-            setTimeout(()=>{this.submitAnalysis()},3000) 
-        } 
+        if (this.props.initBap) {
+            this.setState({
+                // TODO
+                didSubmit: this.props.initBap.didSubmit
+            })
+            if (this.props.initBap.didSubmit) {
+                setTimeout(() => this.submitAnalysis(), 3000)
+            }
+        }
     }
 
 
@@ -83,6 +85,10 @@ class PhenologyAnalysisPackage extends React.Component {
             this.clearCharts()
             this.featureChange()
         }
+        this.props.setShareState({
+            didSubmit: this.state.didSubmit
+            // TODO
+        })
     }
 
     featureChange() {
@@ -118,7 +124,9 @@ class PhenologyAnalysisPackage extends React.Component {
         this.setState({
             data: null,
             charts: [],
-            refs: []
+            refs: [],
+            canSubmit: false,
+            didSubmit: false
         })
     }
 
@@ -175,7 +183,9 @@ class PhenologyAnalysisPackage extends React.Component {
                     this.props.setBapJson(results)
                     this.setState({
                         data: results,
-                        loading: false
+                        loading: false,
+                        didSubmit: true
+
                     }, () => {
                         this.getCharts(this.state.data, 0)
                     })

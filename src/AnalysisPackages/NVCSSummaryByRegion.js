@@ -178,12 +178,16 @@ class NVCSSummaryByRegionPackage extends React.Component {
     componentDidMount() {
         this.props.onRef(this)
         this.fetch()
+        if (this.props.initBap) {
+            // do any initlizing here
+        }
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.feature !== this.props.feature) {
             this.fetch()
         }
+        this.props.setShareState({})
     }
 
     componentWillReceiveProps(props) {

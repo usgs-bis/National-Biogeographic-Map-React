@@ -181,6 +181,9 @@ class NVCSHierarchyByPixelPackage extends React.Component {
     componentDidMount() {
         this.props.onRef(this)
         this.fetch()
+        if (this.props.initBap) {
+            // do any initlizing here
+        }
     }
 
     componentDidUpdate(prevProps) {
@@ -188,6 +191,7 @@ class NVCSHierarchyByPixelPackage extends React.Component {
         if (JSON.stringify(prevProps.point) !== JSON.stringify(this.props.point)) {
             this.fetch()
         }
+        this.props.setShareState({})
     }
 
     componentWillReceiveProps(props) {
