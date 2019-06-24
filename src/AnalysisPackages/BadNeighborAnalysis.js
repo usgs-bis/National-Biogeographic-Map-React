@@ -24,8 +24,6 @@ class BadNeighborAnalysisPackage extends React.Component {
                 tableChart: { id: "", config: {}, data: null },
             },
             tableGroup: "All Invasives",
-            layersOpen: false,
-            value: []
         }
 
         this.donutChart = React.createRef()
@@ -42,12 +40,20 @@ class BadNeighborAnalysisPackage extends React.Component {
     componentDidMount() {
         this.props.onRef(this)
         this.featureChange()
+        if (this.props.initBap) {
+            this.setState({
+                tableGroup: this.props.initBap.tableGroup
+            })
+        }
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.feature !== this.props.feature) {
             this.featureChange()
         }
+        this.props.setShareState({
+            tableGroup: this.state.tableGroup
+        })
     }
 
     featureChange() {
