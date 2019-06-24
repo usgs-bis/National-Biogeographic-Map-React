@@ -162,7 +162,9 @@ class App extends React.Component {
     setBapState(bapId, bapState) {
         if(this.shareStateBeforeHash && this.shareStateBeforeHash.baps){
             this.shareStateBeforeHash.baps[bapId] = bapState
-            this.getHash()
+            if (this.state.feature) {
+                this.getHash()
+            }
         }
     }
 
