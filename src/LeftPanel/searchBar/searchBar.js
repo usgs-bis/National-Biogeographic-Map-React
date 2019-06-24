@@ -16,10 +16,9 @@ class SearchBar extends React.Component {
         this.state = {
             focused: false,
             layersDropdownOpen: false,
-            // If there is a layer or the layer is empty string then we are loading state
+            // If there are initbaps then we are loading state
             // and do not what to display the help popup immediately 
-            displayHelpPopup: this.props.initLayerTitle
-                || this.props.initLayerTitle === '' ? false : true
+            displayHelpPopup: this.props.initBaps ? false : true
             // ------------------------------------------------
         }
 

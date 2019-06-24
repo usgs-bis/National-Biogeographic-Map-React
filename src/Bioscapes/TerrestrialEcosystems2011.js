@@ -57,7 +57,6 @@ class TerrestrialEcosystems2011 extends React.Component {
     }
 
     render() {
-        let counter = 1;
         return (
             <div>
                 <div className="nbm-flex-row-no-padding">
@@ -67,9 +66,10 @@ class TerrestrialEcosystems2011 extends React.Component {
                         setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
-                        bapId={`bap${counter++}`}
-                        initLayerTitle={this.props.initLayerTitle}
+                        bapId={`bap1`}
+                        initBap={(this.props.initBaps || {})['bap1']}
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
+                        setBapState={this.props.setBapState}
                         point={this.props.point}
                         overlay={this.props.overlay}
                     />
@@ -79,9 +79,10 @@ class TerrestrialEcosystems2011 extends React.Component {
                         setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
-                        bapId={`bap${counter++}`}
-                        initLayerTitle={this.props.initLayerTitle}
+                        bapId={`bap2`}
+                        initBap={(this.props.initBaps || {})['bap2']}
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
+                        setBapState={this.props.setBapState}
                         overlay={this.props.overlay}
                     />
                 </div>

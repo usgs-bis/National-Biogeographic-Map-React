@@ -3,7 +3,6 @@ import { BarLoader } from "react-spinners"
 import withSharedAnalysisCharacteristics from "./AnalysisPackage"
 import DonutChart from "../Charts/DonutChart";
 import TableChart from "../Charts/TableChart"
-
 import "./AnalysisPackages.css";
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/5cc34cbae4b09b8c0b7606b9?format=json"
@@ -14,7 +13,7 @@ let sb_properties = {
     "title": "Bad Neighbor Invasives"
 }
 
-const layers = {}
+const layers = []
 
 class BadNeighborAnalysisPackage extends React.Component {
     constructor(props) {
@@ -25,8 +24,6 @@ class BadNeighborAnalysisPackage extends React.Component {
                 tableChart: { id: "", config: {}, data: null },
             },
             tableGroup: "All Invasives",
-            layersOpen: false,
-            value: []
         }
 
         this.donutChart = React.createRef()
@@ -43,12 +40,20 @@ class BadNeighborAnalysisPackage extends React.Component {
     componentDidMount() {
         this.props.onRef(this)
         this.featureChange()
+        if (this.props.initBap) {
+            this.setState({
+                tableGroup: this.props.initBap.tableGroup
+            })
+        }
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.feature !== this.props.feature) {
             this.featureChange()
         }
+        this.props.setShareState({
+            tableGroup: this.state.tableGroup
+        })
     }
 
     featureChange() {
