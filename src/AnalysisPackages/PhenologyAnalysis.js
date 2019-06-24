@@ -47,9 +47,11 @@ class PhenologyAnalysisPackage extends React.Component {
             dates: [{ name: 'Current', date: new Date() }, { name: 'Six-Day', date: new Date(new Date().getTime() + 6 * 86400000) }],
             charts: [],
             refs: [],
+            error: false,
             loading: false,
             canSubmit: false,
-            didSubmit: false
+            didSubmit: false,
+            selectedIndex: 0
         }
 
 
@@ -70,8 +72,8 @@ class PhenologyAnalysisPackage extends React.Component {
         this.featureChange()
         if (this.props.initBap) {
             this.setState({
-                // TODO
-                didSubmit: this.props.initBap.didSubmit
+                didSubmit: this.props.initBap.didSubmit,
+                selectedIndex : this.props.initBap.selectedIndex
             })
             if (this.props.initBap.didSubmit) {
                 setTimeout(() => this.submitAnalysis(), 3000)
@@ -86,8 +88,8 @@ class PhenologyAnalysisPackage extends React.Component {
             this.featureChange()
         }
         this.props.setShareState({
-            didSubmit: this.state.didSubmit
-            // TODO
+            didSubmit: this.state.didSubmit,
+            selectedIndex : this.state.selectedIndex
         })
     }
 
@@ -131,13 +133,13 @@ class PhenologyAnalysisPackage extends React.Component {
     }
 
     turnOnLayer(value) {
-        layers["phenology_service"]["legend"]["imageUrl"] = baseLegendUrl + `&layer=${value[0]}&style=${value[1]}`
+        layers[0]["legend"]["imageUrl"] = baseLegendUrl + `&layer=${value[0]}&style=${value[1]}`
 
         // this will get flipped to turn on the layer in analysysPackage 
-        layers["phenology_service"].checked = false
-        this.props.updateBapLayers(layers["phenology_service"])
+        layers[0].checked = false
+        this.props.toggleLayer(layers[0])
 
-        layers["phenology_service"]["layer"].setParams({
+        layers[0]["layer"].setParams({
             layers: value[0],
             styles: value[1],
             time: this.getFormattedDate(value[2])
@@ -146,6 +148,9 @@ class PhenologyAnalysisPackage extends React.Component {
 
     toggleRadioBtn(index) {
         this.getCharts(this.state.data, index)
+        this.setState({
+            selectedIndex : index
+        })
     }
 
     getFormattedDate(date) {
@@ -162,7 +167,7 @@ class PhenologyAnalysisPackage extends React.Component {
             .then(res => { return res.json() },
                 (error) => {
                     this.setState({
-                        error
+                        error: true
                     });
                 })
     }
@@ -187,7 +192,7 @@ class PhenologyAnalysisPackage extends React.Component {
                         didSubmit: true
 
                     }, () => {
-                        this.getCharts(this.state.data, 0)
+                        this.getCharts(this.state.data, this.state.selectedIndex)
                     })
                     this.props.isEnabled(true)
                     this.props.canOpen(true)
@@ -219,7 +224,8 @@ class PhenologyAnalysisPackage extends React.Component {
                     this.props.setBapJson(results)
                     this.setState({
                         data: results,
-                        loading: false
+                        loading: false,
+                        didSubmit: true
                     }, () => {
                         this.getCharts(this.state.data)
                     })
@@ -445,8 +451,9 @@ class PhenologyAnalysisPackage extends React.Component {
 
         }
         catch (error) {
+            console.log(error)
             this.setState({
-                error,
+                error: true,
                 loading: false
             });
             return null
