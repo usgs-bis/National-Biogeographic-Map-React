@@ -9,6 +9,7 @@ import EcosystemProtectionAnalysis from "../AnalysisPackages/EcosystemProtection
 import PhenologyAnalysis from "../AnalysisPackages/PhenologyAnalysis";
 import OBISAnalysis from "../AnalysisPackages/OBISAnalysis";
 import BadNeighborAnalysis from "../AnalysisPackages/BadNeighborAnalysis";
+import ExpectedLandUseAnalysis from "../AnalysisPackages/ExpectedLandUseAnanlysis";
 const DEV_MODE = process.env.REACT_APP_DEV;
 
 class Biogeography extends React.Component {
@@ -59,6 +60,7 @@ class Biogeography extends React.Component {
         charts.push(this.PhenologyAnalysis.print())
         charts.push(this.OBISAnalysis.print())
         charts.push(this.BadNeighborAnalysis.print())
+        charts.push(this.ExpectedLandUseAnalysis.print())
 
 
         return charts
@@ -202,6 +204,19 @@ class Biogeography extends React.Component {
                         priorityBap={this.props.priorityBap}
                         bapId={`bap9`}
                         initBap={(this.props.initBaps || {})['bap9']}
+                        getDefaultPriorityBap={this.getDefaultPriorityBap}
+                        setBapState={this.props.setBapState}
+                    />
+                </div> }
+                { DEV_MODE && <div className="nbm-flex-row-no-padding">
+                    <ExpectedLandUseAnalysis
+                        onRef={ref => (this.ExpectedLandUseAnalysis = ref)}
+                        updateAnalysisLayers={this.props.updateAnalysisLayers}
+                        setPriorityBap={this.props.setPriorityBap}
+                        feature={this.props.feature}
+                        priorityBap={this.props.priorityBap}
+                        bapId={`bap10`}
+                        initBap={(this.props.initBaps || {})['bap10']}
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
                         setBapState={this.props.setBapState}
                     />

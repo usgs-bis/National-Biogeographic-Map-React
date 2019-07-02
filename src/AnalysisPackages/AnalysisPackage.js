@@ -127,7 +127,10 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             })
             // turn on the layers saved in the state
             if (this.props.initBap) {
-                this.setState({ isOpen: this.props.initBap.isOpen })
+                this.setState({
+                    isOpen: this.props.initBap.isOpen,
+                    glyph: this.props.initBap.isOpen ? "menu-down" : "menu-right"
+                })
                 if (this.props.priorityBap === this.props.bapId) {
                     this.state.layers.forEach((layer) => {
                         let enabledLayer = this.props.initBap.enabledLayers.find((l) => {
