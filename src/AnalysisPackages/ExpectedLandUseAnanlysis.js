@@ -80,11 +80,18 @@ class ExpectedLandUseAnalysisPackage extends React.Component {
 
     const request = this.props.feature.properties.userDefined ?
       fetch(EXPECTED_LAND_USE_ENDPOINT + `polygon?geojson=${JSON.stringify(this.props.feature.geometry)}`) :
-      fetch(EXPECTED_LAND_USE_ENDPOINT + `feature?feature_id=${this.props.feature.properties.feature_id}`)
+      fetch(EXPECTED_LAND_USE_ENDPOINT + `place?feature_id=${this.props.feature.properties.feature_id}`)
 
     request
       .then(res => res.json())
       .then(values => {
+        if (!values.success) {
+          this.setState({
+            loading: false,
+            error: true
+          })
+          return
+        }
         this.setState({
           charts: this.getCharts(values),
           loading: false
