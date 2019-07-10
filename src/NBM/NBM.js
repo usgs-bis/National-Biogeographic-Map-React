@@ -56,6 +56,7 @@ class NBM extends React.PureComponent {
             this.refs.map.leafletElement.fitBounds(this.bounds)
             L.control.scale({ metric: false, imperial: true, position: 'bottomleft' }).addTo(this.refs.map.leafletElement)
             this.refs.map.leafletElement.removeControl(this.refs.map.leafletElement.attributionControl);
+            L.control.attribution({position: 'topleft'}).addTo(this.refs.map.leafletElement)
         }, ENV === 'Local' ? 1500 : 250)
         this.props.setMap(this.refs.map)
 
@@ -179,12 +180,13 @@ class NBM extends React.PureComponent {
         const basemap = () => {
             if (this.props.basemap) {
                 if (this.props.basemap.type === "TileLayer") {
-                    return <TileLayer url={this.props.basemap.serviceUrl} />
+                    return <TileLayer url={this.props.basemap.serviceUrl} attribution={this.props.basemap.attribution} />
                 } else if (this.props.basemap.type === "WMSTileLayer") {
                     return <WMSTileLayer
                         url={this.props.basemap.serviceUrl}
                         format={this.props.basemap.leafletProperties.format}
                         layers={this.props.basemap.leafletProperties.layers}
+                        attribution={this.props.basemap.attribution}
                     />
                 }
             }
@@ -213,21 +215,8 @@ class NBM extends React.PureComponent {
                                 <strong>Mapping API: </strong>
                                 <a href="http://leafletjs.com" title="A JS library for interactive maps">{'Leaflet '}</a>
                                 powered by
-                                    <a href="https://www.esri.com">{` Esri`}</a>.
-                                </div>
-                            <div className="attrDiv">
-                                <strong>Black & white tiles: </strong>
-                                <a href="http://stamen.com" >Stamen Design</a>, under
-                                    <a href="http://creativecommons.org/licenses/by/3.0" >CC BY 3.0</a>. Data by
-                                    <a href="http://openstreetmap.org" >{` OpenStreetMap`}</a>, under
-                                    <a href="http://www.openstreetmap.org/copyright" >{` ODbL`}</a>.
-                                </div>
-                            <div className="attrDiv">
-                                <strong>Satellite tiles: </strong>
-                                <a href="https://www.mapbox.com/about/maps/" >Mapbox</a>. Data by
-                                    <a href="http://openstreetmap.org" >{` OpenStreetMap`}</a>, under
-                                    <a href="http://www.openstreetmap.org/copyright" >{` ODbL`}</a>.
-                                </div>
+                                <a href="https://www.esri.com">{` Esri`}</a>.
+                            </div>
                             <div className="attrDiv">
                                 <strong>Biogeography interface </strong>heavily influenced by: UW-Macrostrat project
                                     <a href="https://github.com/UW-Macrostrat/gmna-app" >{` on Github`}</a>.
@@ -235,8 +224,11 @@ class NBM extends React.PureComponent {
                             <div className="attrDiv">
                                 <strong>NatureServe Species Data: </strong>Natureserve. 2008. NatureServe Web Service. Arlington, VA. U.S.A.
                                 Available
-                                    <a href="http://services.natureserve.org" >{` http://services.natureserve.org`}</a>.
-                                </div>
+                                <a href="http://services.natureserve.org" >{` http://services.natureserve.org`}</a>.
+                            </div>
+                            <div className="attrDiv">
+                                <strong>OpenStreetMap: </strong> © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors
+                            </div>
                             <div className="attrDiv">
                                 <div className="popup-footer-bar">
                                     <ul>
