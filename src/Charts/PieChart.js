@@ -104,9 +104,12 @@ class PieChart extends React.Component {
             .append("g")
             .attr('transform', 'translate(' + ((width + config.margins.left + config.margins.right) / 2) + ',' + ((height / 2) + config.margins.top) + ')');
 
+        const innerRadius = config.innerRadius ? radius * config.innerRadius : 0;
+        const outerRadius = config.outerRadius ? radius * config.outerRadius : radius
+
         const arc = d3.arc()
-            .innerRadius(config.innerRadius ? radius * config.innerRadius : 0)
-            .outerRadius(config.outerRadius ? radius * config.outerRadius : radius);
+            .innerRadius(innerRadius)
+            .outerRadius(outerRadius);
         if (config.innerRadius) {
             arc
                 .cornerRadius(1)
@@ -114,8 +117,8 @@ class PieChart extends React.Component {
         }
 
         var outerArc = d3.arc()
-            .outerRadius(radius * 1.2)
-            .innerRadius(radius * 1.2);
+            .outerRadius(outerRadius * 1.2)
+            .innerRadius(outerRadius * 1.2);
 
 
         const pie = d3.pie()
@@ -158,12 +161,16 @@ class PieChart extends React.Component {
         });
 
         function centerTooltip(d) {
-            svg.append('text')
+            const width = radius * .95;
+            const height = radius * .7;
+            svg.append('foreignObject')
                 .attr('class', 'toolCircle')
-                .attr('dy', -15) // hard-coded. can adjust this to adjust text vertical alignment in tooltip
-                .html(config.tooltip.label(d)) // add text to the circle.
-                .style('font-size', '.7em')
-                .style('text-anchor', 'middle'); // centres text in tooltip
+                .attr('width', width)
+                .attr('height', height)
+                .attr('x', -(width/2))
+                .attr('y', -(height/2 - 5))
+                .html(config.tooltip.label(d))
+                .style('font-size', '.7em');
 
             svg.append('circle')
                 .attr('class', 'toolCircle')

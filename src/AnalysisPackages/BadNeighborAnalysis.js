@@ -3,7 +3,6 @@ import { BarLoader } from "react-spinners"
 import withSharedAnalysisCharacteristics from "./AnalysisPackage"
 import DonutChart from "../Charts/DonutChart";
 import TableChart from "../Charts/TableChart"
-
 import "./AnalysisPackages.css";
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/5cc34cbae4b09b8c0b7606b9?format=json"
@@ -14,7 +13,7 @@ let sb_properties = {
     "title": "Bad Neighbor Invasives"
 }
 
-const layers = {}
+const layers = []
 
 class BadNeighborAnalysisPackage extends React.Component {
     constructor(props) {
@@ -25,8 +24,6 @@ class BadNeighborAnalysisPackage extends React.Component {
                 tableChart: { id: "", config: {}, data: null },
             },
             tableGroup: "All Invasives",
-            layersOpen: false,
-            value: []
         }
 
         this.donutChart = React.createRef()
@@ -43,12 +40,20 @@ class BadNeighborAnalysisPackage extends React.Component {
     componentDidMount() {
         this.props.onRef(this)
         this.featureChange()
+        if (this.props.initBap) {
+            this.setState({
+                tableGroup: this.props.initBap.tableGroup
+            })
+        }
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.feature !== this.props.feature) {
             this.featureChange()
         }
+        this.props.setShareState({
+            tableGroup: this.state.tableGroup
+        })
     }
 
     featureChange() {
@@ -76,7 +81,7 @@ class BadNeighborAnalysisPackage extends React.Component {
             .then(res => res.json())
             .then(
                 (result) => {
-                    if (result && result.hits.hits[0]) {
+                    if (result && result.hits.hits[0] && result.hits.hits[0]._source.data) {
                         this.props.setBapJson(result.hits.hits[0]._source.properties)
                         const charts = this.getCharts(result.hits.hits[0]._source.data)
                         this.setState({
@@ -90,7 +95,8 @@ class BadNeighborAnalysisPackage extends React.Component {
                     } else {
                         this.setState({
                             charts: {
-                                donutChart: { id: "", config: {}, data: null }
+                                donutChart: { id: "", config: {}, data: null },
+                                tableChart: { id: "", config: {}, data: null }
                             },
                             data: null
                         })
@@ -262,7 +268,7 @@ class BadNeighborAnalysisPackage extends React.Component {
                     ]
                 }
             }
-            return this.donutChart.current.print(this.state.charts.donutChart.id).then(img => {
+            return this.donutChart.current.print().then(img => {
                 return [
                     { stack: this.props.getSBItemForPrint() },
                     { text: this.state.charts.donutChart.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
@@ -288,7 +294,11 @@ class BadNeighborAnalysisPackage extends React.Component {
                 {this.props.getAnalysisLayers()}
                 {this.props.handleBapError(this.state.error)}
                 <div className="chartsDiv">
-                    <DonutChart ref={this.donutChart} data={this.state.charts.donutChart.data} id={this.state.charts.donutChart.id} config={this.state.charts.donutChart.config} />
+                    <DonutChart
+                        ref={this.donutChart}
+                        data={this.state.charts.donutChart.data}
+                        id={this.state.charts.donutChart.id}
+                        config={this.state.charts.donutChart.config} />
                     <div className="chart-headers">
                         <button className="submit-analysis-btn" onClick={this.resetTable}>Clear Chart Selection</button>
                     </div>

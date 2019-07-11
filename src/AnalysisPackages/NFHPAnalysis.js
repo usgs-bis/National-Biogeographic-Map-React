@@ -1,10 +1,8 @@
 import React from "react";
 import { DynamicMapLayer } from "esri-leaflet"
 import { BarLoader } from "react-spinners"
-
 import HorizontalBarChart from "../Charts/HorizontalBarChart";
 import "./AnalysisPackages.css";
-
 import withSharedAnalysisCharacteristics from "./AnalysisPackage"
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/5aa2b21ae4b0b1c392e9d968?format=json"
@@ -14,8 +12,8 @@ let sb_properties = {
     "title": "Fish Habitat Condition and Disturbance Summaries"
 }
 
-const layers = {
-    nfhp_service: {
+const layers = [
+    {
         title: "Risk to Fish Habitat Degradation",
         layer: new DynamicMapLayer({
             url: "https://gis1.usgs.gov/arcgis/rest/services/nfhp2015/HCI_Dissolved_NFHP2015_v20160907/MapServer",
@@ -26,9 +24,9 @@ const layers = {
             layers: [0]
         },
         checked: false,
-        sb_item:'58c8542ce4b0849ce97961e4'
+        sb_item: '58c8542ce4b0849ce97961e4'
     }
-}
+]
 
 class NFHPAnalysisPackage extends React.Component {
     constructor(props) {
@@ -37,8 +35,7 @@ class NFHPAnalysisPackage extends React.Component {
             charts: {
                 horizontalBarChart: { id: "", config: {}, data: null }
             },
-            layersOpen: false,
-            value: []
+            loading: false
         }
 
         this.getCharts = this.getCharts.bind(this)
@@ -51,12 +48,16 @@ class NFHPAnalysisPackage extends React.Component {
     componentDidMount() {
         this.props.onRef(this)
         this.featureChange()
+        if (this.props.initBap) {
+            // do any initlizing here
+        }
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.feature !== this.props.feature) {
             this.featureChange()
         }
+        this.props.setShareState({})
     }
 
     featureChange() {

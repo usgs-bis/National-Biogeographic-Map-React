@@ -48,15 +48,13 @@ class App extends React.Component {
             mapDisplayYear: 2005,
             map: null,
             analysisLayers: null,
-            activeLayerTitle: '',
             priorityBap: null,
             APIVersion: '',
             clickDrivenEvent: false
 
         }
-        this.initFeatureId = null
-        this.initLayerTitle = null
-        this.initPoint = null
+        this.initState = null
+        this.shareStateBeforeHash = null
         this.parseBioscape = this.parseBioscape.bind(this)
         this.handleSearchBox = this.handleSearchBox.bind(this)
         this.submitHandler = this.submitHandler.bind(this)
@@ -77,6 +75,8 @@ class App extends React.Component {
         this.setPriorityBap = this.setPriorityBap.bind(this)
         this.getElevationFromPoint = this.getElevationFromPoint.bind(this)
         this.countyStateLookup = this.countyStateLookup.bind(this)
+        this.getApproxArea = this.getApproxArea.bind(this)
+        this.setBapState = this.setBapState.bind(this)
         this.state = this.loadState(this.state)
 
     }
@@ -84,7 +84,10 @@ class App extends React.Component {
     componentDidMount() {
         this.parseBioscape()
         document.title = this.state.bioscape.title
-        if (this.initFeatureId) this.submitHandler(this.initFeatureId)
+        if (this.initState && this.initState.userDefined) {
+            this.handelDrawnPolygon(this.initState.userDefined.geom, true)
+        }
+        else if (this.initState) this.submitHandler(this.initState.feature, true)
         fetch(API_VERSION_URL)
             .then(res => res.json())
             .then(
@@ -92,7 +95,6 @@ class App extends React.Component {
                     this.setState({
                         APIVersion: result.Version
                     })
-
                 },
                 (error) => {
                     this.setState({
@@ -103,24 +105,28 @@ class App extends React.Component {
     }
 
     componentDidUpdate() {
-        if (this.state.feature && !this.state.feature.properties.userDefined) {
-            window.location.hash = this.getHash()
+        if (this.state.feature) {
+             this.getHash()
         }
     }
 
     getHash() {
-        let state = {
-            feature: { id: this.state.feature.properties.feature_id },
+        this.shareStateBeforeHash = {
+            feature: { feature_id: this.state.feature.properties.feature_id },
             basemap: this.state.basemap,
             timeSlider: { rangeYearMin: this.state.rangeYearMin, rangeYearMax: this.state.rangeYearMax, mapDisplayYear: this.state.mapDisplayYear },
-            bap: { activeLayerTitle: this.state.analysisLayers && this.state.analysisLayers.length ? this.state.analysisLayers[0].title : '', priorityBap: this.state.priorityBap },
+            priorityBap: this.state.priorityBap,
+            baps: this.shareStateBeforeHash ? this.shareStateBeforeHash.baps : this.initState ? this.initState.baps : {},
             point: { lat: this.state.lat, lng: this.state.lng, elv: this.state.elv }
         }
-        return Buffer.from(JSON.stringify(state)).toString("base64")
+        if (this.state.feature.properties.userDefined) {
+            this.shareStateBeforeHash.userDefined = { geom: this.state.feature.geometry }
+        }
+        window.location.hash = Buffer.from(JSON.stringify(this.shareStateBeforeHash)).toString("base64")
     }
 
     shareState() {
-        if (this.state.feature && !this.state.feature.properties.userDefined) {
+        if (this.state.feature) {
             let copyText = document.getElementsByClassName('share-url-input')[0]
             copyText.style.display = 'inline-block'
             copyText.value = window.location
@@ -137,25 +143,30 @@ class App extends React.Component {
         let loc = window.location.href
         let split = loc.split('#')
         if (split.length === 2 && split[1]) {
-            let initState = JSON.parse(atob(split[1]))
-            this.initFeatureId = initState.feature
-            this.initLayerTitle = initState.bap.activeLayerTitle
-            s.basemap = initState.basemap
-            s.rangeYearMin = initState.timeSlider.rangeYearMin
-            s.rangeYearMax = initState.timeSlider.rangeYearMax
-            s.mapDisplayYear = initState.timeSlider.mapDisplayYear
-            s.priorityBap = initState.bap.priorityBap
-            this.initPoint = { lat: initState.point.lat, lng: initState.point.lng, elv: initState.point.elv }
-            s.lat = initState.point.lat
-            s.lng = initState.point.lng
-            s.elv = initState.point.elv
-            s.clickDrivenEvent = initState.point.lat ? true : false
+            this.initState = JSON.parse(atob(split[1]))
+            s.basemap = this.initState.basemap
+            s.rangeYearMin = this.initState.timeSlider.rangeYearMin
+            s.rangeYearMax = this.initState.timeSlider.rangeYearMax
+            s.mapDisplayYear = this.initState.timeSlider.mapDisplayYear
+            s.priorityBap = this.initState.priorityBap
+            s.lat = this.initState.point.lat
+            s.lng = this.initState.point.lng
+            s.elv = this.initState.point.elv
+            s.clickDrivenEvent = this.initState.point.lat ? true : false
 
             return s
         }
         return s
     }
 
+    setBapState(bapId, bapState) {
+        if(this.shareStateBeforeHash && this.shareStateBeforeHash.baps){
+            this.shareStateBeforeHash.baps[bapId] = bapState
+            if (this.state.feature) {
+                this.getHash()
+            }
+        }
+    }
 
 
     basemapChanged(e) {
@@ -215,12 +226,13 @@ class App extends React.Component {
 
     }
 
-    handelDrawnPolygon(geom) {
+    handelDrawnPolygon(geom, init) {
         if (geom) {
             this.setState({
                 feature: {
                     geometry: geom,
                     properties: {
+                        approxArea: this.getApproxArea(geom),
                         userDefined: true,
                         feature_class: "Polygon",
                         gid: null,
@@ -232,6 +244,12 @@ class App extends React.Component {
                     type: "Feature"
                 }
             })
+            if (!init) {
+                this.setState({
+                    priorityBap: null,
+                    analysisLayers: []
+                })
+            }
         }
         else {
             this.setState({
@@ -327,41 +345,54 @@ class App extends React.Component {
         return result
     }
 
-    submitHandler(e) {
-        fetch(GET_FEATURE_API + e.id)
+
+    getApproxArea(geom) {
+        let approxArea = 'Unknown'
+        try {
+            let area = 0
+            if (geom.type === 'MultiPolygon') {
+                for (let poly of geom.coordinates) {
+                    area += turf.area(turf.polygon(poly))
+                }
+            }
+            else {
+                area = turf.area(turf.polygon(geom.coordinates))
+            }
+            approxArea = numberWithCommas(parseInt(turf.convertArea(area, 'meters', 'acres')))
+        }
+        catch (e) {
+            console.log(e)
+        }
+        return approxArea
+    }
+
+    submitHandler(feature, init) {
+        if (!feature.feature_id) return
+        fetch(GET_FEATURE_API + feature.feature_id)
             .then(res => res.json())
             .then(
                 (data) => {
                     if (data && data.hits.hits.length && data.hits.hits[0]["_source"]) {
                         let result = data.hits.hits[0]["_source"]
-                        let approxArea = 'Unknown'
-                        try {
-                            let area = 0
-                            if (result.geometry.type === 'MultiPolygon') {
-                                for (let poly of result.geometry.coordinates) {
-                                    area += turf.area(turf.polygon(poly))
-                                }
-                            }
-                            else {
-                                area = turf.area(turf.polygon(result.geometry.coordinates))
-                            }
-                            approxArea = numberWithCommas(parseInt(turf.convertArea(area, 'meters', 'acres')))
-                        }
-                        catch (e) {
-                            console.log(e)
-                        }
-                        result.properties.approxArea = approxArea
+                        result.properties.approxArea = this.getApproxArea(result.geometry)
                         result.geometry = this.parseGeom(result.geometry)
                         result.properties = this.countyStateLookup([result.properties])[0]
                         this.setState({
                             feature: result,
                             mapClicked: false
                         })
+
                     }
                     else {
                         this.setState({
                             feature: null,
                             mapClicked: false
+                        })
+                    }
+                    if (!init) {
+                        this.setState({
+                            priorityBap: null,
+                            analysisLayers: []
                         })
                     }
                 },
@@ -384,7 +415,7 @@ class App extends React.Component {
             if (feature["feature_class"] === overlay.featureClass) {
                 i = results.length
                 this.submitHandler({
-                    id: feature.feature_id
+                    feature_id: feature.feature_id
                 })
             }
         }
@@ -458,7 +489,7 @@ class App extends React.Component {
     }
 
     getElevationFromPoint(lat, lng) {
-        
+
         fetch(`${ELEVATION_SOURCE}x=${lng}&y=${lat}&units=Feet&output=json`)
             .then(res => res.json())
             .then(
@@ -548,7 +579,7 @@ class App extends React.Component {
                     clone.setParams({ time: item.layer.wmsParams.time })
                     clone.setOpacity(0)
                     clone.addTo(this.state.map.leafletElement)
-                    // weird case where layer 'lode' doesent fire and clone doesnt get removed. 
+                    // weird case where layer 'load' doesent fire and clone doesnt get removed. 
                     setTimeout(() => { this.state.map.leafletElement.removeLayer(clone) }, 2000)
                     clone.on('load', (event) => {
                         setTimeout(() => {
@@ -636,8 +667,9 @@ class App extends React.Component {
                             updateAnalysisLayers={this.updateAnalysisLayers}
                             setPriorityBap={this.setPriorityBap}
                             shareState={this.shareState}
+                            setBapState={this.setBapState}
                             map={this.state.map}
-                            initLayerTitle={this.initLayerTitle}
+                            initBaps={(this.initState || {}).baps}
                             priorityBap={this.state.priorityBap}
                             bioscapeName={this.state.bioscapeName}
                             point={{ lat: this.state.lat, lng: this.state.lng, elv: this.state.elv }}
@@ -666,7 +698,8 @@ class App extends React.Component {
                             APIVersion={this.state.APIVersion}
                             priorityBap={this.state.priorityBap}
                             clickDrivenEvent={this.state.clickDrivenEvent}
-                            initPoint={this.initPoint}
+                            initPoint={(this.initState || {}).point}
+
 
                         />
                     </div>

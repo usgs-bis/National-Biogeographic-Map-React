@@ -31,7 +31,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             }
             this.initilized = false
             this.jsonData = null
-            this.inputRefs = {}
+            this.shareState = {}
             this.toggleDropdown = this.toggleDropdown.bind(this)
             this.toggleLayerDropdown = this.toggleLayerDropdown.bind(this)
             this.setOpacity = this.setOpacity.bind(this)
@@ -42,23 +42,16 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             this.getSBItemForPrint = this.getSBItemForPrint.bind(this)
             this.htmlToPDFMake = this.htmlToPDFMake.bind(this)
             this.initilize = this.initilize.bind(this)
-            this.updateBapLayers = this.updateBapLayers.bind(this)
-            this.setPriorityBap = this.setPriorityBap.bind(this)
             this.getSbContactInfo = this.getSbContactInfo.bind(this)
             this.getSbWebLinkInfo = this.getSbWebLinkInfo.bind(this)
             this.handleBapError = this.handleBapError.bind(this)
-            this.addLayer = this.addLayer.bind(this)
-            this.removeLayer = this.removeLayer.bind(this)
-            this.getOtherCheckedLayers = this.getOtherCheckedLayers.bind(this)
-            this.turnOnLayers = this.turnOnLayers.bind(this)
-            this.turnOnLayer = this.turnOnLayer.bind(this)
-            this.turnOffLayer = this.turnOffLayer.bind(this)
-            this.toggleLayer = this.toggleLayer.bind(this)
             this.resetBap = this.resetBap.bind(this)
             this.toggle = this.toggle.bind(this)
             this.setBapJson = this.setBapJson.bind(this)
+            this.toggleLayer = this.toggleLayer.bind(this)
+            this.getOnLayers = this.getOnLayers.bind(this)
+            this.setShareState = this.setShareState.bind(this)
         }
-
 
 
         componentDidMount() {
@@ -82,11 +75,25 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
         componentDidUpdate(prevProps, prevState) {
 
             if (this.initilized) {
+
+                // feature change
                 if (prevProps.feature !== this.props.feature) {
                     this.resetBap()
                 }
-                if (prevProps.priorityBap !== this.props.priorityBap) {
-                    this.turnOffLayer()
+
+                // priorityBap has changed, this bap is not it
+                if (prevProps.priorityBap !== this.props.priorityBap
+                    && this.props.priorityBap !== this.props.bapId) {
+                    this.toggleLayer(null)
+                }
+                // priorityBap has changed, this bap is it
+                else if (prevProps.priorityBap !== this.props.priorityBap
+                    && this.props.priorityBap === this.props.bapId
+                    && !this.getOnLayers().length
+                    && this.state.layers.length) {
+                    let firstLayer = this.state.layers[0]
+                    this.toggleLayer(firstLayer)
+                    this.setState({ isOpen: true })
                 }
 
                 // forcing a rerender so the bapwindow will populate
@@ -97,17 +104,15 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
         }
 
         initilize() {
-            let newLayers = {}
-            Object.keys(this.state.layers).forEach((key) => {
-                newLayers[key] = this.state.layers[key]
-            })
-            Object.keys(newLayers).forEach((key) => {
-                if (newLayers[key].sb_item) {
-                    fetch(`https://www.sciencebase.gov/catalog/item/${newLayers[key].sb_item}?format=json`)
+            let newLayers = this.state.layers
+
+            newLayers.forEach((layer) => {
+                if (layer.sb_item) {
+                    fetch(`https://www.sciencebase.gov/catalog/item/${layer.sb_item}?format=json`)
                         .then(res => res.json())
                         .then(
                             (result) => {
-                                newLayers[key].sb_properties = result
+                                layer.sb_properties = result
                                 this.setState({
                                     layers: newLayers
                                 })
@@ -120,178 +125,106 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                         )
                 }
             })
-
-            if (this.props.priorityBap === this.props.bapId && this.props.initLayerTitle) {
-                Object.keys(this.state.layers).forEach((key) => {
-                    if (this.state.layers[key].title === this.props.initLayerTitle) {
-                        this.turnOnLayer(this.state.layers[key])
-                    }
+            // turn on the layers saved in the state
+            if (this.props.initBap) {
+                this.setState({
+                    isOpen: this.props.initBap.isOpen,
+                    glyph: this.props.initBap.isOpen ? "menu-down" : "menu-right"
                 })
+                if (this.props.priorityBap === this.props.bapId) {
+                    this.state.layers.forEach((layer) => {
+                        let enabledLayer = this.props.initBap.enabledLayers.find((l) => {
+                            return l.t === layer.title
+                        })
+                        if (enabledLayer) {
+                            this.toggleLayer(layer, enabledLayer.o)
+                        }
+                    })
+
+                }
             }
 
-            // let the layer actualy load before we start detecting changes
+            // let the layers actualy load before we start detecting changes
+            // Could use the on load functionaly if it becomes an issue
             setTimeout(() => { this.initilized = true }, 3000)
         }
 
         resetBap() {
             this.jsonData = null
-            let newLayers = {}
-            Object.keys(this.state.layers).forEach((key) => {
-                newLayers[key] = this.state.layers[key]
-                newLayers[key].checked = false
-            })
+        }
 
+        // anything common (enabledLayers) among all baps gets set here.
+        // specific things get set in bap themselves
+        setShareState(state) {
+            this.shareState = state
+            this.shareState.isOpen = this.state.isOpen
             if (this.props.bapId === this.props.priorityBap) {
-                this.setPriorityBap()
+                this.shareState.enabledLayers = this.getOnLayers().map(a => { return { t: a.title, o: a.layer.options.opacity } })
             }
+            this.props.setBapState(this.props.bapId, this.shareState)
         }
 
-        addLayer(layer) {
-            if (!layer) {
-                return
-            }
-            const layers = this.getOtherCheckedLayers(layer)
-            this.turnOnLayers([...layers, layer])
-        }
 
-        removeLayer(layer) {
-            if (!layer) {
-                return
-            }
-            const layers = this.getOtherCheckedLayers(layer)
-            this.turnOnLayers(layers)
-        }
+        toggleLayer(layer, opacity) {
 
-        getOtherCheckedLayers(layer) {
-            return Object.keys(this.state.layers)
-                .map( key => this.state.layers[key])
-                .reduce((layers, l) => {
-                    if (l !== layer && l.checked) {
-                        layers.push(l)
-                    }
-                    return layers
-                }, [])
-        }
-
-        turnOnLayers(layers) {
-            const newLayers = Object.keys(this.state.layers).reduce((newLayers, key) => {
-                    newLayers[key] = this.state.layers[key]
-                    const search = layers.find(layer => newLayers[key].title === layer.title)
-                    if (search) {
-                        newLayers[key].checked = true
-                    } else {
-                        newLayers[key].checked = false
-                    }
-                    return newLayers
-                }, {})
-            this.props.updateAnalysisLayers(layers)
-            this.setState({
-                layers: newLayers
-            })
-        }
-
-        // Turns on a given layer. 
-        // A Bap shoud only call this if we know it is already the pbap.
-        // otherwise we should call the setPriority function with the layer param. 
-        turnOnLayer(layer) {
+            let newLayers = this.state.layers
             if (layer) {
-                this.turnOnLayers([layer])
-                return
-            }
-            this.turnOnLayers([])
-        }
-
-        turnOffLayer() {
-            // when priority bap changes need to make sure all layers are off
-            if (this.props.bapId !== this.props.priorityBap) {
-                let newLayers = {}
-                Object.keys(this.state.layers).forEach((key) => {
-                    newLayers[key] = this.state.layers[key]
-                    newLayers[key].checked = false
-                })
-                this.setState({
-                    layers: newLayers
-                })
-            }
-        }
-
-
-        toggleLayer(layer) {
-            if (!layer || layer.hideCheckbox) {
-                //if the checkbox isn't displayed we don't want to do anything when the user clicks the label
-                return
-            }
-            if (disableMultipleLayers) {
-                if (layer.checked) {
-                    this.turnOffLayer()
-                    return
+                for (let l of newLayers) {
+                    // always toggle the layer clicked
+                    if (l.title === layer.title) {
+                        l.checked = !l.checked
+                        if (opacity) {
+                            l.layer.options.opacity = opacity
+                        }
+                    }
+                    else {
+                        // if disableMultipleLayers then be sure to turn off all others
+                        if (disableMultipleLayers) {
+                            l.checked = false
+                        }
+                    }
                 }
-                this.turnOnLayer(layer)
-                return
-            }
-            if (layer.checked) {
-                this.removeLayer(layer)
-                return
-            }
-            this.addLayer(layer)
-        }
-
-        updateBapLayers(layer, layerToRemove) {
-            if (!layer) {
-                this.turnOnLayer()
-            }
-            if (layerToRemove) {
-                this.removeLayer(layerToRemove)
-            }
-            this.addLayer(layer)
-        }
-
-
-        // Take an optional layer to turn on when switching priority bap 
-        // if no layer is provided we will turn on the first if avaiable. 
-        // Example- User trys to turn on the Bloom layer in the leaf comparison bap
-        setPriorityBap(layer) {
-
-            const layerOrDefault = (l) => {
-                // If layer provided, turn it on
-                // If no layer provided and the bap has layers, turn on the first by default
-                if (l) {
-                    this.turnOnLayer(l)
-                    return
+                // We want the bap with the layers on to be priority
+                if (this.props.bapId !== this.props.priorityBap) {
+                    this.props.setPriorityBap(this.props.bapId)
                 }
-                const layers = this.state.layers
-                const availableLayers = Object.keys(layers)
-                if (availableLayers.length) {
-                    this.turnOnLayer(layers[availableLayers[0]])
-                } else {
-                    this.turnOnLayer()
-                }
-                return
-            }
-
-            if (this.props.bapId !== this.props.priorityBap) {
-                // detect if we are not the priority bap and begin switching process
-                this.props.setPriorityBap(this.props.bapId)
-                layerOrDefault(layer)
+                this.props.updateAnalysisLayers(this.getOnLayers())
+                this.setShareState(this.shareState)
             }
             else {
-                // allready the proiority bap
-                // if layer provided turn it on. 
-                layerOrDefault(layer)
+                for (let l of newLayers) {
+                    l.checked = false
+                }
+                // turning off layers, only replace on layers if priority bap
+                if (this.props.bapId === this.props.priorityBap) {
+                    this.props.updateAnalysisLayers(this.getOnLayers())
+                }
             }
-            // open the bap 
-            this.setState({
-                isOpen: true,
-                glyph: "menu-down",
-            })
+            this.setState({ layers: newLayers })
+
         }
+
+        getOnLayers() {
+            let layersOn = []
+            for (let l of this.state.layers) {
+                if (l.checked) {
+                    layersOn.push(l)
+                }
+            }
+            return layersOn
+        }
+
 
         toggleLayerDropdown() {
             this.setState({ layersOpen: !this.state.layersOpen })
         }
 
-        setOpacity(key) {
-            this.state.layers[key].layer.setOpacity(this[key + "Opacity"].value)
+        setOpacity(layer, event) {
+            layer.layer.setOpacity(event.target.value)
+            layer.layer.options.opacity = event.target.value
+            let newLayers = this.state.layers
+            this.setState({ layers: newLayers })
+            this.setShareState(this.shareState)
         }
 
         handleBapError(error) {
@@ -311,7 +244,6 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
         }
 
         getAnalysisLayers() {
-            let that = this
             if (this.state.layers) {
                 return (
                     <div className="analysis-layers">
@@ -342,23 +274,23 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                             </span>
                         </div>
 
-                        <Collapse className='analysis-dropdown-content' isOpen={that.state.layersOpen}>
-                            {Object.keys(this.state.layers).map(function (key) {
-                                let layer = that.state.layers[key]
+                        <Collapse className='analysis-dropdown-content' isOpen={this.state.layersOpen}>
+                            {this.state.layers.map((l) => {
+                                let layer = l
+                                let key = l.title
                                 return (
                                     <FormGroup key={key} check>
                                         <Label check>
                                             <input
                                                 style={{ display: layer.hideCheckbox ? "none" : "inline-block" }}
-                                                ref={(input) => { that[key] = input; that["inputRefs"][key] = input }}
-                                                onChange={function () { that.toggleLayer(layer) }}
-                                                onClick={function () { that.toggleLayer(layer) }}
+                                                onClick={() => this.toggleLayer(layer)}
+                                                onChange={() => { }}
                                                 checked={layer.checked}
                                                 type="checkbox" />
                                             {' ' + (layer.titlePrefix ? layer.titlePrefix : "") + layer.title}
-                                            <InfoSign onClick={(event) => { that.setState({ [`sbInfoLayerPopUp${key}`]: !that.state[`sbInfoLayerPopUp${key}`] }); event.preventDefault() }}> </InfoSign>
+                                            <InfoSign onClick={(event) => { this.setState({ [`sbInfoLayerPopUp${key}`]: !this.state[`sbInfoLayerPopUp${key}`] }); event.preventDefault() }}> </InfoSign>
                                             {
-                                                that.state[`sbInfoLayerPopUp${key}`] &&
+                                                this.state[`sbInfoLayerPopUp${key}`] &&
                                                 <span onClick={(event) => event.preventDefault()}>
                                                     <CustomDialog
                                                         className="sbinfo-popout-window"
@@ -367,7 +299,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                                                         title={' ' + (layer.titlePrefix ? layer.titlePrefix : "") + layer.title}
                                                         modal={false}
                                                         onClose={() => {
-                                                            that.setState({
+                                                            this.setState({
                                                                 [`sbInfoLayerPopUpToolTip${key}`]: false,
                                                                 [`sbInfoLayerPopUp${key}`]: false
                                                             })
@@ -375,8 +307,8 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                                                         body={layer.sb_properties ?
                                                             <div>
                                                                 <div dangerouslySetInnerHTML={{ __html: layer.sb_properties.body }}></div>
-                                                                {that.getSbContactInfo(layer.sb_properties)}
-                                                                {that.getSbWebLinkInfo(layer.sb_properties)}
+                                                                {this.getSbContactInfo(layer.sb_properties)}
+                                                                {this.getSbWebLinkInfo(layer.sb_properties)}
                                                                 <br></br>
                                                                 {<div><a href={layer.sb_properties.link.url}>{`${layer.sb_properties.link.url}`}</a></div>}
                                                             </div>
@@ -392,15 +324,13 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                                             }
                                         </Label>
                                         <input style={{ width: "50%" }}
-                                            ref={(input) => { that[key + "Opacity"] = input; }}
-                                            onChange={function () {
-                                                that.setOpacity(key)
-                                            }}
+                                            onChange={(event) => this.setOpacity(layer, event)}
                                             type="range"
                                             step=".05"
                                             min="0"
                                             max="1"
-                                            defaultValue={layer.layer.options.opacity} />
+                                            value={layer.layer.options.opacity}
+                                        />
                                     </FormGroup>
                                 )
                             })}
@@ -483,7 +413,8 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                                         <a className="download-json-link" href={getDownloadLink()} download={"JSON_" + this.state.sb_properties.title} >Download</a>
                                         <label htmlFor="prettyCheckbox">{"Pretty JSON "}  </label>
                                         <input checked={this.state.prettyJson}
-                                            onChange={() => this.setState({ prettyJson: !this.state.prettyJson })}
+                                            onClick={() => this.setState({ prettyJson: !this.state.prettyJson })}
+                                            onChange={() => { }}
                                             type="checkbox" id="prettyCheckbox" name="prettyCheckbox" />
                                     </div>
                                     <div className="JSON-text-container">
@@ -517,6 +448,11 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
 
         toggleDropdown() {
             if (this.state.canOpen) {
+
+                // We want the bap with the layers on to be priority
+                if (!this.state.isOpen && this.props.priorityBap !== this.props.bapId) {
+                    this.props.setPriorityBap(this.props.bapId)
+                }
                 this.setState({
                     isOpen: !this.state.isOpen,
                     glyph: !this.state.isOpen ? "menu-down" : "menu-right"
@@ -637,30 +573,31 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                     </div>
                     <div className="bap-title-content" style={{ width: 'calc(100% - 40px)' }}>
                         <span className="bapTitle">
-                            <span onClick={this.state.canOpen ? () => this.props.bapId !== this.props.priorityBap ? this.setPriorityBap() : this.toggleDropdown() : null}>
+                            <span onClick={this.state.canOpen ? () => this.toggleDropdown() : null}>
                                 {this.state.sb_properties.title}
                             </span>
                             {<InfoSign onClick={() => this.setState({ sbInfoPopUp: !this.state.sbInfoPopUp })}> </InfoSign>}
                         </span>
                     </div>
                     <div className="bap-title-content" style={{ width: '20px' }}>
-                        <input id={`pBapToolTip${this.props.bapId}`} className="priority-bap-raido" style={{ display: this.state.canOpen ? 'block' : 'none' }} type='radio' readOnly={true} checked={this.props.bapId === this.props.priorityBap} onClick={() => this.setPriorityBap()} ></input>
+                        <input id={`pBapToolTip${this.props.bapId}`} className="priority-bap-raido"
+                            style={{ display: this.state.canOpen ? 'block' : 'none' }} type='radio'
+                            readOnly={true} checked={this.props.bapId === this.props.priorityBap}
+                            onClick={() => { this.props.setPriorityBap(this.props.bapId) }} ></input>
                         <CustomToolTip placement="top" target={`pBapToolTip${this.props.bapId}`} text={this.props.bapId === this.props.priorityBap ? "" : "Select Priority Bap"} ></CustomToolTip>
                     </div>
                     <Collapse className="settings-dropdown" isOpen={this.state.isOpen && this.state.isEnabled}>
                         <AnalysisPackage
                             {...this.props}
                             {...this.state}
-                            setOpacity={this.setOpacity}
                             toggleLayerDropdown={this.toggleLayerDropdown}
-                            updateBapLayers={this.updateBapLayers}
-                            resetAnalysisLayers={this.resetAnalysisLayers}
+                            toggleLayer={this.toggleLayer}
                             getAnalysisLayers={this.getAnalysisLayers}
                             getBapContents={this.getBapContents}
                             getSBItemForPrint={this.getSBItemForPrint}
                             isEnabled={this.updateEnabled}
                             canOpen={this.canOpen}
-                            inputRefs={this.inputRefs}
+                            setShareState={this.setShareState}
                             layers={this.state.layers}
                             handleBapError={this.handleBapError}
                             isOpen={this.state.isOpen}

@@ -18,8 +18,8 @@ let sb_properties = {
     "title": "First Leaf / First Bloom Spring Index Comparison"
 }
 
-const layers = {
-    first_leaf_service: {
+const layers = [
+    {
         title: "Average Leaf PRISM",
         layer: L.tileLayer.wms(
             "https://geoserver.usanpn.org/geoserver/si-x/wms",
@@ -35,9 +35,9 @@ const layers = {
         },
         timeEnabled: true,
         checked: false,
-        sb_item:'591c6ec6e4b0a7fdb43dea8a'
+        sb_item: '591c6ec6e4b0a7fdb43dea8a'
     },
-    first_bloom_service: {
+    {
         title: "Average Bloom PRISM",
         layer: L.tileLayer.wms(
             "https://geoserver.usanpn.org/geoserver/si-x/wms",
@@ -53,9 +53,9 @@ const layers = {
         },
         timeEnabled: true,
         checked: false,
-        sb_item:'5ac3b12ee4b0e2c2dd0c2b95'
+        sb_item: '5ac3b12ee4b0e2c2dd0c2b95'
     }
-}
+]
 
 class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
     constructor(props) {
@@ -64,8 +64,9 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
             charts: {
                 ComparisonChart: { id: "", config: {}, data: null },
             },
+            loading: false,
             canSubmit: false,
-            loading: false
+            didSubmit: false
         }
 
         this.getCharts = this.getCharts.bind(this)
@@ -79,11 +80,14 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
     componentDidMount() {
         this.props.onRef(this)
         this.featureChange()
-        if(this.props.bapId === this.props.priorityBap){
-            // try to let the feature load before submitting
-            // could change to willRecieveProps with a flag for init
-            setTimeout(()=>{this.submitAnalysis()},3000) 
-        } 
+        if (this.props.initBap) {
+            this.setState({
+                didSubmit: this.props.initBap.didSubmit
+            })
+            if (this.props.initBap.didSubmit) {
+                setTimeout(() => this.submitAnalysis(), 3000)
+            }
+        }
     }
 
     clearCharts() {
@@ -93,6 +97,8 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
         }
         this.setState({
             charts: charts,
+            canSubmit: false,
+            didSubmit: false
         })
     }
 
@@ -101,11 +107,14 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
             this.clearCharts()
             this.featureChange()
         }
+        this.props.setShareState({
+            didSubmit: this.state.didSubmit
+        })
     }
 
     featureChange() {
         if (this.props.feature) {
-            if(this.props.feature.properties.feature_id.includes('OBIS_Areas')){
+            if (this.props.feature.properties.feature_id.includes('OBIS_Areas')) {
                 this.props.isEnabled(false)
                 this.props.canOpen(false)
             }
@@ -159,7 +168,9 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
                     const charts = this.getCharts({ ComparisonChart: { leaf: results[0], bloom: results[1] } })
                     this.setState({
                         charts: charts,
-                        loading: false
+                        loading: false,
+                        didSubmit: true
+
                     })
                     this.props.isEnabled(true)
                     this.props.canOpen(true)
@@ -199,7 +210,9 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
                     const charts = this.getCharts({ ComparisonChart: { leaf: results[0], bloom: results[1] } })
                     this.setState({
                         charts: charts,
-                        loading: false
+                        loading: false,
+                        didSubmit: true
+
                     })
                     this.props.isEnabled(true)
                     this.props.canOpen(true)

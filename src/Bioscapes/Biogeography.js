@@ -9,6 +9,7 @@ import EcosystemProtectionAnalysis from "../AnalysisPackages/EcosystemProtection
 import PhenologyAnalysis from "../AnalysisPackages/PhenologyAnalysis";
 import OBISAnalysis from "../AnalysisPackages/OBISAnalysis";
 import BadNeighborAnalysis from "../AnalysisPackages/BadNeighborAnalysis";
+import ExpectedLandUseAnalysis from "../AnalysisPackages/ExpectedLandUseAnanlysis";
 const DEV_MODE = process.env.REACT_APP_DEV;
 
 class Biogeography extends React.Component {
@@ -59,6 +60,7 @@ class Biogeography extends React.Component {
         charts.push(this.PhenologyAnalysis.print())
         charts.push(this.OBISAnalysis.print())
         charts.push(this.BadNeighborAnalysis.print())
+        charts.push(this.ExpectedLandUseAnalysis.print())
 
 
         return charts
@@ -94,8 +96,9 @@ class Biogeography extends React.Component {
                         yearMax={this.props.rangeYearMax}
                         priorityBap={this.props.priorityBap}
                         bapId={`bap1`}
-                        initLayerTitle={this.props.initLayerTitle}
+                        initBap={(this.props.initBaps || {})['bap1']}
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
+                        setBapState={this.props.setBapState}
                     />
                 </div>
                 <div className="nbm-flex-row-no-padding">
@@ -108,8 +111,9 @@ class Biogeography extends React.Component {
                         yearMax={this.props.rangeYearMax}
                         priorityBap={this.props.priorityBap}
                         bapId={`bap2`}
-                        initLayerTitle={this.props.initLayerTitle}
+                        initBap={(this.props.initBaps || {})['bap2']}
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
+                        setBapState={this.props.setBapState}
                     />
                 </div>
                 <div className="nbm-flex-row-no-padding">
@@ -122,8 +126,9 @@ class Biogeography extends React.Component {
                         yearMax={this.props.rangeYearMax}
                         priorityBap={this.props.priorityBap}
                         bapId={`bap3`}
-                        initLayerTitle={this.props.initLayerTitle}
+                        initBap={(this.props.initBaps || {})['bap3']}
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
+                        setBapState={this.props.setBapState}
                     />
                 </div>
                 <div className="nbm-flex-row-no-padding">
@@ -134,8 +139,9 @@ class Biogeography extends React.Component {
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
                         bapId={`bap4`}
-                        initLayerTitle={this.props.initLayerTitle}
+                        initBap={(this.props.initBaps || {})['bap4']}
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
+                        setBapState={this.props.setBapState}
                     />
                 </div>
                 <div className="nbm-flex-row-no-padding">
@@ -146,8 +152,9 @@ class Biogeography extends React.Component {
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
                         bapId={`bap5`}
-                        initLayerTitle={this.props.initLayerTitle}
+                        initBap={(this.props.initBaps || {})['bap5']}
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
+                        setBapState={this.props.setBapState}
                     />
                 </div>
                 <div className="nbm-flex-row-no-padding">
@@ -158,8 +165,8 @@ class Biogeography extends React.Component {
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
                         bapId={`bap6`}
-                        initLayerTitle={this.props.initLayerTitle}
-                        getDefaultPriorityBap={this.getDefaultPriorityBap}
+                        initBap={(this.props.initBaps || {})['bap6']}
+                        getDefaultPriorityBap={this.getDefaultPriorityBap} setBapState={this.props.setBapState}
                     />
                 </div>
                 { DEV_MODE && <div className="nbm-flex-row-no-padding">
@@ -170,8 +177,9 @@ class Biogeography extends React.Component {
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
                         bapId={`bap7`}
-                        initLayerTitle={this.props.initLayerTitle}
+                        initBap={(this.props.initBaps || {})['bap7']}
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
+                        setBapState={this.props.setBapState}
                     />
                 </div> }
                 <div className="nbm-flex-row-no-padding">
@@ -182,8 +190,9 @@ class Biogeography extends React.Component {
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
                         bapId={`bap8`}
-                        initLayerTitle={this.props.initLayerTitle}
+                        initBap={(this.props.initBaps || {})['bap8']}
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
+                        setBapState={this.props.setBapState}
                     />
                 </div>
                 { DEV_MODE && <div className="nbm-flex-row-no-padding">
@@ -194,8 +203,22 @@ class Biogeography extends React.Component {
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
                         bapId={`bap9`}
-                        initLayerTitle={this.props.initLayerTitle}
+                        initBap={(this.props.initBaps || {})['bap9']}
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
+                        setBapState={this.props.setBapState}
+                    />
+                </div> }
+                { DEV_MODE && <div className="nbm-flex-row-no-padding">
+                    <ExpectedLandUseAnalysis
+                        onRef={ref => (this.ExpectedLandUseAnalysis = ref)}
+                        updateAnalysisLayers={this.props.updateAnalysisLayers}
+                        setPriorityBap={this.props.setPriorityBap}
+                        feature={this.props.feature}
+                        priorityBap={this.props.priorityBap}
+                        bapId={`bap10`}
+                        initBap={(this.props.initBaps || {})['bap10']}
+                        getDefaultPriorityBap={this.getDefaultPriorityBap}
+                        setBapState={this.props.setBapState}
                     />
                 </div> }
             </div>
