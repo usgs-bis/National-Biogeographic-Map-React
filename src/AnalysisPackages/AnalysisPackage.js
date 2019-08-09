@@ -151,6 +151,9 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
 
         resetBap() {
             this.jsonData = null
+            if (this.state.isOpen) {
+                this.toggleDropdown()
+            }
         }
 
         // anything common (enabledLayers) among all baps gets set here.
