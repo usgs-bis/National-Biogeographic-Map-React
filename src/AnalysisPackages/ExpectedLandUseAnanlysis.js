@@ -101,16 +101,16 @@ class ExpectedLandUseAnalysisPackage extends React.Component {
       })
   }
 
+  numberWithCommas = (x) => {
+    return x.toFixed(0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
   /**
    * Loop through the charts defined in the state and look for a data object in datas that matches.
    * Create the chart id, data, and config as documented in the chart type.
    * @param {Object {}} datas - one enrty for each chart named the same as defined in the state
    */
   getCharts(datas) {
-
-    const numberWithCommas = (x) => {
-        return x.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    }
 
     let charts = {}
     
@@ -127,9 +127,9 @@ class ExpectedLandUseAnalysisPackage extends React.Component {
         const chartConfig = {
           margins: { left: 100, right: 20, top: 20, bottom: 70 },
           chart: { title: 'Expected Land Use Change' },
-          xAxis: { key: 'area', label: "Area (acres)", ticks: 5, }, //tickFormat: (d) => { return `${parseInt(d)}%` } },
-          yAxis: { key: 'value', label: "Threat", ticks: 4, tickFormat: (d, idx) => { return labels[idx].short } },
-          tooltip: { label: (d, idx) => { return `<p>${d.label.long}: ${numberWithCommas(d.area)} acres</p>` } }
+          xAxis: { key: 'area', label: "Area (acres)", ticks: 5, },
+          yAxis: { key: 'value', label: "Threat", ticks: 4, tickFormat: (d, idx) => { return labels[idx + 1].short } },
+          tooltip: { label: (d, idx) => { return `<p>${d.label.long}: ${this.numberWithCommas(d.area)} acres</p>` } }
         }
         const chartData = data.map((d, idx) => {
           return {
@@ -147,23 +147,30 @@ class ExpectedLandUseAnalysisPackage extends React.Component {
   }
 
   print() {
-      if (this.state.charts.barChart.data && this.props.isOpen) {
-          return [
-              this.barChart.print(this.state.charts.barChart.id)
-                  .then(img => {
-                      return [
-                          { stack: this.props.getSBItemForPrint() },
-                          { text: this.barChart.props.config.chart.title, style: 'chartTitle' },
-                          { text: this.barChart.props.config.chart.subtitle, style: 'chartSubtitle' },
-                          { image: img, alignment: 'center', width: 450 }
-                      ]
-                  })
-          ]
-      }
-      return []
+    const data = this.state.charts.barChart.data
+    const dataCopy = data ? [...data] : data
+    const noThreat = dataCopy ? dataCopy.splice(0, 1)[0] : dataCopy
+    if (this.state.charts.barChart.data && this.props.isOpen) {
+      return [
+        this.barChart.print(this.state.charts.barChart.id)
+          .then(img => {
+            return [
+              { stack: this.props.getSBItemForPrint() },
+              { text: this.barChart.props.config.chart.title, style: 'chartTitle' },
+              { text: this.barChart.props.config.chart.subtitle, style: 'chartSubtitle' },
+              { image: img, alignment: 'center', width: 450 },
+              { text: noThreat ? `${noThreat.label.long}: ${this.numberWithCommas(noThreat.area)} acres` : '' }
+            ]
+          })
+      ]
+    }
+    return []
   }
 
   createUniqueBapContents() {
+    const data = this.state.charts.barChart.data
+    const dataCopy = data ? [...data] : data
+    const noThreat = dataCopy ? dataCopy.splice(0, 1)[0] : dataCopy
     return (
       <div>
         {this.props.getAnalysisLayers()}
@@ -171,10 +178,13 @@ class ExpectedLandUseAnalysisPackage extends React.Component {
         <div className="chartsDiv">
           <HorizontalBarChart
               onRef={ref => (this.barChart = ref)}
-              data={this.state.charts.barChart.data}
+              data={dataCopy}
               id={this.state.charts.barChart.id}
               config={this.state.charts.barChart.config}
           />
+          { noThreat && <div className="text-right mr-2">
+            { `${noThreat.label.long}: ${this.numberWithCommas(noThreat.area)} acres` }
+          </div> }
         </div>
       </div>
     )
