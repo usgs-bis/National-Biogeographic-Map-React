@@ -2,9 +2,8 @@ import React from "react";
 import L from "leaflet"
 import { BarLoader } from "react-spinners"
 import { TiledMapLayer } from "esri-leaflet";
-
 import withSharedAnalysisCharacteristics from "./AnalysisPackage"
-import PieChart from "../Charts/PieChart"
+import DonutChart from "../Charts/DonutChart";
 import TableChart from "../Charts/TableChart"
 import CustomToolTip from "../ToolTip/ToolTip"
 import "./AnalysisPackages.css";
@@ -16,8 +15,8 @@ let sb_properties = {
     "title": "Protection Status of Terrestrial Vertebrate Species"
 }
 
-const layers = {
-    gap_status: {
+const layers = [
+    {
         title: "PAD-US v1.4 GAP Status Code",
         layer: new TiledMapLayer({
             url: "https://gis1.usgs.gov/arcgis/rest/services/PADUS1_4/GAP_Status_Code/MapServer",
@@ -30,7 +29,7 @@ const layers = {
         checked: false,
         sb_item: "56bba50ce4b08d617f657956"
     },
-    species_range: {
+    {
         title: "Species Range",
         layer: L.tileLayer.wms(
             "https://www.sciencebase.gov/geoserver/CONUS_Range_2001/wms",
@@ -49,7 +48,7 @@ const layers = {
         hideCheckbox: true,
         sb_item: "5951527de4b062508e3b1e79"
     },
-    habitat_map: {
+    {
         title: "Habitat Map",
         layer: L.tileLayer.wms(
             "https://www.sciencebase.gov/geoserver/CONUS_HabMap_2001/wms",
@@ -68,7 +67,7 @@ const layers = {
         hideCheckbox: true,
         sb_item: "527d0a83e4b0850ea0518326"
     }
-}
+]
 
 class SpeciesProtectionAnalysisPackage extends React.Component {
     constructor(props) {
@@ -84,9 +83,12 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
             gapStatus: "ALL",
             gapRange: "ALL",
             gapColor: "white",
-            layers: layers,
-            value: []
+            sppLayer: {}
         }
+
+        this.currentSppLayer = null
+        this.gap12 = React.createRef()
+        this.gap123 = React.createRef()
 
         this.getCharts = this.getCharts.bind(this)
         this.onSpeciesChanged = this.onSpeciesChanged.bind(this)
@@ -103,6 +105,29 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
     componentDidMount() {
         this.props.onRef(this)
         this.featureChange()
+        if (this.props.initBap) {
+            this.setState({
+                taxaLetter: this.props.initBap.taxaLetter,
+                gapStatus: this.props.initBap.gapStatus,
+                gapRange: this.props.initBap.gapRange,
+                gapColor: this.props.initBap.gapColor,
+                sppLayer: this.props.initBap.sppLayer
+            })
+            if (this.props.initBap.sppLayer && this.props.initBap.sppLayer.layerTitle) {
+               
+                const  addSppLayer = () => {
+                    setTimeout(() => {
+                        if(this.state.data !== null){
+                            this.changeFilter(this.props.initBap.sppLayer.e, this.props.initBap.sppLayer.layerTitle, this.props.initBap.sppLayer.row_sppcode)
+                        }
+                        else{
+                            addSppLayer() 
+                        }
+                    }, 1000)
+                }
+                addSppLayer()
+            }
+        }
     }
 
     componentDidUpdate(prevProps) {
@@ -112,7 +137,13 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
         if (prevProps.priorityBap === prevProps.bapId && this.props.bapId !== this.props.priorityBap) {
             this.resetSppTable()
         }
-
+        this.props.setShareState({
+            taxaLetter: this.state.taxaLetter,
+            gapStatus: this.state.gapStatus,
+            gapRange: this.state.gapRange,
+            gapColor: this.state.gapColor,
+            sppLayer: this.state.sppLayer
+        })
     }
 
     featureChange() {
@@ -173,28 +204,36 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
     }
 
 
-    changeFilter(e, layerKey, row_sppcode) {
+    changeFilter(e, layerTitle, row_sppcode) {
 
-
+        this.setState({
+            sppLayer: {
+                e: { currentTarget: { value: e.currentTarget.value } },
+                layerTitle: layerTitle,
+                row_sppcode: row_sppcode,
+            }
+        })
         this.previous_row_sppcode = row_sppcode
-        this.previous_type = layerKey
+        this.previous_type = layerTitle
         const charts = this.getCharts(this.state.data)
         this.setState({
             charts: charts,
             loading: false
         })
-        let otherKey = layerKey === "species_range" ? "habitat_map" : "species_range"
-        layers[layerKey]["legend"]["imageUrl"] = layers[layerKey]["legend"]["baseLegendUrl"] +
-            `&layer=${e.currentTarget.value}`
+        let otherTitle = layerTitle === "Species Range" ? "Habitat Map" : "Species Range"
 
-        let layer = this.state.layers[layerKey]
+        let layer = layers.find((l) => { return l.title === layerTitle })
+        layer["legend"]["imageUrl"] = ["legend"]["baseLegendUrl"] + `&layer=${e.currentTarget.value}`
+
+        layer.checked = false
+        layers.find((l) => { return l.title === otherTitle }).checked = false
+
         layer.layer.setParams({
             layers: e.currentTarget.value
         })
 
-        this.props.inputRefs[layerKey].checked = true
-        this.props.inputRefs[otherKey].checked = false
-        this.props.updateBapLayers(layer, this.state.layers[otherKey])
+        this.props.toggleLayer(layer)
+        this.currentSppLayer = layer
     }
 
     getCharts(data) {
@@ -269,7 +308,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                 const chartConfig = {
                     margins: { left: 0, right: 0, top: 20, bottom: 125 },
                     chart: { title: `GAP Status 1 & 2`, subtitle: `` },
-                    tooltip: { label: (d) => { return `<p><div>${d.data.name}</div><div>${d.data.count} species</div></p>` } },
+                    tooltip: { data: { name: "", count: "Species" } },
                     legend: { rectSize: 16, spacing: 4, leftOffset: 6, verticalSpacing: 20, fontSize: '13px' },
                     width: 225,
                     height: 225,
@@ -283,7 +322,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                 const chartConfig = {
                     margins: { left: 0, right: 0, top: 20, bottom: 125 },
                     chart: { title: `GAP Status 1, 2 & 3`, subtitle: `` },
-                    tooltip: { label: (d) => { return `<p><div>${d.data.name}</div><div>${d.data.count} species</div></p>` } },
+                    tooltip: { data: { name: "", count: "Species" } },
                     legend: { rectSize: 16, spacing: 4, leftOffset: 6, verticalSpacing: 20, fontSize: '13px' },
                     width: 225,
                     height: 225,
@@ -343,8 +382,9 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                             style={{ marginLeft: '10px' }}
                             type="radio"
                             name={`sp_radio`}
-                            checked={this.previous_row_sppcode === row.sppcode && this.previous_type === 'species_range'}
-                            onChange={function (e) { that.changeFilter(e, "species_range", row.sppcode) }}
+                            checked={this.previous_row_sppcode === row.sppcode && this.previous_type === 'Species Range'}
+                            onClick={(e) => { that.changeFilter(e, "Species Range", row.sppcode) }}
+                            onChange={() => { }}
                             value={`${row.common_name} (${row.scientific_name}) ${row.sppcode} v1`} />
                         <CustomToolTip target={`Range_${row.sppcode}`} text={"Known Range Map"} > </CustomToolTip>
 
@@ -354,8 +394,9 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                             id={`Habitat_${row.sppcode}`}
                             type="radio"
                             name={`sp_radio`}
-                            checked={this.previous_row_sppcode === row.sppcode && this.previous_type === 'habitat_map'}
-                            onChange={function (e) { that.changeFilter(e, "habitat_map", row.sppcode) }}
+                            checked={this.previous_row_sppcode === row.sppcode && this.previous_type === 'Habitat Map'}
+                            onClick={(e) => { that.changeFilter(e, "Habitat Map", row.sppcode) }}
+                            onChange={() => { }}
                             value={`${row.common_name} (${row.scientific_name}) ${row.sppcode} v1`} />
                         <CustomToolTip target={`Habitat_${row.sppcode}`} text={"Predicted Habitat Map"} > </CustomToolTip>
                     </span>
@@ -426,15 +467,19 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
         this.previous_row_sppcode = ""
         this.previous_type = ""
         if (this.props.bapId === this.props.priorityBap) {
-            this.props.updateBapLayers()
+            if (this.currentSppLayer) {
+                this.currentSppLayer.checked = true
+                this.props.toggleLayer(this.currentSppLayer)
+                this.currentSppLayer = null
+            }
         }
     }
 
     print() {
         if (this.state.charts.gap12.data && this.props.isOpen) {
             let charts = []
-            charts.push(this.PieChart.print(this.state.charts.gap12.id))
-            charts.push(this.PieChart.print(this.state.charts.gap123.id))
+            charts.push(this.gap12.current.print())
+            charts.push(this.gap123.current.print())
 
             return Promise.all(charts.flat()).then(contents => {
                 return [
@@ -545,24 +590,24 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                         <div className="title">Protection Status of Species in {this.props.feature ? this.props.feature.properties.feature_name : ''}</div>
                         <div className="subtitle">(Click on a slice to filter the table and see only species whose habitat falls in that percent of protection. Click on a radio button to see only species of that type.)</div>
                         <div className="spp-radio-btn">
-                            <div><input type="radio" name="species" value={"ALL"} checked={this.state.taxaLetter === "ALL"} onClick={this.onSpeciesChanged} onChange={this.onSpeciesChanged} />All</div>
-                            <div><input type="radio" name="species" value={"A"} checked={this.state.taxaLetter === "A"} onClick={this.onSpeciesChanged} onChange={this.onSpeciesChanged} />Amphibians</div>
-                            <div><input type="radio" name="species" value={"B"} checked={this.state.taxaLetter === "B"} onClick={this.onSpeciesChanged} onChange={this.onSpeciesChanged} />Birds</div>
-                            <div><input type="radio" name="species" value={"M"} checked={this.state.taxaLetter === "M"} onClick={this.onSpeciesChanged} onChange={this.onSpeciesChanged} />Mammals</div>
-                            <div><input type="radio" name="species" value={"R"} checked={this.state.taxaLetter === "R"} onClick={this.onSpeciesChanged} onChange={this.onSpeciesChanged} />Reptiles</div>
+                            <div><input type="radio" name="species" value={"ALL"} checked={this.state.taxaLetter === "ALL"} onClick={this.onSpeciesChanged} onChange={() => { }} />All</div>
+                            <div><input type="radio" name="species" value={"A"} checked={this.state.taxaLetter === "A"} onClick={this.onSpeciesChanged} onChange={() => { }} />Amphibians</div>
+                            <div><input type="radio" name="species" value={"B"} checked={this.state.taxaLetter === "B"} onClick={this.onSpeciesChanged} onChange={() => { }} />Birds</div>
+                            <div><input type="radio" name="species" value={"M"} checked={this.state.taxaLetter === "M"} onClick={this.onSpeciesChanged} onChange={() => { }} />Mammals</div>
+                            <div><input type="radio" name="species" value={"R"} checked={this.state.taxaLetter === "R"} onClick={this.onSpeciesChanged} onChange={() => { }} />Reptiles</div>
                         </div>
                     </div>
                     <div>
                         <div className="half-chart">
-                            <PieChart
-                                onRef={ref => (this.PieChart = ref)}
+                            <DonutChart
+                                ref={this.gap12}
                                 data={this.state.charts.gap12.data}
                                 id={this.state.charts.gap12.id}
                                 config={this.state.charts.gap12.config} />
                         </div>
                         <div className="half-chart">
-                            <PieChart
-                                onRef={ref => (this.PieChart = ref)}
+                            <DonutChart
+                                ref={this.gap123}
                                 data={this.state.charts.gap123.data}
                                 id={this.state.charts.gap123.id}
                                 config={this.state.charts.gap123.config} />

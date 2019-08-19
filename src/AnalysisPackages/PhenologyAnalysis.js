@@ -1,11 +1,9 @@
 import React from "react";
 import L from "leaflet"
 import { BarLoader } from "react-spinners"
-
 import { RadioButton } from "../CustomRadio/CustomRadio"
 import HorizontalBarChart from "../Charts/HorizontalBarChart";
 import "./AnalysisPackages.css";
-
 import withSharedAnalysisCharacteristics from "./AnalysisPackage"
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/5b96d589e4b0702d0e82700a?format=json"
@@ -14,7 +12,6 @@ const PHENO32_POLY_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenocast/poly
 const PHENO50_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenocast/place/agdd_50";
 const PHENO50_POLY_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenocast/polygon/agdd_50";
 const PUBLIC_TOKEN = process.env.REACT_APP_PUBLIC_TOKEN
-const DEV_MODE = process.env.REACT_APP_DEV
 
 
 let sb_properties = {
@@ -23,8 +20,8 @@ let sb_properties = {
 
 let baseLegendUrl = "https://geoserver.usanpn.org/geoserver/gdd/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng"
 
-let layers = {
-    phenology_service: {
+let layers = [
+     {
         title: "Phenocasts",
         layer: L.tileLayer.wms(
             "https://geoserver.usanpn.org/geoserver/gdd/wms",
@@ -40,7 +37,7 @@ let layers = {
         checked: true,
         hideCheckbox: true
     }
-}
+]
 
 class PhenologyAnalysisPackage extends React.Component {
     constructor(props) {
@@ -48,10 +45,12 @@ class PhenologyAnalysisPackage extends React.Component {
         this.state = {
             data: null,
             dates: [{ name: 'Current', date: new Date() }, { name: 'Six-Day', date: new Date(new Date().getTime() + 6 * 86400000) }],
-            canSubmit: false,
-            loading: false,
             charts: [],
             refs: [],
+            error: false,
+            loading: false,
+            canSubmit: false,
+            didSubmit: false,
             selectedIndex: 0
         }
 
@@ -71,11 +70,15 @@ class PhenologyAnalysisPackage extends React.Component {
     componentDidMount() {
         this.props.onRef(this)
         this.featureChange()
-        if(this.props.bapId === this.props.priorityBap){
-            // try to let the feature load before submitting
-            // could change to willRecieveProps with a flag for init
-            setTimeout(()=>{this.submitAnalysis()},3000) 
-        } 
+        if (this.props.initBap) {
+            this.setState({
+                didSubmit: this.props.initBap.didSubmit,
+                selectedIndex : this.props.initBap.selectedIndex
+            })
+            if (this.props.initBap.didSubmit) {
+                setTimeout(() => this.submitAnalysis(), 3000)
+            }
+        }
     }
 
 
@@ -84,16 +87,13 @@ class PhenologyAnalysisPackage extends React.Component {
             this.clearCharts()
             this.featureChange()
         }
+        this.props.setShareState({
+            didSubmit: this.state.didSubmit,
+            selectedIndex : this.state.selectedIndex
+        })
     }
 
     featureChange() {
-        // This BAP is experimental, display in development only
-        if (!DEV_MODE) {
-            this.props.isEnabled(false)
-            this.props.canOpen(false)
-            return
-        }
-
         if (this.props.feature) {
             if(this.props.feature.properties.feature_id.includes('OBIS_Areas')){
                 this.props.isEnabled(false)
@@ -126,18 +126,20 @@ class PhenologyAnalysisPackage extends React.Component {
         this.setState({
             data: null,
             charts: [],
-            refs: []
+            refs: [],
+            canSubmit: false,
+            didSubmit: false
         })
     }
 
     turnOnLayer(value) {
-        layers["phenology_service"]["legend"]["imageUrl"] = baseLegendUrl + `&layer=${value[0]}&style=${value[1]}`
+        layers[0]["legend"]["imageUrl"] = baseLegendUrl + `&layer=${value[0]}&style=${value[1]}`
 
         // this will get flipped to turn on the layer in analysysPackage 
-        layers["phenology_service"].checked = false
-        this.props.updateBapLayers(layers["phenology_service"])
+        layers[0].checked = false
+        this.props.toggleLayer(layers[0])
 
-        layers["phenology_service"]["layer"].setParams({
+        layers[0]["layer"].setParams({
             layers: value[0],
             styles: value[1],
             time: this.getFormattedDate(value[2])
@@ -146,6 +148,9 @@ class PhenologyAnalysisPackage extends React.Component {
 
     toggleRadioBtn(index) {
         this.getCharts(this.state.data, index)
+        this.setState({
+            selectedIndex : index
+        })
     }
 
     getFormattedDate(date) {
@@ -162,7 +167,7 @@ class PhenologyAnalysisPackage extends React.Component {
             .then(res => { return res.json() },
                 (error) => {
                     this.setState({
-                        error
+                        error: true
                     });
                 })
     }
@@ -183,9 +188,11 @@ class PhenologyAnalysisPackage extends React.Component {
                     this.props.setBapJson(results)
                     this.setState({
                         data: results,
-                        loading: false
+                        loading: false,
+                        didSubmit: true
+
                     }, () => {
-                        this.getCharts(this.state.data, 0)
+                        this.getCharts(this.state.data, this.state.selectedIndex)
                     })
                     this.props.isEnabled(true)
                     this.props.canOpen(true)
@@ -217,7 +224,8 @@ class PhenologyAnalysisPackage extends React.Component {
                     this.props.setBapJson(results)
                     this.setState({
                         data: results,
-                        loading: false
+                        loading: false,
+                        didSubmit: true
                     }, () => {
                         this.getCharts(this.state.data)
                     })
@@ -443,8 +451,9 @@ class PhenologyAnalysisPackage extends React.Component {
 
         }
         catch (error) {
+            console.log(error)
             this.setState({
-                error,
+                error: true,
                 loading: false
             });
             return null

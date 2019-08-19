@@ -22,26 +22,18 @@
       "thumbnailImage": "http://www.arcgis.com/sharing/rest/content/items/5d2bfa736f8448b3a1708e1f6be23eed/info/thumbnail/temposm.jpg"
     },
     {
-      "title": "Elevation and Bathymetry",
-      "type": "WMSTileLayer",
-      "serviceUrl": "http://gmrt.marine-geo.org/cgi-bin/mapserv?map=/public/mgg/web/gmrt.marine-geo.org/htdocs/services/map/wms_merc.map",
-      "thumbnailImage": "images/elv-bath-image.png",
-      "leafletProperties": {
-        "format": "image/png",
-        "layers": "topo"
-      }
-    },
-    {
       "title": "ESRI World Oceans",
       "type": "TileLayer",
       "serviceUrl": "//services.arcgisonline.com/arcgis/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}",
-      "thumbnailImage": "https://www.arcgis.com/sharing/rest/content/items/48b8cec7ebf04b5fbdcaf70d09daff21/info/thumbnail/tempoceans.jpg"
+      "thumbnailImage": "https://www.arcgis.com/sharing/rest/content/items/48b8cec7ebf04b5fbdcaf70d09daff21/info/thumbnail/tempoceans.jpg",
+      "attribution": "Sources: Esri, GEBCO, NOAA, National Geographic, Garmin, HERE, Geonames.org, and other contributors"
     },
     {
       "title": "ESRI World Street Map",
       "type": "TileLayer",
       "serviceUrl": "//services.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
-      "thumbnailImage": "https://www.arcgis.com/sharing/rest/content/items/3b93337983e9436f8db950e38a8629af/info/thumbnail/ago_downloaded.jpg"
+      "thumbnailImage": "https://www.arcgis.com/sharing/rest/content/items/3b93337983e9436f8db950e38a8629af/info/thumbnail/ago_downloaded.jpg",
+      "attribution": "Sources: Esri, HERE, Garmin, USGS, Intermap, INCREMENT P, NRCan, Esri Japan, METI, Esri China (Hong Kong), Esri Korea, Esri (Thailand), NGCC, (c) OpenStreetMap contributors, and the GIS User Community"
     }
   ],
   "overlays": [

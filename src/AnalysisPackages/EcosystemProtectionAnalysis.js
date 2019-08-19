@@ -3,10 +3,9 @@ import L from "leaflet"
 import { BarLoader } from "react-spinners"
 import { TiledMapLayer } from "esri-leaflet";
 import withSharedAnalysisCharacteristics from "./AnalysisPackage"
-import PieChart from "../Charts/PieChart"
+import DonutChart from "../Charts/DonutChart";
 import TableChart from "../Charts/TableChart"
 import HorizontalBarChart from "../Charts/HorizontalBarChart";
-
 import "./AnalysisPackages.css";
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/5b747802e4b0f5d5787ed299?format=json"
@@ -16,8 +15,8 @@ let sb_properties = {
     "title": "Protection Status of Ecological Systems"
 }
 
-const layers = {
-    gap_status: {
+const layers = [
+    {
         title: "PAD-US v1.4 GAP Status Code",
         layer: new TiledMapLayer({
             url: "https://gis1.usgs.gov/arcgis/rest/services/PADUS1_4/GAP_Status_Code/MapServer",
@@ -30,7 +29,7 @@ const layers = {
         checked: false,
         sb_item: '56bba50ce4b08d617f657956'
     },
-    ecological_systems: {
+    {
         title: "GAP Landcover 2011 Ecological System",
         layer: L.tileLayer.wms(
             "https://www.sciencebase.gov/geoserver/nvcs/wms",
@@ -48,7 +47,7 @@ const layers = {
         checked: false,
         sb_item: '58d1bb47e4b0236b68f6b8a7'
     }
-}
+]
 
 class EcosystemProtectionAnalysisPackage extends React.Component {
     constructor(props) {
@@ -65,9 +64,11 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
             gapStatus: "ALL",
             gapRange: "ALL",
             gapColor: "white",
-            layers: layers,
-            value: []
         }
+
+        this.gap12 = React.createRef()
+        this.gap123 = React.createRef()
+        this.gapCoverage = React.createRef()
 
         this.getCharts = this.getCharts.bind(this)
         this.filterTableData = this.filterTableData.bind(this)
@@ -82,6 +83,13 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
     componentDidMount() {
         this.props.onRef(this)
         this.featureChange()
+        if (this.props.initBap) {
+            this.setState({
+                gapStatus: this.props.initBap.gapStatus,
+                gapRange: this.props.initBap.gapRange,
+                gapColor: this.props.initBap.gapColor
+            })
+        }
     }
 
 
@@ -89,6 +97,11 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
         if (prevProps.feature !== this.props.feature) {
             this.featureChange()
         }
+        this.props.setShareState({
+            gapStatus: this.state.gapStatus,
+            gapRange: this.state.gapRange,
+            gapColor: this.state.gapColor
+        })
     }
 
     featureChange() {
@@ -400,9 +413,9 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
             else if (chart.toString() === "gap12" && data) {
                 const chartId = "EP_GAP12"
                 const chartConfig = {
-                    margins: { left: 0, right: 0, top: 20, bottom: 125 },
+                    margins: { left: 0, right: 0, top: 10, bottom: 125 },
                     chart: { title: `GAP Status 1 & 2`, subtitle: `` },
-                    tooltip: { label: (d) => { return `<p><div>${d.data.name}</div><div>${d.data.count} ecosystem</div></p>` } },
+                    tooltip: { data: { name: "", count: "Ecosystems" } },
                     legend: { rectSize: 16, spacing: 4, leftOffset: 6, verticalSpacing: 20, fontSize: '13px' },
                     width: 225,
                     height: 225,
@@ -414,9 +427,9 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
             else if (chart.toString() === "gap123" && data) {
                 const chartId = "EP_GAP123"
                 const chartConfig = {
-                    margins: { left: 0, right: 0, top: 20, bottom: 125 },
+                    margins: { left: 0, right: 0, top: 10, bottom: 125 },
                     chart: { title: `GAP Status 1, 2 & 3`, subtitle: `` },
-                    tooltip: { label: (d) => { return `<p><div>${d.data.name}</div><div>${d.data.count} ecosystem</div></p>` } },
+                    tooltip: { data: { name: "", count: "Ecosystems" } },
                     legend: { rectSize: 16, spacing: 4, leftOffset: 6, verticalSpacing: 20, fontSize: '13px' },
                     width: 225,
                     height: 225,
@@ -471,7 +484,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                 const chartConfig = {
                     margins: { left: 75, right: 75, top: 80, bottom: 225 },
                     chart: { title: `Percent Coverage by National Vegetation Classification Class`, subtitle: `` },
-                    tooltip: { label: (d) => { return `<p><div>${d.data.name}</div><div>${parseFloat(d.data.percent).toFixed(2)}%</div></p>` } },
+                    tooltip: { data: { name: '', percent: "Percent" } },
                     legend: { rectSize: 12, spacing: 2, leftOffset: 1.3, verticalSpacing: 16, fontSize: '11px' },
                     lables: { fontSize: '8px' },
                     width: 200,
@@ -507,9 +520,9 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
         if (this.state.charts.protectionStatus.data && this.props.isOpen) {
             let charts = []
             charts.push(this.HorizontalBarChart.print(this.state.charts.protectionStatus.id))
-            charts.push(this.PieChart.print(this.state.charts.gap12.id))
-            charts.push(this.PieChart.print(this.state.charts.gap123.id))
-            charts.push(this.PieChart.print(this.state.charts.gapCoverage.id))
+            charts.push(this.gap12.current.print())
+            charts.push(this.gap123.current.print())
+            charts.push(this.gapCoverage.current.print())
 
 
             return Promise.all(charts.flat()).then(contents => {
@@ -628,15 +641,15 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                             <div className="subtitle">(Click on a slice to filter the table and see only systems with that percent of protection.)</div>
                         </div>
                         <div className="half-chart">
-                            <PieChart
-                                onRef={ref => (this.PieChart = ref)}
+                            <DonutChart
+                                ref={this.gap12}
                                 data={this.state.charts.gap12.data}
                                 id={this.state.charts.gap12.id}
                                 config={this.state.charts.gap12.config} />
                         </div>
                         <div className="half-chart">
-                            <PieChart
-                                onRef={ref => (this.PieChart = ref)}
+                            <DonutChart
+                                ref={this.gap123}
                                 data={this.state.charts.gap123.data}
                                 id={this.state.charts.gap123.id}
                                 config={this.state.charts.gap123.config} />
@@ -652,8 +665,8 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                         config={this.state.charts.gapTable.config} />
                     <div className="dividing-line"></div>
 
-                    <PieChart
-                        onRef={ref => (this.PieChart = ref)}
+                    <DonutChart
+                        ref={this.gapCoverage}
                         data={this.state.charts.gapCoverage.data}
                         id={this.state.charts.gapCoverage.id}
                         config={this.state.charts.gapCoverage.config} />

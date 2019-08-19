@@ -14,17 +14,8 @@ let sb_properties = {
     "title": "Most Reported Marine Species per Exclusive Economic Zone"
 }
 
-const layers = {
-    // nfhp_service: {
-    //     title: "Risk to Fish Habitat Degradation",
-    //     layer: new DynamicMapLayer({
-    //         url: "https://gis1.usgs.gov/arcgis/rest/services/nfhp2015/HCI_Dissolved_NFHP2015_v20160907/MapServer",
-    //         opacity: .5
-    //     }),
-    //     checked: false,
-    //     loading: false,
-    // }
-}
+const layers = []
+
 
 class OBISAnalysisPackage extends React.Component {
     constructor(props) {
@@ -33,8 +24,6 @@ class OBISAnalysisPackage extends React.Component {
             charts: {
                 speciesCountChart: { id: "", config: {}, data: null }
             },
-            layersOpen: false,
-            value: [],
             loading: false
         }
 
@@ -49,12 +38,16 @@ class OBISAnalysisPackage extends React.Component {
     componentDidMount() {
         this.props.onRef(this)
         this.featureChange()
+        if (this.props.initBap) {
+            // do any initlizing here
+        }
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.feature !== this.props.feature) {
             this.featureChange()
         }
+        this.props.setShareState({})
     }
 
     featureChange() {
@@ -95,7 +88,6 @@ class OBISAnalysisPackage extends React.Component {
                 (result) => {
                     if (result) {
                         this.props.setBapJson(result)
-                        this.props.updateAnalysisLayers([], this.props.bapId) // make the obis bap priority when only one 
                         const charts = this.getCharts(result)
                         this.setState({
                             charts: charts,
