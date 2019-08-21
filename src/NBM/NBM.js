@@ -7,6 +7,9 @@ import TimeSlider from "./TimeSlider/TimeSlider"
 import { EditControl } from "react-leaflet-draw"
 import L from 'leaflet';
 import InfoSign from '../ InfoSign/InfoSign';
+import Control from 'react-leaflet-control';
+import { Glyphicon } from 'react-bootstrap';
+import shp from 'shpjs';
 
 
 const ENV = process.env.REACT_APP_ENV;
@@ -30,6 +33,7 @@ class NBM extends React.PureComponent {
         this.enableDragging = this.enableDragging.bind(this)
         this.userDrawnPolygonStop = this.userDrawnPolygonStop.bind(this)
         this.userDrawnPolygonStart = this.userDrawnPolygonStart.bind(this)
+        this.uploadDoc = this.uploadDoc.bind(this)
     }
 
 
@@ -164,6 +168,22 @@ class NBM extends React.PureComponent {
             this.drawnpolygon = null
         }
         this.disableDragging()
+    }
+
+    uploadDoc(event) {
+        const file = event.target.files[0]
+        file.arrayBuffer().then((arrayBuffer) => {
+            shp(arrayBuffer).then((geojson) => {
+                this.userDrawnPolygonStart()
+                const layer = L.geoJSON(geojson)
+                this.refs.map.leafletElement.fitBounds(layer.getBounds())
+                this.enableDragging()
+                const geometry = geojson.type === 'FeatureCollection' ? geojson = geojson.features[0].geometry : geojson.geometry
+                geometry.crs = { type: "name", properties: { name: "EPSG:4326" } }
+                this.props.parentDrawHandler(geometry)
+            });
+        })
+        event.target.value = '' // make sure the user can upload the same file again
     }
 
     render() {
@@ -319,6 +339,13 @@ class NBM extends React.PureComponent {
                             circle: false
                         }}
                     />
+                    <Control position='topright' className="leaflet-bar">
+                        <label className="mb-0 pt-1 rounded" title="Upload a shp file">
+                            <span className="add-more-label"><Glyphicon className="inner-glyph" glyph="upload"/></span>
+                            <input type="file" name="file-upload" id="file-upload" accept=".zip, .shp" style={{display: 'none'}}
+                                onChange={this.uploadDoc} />
+                        </label>
+                    </Control>
                 </FeatureGroup>
             </Map>
         );

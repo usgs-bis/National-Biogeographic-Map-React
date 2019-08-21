@@ -54,3 +54,12 @@
     margin-left: 8px;
     margin-right: 8px;
 }
+
+.leaflet-control label {
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    background-color: #fff;
+    text-align: center;
+}
