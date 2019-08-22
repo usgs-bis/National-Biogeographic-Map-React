@@ -1,0 +1,42 @@
+#
+# GitLab ci pipeline configuration
+#
+# Builds and pushes a Docker image to a GitLab registry.
+#
+# Reference:
+#   - https://docs.gitlab.com/ee/ci/yaml/
+#
+stages:
+  - docker_build
+  - docker_tag_latest
+
+variables:
+  DOCKERFILE: ./Dockerfile
+  BUILD_CONTEXT: .
+
+docker_build:
+  image: docker:latest
+  services:
+    - docker:dind
+  tags:
+    - docker
+  before_script:
+    - docker login -u gitlab-ci-token -p ${CI_JOB_TOKEN} ${CI_REGISTRY}
+  stage: docker_build
+  script:
+    - docker build -t ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${IMAGE_NAME}:${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA:0:8} -f ${DOCKERFILE} ${BUILD_CONTEXT}
+    - docker push ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${IMAGE_NAME}:${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA:0:8}
+
+docker_tag_latest:
+  image: docker:latest
+  services:
+    - docker:dind
+  tags:
+    - docker
+  before_script:
+    - docker login -u gitlab-ci-token -p ${CI_JOB_TOKEN} ${CI_REGISTRY}
+  stage: docker_tag_latest
+  script:
+    - docker pull ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${IMAGE_NAME}:${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA:0:8}
+    - docker tag ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${IMAGE_NAME}:${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA:0:8} ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${IMAGE_NAME}:${CI_COMMIT_REF_NAME}-latest
+    - docker push ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${IMAGE_NAME}:${CI_COMMIT_REF_NAME}-latest
