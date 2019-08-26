@@ -188,8 +188,9 @@ class NBM extends React.PureComponent {
             uploading: true
         })
         try {
-            file.arrayBuffer().then((arrayBuffer) => {
-                shp(arrayBuffer).then((geojson) => {
+            const fileReader = new FileReader()
+            fileReader.onload = (event) => {
+                shp(fileReader.result).then((geojson) => {
                     this.handleClose()
                     this.userDrawnPolygonStart()
                     const layer = L.geoJSON(geojson)
@@ -204,7 +205,8 @@ class NBM extends React.PureComponent {
                         uploading: false
                     })
                 });
-            })
+            }
+            fileReader.readAsArrayBuffer(file)
         } catch (ex) {
             this.setState({
                 uploadError: 'File read failure: ' + ex.message,
