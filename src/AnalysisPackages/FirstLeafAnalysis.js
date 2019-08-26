@@ -183,7 +183,14 @@ class FirstLeafAnalysisPackage extends React.Component {
                 loading: true,
                 error: false
             })
-            fetch(FIRSTLEAF_POLY_URL + `?year_min=${this.props.yearMin}&year_max=${this.props.yearMax}&geojson=${JSON.stringify(this.props.feature.geometry)}&token=${PUBLIC_TOKEN}`)
+            const request = {
+                headers: new Headers({ 'Content-Type': 'application/json'}),
+                method: 'post',
+                body: JSON.stringify({
+                    geojson: this.props.feature.geometry
+                })
+            }
+            fetch(FIRSTLEAF_POLY_URL + `?year_min=${this.props.yearMin}&year_max=${this.props.yearMax}&token=${PUBLIC_TOKEN}`, request)
                 .then(res => res.json())
                 .then(
                     (result) => {

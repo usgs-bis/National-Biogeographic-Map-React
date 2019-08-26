@@ -190,14 +190,21 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
                 error: false
             })
             this.clearCharts()
-            let firstLeafFetch = fetch(FIRSTLEAF_POLY_URL + `?year_min=${this.props.yearMin}&year_max=${this.props.yearMax}&geojson=${JSON.stringify(this.props.feature.geometry)}&token=${PUBLIC_TOKEN}`)
+            const request = {
+                headers: new Headers({ 'Content-Type': 'application/json'}),
+                method: 'post',
+                body: JSON.stringify({
+                    geojson: this.props.feature.geometry
+                })
+            }
+            let firstLeafFetch = fetch(FIRSTLEAF_POLY_URL + `?year_min=${this.props.yearMin}&year_max=${this.props.yearMax}&token=${PUBLIC_TOKEN}`, request)
                 .then(res => { return res.json() },
                     (error) => {
                         this.setState({
                             error: true
                         });
                     })
-            let firstBloomFetch = fetch(FIRSTBLOOM_POLY_URL + `?year_min=${this.props.yearMin}&year_max=${this.props.yearMax}&geojson=${JSON.stringify(this.props.feature.geometry)}&token=${PUBLIC_TOKEN}`)
+            let firstBloomFetch = fetch(FIRSTBLOOM_POLY_URL + `?year_min=${this.props.yearMin}&year_max=${this.props.yearMax}&token=${PUBLIC_TOKEN}`, request)
                 .then(res => { return res.json() },
                     (error) => {
                         this.setState({
