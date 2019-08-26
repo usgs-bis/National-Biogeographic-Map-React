@@ -10,6 +10,7 @@ import InfoSign from '../ InfoSign/InfoSign';
 import Control from 'react-leaflet-control';
 import { Glyphicon } from 'react-bootstrap';
 import shp from 'shpjs';
+import loadingGif from './loading.gif';
 
 
 const ENV = process.env.REACT_APP_ENV;
@@ -22,7 +23,8 @@ class NBM extends React.PureComponent {
             point: null,
             attributionOpen: false,
             showUploadDialog: false,
-            uploadError: ''
+            uploadError: '',
+            uploading: false
         }
         this.drawnpolygon = null
         this.bounds = [[21, -134], [51, -63]];
@@ -176,6 +178,15 @@ class NBM extends React.PureComponent {
 
     uploadShapefile(event) {
         const file = event.target.files[0]
+        if (file.size > 5000000) {
+            this.setState({
+                uploadError: 'File size is greater than 5MB'
+            })
+            return
+        }
+        this.setState({
+            uploading: true
+        })
         try {
             file.arrayBuffer().then((arrayBuffer) => {
                 shp(arrayBuffer).then((geojson) => {
@@ -189,13 +200,15 @@ class NBM extends React.PureComponent {
                     this.props.parentDrawHandler(geometry)
                 }).catch(ex => {
                     this.setState({
-                        uploadError: ex.message
+                        uploadError: 'Shapefile parse issue: ' + ex.message,
+                        uploading: false
                     })
                 });
             })
         } catch (ex) {
             this.setState({
-                uploadError: ex.message
+                uploadError: 'File read failure: ' + ex.message,
+                uploading: false
             })
         }
         event.target.value = '' // make sure the user can upload the same file again
@@ -210,7 +223,8 @@ class NBM extends React.PureComponent {
     handleClose() {
         this.setState({
             showUploadDialog: false,
-            uploadError: ''
+            uploadError: '',
+            uploading: false
         })
     }
 
@@ -338,6 +352,10 @@ class NBM extends React.PureComponent {
                             <input type="file" name="file-upload" id="file-upload" accept=".zip, .shp" style={{display: 'none'}}
                                 onChange={this.uploadShapefile} />
                         </label>
+                        {
+                            this.state.uploading &&
+                            <img src={loadingGif} alt="Loading..."></img>
+                        }
                         </>
                     }
                 />
