@@ -16,7 +16,7 @@ const layers = [
   {
     title: 'Expected Land Use',
     layer: L.tileLayer.wms(
-        "https://dev-blm.sciencebase.gov/geoserver/bcb/wms",
+        "https://sciencebase.usgs.gov/geoserver/bcb/wms",
         {
           layers: ['classified_chance_of_development'],
           format: "image/png",
@@ -25,7 +25,7 @@ const layers = [
         }
     ),
     legend: {
-        imageUrl: "https://dev-blm.sciencebase.gov:443/geoserver/bcb/ows?service=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=classified_chance_of_development"
+        imageUrl: "https://sciencebase.usgs.gov/geoserver/bcb/wms?service=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=classified_chance_of_development"
     },
     checked: false,
     sb_item: '5a87249de4b00f54eb3a2e1e'
