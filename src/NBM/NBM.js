@@ -11,6 +11,7 @@ import Control from 'react-leaflet-control';
 import { Glyphicon } from 'react-bootstrap';
 import shp from 'shpjs';
 import loadingGif from './loading.gif';
+const DEV_MODE = process.env.REACT_APP_DEV;
 
 
 const ENV = process.env.REACT_APP_ENV;
@@ -416,14 +417,16 @@ class NBM extends React.PureComponent {
                             circle: false
                         }}
                     />
-                    <Control position='topright' className="leaflet-bar">
-                        <label className="mb-0 pt-1 rounded" title="Upload a shp file">
-                            <span className="add-more-label" onClick={this.handleShow}><Glyphicon className="inner-glyph" glyph="upload"/></span>
-                        </label>
-                    </Control>
+                    { DEV_MODE && 
+                        <Control position='topright' className="leaflet-bar">
+                            <label className="mb-0 pt-1 rounded" title="Upload a shp file">
+                                <span className="add-more-label" onClick={this.handleShow}><Glyphicon className="inner-glyph" glyph="upload"/></span>
+                            </label>
+                        </Control>
+                    }
                 </FeatureGroup>
             </Map>
-            {uploadShapefileDialog()}
+            { DEV_MODE && uploadShapefileDialog() }
             </>
         );
     }
