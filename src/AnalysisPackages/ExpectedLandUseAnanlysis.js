@@ -11,7 +11,6 @@ const EXPECTED_LAND_USE_ENDPOINT = process.env.REACT_APP_BIS_API + '/api/v1/expe
 const sb_properties = {
   title: "Expected Land Use"
 }
-
 const layers = [
   {
     title: 'Expected Land Use',
