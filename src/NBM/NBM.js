@@ -7,6 +7,11 @@ import TimeSlider from "./TimeSlider/TimeSlider"
 import { EditControl } from "react-leaflet-draw"
 import L from 'leaflet';
 import InfoSign from '../ InfoSign/InfoSign';
+import Control from 'react-leaflet-control';
+import { Glyphicon } from 'react-bootstrap';
+import shp from 'shpjs';
+import loadingGif from './loading.gif';
+const DEV_MODE = process.env.REACT_APP_DEV;
 
 
 const ENV = process.env.REACT_APP_ENV;
@@ -17,7 +22,10 @@ class NBM extends React.PureComponent {
         super(props);
         this.state = {
             point: null,
-            attributionOpen: false
+            attributionOpen: false,
+            showUploadDialog: false,
+            uploadError: '',
+            uploading: false
         }
         this.drawnpolygon = null
         this.bounds = [[21, -134], [51, -63]];
@@ -30,6 +38,9 @@ class NBM extends React.PureComponent {
         this.enableDragging = this.enableDragging.bind(this)
         this.userDrawnPolygonStop = this.userDrawnPolygonStop.bind(this)
         this.userDrawnPolygonStart = this.userDrawnPolygonStart.bind(this)
+        this.uploadShapefile = this.uploadShapefile.bind(this)
+        this.handleShow = this.handleShow.bind(this)
+        this.handleClose = this.handleClose.bind(this)
     }
 
 
@@ -166,6 +177,60 @@ class NBM extends React.PureComponent {
         this.disableDragging()
     }
 
+    uploadShapefile(event) {
+        const file = event.target.files[0]
+        if (file.size > 5000000) {
+            this.setState({
+                uploadError: 'File size is greater than 5MB'
+            })
+            return
+        }
+        this.setState({
+            uploading: true
+        })
+        try {
+            const fileReader = new FileReader()
+            fileReader.onload = (event) => {
+                shp(fileReader.result).then((geojson) => {
+                    this.handleClose()
+                    this.userDrawnPolygonStart()
+                    const layer = L.geoJSON(geojson)
+                    this.refs.map.leafletElement.fitBounds(layer.getBounds())
+                    this.enableDragging()
+                    const geometry = geojson.type === 'FeatureCollection' ? geojson = geojson.features[0].geometry : geojson.geometry
+                    geometry.crs = { type: "name", properties: { name: "EPSG:4326" } }
+                    this.props.parentDrawHandler(geometry)
+                }).catch(ex => {
+                    this.setState({
+                        uploadError: 'Shapefile parse issue: ' + ex.message,
+                        uploading: false
+                    })
+                });
+            }
+            fileReader.readAsArrayBuffer(file)
+        } catch (ex) {
+            this.setState({
+                uploadError: 'File read failure: ' + ex.message,
+                uploading: false
+            })
+        }
+        event.target.value = '' // make sure the user can upload the same file again
+    }
+
+    handleShow() {
+        this.setState({
+            showUploadDialog: true
+        })
+    }
+
+    handleClose() {
+        this.setState({
+            showUploadDialog: false,
+            uploadError: '',
+            uploading: false
+        })
+    }
+
     render() {
         const geojson = () => {
             if (this.props.feature) {
@@ -196,7 +261,6 @@ class NBM extends React.PureComponent {
 
             if (!this.state.attributionOpen) return
             return (
-
                 <CustomDialog
                     className="sbinfo-popout-window"
                     isResizable={true}
@@ -264,10 +328,44 @@ class NBM extends React.PureComponent {
                     }
                 />
             )
+        }
 
-
+        const uploadShapefileDialog = () => {
+            return (
+                this.state.showUploadDialog &&
+                <CustomDialog
+                    className="sbinfo-popout-window"
+                    title={'Upload a shapefile'}
+                    modal={true}
+                    onClose={this.handleClose}
+                    body={
+                        <>
+                        <ul>
+                            <li>Your shapefile must be zipped into a '.zip' extension and be under 5MB.</li>
+                            <li>Valid .shp, .shx, .dbf, and .prj files must be included.</li>
+                            <li>Most common coordinate systems are supported.</li>
+                            <li>Only the first feature in your shapefile will be used.</li>
+                        </ul>
+                        {
+                            this.state.uploadError &&
+                            <div className="text-danger"><b>Error: </b>{this.state.uploadError}</div>
+                        }
+                        <label className="mb-0 pt-1 rounded float-right" title="Upload a shp file">
+                            <span className="btn submit-analysis-btn">Upload</span>
+                            <input type="file" name="file-upload" id="file-upload" accept=".zip, .shp" style={{display: 'none'}}
+                                onChange={this.uploadShapefile} />
+                        </label>
+                        {
+                            this.state.uploading &&
+                            <img src={loadingGif} alt="Loading..."></img>
+                        }
+                        </>
+                    }
+                />
+            )
         }
         return (
+            <>
             <Map ref={"map"}
                 onClick={this.handleClick}
                 bounds={this.bounds}
@@ -319,8 +417,17 @@ class NBM extends React.PureComponent {
                             circle: false
                         }}
                     />
+                    { DEV_MODE && 
+                        <Control position='topright' className="leaflet-bar">
+                            <label className="mb-0 pt-1 rounded" title="Upload a shp file">
+                                <span className="add-more-label" onClick={this.handleShow}><Glyphicon className="inner-glyph" glyph="upload"/></span>
+                            </label>
+                        </Control>
+                    }
                 </FeatureGroup>
             </Map>
+            { DEV_MODE && uploadShapefileDialog() }
+            </>
         );
     }
 }
