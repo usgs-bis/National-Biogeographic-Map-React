@@ -8,6 +8,7 @@ import HorizontalBarChart from '../Charts/HorizontalBarChart';
 const SB_URL = 'https://www.sciencebase.gov/catalog/item/5a87249de4b00f54eb3a2e1e?format=json';
 const EXPECTED_LAND_USE_ENDPOINT = process.env.REACT_APP_BIS_API + '/api/v1/expectedlanduse/';
 
+
 const sb_properties = {
   title: "Expected Land Use"
 }
