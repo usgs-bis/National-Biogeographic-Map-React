@@ -205,8 +205,8 @@ class PhenologyAnalysisPackage extends React.Component {
             error: false
         })
         let fetches = [
-            this.getFetch(`http://geoserver.usanpn.org/geoserver/gdd/wms?layers=agdd&request=GetStyles&service=wms&version=1.1.1`),
-            this.getFetch(`http://geoserver.usanpn.org/geoserver/gdd/wms?layers=agdd_50f&request=GetStyles&service=wms&version=1.1.1`)
+            this.getFetch(`https://geoserver.usanpn.org/geoserver/gdd/wms?layers=agdd&request=GetStyles&service=wms&version=1.1.1`),
+            this.getFetch(`https://geoserver.usanpn.org/geoserver/gdd/wms?layers=agdd_50f&request=GetStyles&service=wms&version=1.1.1`)
         ]
         Promise.all(fetches).then(results => {
             if (results) {
