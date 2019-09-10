@@ -114,7 +114,9 @@ class PhenologyAnalysisPackage extends React.Component {
 
         // this will get flipped to turn on the layer in analysysPackage 
         layers[0].checked = false
-        this.props.toggleLayer(layers[0])
+        if (this.props.isOpen) {
+            this.props.toggleLayer(layers[0])
+        }
 
         layers[0]["layer"].setParams({
             layers: layer,
