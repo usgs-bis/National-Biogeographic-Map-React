@@ -39,10 +39,8 @@ class PhenologyAnalysisPackage extends React.Component {
             data: null,
             dates: [{ name: 'Current', date: new Date() }, { name: 'Six-Day', date: new Date(new Date().getTime() + 6 * 86400000) }],
             charts: [],
-            refs: [],
             error: false,
             loading: false,
-            canSubmit: false,
             didSubmit: false,
             selectedIndex: 0
         }
@@ -87,7 +85,7 @@ class PhenologyAnalysisPackage extends React.Component {
 
     featureChange() {
         if (this.props.feature) {
-            if(this.props.feature.properties.feature_id.includes('OBIS_Areas')){
+            if (this.props.feature.properties.feature_id.includes('OBIS_Areas')){
                 this.props.isEnabled(false)
                 this.props.canOpen(false)
             }
@@ -107,8 +105,6 @@ class PhenologyAnalysisPackage extends React.Component {
         this.setState({
             data: null,
             charts: [],
-            refs: [],
-            canSubmit: false,
             didSubmit: false
         })
     }
@@ -217,8 +213,47 @@ class PhenologyAnalysisPackage extends React.Component {
                 const slds = results.map(res => {
                     return parseSld(res)
                 })
+
+                let layers = [
+                    {
+                        name: 'agdd_50f',
+                        times: [
+                            {label: 'Current'},
+                            {label: 'Six-Day'}
+                        ],
+                        species: [
+                            {name: 'Apple Maggot', legend: []},
+                            {name: 'Emerald Ash Borer', legend: []},
+                            {name: 'Lilac Borer', legend: []},
+                            {name: 'Winter Moth', legend: []}
+                        ]
+                    },
+                    {
+                        name: 'agdd',
+                        times: [
+                            {label: 'Current'},
+                            {label: 'Six-Day'}
+                        ],
+                        species: [
+                            {name: 'Hemlock Woolly Adelgid', legend: []}
+                        ]
+                    }
+                ]
+                layers.forEach(layer => {
+                    const layerSld = slds.find(sld => sld.layer === layer.name)
+                    if (!layerSld) {
+                        return
+                    }
+                    layer.species.forEach(species => {
+                        species.style = species.name.toLowerCase().replace(/\s/g, '_')
+                        const style = layerSld.styles.find(s => s.name === species.style)
+                        if (style) {
+                            species.legend = style.colorMapEntries
+                        }
+                    })
+                })
                 this.setState({
-                    data: slds,
+                    data: layers,
                     loading: false,
                     didSubmit: true
                 }, () => {
@@ -258,66 +293,32 @@ class PhenologyAnalysisPackage extends React.Component {
                 )
             }
 
-            let chartData = [
-                {
-                    name: 'agdd_50f',
-                    times: [
-                        {label: 'Current'},
-                        {label: 'Six-Day'}
-                    ],
-                    species: [
-                        {name: 'Apple Maggot'},
-                        {name: 'Emerald Ash Borer'},
-                        {name: 'Lilac Borer'},
-                        {name: 'Winter Moth'}
-                    ]
-                },
-                {
-                    name: 'agdd',
-                    times: [
-                        {label: 'Current'},
-                        {label: 'Six-Day'}
-                    ],
-                    species: [
-                        {name: 'Hemlock Woolly Adelgid'}
-                    ]
-                }
-            ]
-
             let charts = []
-            let refs = []
             let i = 0;
-            chartData.forEach(layer => {
+            data.forEach(layer => {
                 const layerName = layer.name
-                const sld = data.find(sld => sld.layer === layerName)
                 layer.species.forEach(species => {
                     const speciesName = species.name
-                    const styleName = speciesName.toLowerCase().replace(/\s/g, '_')
                     const controls = []
                     layer.times.forEach(time => {
                         const timeLabel = time.label
                         const timeIndex = timeLabel === 'Current' ? 0 : 1
                         const date = this.state.dates[timeIndex].date
-                        controls.push(getControl(timeLabel, layerName, date, styleName, i))
+                        controls.push(getControl(timeLabel, layerName, date, species.style, i))
                         if (selectedIndex === i) {
-                            this.turnOnLayer(layerName, styleName, date)
+                            this.turnOnLayer(layerName, species.style, date)
                         }
                         i++
                     })
                     const styles = []
-                    if (sld) {
-                        const style = sld.styles.find(s => s.name === styleName)
-                        if (style) {
-                            style.colorMapEntries.forEach(colorMapEntry => {
-                                styles.push((
-                                    <div key={`${style}_${colorMapEntry.quantity}`} className="mb-2">
-                                        <div className="d-inline-block mr-2" style={{width:'20px', height:'20px', backgroundColor: colorMapEntry.color}}>&nbsp;</div>
-                                        <div className="d-inline">{colorMapEntry.label}</div>
-                                    </div>
-                                ))
-                            })
-                        }
-                    }
+                    species.legend.forEach(item => {
+                        styles.push((
+                            <div key={`${species.style}_${item.quantity}`} className="mb-2">
+                                <div className="d-inline-block mr-2" style={{width:'20px', height:'20px', backgroundColor: item.color}}>&nbsp;</div>
+                                <div className="d-inline">{item.label}</div>
+                            </div>
+                        ))
+                    })
                     let chartId = `PHENO_${speciesName.replace(/\s/g, '')}`
                     charts.push(
                         <div key={chartId}>
@@ -328,7 +329,7 @@ class PhenologyAnalysisPackage extends React.Component {
                                     {styles}
                                 </div>) :
                                 (<div className="text-center">
-                                    <img src={baseLegendUrl + `&layer=${layerName}&style=${styleName}`} alt="Legend" style={{maxWidth: '100%'}}></img>
+                                    <img src={baseLegendUrl + `&layer=${layerName}&style=${species.style}`} alt="Legend" style={{maxWidth: '100%'}}></img>
                                 </div>)
                         }
                         {controls}
@@ -337,10 +338,8 @@ class PhenologyAnalysisPackage extends React.Component {
                 })
             })
             this.setState({
-                charts: charts,
-                refs: refs
+                charts: charts
             })
-
         }
         catch (error) {
             console.log(error)
@@ -353,41 +352,44 @@ class PhenologyAnalysisPackage extends React.Component {
     }
 
     print() {
-        if (this.state.refs.length && this.props.isOpen) {
-            let charts = []
-            for (let i = 0; i < this.state.refs.length; i++) {
-                charts.push(this.state.refs[i].print(this.state.refs[i].props.id))
-            }
+        if (this.props.isOpen) {
+            let chartData = null
+            let i = 0
+            this.state.data.forEach(layer => {
+                layer.species.forEach(species => {
+                    layer.times.forEach(time => {
+                        if (this.state.selectedIndex === i) {
+                            const timeLabel = time.label
+                            const timeIndex = timeLabel === 'Current' ? 0 : 1
+                            const date = this.state.dates[timeIndex].date
+                            chartData = {
+                                name: species.name,
+                                legend: species.legend,
+                                time: `${timeLabel} ${this.getFormattedDate(date)}`
+                            }
+                        }
+                        i++
+                    })
+                })
+            })
 
-            return Promise.all(charts.flat()).then(contents => {
-                let content = []
-                content.push({ stack: this.props.getSBItemForPrint() })
-
-                for (let i = 0; i < this.state.refs.length; i += 2) {
-                    content.push({ text: this.state.refs[i].props.config.chart.title, style: 'chartTitle', margin: [5, 5, 5, 5] })
+            if (chartData) {
+                const content = []
+                content.push({ text: chartData.name, style: 'chartTitle', margin: [5, 5, 5, 5] })
+                content.push({ text: chartData.time, style: 'chartSubtitle', margin: [5, 0, 5, 5] })
+                chartData.legend.forEach(item => {
                     content.push({
                         columns: [
-                            {
-                                width: 'auto',
-                                stack: [
-                                    { image: contents[i], alignment: 'center', width: 250, height: 110 }
-                                ]
-                            },
-                            {
-                                width: 'auto',
-                                stack: [
-                                    { image: contents[i + 1], alignment: 'center', width: 250, height: 110 }
-                                ]
-                            }
+                            { width: 'auto', table: { body: [[{text: '\n', fillColor: item.color}]] } },
+                            { text: item.label, margin: [5, 0, 0, 0] }
                         ]
                     })
-                }
+                })
                 content.push({ text: 'Phenology Forecasts data were provided by the', style: 'annotation', margin: [5, 10, 5, 0] })
                 content.push({ text: 'USA National Phenology Network', style: 'annotationLink', margin: [5, 0, 5, 0], link: 'https://www.usanpn.org' })
                 content.push({ text: `Data retrieved ${new Date().toDateString()}`, style: 'annotation', margin: [5, 0, 5, 0] })
-
                 return content
-            })
+            }
         }
         return []
     }
