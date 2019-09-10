@@ -281,7 +281,7 @@ class PhenologyAnalysisPackage extends React.Component {
 
             const getControl = (timeLabel, layerName, date, style, i) => {
                 return (
-                    <div key={`${layerName}${i}`} className="nbm-flex-row-no-padding" style={{ borderBottom: "1px solid gray" }}>
+                    <div key={`${layerName}${i}`} className="nbm-flex-row-no-padding px-2" style={{ borderBottom: "1px solid gray" }}>
                         <div>{`${timeLabel}  ${this.getFormattedDate(date)}`}</div>
                         <div style={{ justifyContent: "center", paddingRight: "5px" }} className="nbm-flex-column">
                             <RadioButton
@@ -323,18 +323,18 @@ class PhenologyAnalysisPackage extends React.Component {
                     })
                     let chartId = `PHENO_${speciesName.replace(/\s/g, '')}`
                     charts.push(
-                        <div key={chartId}>
-                        <div className="title">{speciesName}</div>
-                        {
-                            styles.length ? 
-                                (<div className="m-4 p-2" style={{border: '1px solid gray'}}>
-                                    {styles}
-                                </div>) :
-                                (<div className="text-center">
-                                    <img src={baseLegendUrl + `&layer=${layerName}&style=${species.style}`} alt="Legend" style={{maxWidth: '100%'}}></img>
-                                </div>)
-                        }
-                        {controls}
+                        <div key={chartId} className="border-bottom pb-2">
+                            <div className="title">{speciesName}</div>
+                            {controls}
+                            {
+                                styles.length ? 
+                                    (<div className="m-4 p-2" style={{border: '1px solid gray'}}>
+                                        {styles}
+                                    </div>) :
+                                    (<div className="text-center">
+                                        <img src={baseLegendUrl + `&layer=${layerName}&style=${species.style}`} alt="Legend" style={{maxWidth: '100%'}}></img>
+                                    </div>)
+                            }
                         </div>
                     )
                 })
