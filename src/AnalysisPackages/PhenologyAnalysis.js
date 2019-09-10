@@ -2,17 +2,10 @@ import React from "react";
 import L from "leaflet"
 import { BarLoader } from "react-spinners"
 import { RadioButton } from "../CustomRadio/CustomRadio"
-import HorizontalBarChart from "../Charts/HorizontalBarChart";
 import "./AnalysisPackages.css";
 import withSharedAnalysisCharacteristics from "./AnalysisPackage"
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/5b96d589e4b0702d0e82700a?format=json"
-const PHENO32_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenocast/place/agdd_32";
-const PHENO32_POLY_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenocast/polygon/agdd_32";
-const PHENO50_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenocast/place/agdd_50";
-const PHENO50_POLY_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenocast/polygon/agdd_50";
-const PUBLIC_TOKEN = process.env.REACT_APP_PUBLIC_TOKEN
-
 
 let sb_properties = {
     "title": "Phenology Forecasts"
@@ -46,17 +39,15 @@ class PhenologyAnalysisPackage extends React.Component {
             data: null,
             dates: [{ name: 'Current', date: new Date() }, { name: 'Six-Day', date: new Date(new Date().getTime() + 6 * 86400000) }],
             charts: [],
-            refs: [],
             error: false,
             loading: false,
-            canSubmit: false,
             didSubmit: false,
             selectedIndex: 0
         }
 
-
         this.getCharts = this.getCharts.bind(this)
         this.getFetchForDate = this.getFetchForDate.bind(this)
+        this.getFetch = this.getFetch.bind(this)
         this.submitAnalysis = this.submitAnalysis.bind(this)
         this.clearCharts = this.clearCharts.bind(this)
         this.print = this.print.bind(this)
@@ -81,7 +72,6 @@ class PhenologyAnalysisPackage extends React.Component {
         }
     }
 
-
     componentDidUpdate(prevProps) {
         if (prevProps.feature !== this.props.feature) {
             this.clearCharts()
@@ -95,54 +85,41 @@ class PhenologyAnalysisPackage extends React.Component {
 
     featureChange() {
         if (this.props.feature) {
-            if(this.props.feature.properties.feature_id.includes('OBIS_Areas')){
+            if (this.props.feature.properties.feature_id.includes('OBIS_Areas')){
                 this.props.isEnabled(false)
                 this.props.canOpen(false)
-            }
-            else if (this.props.feature.properties.userDefined) {
-                this.props.isEnabled(true)
-                this.props.canOpen(true)
-                this.setState({
-                    canSubmit: true
-                })
             }
             else {
                 this.props.isEnabled(true)
                 this.props.canOpen(true)
-                this.setState({
-                    canSubmit: true
-                })
+                this.submitAnalysis()
             }
         }
         else {
             this.props.canOpen(false)
             this.props.isEnabled(true)
         }
-
     }
-
 
     clearCharts() {
         this.setState({
             data: null,
             charts: [],
-            refs: [],
-            canSubmit: false,
             didSubmit: false
         })
     }
 
-    turnOnLayer(value) {
-        layers[0]["legend"]["imageUrl"] = baseLegendUrl + `&layer=${value[0]}&style=${value[1]}`
+    turnOnLayer(layer, style, date) {
+        layers[0]["legend"]["imageUrl"] = baseLegendUrl + `&layer=${layer}&style=${style}`
 
         // this will get flipped to turn on the layer in analysysPackage 
         layers[0].checked = false
         this.props.toggleLayer(layers[0])
 
         layers[0]["layer"].setParams({
-            layers: value[0],
-            styles: value[1],
-            time: this.getFormattedDate(value[2])
+            layers: layer,
+            styles: style,
+            time: this.getFormattedDate(date)
         })
     }
 
@@ -172,77 +149,121 @@ class PhenologyAnalysisPackage extends React.Component {
                 })
     }
 
+    getFetch(url) {
+        return fetch(url)
+            .then(res => { return res.text() })
+            .then(str => new DOMParser().parseFromString(str, 'text/xml'))
+            .catch(error => {
+                this.setState({
+                    error: true
+                });
+            })
+    }
+
     submitAnalysis() {
-        if (this.props.feature && !this.props.feature.properties.userDefined) {
-            this.setState({
-                loading: true,
-                error: false
-            })
-            let fetches = []
-            for (let date of this.state.dates) {
-                fetches.push(this.getFetchForDate(`${PHENO32_URL}?feature_id=${this.props.feature.properties.feature_id}&token=${PUBLIC_TOKEN}`, date.date))
-                fetches.push(this.getFetchForDate(`${PHENO50_URL}?feature_id=${this.props.feature.properties.feature_id}&token=${PUBLIC_TOKEN}`, date.date))
+
+        const htmlCollectionForEach = (collection, cb) => {
+            for(let i = 0; i < collection.length; i++) {
+                const el = collection[i]
+                cb(el)
             }
-            Promise.all(fetches).then(results => {
-                if (results) {
-                    this.props.setBapJson(results)
-                    this.setState({
-                        data: results,
-                        loading: false,
-                        didSubmit: true
-
-                    }, () => {
-                        this.getCharts(this.state.data, this.state.selectedIndex)
-                    })
-                    this.props.isEnabled(true)
-                    this.props.canOpen(true)
-
-                } else {
-                    this.props.isEnabled(false)
-                    this.props.canOpen(false)
-                }
-            }, (error) => {
-                this.setState({
-                    error: true,
-                    loading: false
-                });
-            })
         }
-        else if (this.props.feature) {
-            // hit with drawn polygon
-            this.setState({
-                loading: true,
-                error: false
-            })
-            let fetches = []
-            for (let date of this.state.dates) {
-                fetches.push(this.getFetchForDate(`${PHENO32_POLY_URL}?geojson=${JSON.stringify(this.props.feature.geometry)}&token=${PUBLIC_TOKEN}`, date.date))
-                fetches.push(this.getFetchForDate(`${PHENO50_POLY_URL}?geojson=${JSON.stringify(this.props.feature.geometry)}&token=${PUBLIC_TOKEN}`, date.date))
+
+        const parseSld = sld => {
+            let sldJson = {
+                layer: sld.getElementsByTagName('sld:Name')[0].textContent,
+                styles: []
             }
-            Promise.all(fetches).then(results => {
-                if (results) {
-                    this.props.setBapJson(results)
-                    this.setState({
-                        data: results,
-                        loading: false,
-                        didSubmit: true
-                    }, () => {
-                        this.getCharts(this.state.data)
+            const userStyles = sld.getElementsByTagName('sld:UserStyle')
+            htmlCollectionForEach(userStyles, style => {
+                const name = style.getElementsByTagName('sld:Name')[0].textContent
+                const title = style.getElementsByTagName('sld:Title')[0].textContent
+                const styles = []
+                htmlCollectionForEach(style.getElementsByTagName('sld:ColorMapEntry'), colorMapEntry => {
+                    const attributes = colorMapEntry.attributes
+                    const label = attributes.label.textContent
+                    if (!label || label === 'ignore') {
+                        return
+                    }
+                    styles.push({
+                        label: label,
+                        color: attributes.color.textContent,
+                        quantity: attributes.quantity.textContent
                     })
-                    this.props.isEnabled(true)
-                    this.props.canOpen(true)
-
-                } else {
-                    this.props.isEnabled(false)
-                    this.props.canOpen(false)
-                }
-            }, (error) => {
-                this.setState({
-                    error: true,
-                    loading: false
-                });
+                })
+                sldJson.styles.push({
+                    name: name,
+                    title: title,
+                    colorMapEntries: styles
+                })
             })
+            return sldJson
         }
+
+        this.setState({
+            loading: true,
+            error: false
+        })
+        let fetches = [
+            this.getFetch(`http://geoserver.usanpn.org/geoserver/gdd/wms?layers=agdd&request=GetStyles&service=wms&version=1.1.1`),
+            this.getFetch(`http://geoserver.usanpn.org/geoserver/gdd/wms?layers=agdd_50f&request=GetStyles&service=wms&version=1.1.1`)
+        ]
+        Promise.all(fetches).then(results => {
+            if (results) {
+                const slds = results.map(res => {
+                    return parseSld(res)
+                })
+
+                let layers = [
+                    {
+                        name: 'agdd_50f',
+                        times: [
+                            {label: 'Current'},
+                            {label: 'Six-Day'}
+                        ],
+                        species: [
+                            {name: 'Apple Maggot', legend: []},
+                            {name: 'Emerald Ash Borer', legend: []},
+                            {name: 'Lilac Borer', legend: []},
+                            {name: 'Winter Moth', legend: []}
+                        ]
+                    },
+                    {
+                        name: 'agdd',
+                        times: [
+                            {label: 'Current'},
+                            {label: 'Six-Day'}
+                        ],
+                        species: [
+                            {name: 'Hemlock Woolly Adelgid', legend: []}
+                        ]
+                    }
+                ]
+                layers.forEach(layer => {
+                    const layerSld = slds.find(sld => sld.layer === layer.name)
+                    if (!layerSld) {
+                        return
+                    }
+                    layer.species.forEach(species => {
+                        species.style = species.name.toLowerCase().replace(/\s/g, '_')
+                        const style = layerSld.styles.find(s => s.name === species.style)
+                        if (style) {
+                            species.legend = style.colorMapEntries
+                        }
+                    })
+                })
+                this.setState({
+                    data: layers,
+                    loading: false,
+                    didSubmit: true
+                }, () => {
+                    this.getCharts(this.state.data, this.state.selectedIndex)
+                })
+            } else {
+                this.props.isEnabled(false)
+                this.props.canOpen(false)
+            }
+        })
     }
 
     /**
@@ -251,204 +272,74 @@ class PhenologyAnalysisPackage extends React.Component {
      * @param {Object {}} data
      */
     getCharts(data, idx) {
-        if (!data) return
-
         let selectedIndex = idx;
         if (!selectedIndex) selectedIndex = 0;
 
         try {
 
-            function inRange(num, bucket, name) {
-                if (bucket.length === 1) {
-                    return num > bucket[0]
-                } else {
-                    return num > bucket[0] && num <= bucket[1]
-                }
-            }
-            const numberWithCommas = (x) => {
-                return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-            }
-
-            let rawData = {
-                "agdd_50f": {
-                    "Current": data[1][`${this.getFormattedDate(this.state.dates[0].date)}`],
-                    "Six-Day": data[3][`${this.getFormattedDate(this.state.dates[1].date)}`]
-                },
-                "agdd": {
-                    "Current": data[0][`${this.getFormattedDate(this.state.dates[0].date)}`],
-                    "Six-Day": data[2][`${this.getFormattedDate(this.state.dates[1].date)}`]
-                }
+            const getControl = (timeLabel, layerName, date, style, i) => {
+                return (
+                    <div key={`${layerName}${i}`} className="nbm-flex-row-no-padding" style={{ borderBottom: "1px solid gray" }}>
+                        <div>{`${timeLabel}  ${this.getFormattedDate(date)}`}</div>
+                        <div style={{ justifyContent: "center", paddingRight: "5px" }} className="nbm-flex-column">
+                            <RadioButton
+                                isChecked={(selectedIndex === i)}
+                                value={[layerName, style, date]}
+                                index={i}
+                                handler={this.toggleRadioBtn.bind(this)}
+                            />
+                        </div>
+                    </div>
+                )
             }
 
-            let chartData = {
-                "agdd_50f": {
-                    "Apple Maggot": {
-                        "Not Approaching Treatment Window": {
-                            "range": [0, 650],
-                            "color": "rgb(153,153,153)"
-                        },
-                        "Approaching Treatment Window": {
-                            "range": [650, 900],
-                            "color": "rgb(255,237,111)"
-                        },
-                        "Treatment Window": {
-                            "range": [900, 2000],
-                            "color": "rgb(65,171,93)"
-                        },
-                        "Treatment Window Passed": {
-                            "range": [2000],
-                            "color": "rgb(193,154,107)"
-                        },
-                    },
-                    "Emerald Ash Borer": {
-                        "Not Approaching Treatment Window": {
-                            "range": [0, 350],
-                            "color": "rgb(153,153,153)"
-                        },
-                        "Approaching Treatment Window": {
-                            "range": [350, 450],
-                            "color": "rgb(255,237,111)"
-                        },
-                        "Treatment Window": {
-                            "range": [450, 1500],
-                            "color": "rgb(65,171,93)"
-                        },
-                        "Treatment Window Passed": {
-                            "range": [1500],
-                            "color": "rgb(193,154,107)"
-                        },
-                    },
-                    "Lilac Borer": {
-                        "Not Approaching Treatment Window": {
-                            "range": [0, 350],
-                            "color": "rgb(153,153,153)"
-                        },
-                        "Approaching Treatment Window": {
-                            "range": [350, 500],
-                            "color": "rgb(255,237,111)"
-                        },
-                        "Treatment Window": {
-                            "range": [500, 1300],
-                            "color": "rgb(65,171,93)"
-                        },
-                        "Treatment Window Passed": {
-                            "range": [1300],
-                            "color": "rgb(193,154,107)"
-                        },
-                    },
-                    "Winter Moth": {
-                        "Not Approaching Treatment Window": {
-                            "range": [0, 20],
-                            "color": "rgb(153,153,153)"
-                        },
-                        "Treatment Window": {
-                            "range": [20, 350],
-                            "color": "rgb(65,171,93)"
-                        },
-                        "Treatment Window Passed": {
-                            "range": [350],
-                            "color": "rgb(193,154,107)"
-                        },
-                    }
-                },
-                "agdd": {
-                    "Hemlock Woolly Adelgid": {
-                        "Not Approaching Treatment Window": {
-                            "range": [0, 25],
-                            "color": "rgb(153,153,153)"
-                        },
-                        "Approaching Treatment Window": {
-                            "range": [25, 1000],
-                            "color": "rgb(255,237,111)"
-                        },
-                        "Treatment Window": {
-                            "range": [1000, 2200],
-                            "color": "rgb(65,171,93)"
-                        },
-                        "Treatment Window Passed": {
-                            "range": [2200],
-                            "color": "rgb(193,154,107)"
-                        },
-                    }
-                }
-            }
-
-            for (let layer of Object.keys(rawData)) {
-                for (let time of Object.keys(rawData[layer])) {
-                    for (let num of rawData[layer][time]) {
-                        for (let speciesName of Object.keys(chartData[layer])) {
-                            for (let categoryLabel of Object.keys(chartData[layer][speciesName])) {
-                                if (chartData[layer][speciesName][categoryLabel][time] === undefined) {
-                                    chartData[layer][speciesName][categoryLabel][time] = 0;
-                                }
-                                if (inRange(num, chartData[layer][speciesName][categoryLabel]["range"], speciesName)) {
-                                    chartData[layer][speciesName][categoryLabel][time] = chartData[layer][speciesName][categoryLabel][time] + 1
-                                }
-                            }
-                        }
-                    }
-                }
-            }
             let charts = []
-            let refs = []
             let i = 0;
-            for (let layer of Object.keys(rawData)) {
-                for (let pestName of Object.keys(chartData[layer])) {
-                    for (let time of Object.keys(rawData[layer])) {
-                        const timeIndex = time === 'Current' ? 0 : 1
-                        let chartId = `PHENO_${pestName.replace(/\s/g, '')}_${time}`
-                        const chartConfig = {
-                            width: 400,
-                            height: 150,
-                            margins: { left: 50, right: 20, top: 20, bottom: 40 },
-                            chart: { title: timeIndex ? '' : `${pestName}`, subtitle: `` },
-                            xAxis: { key: 'acres', label: "Approximate Acreage", ticks: 5, tickFormat: (d) => { return `${numberWithCommas(parseInt(d))}` } },
-                            yAxis: { key: 'name', label: `${time}  ${this.getFormattedDate(this.state.dates[timeIndex].date)}`, ticks: 5, tickFormat: (d) => { '' } },
-                            tooltip: { label: (d) => { return `<p>${d.name}: ${numberWithCommas(d.acres)} Acres</p>` } }
-                        }
-                        let chartDataFormatted = []
-                        let windows = ['Not Approaching Treatment Window', 'Approaching Treatment Window', 'Treatment Window', 'Treatment Window Passed']
-                        windows.reverse()
-                        for (let window of windows) {
-                            if (chartData[layer][pestName][window]) {
-                                chartDataFormatted.push({ "name": window, "acres": timeIndex ? chartData[layer][pestName][window]['Current'] : chartData[layer][pestName][window]['Six-Day'], "color": chartData[layer][pestName][window].color })
-                            }
-                        }
-
-                        let style = pestName.toLowerCase().replace(/\s/g, '_')
-                        let d = this.state.dates[timeIndex].date
-                        charts.push(
-                            <div key={chartId} className="nbm-flex-row-no-padding" style={{ borderBottom: "1px solid gray" }}>
-                                <div style={{ justifyContent: "center" }} className="nbm-flex-column-big">
-                                    <HorizontalBarChart
-                                        onRef={ref => { (this.chartId = ref); refs.push(this.chartId) }}
-                                        key={chartId}
-                                        data={chartDataFormatted}
-                                        id={chartId}
-                                        config={chartConfig} />
-                                </div>
-                                <div style={{ justifyContent: "center", paddingRight: "5px" }} className="nbm-flex-column">
-                                    <RadioButton
-                                        isChecked={(selectedIndex === i)}
-                                        value={[layer, style, d]}
-                                        index={i}
-                                        handler={this.toggleRadioBtn.bind(this)}
-                                    />
-                                </div>
-                            </div>
-                        )
-                        if (i === selectedIndex) {
-                            this.turnOnLayer([layer, style, d])
+            data.forEach(layer => {
+                const layerName = layer.name
+                layer.species.forEach(species => {
+                    const speciesName = species.name
+                    const controls = []
+                    layer.times.forEach(time => {
+                        const timeLabel = time.label
+                        const timeIndex = timeLabel === 'Current' ? 0 : 1
+                        const date = this.state.dates[timeIndex].date
+                        controls.push(getControl(timeLabel, layerName, date, species.style, i))
+                        if (selectedIndex === i) {
+                            this.turnOnLayer(layerName, species.style, date)
                         }
                         i++
-                    }
-                }
-            }
-            this.setState({
-                charts: charts,
-                refs: refs
+                    })
+                    const styles = []
+                    species.legend.forEach(item => {
+                        styles.push((
+                            <div key={`${species.style}_${item.quantity}`} className="mb-2">
+                                <div className="d-inline-block mr-2" style={{width:'20px', height:'20px', backgroundColor: item.color}}>&nbsp;</div>
+                                <div className="d-inline">{item.label}</div>
+                            </div>
+                        ))
+                    })
+                    let chartId = `PHENO_${speciesName.replace(/\s/g, '')}`
+                    charts.push(
+                        <div key={chartId}>
+                        <div className="title">{speciesName}</div>
+                        {
+                            styles.length ? 
+                                (<div className="m-4 p-2" style={{border: '1px solid gray'}}>
+                                    {styles}
+                                </div>) :
+                                (<div className="text-center">
+                                    <img src={baseLegendUrl + `&layer=${layerName}&style=${species.style}`} alt="Legend" style={{maxWidth: '100%'}}></img>
+                                </div>)
+                        }
+                        {controls}
+                        </div>
+                    )
+                })
             })
-
+            this.setState({
+                charts: charts
+            })
         }
         catch (error) {
             console.log(error)
@@ -461,41 +352,44 @@ class PhenologyAnalysisPackage extends React.Component {
     }
 
     print() {
-        if (this.state.refs.length && this.props.isOpen) {
-            let charts = []
-            for (let i = 0; i < this.state.refs.length; i++) {
-                charts.push(this.state.refs[i].print(this.state.refs[i].props.id))
-            }
+        if (this.props.isOpen) {
+            let chartData = null
+            let i = 0
+            this.state.data.forEach(layer => {
+                layer.species.forEach(species => {
+                    layer.times.forEach(time => {
+                        if (this.state.selectedIndex === i) {
+                            const timeLabel = time.label
+                            const timeIndex = timeLabel === 'Current' ? 0 : 1
+                            const date = this.state.dates[timeIndex].date
+                            chartData = {
+                                name: species.name,
+                                legend: species.legend,
+                                time: `${timeLabel} ${this.getFormattedDate(date)}`
+                            }
+                        }
+                        i++
+                    })
+                })
+            })
 
-            return Promise.all(charts.flat()).then(contents => {
-                let content = []
-                content.push({ stack: this.props.getSBItemForPrint() })
-
-                for (let i = 0; i < this.state.refs.length; i += 2) {
-                    content.push({ text: this.state.refs[i].props.config.chart.title, style: 'chartTitle', margin: [5, 5, 5, 5] })
+            if (chartData) {
+                const content = []
+                content.push({ text: chartData.name, style: 'chartTitle', margin: [5, 5, 5, 5] })
+                content.push({ text: chartData.time, style: 'chartSubtitle', margin: [5, 0, 5, 5] })
+                chartData.legend.forEach(item => {
                     content.push({
                         columns: [
-                            {
-                                width: 'auto',
-                                stack: [
-                                    { image: contents[i], alignment: 'center', width: 250, height: 110 }
-                                ]
-                            },
-                            {
-                                width: 'auto',
-                                stack: [
-                                    { image: contents[i + 1], alignment: 'center', width: 250, height: 110 }
-                                ]
-                            }
+                            { width: 'auto', table: { body: [[{text: '\n', fillColor: item.color}]] } },
+                            { text: item.label, margin: [5, 0, 0, 0] }
                         ]
                     })
-                }
+                })
                 content.push({ text: 'Phenology Forecasts data were provided by the', style: 'annotation', margin: [5, 10, 5, 0] })
                 content.push({ text: 'USA National Phenology Network', style: 'annotationLink', margin: [5, 0, 5, 0], link: 'https://www.usanpn.org' })
                 content.push({ text: `Data retrieved ${new Date().toDateString()}`, style: 'annotation', margin: [5, 0, 5, 0] })
-
                 return content
-            })
+            }
         }
         return []
     }
@@ -505,10 +399,7 @@ class PhenologyAnalysisPackage extends React.Component {
             <div>
                 {this.props.getAnalysisLayers()}
                 {this.props.handleBapError(this.state.error)}
-                <div className="chartsDiv">
-                    <div className="chart-headers" >
-                        <button className="submit-analysis-btn" onClick={this.submitAnalysis}>Get Phenology Forecast</button>
-                    </div>
+                <div className="chartsDiv p-2">
                     {this.state.charts}
                     <div className="chart-footers" >
                         <div className="anotations">
