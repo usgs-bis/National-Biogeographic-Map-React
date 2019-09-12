@@ -11,13 +11,14 @@ let sb_properties = {
     "title": "Phenology Forecasts"
 }
 
-let baseLegendUrl = "https://geoserver.usanpn.org/geoserver/gdd/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng"
+let baseLegendUrl = "https://geoserver.usanpn.org/geoserver/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng"
+const pestDescriptions = "https://data.usanpn.org:3006/v1/phenoforecasts/pestDescriptions"
 
 let layers = [
      {
         title: "Phenocasts",
         layer: L.tileLayer.wms(
-            "https://geoserver.usanpn.org/geoserver/gdd/wms",
+            "https://geoserver.usanpn.org/geoserver/wms",
             {
                 format: "image/png",
                 opacity: .5,
@@ -206,66 +207,69 @@ class PhenologyAnalysisPackage extends React.Component {
             loading: true,
             error: false
         })
-        let fetches = [
-            this.getFetch(`https://geoserver.usanpn.org/geoserver/gdd/wms?layers=agdd&request=GetStyles&service=wms&version=1.1.1`),
-            this.getFetch(`https://geoserver.usanpn.org/geoserver/gdd/wms?layers=agdd_50f&request=GetStyles&service=wms&version=1.1.1`)
-        ]
-        Promise.all(fetches).then(results => {
-            if (results) {
-                const slds = results.map(res => {
-                    return parseSld(res)
-                })
-
-                let layers = [
-                    {
-                        name: 'agdd_50f',
-                        times: [
-                            {label: 'Current'},
-                            {label: 'Six-Day'}
-                        ],
-                        species: [
-                            {name: 'Apple Maggot', legend: []},
-                            {name: 'Emerald Ash Borer', legend: []},
-                            {name: 'Lilac Borer', legend: []},
-                            {name: 'Winter Moth', legend: []}
-                        ]
-                    },
-                    {
-                        name: 'agdd',
-                        times: [
-                            {label: 'Current'},
-                            {label: 'Six-Day'}
-                        ],
-                        species: [
-                            {name: 'Hemlock Woolly Adelgid', legend: []}
-                        ]
-                    }
-                ]
-                layers.forEach(layer => {
-                    const layerSld = slds.find(sld => sld.layer === layer.name)
-                    if (!layerSld) {
+        fetch(pestDescriptions)
+            .then(res => res.json())
+            .then(data => {
+                const layers = []
+                data.forEach(pest => {
+                    if (!pest.layerName.includes('agdd')) {
                         return
                     }
-                    layer.species.forEach(species => {
-                        species.style = species.name.toLowerCase().replace(/\s/g, '_')
-                        const style = layerSld.styles.find(s => s.name === species.style)
-                        if (style) {
-                            species.legend = style.colorMapEntries
+                    let layer = layers.find(l => l.name === pest.layerName)
+                    if (!layer) {
+                        layer = {
+                            name: pest.layerName,
+                            times: [
+                                {label: 'Current'},
+                                {label: 'Six-Day'}
+                            ],
+                            species: []
                         }
+                        layers.push(layer)
+                    }
+                    layer.species.push({
+                        name: pest.species,
+                        legend: [],
+                        style: pest.sldName.replace('.sld', '')
                     })
                 })
-                this.setState({
-                    data: layers,
-                    loading: false,
-                    didSubmit: true
-                }, () => {
-                    this.getCharts(this.state.data, this.state.selectedIndex)
+                return layers
+            })
+            .then((layers) => {
+                const fetches = []
+                layers.forEach(layer => {
+                    fetches.push(this.getFetch(`https://geoserver.usanpn.org/geoserver/wms?layers=${layer.name}&request=GetStyles&service=wms&version=1.1.1`))
                 })
-            } else {
-                this.props.isEnabled(false)
-                this.props.canOpen(false)
-            }
-        })
+                Promise.all(fetches).then(results => {
+                    if (results) {
+                        const slds = results.map(res => {
+                            return parseSld(res)
+                        })
+                        layers.forEach(layer => {
+                            const layerSld = slds.find(sld => sld.layer === layer.name)
+                            if (!layerSld) {
+                                return
+                            }
+                            layer.species.forEach(species => {
+                                const style = layerSld.styles.find(s => s.name === species.style)
+                                if (style) {
+                                    species.legend = style.colorMapEntries
+                                }
+                            })
+                        })
+                        this.setState({
+                            data: layers,
+                            loading: false,
+                            didSubmit: true
+                        }, () => {
+                            this.getCharts(this.state.data, this.state.selectedIndex)
+                        })
+                    } else {
+                        this.props.isEnabled(false)
+                        this.props.canOpen(false)
+                    }
+                })
+            })
     }
 
     /**
