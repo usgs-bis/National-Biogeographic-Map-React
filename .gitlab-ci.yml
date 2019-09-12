@@ -30,9 +30,9 @@
 #     Specified external to this file as a CI variable.
 #
 include:
-  - project: 'sas/ops/gitlab-ci-pipeline'
+  - project: 'sas/ops/ci-pipeline/gitlab-ci-pipeline'
     file: '/build/docker.yml'
-  - project: 'sas/ops/gitlab-ci-pipeline'
+  - project: 'sas/ops/ci-pipeline/gitlab-ci-pipeline'
     file: '/deploy/api_trigger.yml'
 
 stages:
