@@ -46,6 +46,9 @@ class NBM extends React.PureComponent {
 
     componentWillReceiveProps(props) {
         if (props.feature && props.feature.properties) {
+            if(!props.feature.type) {
+                props.feature.type = "Feature"
+            }
             let b = L.geoJSON(props.feature).getBounds()
             let northEastLng = b._northEast.lng + BUFFER
             // zooms to features that cross 180 on the right side of map

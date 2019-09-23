@@ -57,10 +57,12 @@ class Biogeography extends React.Component {
         charts.push(this.NFHPAnalysis.print())
         charts.push(this.EcosystemProtectionAnalysis.print())
         charts.push(this.SpeciesProtectionAnalysis.print())
-        charts.push(this.PhenologyAnalysis.print())
         charts.push(this.OBISAnalysis.print())
-        charts.push(this.BadNeighborAnalysis.print())
-        charts.push(this.ExpectedLandUseAnalysis.print())
+        if (DEV_MODE) {
+            charts.push(this.PhenologyAnalysis.print())
+            charts.push(this.BadNeighborAnalysis.print())
+            charts.push(this.ExpectedLandUseAnalysis.print())
+        }
 
 
         return charts
@@ -169,7 +171,7 @@ class Biogeography extends React.Component {
                         getDefaultPriorityBap={this.getDefaultPriorityBap} setBapState={this.props.setBapState}
                     />
                 </div>
-                {/* { DEV_MODE && <div className="nbm-flex-row-no-padding">
+                { DEV_MODE && <div className="nbm-flex-row-no-padding">
                     <PhenologyAnalysis
                         onRef={ref => (this.PhenologyAnalysis = ref)}
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
@@ -181,7 +183,7 @@ class Biogeography extends React.Component {
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
                         setBapState={this.props.setBapState}
                     />
-                </div> } */}
+                </div> }
                 <div className="nbm-flex-row-no-padding">
                     <OBISAnalysis
                         onRef={ref => (this.OBISAnalysis = ref)}
