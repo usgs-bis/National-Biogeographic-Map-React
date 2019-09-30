@@ -3,10 +3,13 @@ import * as d3 from "d3";
 import "./Chart.css"
 
 function getColor(color, i) {
+    if (color !== 'random') {
+        return color
+    }
     const colors = d3.schemeCategory10
     const length = colors.length
     const start = Math.floor((i % (length * length))/length)
-    return color === 'random' ? colors[(i + start) % length] : color
+    return colors[(i + start) % length]
 }
 
 class PieChart extends React.Component {
@@ -15,7 +18,8 @@ class PieChart extends React.Component {
         this.state = {
             id: null,
             config: null,
-            data: null
+            data: null,
+            displayLabel: null
         }
         this.drawChart = this.drawChart.bind(this);
         this.print = this.print.bind(this)
@@ -26,14 +30,14 @@ class PieChart extends React.Component {
     }
 
     componentDidUpdate() {
-        if (this.state.data !== this.props.data) {
+        if (this.state.data !== this.props.data || (this.state.displayLabel !== this.props.displayLabel)) {
             this.setState({
                 id: this.props.id,
                 config: this.props.config,
                 data: this.props.data,
+                displayLabel: this.props.displayLabel
             }, () => {
                 this.drawChart(this.props.id, this.props.config, this.props.data)
-
             })
         }
     }
@@ -120,7 +124,6 @@ class PieChart extends React.Component {
             .outerRadius(outerRadius * 1.2)
             .innerRadius(outerRadius * 1.2);
 
-
         const pie = d3.pie()
             .value(function (d) { return d.percent; })
             .sort(null);
@@ -134,8 +137,9 @@ class PieChart extends React.Component {
             .attr('fill', function (d, i) { return getColor(d.data.color, i) })
             .style('opacity', opacity);
 
-        path.on("click", function (d) {
-            config.onClick(d.data)
+        path.on("click", (d) => {
+            config.onClick(d.data);
+            resetLabel()
         })
 
         // Add a div inside chart for tooltips
@@ -160,34 +164,43 @@ class PieChart extends React.Component {
                 .style("border", `3px solid ${getColor(d.data.color, d.index)}`);
         });
 
+        const toolCircle = `${id}toolCircle`
         function centerTooltip(d) {
+            d3.selectAll('.' + toolCircle).remove();
             const width = radius * .95;
             const height = radius * .7;
             svg.append('foreignObject')
-                .attr('class', 'toolCircle')
+                .attr('class', toolCircle)
                 .attr('width', width)
                 .attr('height', height)
                 .attr('x', -(width/2))
                 .attr('y', -(height/2 - 5))
                 .html(config.tooltip.label(d))
-                .style('font-size', '.7em');
+                .style('font-size', '.6vw');
 
             svg.append('circle')
-                .attr('class', 'toolCircle')
-                .attr('r', radius * 0.55) // radius of tooltip circle
+                .attr('class', toolCircle)
+                .attr('r', radius * (config.innerRadius - 0.05)) // radius of tooltip circle
                 .style('fill', getColor(d.data.color, d.index)) // colour based on category mouse is over
                 .style('fill-opacity', 0.35);
         }
 
+        const resetLabel = () => {
+            d3.selectAll('.' + toolCircle).remove();
+            if (this.state.displayLabel) {
+                centerTooltip(this.state.displayLabel)
+            }
+        }
+
         // Add tooltip functionality on mouseOut
-        path.on("mouseout", function (d) {
+        path.on("mouseout", (d) => {
             chart.selectAll('path')
                 .style("opacity", opacityHover);
             tooltip.transition()
                 .duration(500)
                 .style("opacity", 0);
             if (config.tooltip.center) {
-                d3.selectAll('.toolCircle').remove();
+                resetLabel()
             }
         });
 
@@ -250,7 +263,7 @@ class PieChart extends React.Component {
                     .style('cursor', 'pointer')
                     .on('click', ({data}) => config.onClick(data))
                     .on('mouseover', centerTooltip)
-                    .on('mouseout', () => d3.selectAll('.toolCircle').remove());
+                    .on('mouseout', () => resetLabel());
             }
         }
 
@@ -276,6 +289,10 @@ class PieChart extends React.Component {
                 .attr('y', config.legend.rectSize - config.legend.spacing + 2)
                 .style('font-size', config.legend.fontSize)
                 .text((d) => { return d.name; });
+        }
+
+        if (this.state.displayLabel) {
+            centerTooltip(this.state.displayLabel)
         }
     }
 
