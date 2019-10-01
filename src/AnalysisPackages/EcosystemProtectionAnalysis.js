@@ -551,7 +551,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                                 stack: [
                                     { text: this.state.charts.gap12.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
                                     { text: this.state.charts.gap12.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
-                                    { image: contents[1], alignment: 'center', width: 230, height: 370 },
+                                    { image: contents[1], alignment: 'center', width: 200, height: 200 },
                                 ]
                             },
 
@@ -560,7 +560,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                                 stack: [
                                     { text: this.state.charts.gap123.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
                                     { text: this.state.charts.gap123.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
-                                    { image: contents[2], alignment: 'center', width: 230, height: 370 },
+                                    { image: contents[2], alignment: 'center', width: 200, height: 200 },
                                 ]
                             }
                         ]
@@ -674,7 +674,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                         <div className="chart-footers p-0">
                             <div className="anotations">
                                 In this analysis the same thresholds are used to summarize protection status using GAP Status 1, 2, and 3 lands for those who consider multiple use lands as protected for their analyses.<br/><br/>
-                                <span className="font-small">
+                                <span>
                                     * 17% represents the 2020 target threshold for protection of terrestrial ecosystems agreed upon by Parties to the Conservation on Biological Diversity during the Aichi Convention. 
                                     <a href="https://www.cbd.int/sp/targets/" target="_blank" rel="noopener noreferrer">https://www.cbd.int/sp/targets/</a>
                                 </span>

@@ -139,6 +139,9 @@ class PieChart extends React.Component {
 
         path.on("click", (d) => {
             config.onClick(d.data);
+            this.setState({
+                displayLabel: d.data
+            })
             resetLabel()
         })
 
