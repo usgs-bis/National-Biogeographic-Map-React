@@ -390,7 +390,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                             onClick={(e) => { that.changeFilter(e, "Species Range", row.sppcode) }}
                             onChange={() => { }}
                             value={`${row.common_name} (${row.scientific_name}) ${row.sppcode} v1`} />
-                        <CustomToolTip target={`Range_${row.sppcode}`} text={"Known Range Map"} > </CustomToolTip>
+                        <CustomToolTip target={`Range_${row.sppcode}`} text={"Known Range Map"} placement={preData.length === 1 ? 'right' : null} > </CustomToolTip>
 
                     </span>
                     const radio2 = <span className="no-sort">
@@ -402,7 +402,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                             onClick={(e) => { that.changeFilter(e, "Habitat Map", row.sppcode) }}
                             onChange={() => { }}
                             value={`${row.common_name} (${row.scientific_name}) ${row.sppcode} v1`} />
-                        <CustomToolTip target={`Habitat_${row.sppcode}`} text={"Predicted Habitat Map"} > </CustomToolTip>
+                        <CustomToolTip target={`Habitat_${row.sppcode}`} text={"Predicted Habitat Map"} placement={preData.length === 1 ? 'right' : null} > </CustomToolTip>
                     </span>
 
                     if (protectedPercent) {
