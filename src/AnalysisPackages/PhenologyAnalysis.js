@@ -4,7 +4,7 @@ import { BarLoader } from "react-spinners"
 import { RadioButton } from "../CustomRadio/CustomRadio"
 import "./AnalysisPackages.css";
 import withSharedAnalysisCharacteristics from "./AnalysisPackage"
-import Legend from "../Charts/Legend";
+import ChartLegend from "../Charts/ChartLegend";
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/5b96d589e4b0702d0e82700a?format=json"
 
@@ -333,7 +333,7 @@ class PhenologyAnalysisPackage extends React.Component {
                             {controls}
                             {
                                 styles.length ? 
-                                    (<Legend items={species.legend.map(item => {return {key: `${species.style}_${item.quantity}`, ...item}})}/>) :
+                                    (<ChartLegend items={species.legend.map(item => {return {key: `${species.style}_${item.quantity}`, ...item}})} border={true}/>) :
                                     (<div className="text-center">
                                         <img src={baseLegendUrl + `&layer=${layerName}&style=${species.style}`} alt="Legend" style={{maxWidth: '100%'}}></img>
                                     </div>)

@@ -1,8 +1,9 @@
 import React from "react";
 
-class Legend extends React.Component {
+class ChartLegend extends React.Component {
     constructor(props) {
       super(props);
+      this.border = props.border
 
       this.state = {
         items: props.items
@@ -20,7 +21,7 @@ class Legend extends React.Component {
     render() {
       const items = this.state.items
       return items.length ? (
-        <div className="m-4 p-2" style={{border: '1px solid gray'}}>
+        <div className="m-4 p-2" style={this.border ? {border: '1px solid gray'} : {}}>
             {items.map(item => {
               return (
                 <div key={`${item.key}`} className="mb-2">
@@ -33,4 +34,4 @@ class Legend extends React.Component {
       ) : ''
     }
 }
-export default Legend;
+export default ChartLegend;
