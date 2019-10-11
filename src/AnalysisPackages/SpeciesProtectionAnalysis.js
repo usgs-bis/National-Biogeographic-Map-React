@@ -625,7 +625,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                                 data={this.state.charts.gap12.data}
                                 id={this.state.charts.gap12.id}
                                 config={this.state.charts.gap12.config}
-                                displayLabel={gapSelection.status === this.gap12StatusGroup ? {data: gapSelection} : null} />
+                                displayLabel={gapSelection.status === this.gap12StatusGroup ? gapSelection : null} />
                         </div>
                         <div className="half-chart px-3">
                             <DonutChart
@@ -633,7 +633,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                                 data={this.state.charts.gap123.data}
                                 id={this.state.charts.gap123.id}
                                 config={this.state.charts.gap123.config}
-                                displayLabel={gapSelection.status === this.gap123StatusGroup ? {data: gapSelection} : null} />
+                                displayLabel={gapSelection.status === this.gap123StatusGroup ? gapSelection : null} />
                         </div>
                         <ChartLegend items={this.state.charts.gap12.data ?
                             this.state.charts.gap12.data.map(data => {return {key: data.range, color: data.color, label: data.legend}}) : []}/>

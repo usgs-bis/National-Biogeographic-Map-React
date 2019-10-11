@@ -138,11 +138,12 @@ class PieChart extends React.Component {
             .style('opacity', opacity);
 
         path.on("click", (d) => {
-            config.onClick(d.data);
             this.setState({
                 displayLabel: d.data
+            }, () => {
+                config.onClick(d.data);
+                resetLabel()
             })
-            resetLabel()
         })
 
         // Add a div inside chart for tooltips
@@ -191,7 +192,7 @@ class PieChart extends React.Component {
         const resetLabel = () => {
             d3.selectAll('.' + toolCircle).remove();
             if (this.state.displayLabel) {
-                centerTooltip(this.state.displayLabel)
+                centerTooltip({ data: this.state.displayLabel })
             }
         }
 
@@ -295,7 +296,7 @@ class PieChart extends React.Component {
         }
 
         if (this.state.displayLabel) {
-            centerTooltip(this.state.displayLabel)
+            centerTooltip({ data: this.state.displayLabel })
         }
     }
 
