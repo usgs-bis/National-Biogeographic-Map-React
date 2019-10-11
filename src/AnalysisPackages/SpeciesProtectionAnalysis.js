@@ -7,7 +7,7 @@ import DonutChart from "../Charts/DonutChart";
 import TableChart from "../Charts/TableChart"
 import CustomToolTip from "../ToolTip/ToolTip"
 import "./AnalysisPackages.css";
-import Legend from "../Charts/Legend";
+import ChartLegend from "../Charts/ChartLegend";
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/5b86d48ce4b0702d0e7962b5?format=json"
 const SPECIES_URL = process.env.REACT_APP_BIS_API + "/api/v1/gapmetrics/species/protection?feature_id=";
@@ -635,7 +635,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                                 config={this.state.charts.gap123.config}
                                 displayLabel={gapSelection.status === this.gap123StatusGroup ? {data: gapSelection} : null} />
                         </div>
-                        <Legend items={this.state.charts.gap12.data ?
+                        <ChartLegend items={this.state.charts.gap12.data ?
                             this.state.charts.gap12.data.map(data => {return {key: data.range, color: data.color, label: data.legend}}) : []}/>
                         <div className="chart-footers p-0">
                             <div className="anotations">

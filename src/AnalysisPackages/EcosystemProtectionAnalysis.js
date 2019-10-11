@@ -7,7 +7,7 @@ import DonutChart from "../Charts/DonutChart";
 import TableChart from "../Charts/TableChart"
 import HorizontalBarChart from "../Charts/HorizontalBarChart";
 import "./AnalysisPackages.css";
-import Legend from "../Charts/Legend";
+import ChartLegend from "../Charts/ChartLegend";
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/5b747802e4b0f5d5787ed299?format=json"
 const ECOSYSTEM_URL = process.env.REACT_APP_BIS_API + "/api/v1/gapmetrics/ecologicalsystems/protection?feature_id=";
@@ -669,7 +669,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                                 config={this.state.charts.gap123.config}
                                 displayLabel={gapSelection.status === this.gap123StatusGroup ? {data: gapSelection} : null} />
                         </div>
-                        <Legend items={this.state.charts.gap12.data ?
+                        <ChartLegend items={this.state.charts.gap12.data ?
                             this.state.charts.gap12.data.map(data => {return {key: data.range, color: data.color, label: data.legend}}) : []}/>
                         <div className="chart-footers p-0">
                             <div className="anotations">

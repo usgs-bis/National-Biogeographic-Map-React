@@ -316,6 +316,9 @@ class PieChart extends React.Component {
                     .attr("class", `${id}Class`)
                     .html(`<canvas id="canvas${id}" width="${currentWidth}" height="${currentHeight}" style="position: fixed;"></canvas>`)
 
+                d3.select(`.${id}toolCircle`)
+                    .style('font-size', '.5em')
+
                 const canvas = document.getElementById(`canvas${id}`);
                 const image = new Image();
                 image.onload = () => {
