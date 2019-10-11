@@ -66,7 +66,8 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                 status: 'ALL',
                 range: 'ALL',
                 color: 'white'
-            }
+            },
+            gapCoverageSelection: null
         }
         this.gap12StatusGroup = 'status_1_2_group'
         this.gap123StatusGroup = 'status_1_2_3_group'
@@ -76,6 +77,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
 
         this.getCharts = this.getCharts.bind(this)
         this.filterTableData = this.filterTableData.bind(this)
+        this.showGapCoverage = this.showGapCoverage.bind(this)
         this.getColorFromName = this.getColorFromName.bind(this)
         this.resetEcoTable = this.resetEcoTable.bind(this)
         this.print = this.print.bind(this)
@@ -493,7 +495,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                     lables: { fontSize: '8px' },
                     width: 200,
                     height: 200,
-                    onClick: (d) => { return null }
+                    onClick: (d) => { this.showGapCoverage(d) }
                 }
                 const chartData = dataTemplate.ecosystem_coverage
                 charts[chart] = { id: chartId, config: chartConfig, data: chartData }
@@ -507,6 +509,19 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
     filterTableData(d) {
         this.setState({
             gapSelection: d
+        }, () => {
+            const charts = this.getCharts(this.state.data)
+            this.setState({
+                charts: charts,
+                submitted: true,
+                loading: false
+            })
+        })
+    }
+
+    showGapCoverage(d) {
+        this.setState({
+            gapCoverageSelection: d
         }, () => {
             const charts = this.getCharts(this.state.data)
             this.setState({
@@ -659,7 +674,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                                 data={this.state.charts.gap12.data}
                                 id={this.state.charts.gap12.id}
                                 config={this.state.charts.gap12.config}
-                                displayLabel={gapSelection.status === this.gap12StatusGroup ? {data: gapSelection} : null} />
+                                displayLabel={gapSelection.status === this.gap12StatusGroup ? gapSelection : null} />
                         </div>
                         <div className="half-chart px-3">
                             <DonutChart
@@ -667,7 +682,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                                 data={this.state.charts.gap123.data}
                                 id={this.state.charts.gap123.id}
                                 config={this.state.charts.gap123.config}
-                                displayLabel={gapSelection.status === this.gap123StatusGroup ? {data: gapSelection} : null} />
+                                displayLabel={gapSelection.status === this.gap123StatusGroup ? gapSelection : null} />
                         </div>
                         <ChartLegend items={this.state.charts.gap12.data ?
                             this.state.charts.gap12.data.map(data => {return {key: data.range, color: data.color, label: data.legend}}) : []}/>
@@ -694,7 +709,9 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                         ref={this.gapCoverage}
                         data={this.state.charts.gapCoverage.data}
                         id={this.state.charts.gapCoverage.id}
-                        config={this.state.charts.gapCoverage.config} />
+                        config={this.state.charts.gapCoverage.config}
+                        displayLabel={this.state.gapCoverageSelection}
+                    />
                 </div>
             </div>
         )
