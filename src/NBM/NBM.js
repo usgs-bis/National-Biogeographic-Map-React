@@ -38,7 +38,10 @@ class NBM extends React.PureComponent {
         this.enableDragging = this.enableDragging.bind(this)
         this.userDrawnPolygonStop = this.userDrawnPolygonStop.bind(this)
         this.userDrawnPolygonStart = this.userDrawnPolygonStart.bind(this)
-        this.uploadShapefile = this.uploadShapefile.bind(this)
+        this.uploadFile = this.uploadFile.bind(this)
+        this.parseShapefile = this.parseShapefile.bind(this)
+        this.parseGeojsonFile = this.parseGeojsonFile.bind(this)
+        this.handleGeojson = this.handleGeojson.bind(this)
         this.handleShow = this.handleShow.bind(this)
         this.handleClose = this.handleClose.bind(this)
     }
@@ -180,7 +183,7 @@ class NBM extends React.PureComponent {
         this.disableDragging()
     }
 
-    uploadShapefile(event) {
+    uploadFile(event) {
         const file = event.target.files[0]
         if (file.size > 5000000) {
             this.setState({
@@ -192,25 +195,18 @@ class NBM extends React.PureComponent {
             uploading: true
         })
         try {
-            const fileReader = new FileReader()
-            fileReader.onload = (event) => {
-                shp(fileReader.result).then((geojson) => {
-                    this.handleClose()
-                    this.userDrawnPolygonStart()
-                    const layer = L.geoJSON(geojson)
-                    this.refs.map.leafletElement.fitBounds(layer.getBounds())
-                    this.enableDragging()
-                    const geometry = geojson.type === 'FeatureCollection' ? geojson = geojson.features[0].geometry : geojson.geometry
-                    geometry.crs = { type: "name", properties: { name: "EPSG:4326" } }
-                    this.props.parentDrawHandler(geometry)
-                }).catch(ex => {
-                    this.setState({
-                        uploadError: 'Shapefile parse issue: ' + ex.message,
-                        uploading: false
-                    })
-                });
+            const fileNameArr = file.name.split('.')
+            const fileExt = fileNameArr[fileNameArr.length - 1]
+            if (fileExt === 'zip') {
+                this.parseShapefile(file)
+            } else if (fileExt === 'geojson' || fileExt === 'json') {
+                this.parseGeojsonFile(file)
+            } else {
+                this.setState({
+                    uploadError: `Uploads of files with the extension ${fileExt} are not supported.`,
+                    uploading: false
+                })
             }
-            fileReader.readAsArrayBuffer(file)
         } catch (ex) {
             this.setState({
                 uploadError: 'File read failure: ' + ex.message,
@@ -218,6 +214,49 @@ class NBM extends React.PureComponent {
             })
         }
         event.target.value = '' // make sure the user can upload the same file again
+    }
+
+    parseShapefile(file) {
+        const fileReader = new FileReader()
+        fileReader.onload = (event) => {
+            shp(fileReader.result).then((geojson) => {
+                this.handleGeojson(geojson)
+            }).catch(ex => {
+                this.setState({
+                    uploadError: 'Shapefile parse issue: ' + ex.message,
+                    uploading: false
+                })
+            });
+        }
+        fileReader.readAsArrayBuffer(file)
+    }
+
+    parseGeojsonFile(file) {
+        const fileReader = new FileReader()
+        fileReader.onload = (event) => {
+            const result = event.target.result
+            const geojson = JSON.parse(result)
+            this.handleGeojson(geojson)
+        }
+        fileReader.readAsText(file)
+    }
+
+    handleGeojson(geojson) {
+        const geometry = geojson.type === 'FeatureCollection' ? geojson = geojson.features[0].geometry : geojson.geometry
+        geometry.crs = { type: "name", properties: { name: "EPSG:4326" } }
+        if (geometry.type !== 'Polygon' && geometry.type !== 'MultiPolygon') {
+            this.setState({
+                uploadError: 'Only Polygons are accepted for upload.',
+                uploading: false
+            })
+            return
+        }
+        this.handleClose()
+        this.userDrawnPolygonStart()
+        const layer = L.geoJSON(geojson)
+        this.refs.map.leafletElement.fitBounds(layer.getBounds())
+        this.enableDragging()
+        this.props.parentDrawHandler(geometry)
     }
 
     handleShow() {
@@ -344,10 +383,11 @@ class NBM extends React.PureComponent {
                     body={
                         <>
                         <ul>
+                            <li>Only shapefile (.shp) and GeoJSON (.json , .geojson) files under 5MB are accepted.</li>
                             <li>Your shapefile must be zipped into a '.zip' extension and be under 5MB.</li>
+                            <li>Only the first <b>polygon</b> feature in your file will be used. Point and line geometries are not accepted.</li>
                             <li>Valid .shp, .shx, .dbf, and .prj files must be included.</li>
                             <li>Most common coordinate systems are supported.</li>
-                            <li>Only the first feature in your shapefile will be used.</li>
                         </ul>
                         {
                             this.state.uploadError &&
@@ -355,8 +395,8 @@ class NBM extends React.PureComponent {
                         }
                         <label className="mb-0 pt-1 rounded float-right" title="Upload a shp file">
                             <span className="btn submit-analysis-btn">Upload</span>
-                            <input type="file" name="file-upload" id="file-upload" accept=".zip, .shp" style={{display: 'none'}}
-                                onChange={this.uploadShapefile} />
+                            <input type="file" name="file-upload" id="file-upload" accept=".zip, .shp, json, .geojson" style={{display: 'none'}}
+                                onChange={this.uploadFile} />
                         </label>
                         {
                             this.state.uploading &&

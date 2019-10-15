@@ -7,7 +7,8 @@ class DonutChart extends React.Component {
     this.state = {
       id: null,
       config: null,
-      data: null
+      data: null,
+      displayLabel: null
     }
 
     this.pieChart = React.createRef()
@@ -38,12 +39,17 @@ class DonutChart extends React.Component {
         data: this.props.data
       })
     }
+    if (this.props.displayLabel !== prevProps.displayLabel) {
+      this.setState({
+        displayLabel: this.props.displayLabel
+      })
+    }
   }
 
   getConfig() {
     const config = {...this.props.config}
-    config.innerRadius = 0.6
-    config.outerRadius = 0.8
+    config.innerRadius = config.innerRadius ? config.innerRadius : 0.6
+    config.outerRadius = config.outerRadius ? config.outerRadius : 0.8
 
     function getLabel(key) {
       return key ? key + ': ' : ''
@@ -76,7 +82,8 @@ class DonutChart extends React.Component {
         onRef={ref => (this.pieChart = ref)}
         data={this.state.data}
         id={this.state.id}
-        config={this.state.config} />
+        config={this.state.config}
+        displayLabel={this.state.displayLabel} />
     );
   }
 }
