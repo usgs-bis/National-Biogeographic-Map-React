@@ -10,6 +10,7 @@ const enableLookup = {
     'bap1' : true,
     'bap2' : true,
     'bap3' : true,
+    'bap10': true,
 }
 
 
@@ -23,6 +24,13 @@ class TimeSlider extends React.Component {
         // This also allows us to initilize this component when loading from a 
         // share url. 
 
+        //Initially added to get the slider to display the expected development range.
+        //  This will need to be redone to make the slider a bit more bap driven.
+        // console.log (' rangeYears = '+ props.rangeYearMin + '  ' + props.rangeYearMax);
+        // if (props.priorityBap ==='bap10'){
+        //     minSliderValue = 2001
+        //     maxSliderValue = 2061
+        // }
         this.state = {
             mapDisplayYear: props.mapDisplayYear,
             rangeYearMax: props.rangeYearMax,
@@ -176,9 +184,10 @@ class TimeSlider extends React.Component {
                 })
             }
 
+            // seems to work smoother on the render
             setTimeout(() => {
                 this.playCycle()
-            }, 3000)
+            }, 5000)
         }
     }
 

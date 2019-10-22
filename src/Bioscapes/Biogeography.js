@@ -215,6 +215,8 @@ class Biogeography extends React.Component {
                         onRef={ref => (this.ExpectedLandUseAnalysis = ref)}
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
                         setPriorityBap={this.props.setPriorityBap}
+                        yearMin={`2001`}
+                        yearMax={`2061`}
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
                         bapId={`bap10`}
