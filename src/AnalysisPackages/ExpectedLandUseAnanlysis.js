@@ -13,8 +13,26 @@ const sb_properties = {
   title: "Expected Land Use"
 }
 const layers = [
+    {
+        title: 'Expected Land Use over time 2001-2061',
+        layer: L.tileLayer.wms(
+            "https://dev-blm.sciencebase.gov/geoserver/bcb/wms",
+            {
+                format: "image/png",
+                layers: 'expected_land_use',
+                opacity: .5,
+                transparent: true
+            }
+        ),
+        legend: {
+            imageUrl: "https://dev-blm.sciencebase.gov/geoserver/bcb/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=expected_land_use"
+        },
+        timeEnabled: true,
+        checked: false,
+        sb_item: '5a87249de4b00f54eb3a2e1e'
+    },
   {
-    title: 'Expected Land Use',
+    title: 'Expected Land Use 2061',
     layer: L.tileLayer.wms(
         "https://sciencebase.usgs.gov/geoserver/bcb/wms",
         {

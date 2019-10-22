@@ -584,7 +584,9 @@ class App extends React.Component {
                     clone.on('load', (event) => {
                         setTimeout(() => {
                             clone.setOpacity(currentOpacity)
-                            item.layer.setOpacity(0)
+                            //  This "seemed" to cause the blink...No reason to go all the way to zero here setting this...
+                             //item.layer.setOpacity(0)
+                            item.layer.setOpacity(.45)
                             item.layer.setParams({ time: `${year}-01-01` })
                         }, 150)
                         clone.off('load')
@@ -595,6 +597,10 @@ class App extends React.Component {
                         }, 150)
                         item.layer.off('load')
                     })
+                    let o = item.layer.opacity;
+                    if (o < currentOpacity){
+                        item.layer.opacity = currentOpacity;
+                    }
                 }
             })
         }
@@ -623,6 +629,12 @@ class App extends React.Component {
         else {
             this.state.map.leafletElement.removeLayer(layer2)
         }
+        // This shouldn't happen, but does when cycling the map. this is crude, but
+        //   prevents the map from going blank if going thru a long progression
+        if ((currentOpacityLayer < .05) ) {
+            console.log('Failsafe setting opacity to .5 currentOpacityLayer '+ currentOpacityLayer + ' targetOpacity= '+targetOpacity);
+            layer.setOpacity(.5)
+         }
     }
 
     updateAnalysisLayers(layers, bapId) {
