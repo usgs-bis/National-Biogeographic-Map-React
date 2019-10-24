@@ -574,19 +574,17 @@ class App extends React.Component {
         if (this.state.analysisLayers) {
             this.state.analysisLayers.forEach((item) => {
                 if (item.timeEnabled) {
-                    let currentOpacity = Number(item.layer.options.opacity)
+                    let currentOpacity = Number(item.layer.options.opacity).toFixed(2)
                     let clone = cloneLayer(item.layer);
                     clone.setParams({ time: item.layer.wmsParams.time })
                     clone.setOpacity(0)
                     clone.addTo(this.state.map.leafletElement)
                     // weird case where layer 'load' doesent fire and clone doesnt get removed. 
-                    setTimeout(() => { this.state.map.leafletElement.removeLayer(clone) }, 2000)
+                    setTimeout(() => { this.state.map.leafletElement.removeLayer(clone) }, 5000)
                     clone.on('load', (event) => {
                         setTimeout(() => {
                             clone.setOpacity(currentOpacity)
-                            //  This "seemed" to cause the blink...No reason to go all the way to zero here setting this...
-                             //item.layer.setOpacity(0)
-                            item.layer.setOpacity(.45)
+                            item.layer.setOpacity(0)
                             item.layer.setParams({ time: `${year}-01-01` })
                         }, 150)
                         clone.off('load')
@@ -612,17 +610,17 @@ class App extends React.Component {
         let currentOpacitylayer2 = Number(layer2.options.opacity)
         let recurse = false
 
-        if (currentOpacitylayer2 > .06) {
-            layer2.setOpacity(currentOpacitylayer2 - 0.05);
+        if (currentOpacitylayer2 > .11) {
+            layer2.setOpacity(currentOpacitylayer2 - 0.10);
             recurse = true
         }
 
         if (currentOpacityLayer < targetOpacity) {
-            layer.setOpacity(currentOpacityLayer + 0.05);
+            layer.setOpacity(currentOpacityLayer + 0.10);
             recurse = true
         }
         if (recurse) {
-            setTimeout(() => { this.layerTransitionFade(layer, layer2, targetOpacity) }, 50)
+            setTimeout(() => { this.layerTransitionFade(layer, layer2, targetOpacity) }, 200)
         }
         // Idealy we would only remove clone here but about 5% of the time layer 'load' doesnt fire
         // see comment in setMapDisplayYear above
@@ -631,9 +629,9 @@ class App extends React.Component {
         }
         // This shouldn't happen, but does when cycling the map. this is crude, but
         //   prevents the map from going blank if going thru a long progression
-        if ((currentOpacityLayer < .05) ) {
-            console.log('Failsafe setting opacity to .5 currentOpacityLayer '+ currentOpacityLayer + ' targetOpacity= '+targetOpacity);
-            layer.setOpacity(.5)
+        //   we should only get here if we're done with the recursion, so something is messed up if opacity is this low
+        if ((currentOpacityLayer < .11) ) {
+            layer.setOpacity(.6)
          }
     }
 
