@@ -595,12 +595,6 @@ class App extends React.Component {
                         }, 250)
                         item.layer.off('load')
                     })
-                    // This shouldn't happen, but occasionally does, don't let the layer opacity drop below
-                    // the target
-                    let o = item.layer.opacity;
-                    if (o < currentOpacity){
-                        item.layer.opacity = currentOpacity;
-                    }
                 }
             })
         }
