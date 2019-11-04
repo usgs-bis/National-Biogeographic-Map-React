@@ -7,6 +7,7 @@ import DonutChart from "../Charts/DonutChart";
 import TableChart from "../Charts/TableChart"
 import HorizontalBarChart from "../Charts/HorizontalBarChart";
 import "./AnalysisPackages.css";
+import ChartLegend from "../Charts/ChartLegend";
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/5b747802e4b0f5d5787ed299?format=json"
 const ECOSYSTEM_URL = process.env.REACT_APP_BIS_API + "/api/v1/gapmetrics/ecologicalsystems/protection?feature_id=";
@@ -27,6 +28,7 @@ const layers = [
             layers: [0]
         },
         checked: false,
+        disabled: true,
         sb_item: '56bba50ce4b08d617f657956'
     },
     {
@@ -61,17 +63,22 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                 gapCoverage: { id: "", config: {}, data: null }
             },
             data: null,
-            gapStatus: "ALL",
-            gapRange: "ALL",
-            gapColor: "white",
+            gapSelection: {
+                status: 'ALL',
+                range: 'ALL',
+                color: 'white'
+            },
+            gapCoverageSelection: null
         }
-
+        this.gap12StatusGroup = 'status_1_2_group'
+        this.gap123StatusGroup = 'status_1_2_3_group'
         this.gap12 = React.createRef()
         this.gap123 = React.createRef()
         this.gapCoverage = React.createRef()
 
         this.getCharts = this.getCharts.bind(this)
         this.filterTableData = this.filterTableData.bind(this)
+        this.showGapCoverage = this.showGapCoverage.bind(this)
         this.getColorFromName = this.getColorFromName.bind(this)
         this.resetEcoTable = this.resetEcoTable.bind(this)
         this.print = this.print.bind(this)
@@ -85,9 +92,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
         this.featureChange()
         if (this.props.initBap) {
             this.setState({
-                gapStatus: this.props.initBap.gapStatus,
-                gapRange: this.props.initBap.gapRange,
-                gapColor: this.props.initBap.gapColor
+                gapSelection: this.props.initBap.gapSelection
             })
         }
     }
@@ -98,9 +103,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
             this.featureChange()
         }
         this.props.setShareState({
-            gapStatus: this.state.gapStatus,
-            gapRange: this.state.gapRange,
-            gapColor: this.state.gapColor
+            gapSelection: this.state.gapSelection
         })
     }
 
@@ -190,10 +193,11 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
 
     resetEcoTable() {
         this.setState({
-            gapStatus: "ALL",
-            gapRange: "ALL",
-            gapColor: 'white',
-
+            gapSelection: {
+                status: 'ALL',
+                range: 'ALL',
+                color: 'white'
+            }
         }, () => {
             const charts = this.getCharts(this.state.data)
             this.setState({
@@ -225,18 +229,18 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
             ecosystem_coverage: [],
             ecological_systems: [],
             gap1_2: [
-                { color: 'rgb(102,0,0)', count: 0, name: '< 1%', status: 'status_1_2_group', range: '<1' },
-                { color: 'rgb(255,0,0)', count: 0, name: '1 - 10%', status: 'status_1_2_group', range: '1-10' },
-                { color: 'rgb(237,203,98)', count: 0, name: '10 - 17%', status: 'status_1_2_group', range: '10-17' },
-                { color: 'rgb(156,203,25)', count: 0, name: '17 - 50%', status: 'status_1_2_group', range: '17-50' },
-                { color: 'rgb(34,139,34)', count: 0, name: '> 50%', status: 'status_1_2_group', range: '>50' },
+                { color: '#660000', count: 0, name: '< 1%', status: this.gap12StatusGroup, range: '<1', legend: '<1% is on GAP Status 1 and 2 lands (least protected).' },
+                { color: '#ff0000', count: 0, name: '1 - 10%', status: this.gap12StatusGroup, range: '1-10', legend: '1 - 10% is on GAP Status 1 and 2 lands.' },
+                { color: '#edcb62', count: 0, name: '10 - 17%', status: this.gap12StatusGroup, range: '10-17', legend: '10 - 17%* is on GAP Status 1 and 2 lands.' },
+                { color: '#9ccb19', count: 0, name: '17 - 50%', status: this.gap12StatusGroup, range: '17-50', legend: '17% - 50% is on GAP Status 1 and 2 lands.' },
+                { color: '#228b22', count: 0, name: '> 50%', status: this.gap12StatusGroup, range: '>50', legend: '> 50% is on GAP Status 1 and 2 lands (most protected).' },
             ],
             gap1_2_3: [
-                { color: 'rgb(102,0,0)', count: 0, name: '< 1%', status: 'status_1_2_3_group', range: '<1' },
-                { color: 'rgb(255,0,0)', count: 0, name: '1 - 10%', status: 'status_1_2_3_group', range: '1-10' },
-                { color: 'rgb(237,203,98)', count: 0, name: '10 - 17%', status: 'status_1_2_3_group', range: '10-17' },
-                { color: 'rgb(156,203,25)', count: 0, name: '17 - 50%', status: 'status_1_2_3_group', range: '17-50' },
-                { color: 'rgb(34,139,34)', count: 0, name: '> 50%', status: 'status_1_2_3_group', range: '>50' },
+                { color: '#660000', count: 0, name: '< 1%', status: this.gap123StatusGroup, range: '<1' },
+                { color: '#ff0000', count: 0, name: '1 - 10%', status: this.gap123StatusGroup, range: '1-10' },
+                { color: '#edcb62', count: 0, name: '10 - 17%', status: this.gap123StatusGroup, range: '10-17' },
+                { color: '#9ccb19', count: 0, name: '17 - 50%', status: this.gap123StatusGroup, range: '17-50' },
+                { color: '#228b22', count: 0, name: '> 50%', status: this.gap123StatusGroup, range: '>50' },
             ],
         }
         const placeName = this.props.feature.properties.feature_name
@@ -296,10 +300,10 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                     name: row.nvc_name,
                     code: row.nvc_code,
                     status_1_2: row.gapstat12perc,
-                    status_1_2_3: row.gapstat123perc,
-                    status_1_2_group: row.gapstat12group,
-                    status_1_2_3_group: row.gapstat123group
+                    status_1_2_3: row.gapstat123perc
                 }
+                c[this.gap12StatusGroup] = row.gapstat12group
+                c[this.gap123StatusGroup] = row.gapstat123group
                 dataTemplate.ecological_systems.push(c)
 
                 let total = data.systems.length
@@ -413,12 +417,13 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
             else if (chart.toString() === "gap12" && data) {
                 const chartId = "EP_GAP12"
                 const chartConfig = {
-                    margins: { left: 0, right: 0, top: 10, bottom: 125 },
+                    margins: { left: 0, right: 0, top: 0, bottom: 0 },
                     chart: { title: `GAP Status 1 & 2`, subtitle: `` },
                     tooltip: { data: { name: "", count: "Ecosystems" } },
-                    legend: { rectSize: 16, spacing: 4, leftOffset: 6, verticalSpacing: 20, fontSize: '13px' },
-                    width: 225,
-                    height: 225,
+                    width: 150,
+                    height: 150,
+                    innerRadius: .8,
+                    outerRadius: 1,
                     onClick: (d) => { this.filterTableData(d) }
                 }
                 const chartData = dataTemplate.gap1_2
@@ -427,12 +432,13 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
             else if (chart.toString() === "gap123" && data) {
                 const chartId = "EP_GAP123"
                 const chartConfig = {
-                    margins: { left: 0, right: 0, top: 10, bottom: 125 },
+                    margins: { left: 0, right: 0, top: 0, bottom: 0 },
                     chart: { title: `GAP Status 1, 2 & 3`, subtitle: `` },
                     tooltip: { data: { name: "", count: "Ecosystems" } },
-                    legend: { rectSize: 16, spacing: 4, leftOffset: 6, verticalSpacing: 20, fontSize: '13px' },
-                    width: 225,
-                    height: 225,
+                    width: 150,
+                    height: 150,
+                    innerRadius: .8,
+                    outerRadius: 1,
                     onClick: (d) => { this.filterTableData(d) }
                 }
                 const chartData = dataTemplate.gap1_2_3
@@ -446,11 +452,12 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                 let chartData = [['Ecological System', `Gap 1 & 2 Protection (%)`, `Gap 1, 2 & 3 Protection (%)`]]
                 let percentProtected = ''
                 let acresProtected = ''
+                const gapSelection = this.state.gapSelection
 
-                if (this.state.gapRange !== 'ALL') {
-                    preData = preData.filter((d) => { return d[this.state.gapStatus] === this.state.gapRange })
-                    if (this.state.gapStatus === 'status_1_2_group') chartTitle = `${preData.length} Ecological Systems with ${this.state.gapRange}% within GAP Status 1 & 2 in ${this.props.feature.properties.feature_name}`
-                    if (this.state.gapStatus === 'status_1_2_3_group') chartTitle = `${preData.length} Ecological Systems with ${this.state.gapRange}% within GAP Status 1, 2 & 3 in ${this.props.feature.properties.feature_name}`
+                if (gapSelection.range !== 'ALL') {
+                    preData = preData.filter((d) => { return d[gapSelection.status] === gapSelection.range })
+                    if (gapSelection.status === this.gap12StatusGroup) chartTitle = `${preData.length} Ecological Systems with ${gapSelection.range}% within GAP Status 1 & 2 in ${this.props.feature.properties.feature_name}`
+                    if (gapSelection.status === this.gap123StatusGroup) chartTitle = `${preData.length} Ecological Systems with ${gapSelection.range}% within GAP Status 1, 2 & 3 in ${this.props.feature.properties.feature_name}`
                     chartData = [['Ecological System', 'Acres Protected', '% Protected']]
                 }
 
@@ -459,13 +466,13 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                     acresProtected = `${parseFloat(row.status_1_2).toFixed(2)}%`
                     percentProtected = `${parseFloat(row.status_1_2_3).toFixed(2)}%`
 
-                    if (this.state.gapRange !== 'ALL') {
-                        if (this.state.gapStatus === 'status_1_2_group') {
+                    if (gapSelection.range !== 'ALL') {
+                        if (gapSelection.status === this.gap12StatusGroup) {
                             percentProtected = `${parseFloat(row.status_1_2).toFixed(2)}%`
                             acresProtected = `${numberWithCommas(parseFloat(row.acres).toFixed(0))}`
 
                         }
-                        if (this.state.gapStatus === 'status_1_2_3_group') {
+                        if (gapSelection.status === this.gap123StatusGroup) {
                             percentProtected = `${parseFloat(row.status_1_2_3).toFixed(2)}%`
                             acresProtected = `${numberWithCommas(parseFloat(row.acres).toFixed(0))}`
                         }
@@ -474,7 +481,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                 }
                 const chartConfig = {
                     margins: { left: 20, right: 20, top: 20, bottom: 125 },
-                    chart: { title: chartTitle, subtitle: ``, color: this.state.gapColor },
+                    chart: { title: chartTitle, subtitle: ``, color: gapSelection.color },
                 }
                 charts[chart] = { id: chartId, config: chartConfig, data: chartData }
 
@@ -489,7 +496,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                     lables: { fontSize: '8px' },
                     width: 200,
                     height: 200,
-                    onClick: (d) => { return null }
+                    onClick: (d) => { this.showGapCoverage(d) }
                 }
                 const chartData = dataTemplate.ecosystem_coverage
                 charts[chart] = { id: chartId, config: chartConfig, data: chartData }
@@ -502,9 +509,20 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
 
     filterTableData(d) {
         this.setState({
-            gapStatus: d.status,
-            gapRange: d.range,
-            gapColor: d.color
+            gapSelection: d
+        }, () => {
+            const charts = this.getCharts(this.state.data)
+            this.setState({
+                charts: charts,
+                submitted: true,
+                loading: false
+            })
+        })
+    }
+
+    showGapCoverage(d) {
+        this.setState({
+            gapCoverageSelection: d
         }, () => {
             const charts = this.getCharts(this.state.data)
             this.setState({
@@ -524,6 +542,15 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
             charts.push(this.gap123.current.print())
             charts.push(this.gapCoverage.current.print())
 
+            const gapStatusLegend = []
+            this.state.charts.gap12.data.forEach(item => {
+                gapStatusLegend.push({
+                    columns: [
+                        { width: 'auto', table: { body: [[{text: '\n', fillColor: item.color}]] } },
+                        { text: item.legend, margin: [5, 0, 0, 0] }
+                    ]
+                })
+            })
 
             return Promise.all(charts.flat()).then(contents => {
                 return [
@@ -540,7 +567,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                                 stack: [
                                     { text: this.state.charts.gap12.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
                                     { text: this.state.charts.gap12.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
-                                    { image: contents[1], alignment: 'center', width: 230, height: 370 },
+                                    { image: contents[1], alignment: 'center', width: 200, height: 200 },
                                 ]
                             },
 
@@ -549,11 +576,12 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                                 stack: [
                                     { text: this.state.charts.gap123.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
                                     { text: this.state.charts.gap123.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
-                                    { image: contents[2], alignment: 'center', width: 230, height: 370 },
+                                    { image: contents[2], alignment: 'center', width: 200, height: 200 },
                                 ]
                             }
                         ]
                     },
+                    { stack: gapStatusLegend },
                     { text: this.state.charts.gapTable.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 10] },
                     {
                         columns: [
@@ -620,6 +648,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
     }
 
     createUniqueBapContents() {
+        const gapSelection = this.state.gapSelection
         return (
             <div>
                 {this.props.getAnalysisLayers()}
@@ -640,23 +669,35 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                             <div className="title">Protection Status of {this.props.feature ? this.props.feature.properties.feature_name : ''}</div>
                             <div className="subtitle">(Click on a slice to filter the table and see only systems with that percent of protection.)</div>
                         </div>
-                        <div className="half-chart">
+                        <div className="half-chart px-3">
                             <DonutChart
                                 ref={this.gap12}
                                 data={this.state.charts.gap12.data}
                                 id={this.state.charts.gap12.id}
-                                config={this.state.charts.gap12.config} />
+                                config={this.state.charts.gap12.config}
+                                displayLabel={gapSelection.status === this.gap12StatusGroup ? gapSelection : null} />
                         </div>
-                        <div className="half-chart">
+                        <div className="half-chart px-3">
                             <DonutChart
                                 ref={this.gap123}
                                 data={this.state.charts.gap123.data}
                                 id={this.state.charts.gap123.id}
-                                config={this.state.charts.gap123.config} />
+                                config={this.state.charts.gap123.config}
+                                displayLabel={gapSelection.status === this.gap123StatusGroup ? gapSelection : null} />
+                        </div>
+                        <ChartLegend items={this.state.charts.gap12.data ?
+                            this.state.charts.gap12.data.map(data => {return {key: data.range, color: data.color, label: data.legend}}) : []}/>
+                        <div className="chart-footers p-0">
+                            <div className="anotations">
+                                In this analysis the same thresholds are used to summarize protection status using GAP Status 1, 2, and 3 lands for those who consider multiple use lands as protected for their analyses.<br/><br/>
+                                <span>
+                                    * 17% represents the 2020 target threshold for protection of terrestrial ecosystems agreed upon by Parties to the Conservation on Biological Diversity during the Aichi Convention. 
+                                    <a href="https://www.cbd.int/sp/targets/" target="_blank" rel="noopener noreferrer">https://www.cbd.int/sp/targets/</a>
+                                </span>
+                            </div>
                         </div>
                     </div>
-
-                    <div className="chart-headers">
+                    <div className="chart-headers pt-0">
                         <button className="submit-analysis-btn" onClick={this.resetEcoTable}>Clear Chart Selection</button>
                     </div>
                     <TableChart
@@ -669,7 +710,9 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                         ref={this.gapCoverage}
                         data={this.state.charts.gapCoverage.data}
                         id={this.state.charts.gapCoverage.id}
-                        config={this.state.charts.gapCoverage.config} />
+                        config={this.state.charts.gapCoverage.config}
+                        displayLabel={this.state.gapCoverageSelection}
+                    />
                 </div>
             </div>
         )
