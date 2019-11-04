@@ -10,6 +10,7 @@ const enableLookup = {
     'bap1' : true,
     'bap2' : true,
     'bap3' : true,
+    'bap10': true,
 }
 
 
@@ -21,8 +22,7 @@ class TimeSlider extends React.Component {
         // in the tooltips/summary box. The actual values, since they are 
         // used by many different components are stored in the state of app.js.
         // This also allows us to initilize this component when loading from a 
-        // share url. 
-
+        // share url.
         this.state = {
             mapDisplayYear: props.mapDisplayYear,
             rangeYearMax: props.rangeYearMax,
@@ -176,9 +176,10 @@ class TimeSlider extends React.Component {
                 })
             }
 
+            // seems to work smoother on the render
             setTimeout(() => {
                 this.playCycle()
-            }, 3000)
+            }, 5000)
         }
     }
 

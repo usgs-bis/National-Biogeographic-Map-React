@@ -574,13 +574,13 @@ class App extends React.Component {
         if (this.state.analysisLayers) {
             this.state.analysisLayers.forEach((item) => {
                 if (item.timeEnabled) {
-                    let currentOpacity = Number(item.layer.options.opacity)
+                    let currentOpacity = Number(item.layer.options.opacity).toFixed(2)
                     let clone = cloneLayer(item.layer);
                     clone.setParams({ time: item.layer.wmsParams.time })
                     clone.setOpacity(0)
                     clone.addTo(this.state.map.leafletElement)
                     // weird case where layer 'load' doesent fire and clone doesnt get removed. 
-                    setTimeout(() => { this.state.map.leafletElement.removeLayer(clone) }, 2000)
+                    setTimeout(() => { this.state.map.leafletElement.removeLayer(clone) }, 5000)
                     clone.on('load', (event) => {
                         setTimeout(() => {
                             clone.setOpacity(currentOpacity)
@@ -592,7 +592,7 @@ class App extends React.Component {
                     item.layer.on('load', (event) => {
                         setTimeout(() => {
                             this.layerTransitionFade(item.layer, clone, currentOpacity)
-                        }, 150)
+                        }, 250)
                         item.layer.off('load')
                     })
                 }
@@ -602,27 +602,33 @@ class App extends React.Component {
 
     // brings layer 1 up and layer 2 down; removes layer 2.
     layerTransitionFade(layer, layer2, targetOpacity) {
-        let currentOpacityLayer = Number(layer.options.opacity)
-        let currentOpacitylayer2 = Number(layer2.options.opacity)
+        let currentOpacityLayer = Number(layer.options.opacity).toFixed(2)
+        let currentOpacitylayer2 = Number(layer2.options.opacity).toFixed(2)
         let recurse = false
 
-        if (currentOpacitylayer2 > .06) {
-            layer2.setOpacity(currentOpacitylayer2 - 0.05);
+        if (currentOpacitylayer2 > .11) {
+            layer2.setOpacity(currentOpacitylayer2 - 0.10);
             recurse = true
         }
 
         if (currentOpacityLayer < targetOpacity) {
-            layer.setOpacity(currentOpacityLayer + 0.05);
+            layer.setOpacity(currentOpacityLayer + 0.10);
             recurse = true
         }
         if (recurse) {
-            setTimeout(() => { this.layerTransitionFade(layer, layer2, targetOpacity) }, 50)
+            setTimeout(() => { this.layerTransitionFade(layer, layer2, targetOpacity) }, 100)
         }
         // Idealy we would only remove clone here but about 5% of the time layer 'load' doesnt fire
         // see comment in setMapDisplayYear above
         else {
             this.state.map.leafletElement.removeLayer(layer2)
         }
+        // This shouldn't happen, but does when cycling the map. this is crude, but
+        //   prevents the map from going blank if going thru a long progression
+        if ((currentOpacityLayer < .11) ) {
+   //         console.log('Failsafe setting opacity to .5 currentOpacityLayer '+ currentOpacityLayer + ' targetOpacity= '+targetOpacity);
+            layer.setOpacity(.50)
+         }
     }
 
     updateAnalysisLayers(layers, bapId) {

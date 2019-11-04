@@ -28,6 +28,7 @@ const layers = [
             layers: [0]
         },
         checked: false,
+        disabled: true,
         sb_item: '56bba50ce4b08d617f657956'
     },
     {

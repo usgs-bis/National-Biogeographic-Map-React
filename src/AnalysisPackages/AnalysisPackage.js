@@ -171,7 +171,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
         toggleLayer(layer, opacity) {
 
             let newLayers = this.state.layers
-            if (layer) {
+            if (layer && !layer.disabled) {
                 for (let l of newLayers) {
                     // always toggle the layer clicked
                     if (l.title === layer.title) {
@@ -289,7 +289,8 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                                                 onClick={() => this.toggleLayer(layer)}
                                                 onChange={() => { }}
                                                 checked={layer.checked}
-                                                type="checkbox" />
+                                                type="checkbox"
+                                                disabled={layer.disabled ? true : false} />
                                             {' ' + (layer.titlePrefix ? layer.titlePrefix : "") + layer.title}
                                             <InfoSign onClick={(event) => { this.setState({ [`sbInfoLayerPopUp${key}`]: !this.state[`sbInfoLayerPopUp${key}`] }); event.preventDefault() }}> </InfoSign>
                                             {
