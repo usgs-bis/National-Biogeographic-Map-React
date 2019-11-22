@@ -1,5 +1,13 @@
+# Dockerfile for deploying the static site in a container
+
+ARG node_image=node
+ARG node_image_tag=10.15
+
+#
+# Build image
+#
 # base image
-FROM node:10.15 as npmbuild
+FROM ${node_image}:${node_image_tag} as npmbuild
 
 # set working directory
 RUN mkdir /usr/src/app
@@ -19,6 +27,11 @@ COPY public /usr/src/app/public
 COPY src /usr/src/app/src
 RUN npm run build
 
-FROM nginx:stable
+ARG nginx_image=nginx
+ARG nginx_image_tag=stable
+#
+# Runtime image
+#
+FROM ${nginx_image}:${nginx_image_tag}
 COPY --from=npmbuild /usr/src/app/build /usr/share/nginx/html/biogeography
 COPY conf/nginx.default.conf /etc/nginx/conf.d/default.conf

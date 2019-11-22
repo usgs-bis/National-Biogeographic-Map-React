@@ -1,4 +1,4 @@
-# .gitlab-ci.yml
+# .gitlab-ci.yml for USGS SAS deployment
 #
 # This builds a Docker image and tags it as the latest for its branch.
 # After building, it will trigger a deployment pipeline in another repo.
@@ -43,9 +43,13 @@ stages:
 variables:
   # This is passed to deployment
   NBM_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}
-  # This is passed to deployment
   NBM_IMAGE_TAG: ${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}
+  node_image: code.chs.usgs.gov:5001/sas/ops/docker/base-images/node
+  node_image_tag: 10.15-latest
   DOCKERFILE: ./Dockerfile.static
+  DOCKER_BUILD_ARGS: >-
+    --build-arg node_image=${node_image}
+    --build-arg node_image_tag=${node_image_tag}
 
 trigger_deploy_development:
   extends: .deploy_trigger
