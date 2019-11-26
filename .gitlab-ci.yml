@@ -1,27 +1,11 @@
-# .gitlab-ci.yml
-#
-# This builds a Docker image and tags it as the latest for its branch.
-# After building, it will trigger a deployment pipeline in another repo.
+# .gitlab-ci.yml for USGS SAS deployment
 #
 # Reference:
 #   - https://docs.gitlab.com/ee/ci/yaml/
-#   - https://docs.gitlab.com/ee/ci/multi_project_pipelines.html
 #
 # CI Variables:
-#   NBM_IMAGE
-#     Should be the full value of the Docker image to produce. This should include the full registry address.
-#     This variable is sent to the deployment trigger.
-#
-#   NBM_IMAGE_TAG
-#     The Docker image tag. The default is to use the branch:short_sha
-#     This variable is sent to the deployment trigger.
-#
 #   DEPLOY_TRIGGER_REF
 #     Set on the individual deployment jobs below. This is the branch name to trigger on the deployment pipeline.
-#
-#   DEPLOY_TRIGGER_VARS
-#     Space-delimited list of variables to pass along with the deployment trigger.
-#     This is used to pass the NBM_IMAGE and NBM_IMAGE_TAG variables along to the deployment.
 #
 #   DEPLOY_TRIGGER_TOKEN
 #     Specified external to this file as a CI variable.
@@ -31,38 +15,49 @@
 #
 include:
   - project: 'sas/ops/ci-pipeline/gitlab-ci-pipeline'
-    file: '/build/docker.yml'
+    file: '/common-vars.yml'
   - project: 'sas/ops/ci-pipeline/gitlab-ci-pipeline'
     file: '/deploy/api_trigger.yml'
 
 stages:
-  - docker_build
-  - docker_tag_latest
-  - deploy_trigger
+  - build
+  - deploy
 
-variables:
-  # This is passed to deployment
-  NBM_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}
-  # This is passed to deployment
-  NBM_IMAGE_TAG: ${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}
-  DOCKERFILE: ./Dockerfile.static
+npm_build:
+  stage: build
+  # Use an internal registry for node
+  # This variable is from the included '/common-vars.yml'
+  image: ${SAS_IMAGE_NODE}:10.15
+  tags:
+    - docker
+  script:
+    - export PATH=${PWD}/node_modules/.bin:${PATH}
+    - npm install
+    - npm install react-scripts@1.1.1 -g --silent
+    - npm run build
+  artifacts:
+    paths:
+      - build
 
 trigger_deploy_development:
   extends: .deploy_trigger
+  stage: deploy
   variables:
-    DEPLOY_TRIGGER_VARS: NBM_IMAGE NBM_IMAGE_TAG
-    ENVIRONMENT: development
+    # Pass along the build artifact information with the trigger
+    ARTIFACT_JOB: npm_build
+    # Trigger the 'development' branch on the deploy pipeline
     DEPLOY_TRIGGER_REF: development
   only:
     refs:
-      - gitlab_ci
       - development
 
-trigger_deploy_staging:
+trigger_deploy_master:
   extends: .deploy_trigger
+  stage: deploy
   variables:
-    DEPLOY_TRIGGER_VARS: NBM_IMAGE NBM_IMAGE_TAG
-    ENVIRONMENT: staging
+    # Pass along the build artifact information with the trigger
+    ARTIFACT_JOB: npm_build
+    # Trigger the 'master' branch on the deploy pipeline
     DEPLOY_TRIGGER_REF: master
   only:
     refs:
