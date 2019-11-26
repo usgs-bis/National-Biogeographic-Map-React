@@ -36,10 +36,6 @@ https://www.sciencebase.gov/catalog/
 
         ./run.sh
 
-    To build a static site (`npm run build`) and serve:
-
-        ./run.sh static
-
 ## Building:
 
 * `npm run build`
