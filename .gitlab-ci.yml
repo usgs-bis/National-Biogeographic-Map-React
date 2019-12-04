@@ -38,6 +38,7 @@ npm_build:
   artifacts:
     paths:
       - build
+      - package-lock.json
 
 trigger_deploy_development:
   extends: .deploy_trigger
