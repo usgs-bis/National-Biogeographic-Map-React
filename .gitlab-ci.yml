@@ -33,7 +33,7 @@ npm_build:
   script:
     - export PATH=${PWD}/node_modules/.bin:${PATH}
     - npm install
-    - npm install react-scripts@1.1.1 -g --silent
+    # - npm install react-scripts@1.1.1 -g --silent
     - npm run build
   artifacts:
     paths:
