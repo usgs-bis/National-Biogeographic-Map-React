@@ -42,7 +42,7 @@ npm_build:
   script:
     - export PATH=${PWD}/node_modules/.bin:${PATH}
     - npm install
-    - npm run build
+    - npm run build:dev
     - echo $(grep '"version"' package.json | cut -d '"' -f 4) > .version
   artifacts:
     paths:
@@ -97,9 +97,11 @@ trigger_deploy_development:
     DEPLOY_TRIGGER_VARS: ARTIFACTORY_REPO ARTIFACTORY_TARGET_FILE
     # Trigger the 'development' branch on the deploy pipeline
     DEPLOY_TRIGGER_REF: development
+  when: manual
   only:
     refs:
       - development
+      - BCB-1282
 
 trigger_deploy_master:
   extends: .nbm_deploy_trigger
