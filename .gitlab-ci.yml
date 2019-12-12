@@ -90,6 +90,20 @@ upload_artifact:
   dependencies:
     - upload_artifact
 
+trigger_deploy_dev_test:
+  extends: .deploy_trigger
+  stage: deploy
+  before_script:
+    - set -a && source .vars
+  variables:
+    ARTIFACT_JOB: npm_build
+    # Trigger the 'development' branch on the deploy pipeline
+    DEPLOY_TRIGGER_REF: development
+  when: manual
+  only:
+    refs:
+      - BCB-1282
+
 trigger_deploy_development:
   extends: .nbm_deploy_trigger
   variables:
@@ -101,7 +115,6 @@ trigger_deploy_development:
   only:
     refs:
       - development
-      - BCB-1282
 
 trigger_deploy_master:
   extends: .nbm_deploy_trigger
