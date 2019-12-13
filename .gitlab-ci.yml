@@ -93,28 +93,24 @@ upload_artifact:
     - set -a && source .vars
   dependencies:
     - upload_artifact
+  variables:
+    ARTIFACTORY_REPO: nbm
+    DEPLOY_TRIGGER_VARS: ARTIFACTORY_REPO ARTIFACTORY_TARGET_FILE DEPLOY_ENV
+    # Trigger the 'development' branch on the deploy pipeline
+    DEPLOY_TRIGGER_REF: development
 
 trigger_deploy_development:
   extends: .nbm_deploy_trigger
-  variables:
-    ARTIFACTORY_REPO: nbm
-    DEPLOY_TRIGGER_VARS: ARTIFACTORY_REPO ARTIFACTORY_TARGET_FILE
-    # Trigger the 'development' branch on the deploy pipeline
-    DEPLOY_TRIGGER_REF: development
-  only:
-    refs:
-      - development
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "BCB-1282"'
+      when: manual
 
 trigger_deploy_beta:
   extends: .nbm_deploy_trigger
   variables:
-    ARTIFACTORY_REPO: nbm
     DEPLOY_ENV: beta
-    DEPLOY_TRIGGER_VARS: ARTIFACTORY_REPO ARTIFACTORY_TARGET_FILE DEPLOY_ENV
-    # Trigger the 'beta' branch on the deploy pipeline
-    DEPLOY_TRIGGER_REF: development
   rules:
-    - if: '$CI_COMMIT_REF_NAME == "BCB-1282"'
+    - if: '$CI_COMMIT_REF_NAME == "beta"'
       when: manual
   
 
