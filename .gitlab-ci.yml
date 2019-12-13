@@ -96,8 +96,6 @@ upload_artifact:
 trigger_deploy_dev_test:
   extends: .deploy_trigger
   stage: deploy
-  before_script:
-    - set -a && source .vars
   variables:
     ARTIFACT_JOB: npm_build
     # Trigger the 'development' branch on the deploy pipeline
