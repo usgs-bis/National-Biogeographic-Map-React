@@ -110,7 +110,7 @@ trigger_deploy_beta:
   variables:
     DEPLOY_ENV: beta
   rules:
-    - if: '$CI_COMMIT_REF_NAME == "beta"'
+    - if: '$CI_COMMIT_REF_NAME == "BCB-1282"'
       when: manual
   
 
