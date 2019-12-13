@@ -42,7 +42,8 @@ npm_build:
   script:
     - export PATH=${PWD}/node_modules/.bin:${PATH}
     - npm install
-    - npm run build:dev
+    - npm run build:beta
+    # - npm run build:${CI_COMMIT_REF}
     - echo $(grep '"version"' package.json | cut -d '"' -f 4) > .version
   artifacts:
     paths:

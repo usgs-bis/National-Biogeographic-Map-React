@@ -38,13 +38,13 @@ https://www.sciencebase.gov/catalog/
 
 ## Building:
 
-* `npm run build`
+* `npm run build` or `npm run build:master`
   * builds the app for production deploy using `.env.production`
 
 * `npm run build:beta`
   * builds the app for beta deploy using `.env.beta` to override values in `.env.production`
 
-* `npm run build:dev`
+* `npm run build:development`
   * builds the app for development deploy using `.env.dev` to override values in `.env.production`
 
 
