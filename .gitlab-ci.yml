@@ -98,10 +98,20 @@ trigger_deploy_development:
     DEPLOY_TRIGGER_VARS: ARTIFACTORY_REPO ARTIFACTORY_TARGET_FILE
     # Trigger the 'development' branch on the deploy pipeline
     DEPLOY_TRIGGER_REF: development
-  when: manual
   only:
     refs:
       - development
+
+trigger_deploy_beta:
+  extends: .nbm_deploy_trigger
+  variables:
+    ARTIFACTORY_REPO: nbm
+    DEPLOY_TRIGGER_VARS: ARTIFACTORY_REPO ARTIFACTORY_TARGET_FILE
+    # Trigger the 'beta' branch on the deploy pipeline
+    DEPLOY_TRIGGER_REF: master
+  when: manual
+  only:
+    refs:
       - BCB-1282
 
 trigger_deploy_master:
