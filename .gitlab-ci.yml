@@ -73,6 +73,9 @@ upload_artifact:
       - .vars
   dependencies:
     - npm_build
+  except:
+    refs:
+      - BCB-1282
 
 #
 # Trigger the deployment pipeline using the GitLab API
