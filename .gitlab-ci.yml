@@ -47,8 +47,7 @@ npm_build:
   script:
     - export PATH=${PWD}/node_modules/.bin:${PATH}
     - npm install
-    - npm run build:beta
-    # - npm run build:${CI_COMMIT_REF_NAME}
+    - npm run build:${CI_COMMIT_REF_NAME}
     - echo $(grep '"version"' package.json | cut -d '"' -f 4) > .version
   artifacts:
     paths:
@@ -124,10 +123,6 @@ trigger_deploy_master:
   variables:
     # run the deploy pipeline for the prod environment
     DEPLOY_ENV: prod
-    # ARTIFACTORY_REPO: nbm
-    # DEPLOY_TRIGGER_VARS: ARTIFACTORY_REPO ARTIFACTORY_TARGET_FILE
-    # # Trigger the 'master' branch on the deploy pipeline
-    # DEPLOY_TRIGGER_REF: master
   only:
     refs:
       - master
