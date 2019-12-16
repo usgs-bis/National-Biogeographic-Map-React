@@ -29,6 +29,11 @@ stages:
   - publish_artifact
   - deploy
 
+variables:
+  # Specify the environment for the deployment pipeline
+  # Can/should be overridden in trigger_deploy jobs
+  DEPLOY_ENV: development
+
 #
 # Use npm to produce a static site artifact
 #
@@ -42,7 +47,7 @@ npm_build:
   script:
     - export PATH=${PWD}/node_modules/.bin:${PATH}
     - npm install
-    - npm run build
+    - npm run build:${CI_COMMIT_REF_NAME}
     - echo $(grep '"version"' package.json | cut -d '"' -f 4) > .version
   artifacts:
     paths:
@@ -89,25 +94,35 @@ upload_artifact:
     - set -a && source .vars
   dependencies:
     - upload_artifact
+  variables:
+    ARTIFACTORY_REPO: nbm
+    DEPLOY_TRIGGER_VARS: ARTIFACTORY_REPO ARTIFACTORY_TARGET_FILE DEPLOY_ENV
+    # Trigger the 'development' branch on the deploy pipeline
+    DEPLOY_TRIGGER_REF: development
 
 trigger_deploy_development:
   extends: .nbm_deploy_trigger
-  variables:
-    ARTIFACTORY_REPO: nbm
-    DEPLOY_TRIGGER_VARS: ARTIFACTORY_REPO ARTIFACTORY_TARGET_FILE
-    # Trigger the 'development' branch on the deploy pipeline
-    DEPLOY_TRIGGER_REF: development
+  when: manual
   only:
     refs:
       - development
 
+trigger_deploy_beta:
+  extends: .nbm_deploy_trigger
+  variables:
+    # run the deploy pipeline for the beta environment
+    DEPLOY_ENV: beta
+  when: manual
+  only:
+    refs:
+      - beta
+  
+
 trigger_deploy_master:
   extends: .nbm_deploy_trigger
   variables:
-    ARTIFACTORY_REPO: nbm
-    DEPLOY_TRIGGER_VARS: ARTIFACTORY_REPO ARTIFACTORY_TARGET_FILE
-    # Trigger the 'master' branch on the deploy pipeline
-    DEPLOY_TRIGGER_REF: master
+    # run the deploy pipeline for the prod environment
+    DEPLOY_ENV: prod
   only:
     refs:
       - master
