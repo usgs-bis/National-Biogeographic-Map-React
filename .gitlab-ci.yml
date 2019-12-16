@@ -102,7 +102,6 @@ upload_artifact:
 
 trigger_deploy_development:
   extends: .nbm_deploy_trigger
-  when: manual
   only:
     refs:
       - development
@@ -112,11 +111,9 @@ trigger_deploy_beta:
   variables:
     # run the deploy pipeline for the beta environment
     DEPLOY_ENV: beta
-  when: manual
   only:
     refs:
       - beta
-  
 
 trigger_deploy_master:
   extends: .nbm_deploy_trigger
