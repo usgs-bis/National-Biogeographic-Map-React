@@ -62,13 +62,13 @@ https://www.sciencebase.gov/catalog/
 
 * ### Biogeography
 
-    * SAS Dev: (Internal USGS Only) https://master.staging.sciencebase.gov/biogeography
+    * SAS Dev: (Internal USGS Only) https://maps-dev.snafu.cr.usgs.gov/biogeography
     * SAS Beta: https://maps-beta.usgs.gov/biogeography/
     * SAS Prod: https://maps.usgs.gov/biogeography/
 
 * ### Terrestrial Ecosystems 2011
 
-    * SAS Dev: (Internal USGS Only) https://master.staging.sciencebase.gov/terrestrial-ecosystems-2011
+    * SAS Dev: (Internal USGS Only) https://maps-dev.snafu.cr.usgs.gov/terrestrial-ecosystems-2011
     * SAS Beta: https://maps-beta.usgs.gov/terrestrial-ecosystems-2011/
     * SAS Prod: https://maps.usgs.gov/terrestrial-ecosystems-2011/
 
