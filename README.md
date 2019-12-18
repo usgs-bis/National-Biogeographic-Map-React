@@ -38,22 +38,22 @@ https://www.sciencebase.gov/catalog/
 
 ## Building:
 
-* `npm run build`
+* `npm run build` or `npm run build:master`
   * builds the app for production deploy using `.env.production`
 
 * `npm run build:beta`
   * builds the app for beta deploy using `.env.beta` to override values in `.env.production`
 
-* `npm run build:dev`
+* `npm run build:development`
   * builds the app for development deploy using `.env.dev` to override values in `.env.production`
 
 
 ## To review and publish
 
 * This project follows a three branch structure.
-     * development ->  https://dev-sciencebase.usgs.gov/biogeography
-     * beta ->  https://my-beta.usgs.gov/biogeography/
-     * master (FUTURE) -> https://maps.usgs.gov/biogeography
+     * development ->  https://maps-dev.snafu.cr.usgs.gov/biogeography/
+     * beta ->  https://maps-beta.usgs.gov/biogeography/
+     * master -> https://maps.usgs.gov/biogeography
 * Merge code into development branch for review
 * Open a PR to beta branch for further review and testing
 * After code is reviewed and tested, open a pr to master branch to deploy to production
@@ -62,15 +62,15 @@ https://www.sciencebase.gov/catalog/
 
 * ### Biogeography
 
-    * DEV-IS k8s: (Deprecated) ~~https://master.staging.sciencebase.gov/biogeography~~
-    * DEV-IS: (Internal USGS Only) https://dev-sciencebase.usgs.gov/biogeography
-    * My-BETA: https://my-beta.usgs.gov/biogeography/
+    * SAS Dev: (Internal USGS Only) https://maps-dev.snafu.cr.usgs.gov/biogeography
+    * SAS Beta: https://maps-beta.usgs.gov/biogeography/
+    * SAS Prod: https://maps.usgs.gov/biogeography/
 
 * ### Terrestrial Ecosystems 2011
 
-    * DEV-IS k8s: (Deprecated) ~~https://master.staging.sciencebase.gov/terrestrial-ecosystems-2011~~
-    * DEV-IS: (Internal USGS Only) https://dev-sciencebase.usgs.gov/terrestrial-ecosystems-2011
-    * MY-BETA: https://my-beta.usgs.gov/terrestrial-ecosystems-2011/
+    * SAS Dev: (Internal USGS Only) https://maps-dev.snafu.cr.usgs.gov/terrestrial-ecosystems-2011
+    * SAS Beta: https://maps-beta.usgs.gov/terrestrial-ecosystems-2011/
+    * SAS Prod: https://maps.usgs.gov/terrestrial-ecosystems-2011/
 
 ## Authors
 

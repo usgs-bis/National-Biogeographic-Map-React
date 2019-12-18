@@ -14,15 +14,29 @@
 #     Specified external to this file as a CI variable.
 #
 include:
+  # Include common variables
   - project: 'sas/ops/ci-pipeline/gitlab-ci-pipeline'
     file: '/common-vars.yml'
+  # Jobs for publishing artifacts to Artifactory
+  - project: 'sas/ops/ci-pipeline/gitlab-ci-pipeline'
+    file: '/util/artifactory.yml'
+  # Job to trigger a GitLab pipeline
   - project: 'sas/ops/ci-pipeline/gitlab-ci-pipeline'
     file: '/deploy/api_trigger.yml'
 
 stages:
   - build
+  - publish_artifact
   - deploy
 
+variables:
+  # Specify the environment for the deployment pipeline
+  # Can/should be overridden in trigger_deploy jobs
+  DEPLOY_ENV: development
+
+#
+# Use npm to produce a static site artifact
+#
 npm_build:
   stage: build
   # Use an internal registry for node
@@ -33,33 +47,79 @@ npm_build:
   script:
     - export PATH=${PWD}/node_modules/.bin:${PATH}
     - npm install
-    # - npm install react-scripts@1.1.1 -g --silent
-    - npm run build
+    - npm run build:${CI_COMMIT_REF_NAME}
+    - echo $(grep '"version"' package.json | cut -d '"' -f 4) > .version
   artifacts:
     paths:
       - build
+      - .version
       - package-lock.json
 
-trigger_deploy_development:
+#
+# Compress and upload the build artifact to artifactory
+#
+# The ARTIFACTORY_TARGET_FILE is determined by evaluating the
+# version from the package.json file in the build artifact and adding
+# the short commit hash.
+# e.g. nbm-2.0.4-2643da4ec.zip
+#
+upload_artifact:
+  extends: .upload_artifact
+  stage: publish_artifact
+  variables:
+    ARTIFACTORY_REPO: nbm
+    ARTIFACTORY_SOURCE_FILE: build
+    ARTIFACTORY_COMPRESS: 'true'
+  before_script:
+    - echo ARTIFACTORY_TARGET_FILE=nbm-$(cat .version)-${CI_COMMIT_SHORT_SHA}.zip > .vars
+    - set -a && source .vars
+  artifacts:
+    paths:
+      - .vars
+  dependencies:
+    - npm_build
+
+#
+# Trigger the deployment pipeline using the GitLab API
+#
+# This passes along the artifactory repo and target filename.
+#
+# The 'upload_artifact' job provides a ".vars" file that provides
+# the filename, which is sourced here.
+#
+.nbm_deploy_trigger:
   extends: .deploy_trigger
   stage: deploy
+  before_script:
+    - set -a && source .vars
+  dependencies:
+    - upload_artifact
   variables:
-    # Pass along the build artifact information with the trigger
-    ARTIFACT_JOB: npm_build
+    ARTIFACTORY_REPO: nbm
+    DEPLOY_TRIGGER_VARS: ARTIFACTORY_REPO ARTIFACTORY_TARGET_FILE DEPLOY_ENV
     # Trigger the 'development' branch on the deploy pipeline
     DEPLOY_TRIGGER_REF: development
+
+trigger_deploy_development:
+  extends: .nbm_deploy_trigger
   only:
     refs:
       - development
 
-trigger_deploy_master:
-  extends: .deploy_trigger
-  stage: deploy
+trigger_deploy_beta:
+  extends: .nbm_deploy_trigger
   variables:
-    # Pass along the build artifact information with the trigger
-    ARTIFACT_JOB: npm_build
-    # Trigger the 'master' branch on the deploy pipeline
-    DEPLOY_TRIGGER_REF: master
+    # run the deploy pipeline for the beta environment
+    DEPLOY_ENV: beta
+  only:
+    refs:
+      - beta
+
+trigger_deploy_master:
+  extends: .nbm_deploy_trigger
+  variables:
+    # run the deploy pipeline for the prod environment
+    DEPLOY_ENV: prod
   only:
     refs:
       - master
