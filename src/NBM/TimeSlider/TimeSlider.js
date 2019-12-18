@@ -2,7 +2,7 @@ import React from "react";
 import "./TimeSlider.css";
 import { Glyphicon } from "react-bootstrap";
 
-
+// initial values for now
 const minSliderValue = 1981
 const maxSliderValue = 2018
 
@@ -23,6 +23,7 @@ class TimeSlider extends React.Component {
         // used by many different components are stored in the state of app.js.
         // This also allows us to initilize this component when loading from a 
         // share url.
+
         this.state = {
             mapDisplayYear: props.mapDisplayYear,
             rangeYearMax: props.rangeYearMax,
@@ -42,6 +43,8 @@ class TimeSlider extends React.Component {
         this.sliderSize = 0
         this.leftPos = 0;
         this.enabled = true
+        this.maxSliderValue = maxSliderValue
+        this.minSliderValue = minSliderValue
     }
 
     componentDidMount() {
@@ -74,10 +77,22 @@ class TimeSlider extends React.Component {
         if(!enableLookup[this.props.priorityBap]){
             document.getElementById("range-slider").style.opacity = "0.4";
             this.enabled = false
+ //           this.state.playing = false;
         }
         else{
             document.getElementById("range-slider").style.opacity = "1";
             this.enabled = true
+            if (this.props.priorityBap === 'bap10'){
+                this.minSliderValue=2001
+                this.maxSliderValue=2061
+            }
+            else{
+                 this.maxSliderValue=2018
+                 this.minSliderValue=1981
+            }
+
+            this.setIntermittentYearRange()
+            this.setIntermittentMapDisplayYear()
         }
     }
 
@@ -91,8 +106,8 @@ class TimeSlider extends React.Component {
         let leftWidthRatio = leftpos / this.sliderSize
         let rightWidthRatio = rightpos / this.sliderSize
 
-        let leftYear = minSliderValue + parseInt((maxSliderValue - minSliderValue) * leftWidthRatio)
-        let rightYear = minSliderValue + parseInt((maxSliderValue - minSliderValue) * rightWidthRatio)
+        let leftYear = this.minSliderValue + parseInt((this.maxSliderValue - this.minSliderValue) * leftWidthRatio)
+        let rightYear = this.minSliderValue + parseInt((this.maxSliderValue - this.minSliderValue) * rightWidthRatio)
 
         document.getElementById('leftHandelOutput').style.left = (leftpos - 12) + 'px'
         document.getElementById('leftHandelOutputText').innerHTML = leftYear
@@ -116,7 +131,7 @@ class TimeSlider extends React.Component {
         let pos = document.getElementById('middleHandelOutputGlyph').offsetLeft
         let widthRatio = pos / this.sliderSize
 
-        let year = minSliderValue + parseInt((maxSliderValue - minSliderValue) * widthRatio)
+        let year = this.minSliderValue + parseInt((this.maxSliderValue - this.minSliderValue) * widthRatio)
 
         document.getElementById('middleHandelOutput').style.left = (pos - 48) + 'px'
         document.getElementById('middleHandelOutputText').innerHTML = 'Map Display: ' + year
@@ -130,15 +145,15 @@ class TimeSlider extends React.Component {
     initHandelPos() {
         this.sliderSize = document.getElementById("rangeSliderContainer").clientWidth
         // init middle
-        let left = ((this.state.mapDisplayYear - minSliderValue) / (maxSliderValue - minSliderValue)) * this.sliderSize
+        let left = ((this.state.mapDisplayYear - this.minSliderValue) / (this.maxSliderValue - this.minSliderValue)) * this.sliderSize
         document.getElementById('middleHandelOutputGlyph').style.left = (left +5) + 'px'
 
         // init left 
-        left = ((this.state.rangeYearMin - minSliderValue) / (maxSliderValue - minSliderValue)) * this.sliderSize
+        left = ((this.state.rangeYearMin - this.minSliderValue) / (this.maxSliderValue - this.minSliderValue)) * this.sliderSize
         document.getElementById('leftHandelOutputGlyph').style.left = (left + 5) + 'px'
 
         // init right
-        left = ((this.state.rangeYearMax - minSliderValue) / (maxSliderValue - minSliderValue)) * this.sliderSize
+        left = ((this.state.rangeYearMax - this.minSliderValue) / (this.maxSliderValue - this.minSliderValue)) * this.sliderSize
         if (left >= this.sliderSize) left = this.sliderSize
         document.getElementById('rightHandelOutputGlyph').style.left = (left + 5) + 'px'
 
@@ -159,9 +174,9 @@ class TimeSlider extends React.Component {
     playCycle() {
 
         if (this.state.playing) {
-            if ((this.state.mapDisplayYear + 1) > maxSliderValue) {
+            if ((this.state.mapDisplayYear + 1) > this.maxSliderValue) {
                 this.setState({
-                    mapDisplayYear: minSliderValue
+                    mapDisplayYear: this.minSliderValue
                 }, () => {
                     this.initHandelPos()
                     this.props.setMapDisplayYearFade(this.state.mapDisplayYear)
@@ -236,7 +251,7 @@ class TimeSlider extends React.Component {
                 <section id="range-slider" className="range-slider">
                     <Glyphicon onClick={this.playTimeSlider} className="play-glyph inner-glyph" glyph={this.state.playGlyph}
                     data-toggle="tooltip" data-placement="top" title={this.state.playing ? "Pause" : "Play"} />
-                    <span className="range-values" style={{ left: "30px" }}>{minSliderValue}</span>
+                    <span className="range-values" style={{ left: "30px" }}>{this.minSliderValue}</span>
                     <span id="rangeSliderContainer" className="range-slider-container">
                         <span id="sliderRangeFill" className="slider-range-fill"></span>
 
@@ -259,7 +274,7 @@ class TimeSlider extends React.Component {
 
                     </span>
 
-                    <span className="range-values" style={{ right: "10px" }}>{maxSliderValue}</span>
+                    <span className="range-values" style={{ right: "10px" }}>{this.maxSliderValue}</span>
                 </section>
             </div >
         );
