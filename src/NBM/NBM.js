@@ -17,6 +17,15 @@ const DEV_MODE = process.env.REACT_APP_DEV;
 const ENV = process.env.REACT_APP_ENV;
 const BUFFER = .5;
 
+//this is the total range of data for slider,
+// not the range of the analysis window
+const YEAR_RANGES = {
+    'bap1':{min:1981,max:2018},
+    'bap2':{min:1981,max:2018},
+    'bap3':{min:1981,max:2018},
+    'bap10':{min:2001,max:2061}
+}
+
 class NBM extends React.PureComponent {
     constructor(props) {
         super(props);
@@ -429,6 +438,7 @@ class NBM extends React.PureComponent {
                         rangeYearMin={this.props.rangeYearMin}
                         mapDisplayYear={this.props.mapDisplayYear}
                         priorityBap={this.props.priorityBap}
+                        bapYearRanges={YEAR_RANGES}
                     />}
                 </div>
                 <div className="attribution" onClick={() => { this.setState({ attributionOpen: !this.state.attributionOpen }) }} onMouseOver={this.disableDragging} onMouseOut={this.enableDragging}>
