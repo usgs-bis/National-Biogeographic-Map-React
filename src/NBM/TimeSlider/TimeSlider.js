@@ -2,7 +2,7 @@ import React from "react";
 import "./TimeSlider.css";
 import { Glyphicon } from "react-bootstrap";
 
-// initial values for now
+// only used initial values for now
 const minSliderValue = 1981
 const maxSliderValue = 2018
 
@@ -12,7 +12,6 @@ const enableLookup = {
     'bap3' : true,
     'bap10': true,
 }
-
 
 class TimeSlider extends React.Component {
     constructor(props) {
@@ -32,8 +31,6 @@ class TimeSlider extends React.Component {
             playing: false,
 
         }
-
-
         this.setIntermittentYearRange = this.setIntermittentYearRange.bind(this)
         this.setIntermittentMapDisplayYear = this.setIntermittentMapDisplayYear.bind(this)
         this.initHandelPos = this.initHandelPos.bind(this)
@@ -45,6 +42,7 @@ class TimeSlider extends React.Component {
         this.enabled = true
         this.maxSliderValue = maxSliderValue
         this.minSliderValue = minSliderValue
+        this.bapYearRanges = props.bapYearRanges
     }
 
     componentDidMount() {
@@ -82,15 +80,8 @@ class TimeSlider extends React.Component {
         else{
             document.getElementById("range-slider").style.opacity = "1";
             this.enabled = true
-            if (this.props.priorityBap === 'bap10'){
-                this.minSliderValue=2001
-                this.maxSliderValue=2061
-            }
-            else{
-                 this.maxSliderValue=2018
-                 this.minSliderValue=1981
-            }
-
+            this.minSliderValue = this.bapYearRanges[this.props.priorityBap].min
+            this.maxSliderValue = this.bapYearRanges[this.props.priorityBap].max
             this.setIntermittentYearRange()
             this.setIntermittentMapDisplayYear()
         }
