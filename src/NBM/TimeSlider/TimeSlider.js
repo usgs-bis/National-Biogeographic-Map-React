@@ -172,29 +172,31 @@ class TimeSlider extends React.Component {
     }
 
     playCycle() {
+        // Keep slider from moving when slider is not applicable
+        if (this.enabled) {
+            if (this.state.playing) {
+                if ((this.state.mapDisplayYear + 1) > this.maxSliderValue) {
+                    this.setState({
+                        mapDisplayYear: this.minSliderValue
+                    }, () => {
+                        this.initHandelPos()
+                        this.props.setMapDisplayYearFade(this.state.mapDisplayYear)
+                    })
+                }
+                else {
+                    this.setState({
+                        mapDisplayYear: this.state.mapDisplayYear + 1
+                    }, () => {
+                        this.initHandelPos()
+                        this.props.setMapDisplayYearFade(this.state.mapDisplayYear)
+                    })
+                }
 
-        if (this.state.playing) {
-            if ((this.state.mapDisplayYear + 1) > this.maxSliderValue) {
-                this.setState({
-                    mapDisplayYear: this.minSliderValue
-                }, () => {
-                    this.initHandelPos()
-                    this.props.setMapDisplayYearFade(this.state.mapDisplayYear)
-                })
+                // seems to work smoother on the render
+                setTimeout(() => {
+                    this.playCycle()
+                }, 5000)
             }
-            else {
-                this.setState({
-                    mapDisplayYear: this.state.mapDisplayYear + 1
-                }, () => {
-                    this.initHandelPos()
-                    this.props.setMapDisplayYearFade(this.state.mapDisplayYear)
-                })
-            }
-
-            // seems to work smoother on the render
-            setTimeout(() => {
-                this.playCycle()
-            }, 5000)
         }
     }
 
