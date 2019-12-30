@@ -7,6 +7,8 @@ import TerrestrialEcosystems2011 from "../Bioscapes/TerrestrialEcosystems2011";
 import CustomToolTip from "../ToolTip/ToolTip";
 import speechBubble from './bubble.png'
 import loadingGif from './ajax-loader.gif'
+import InfoSign from "../ InfoSign/InfoSign";
+import CustomDialog from "../CustomDialog/CustomDialog";
 
 
 class LeftPanel extends React.Component {
@@ -18,7 +20,8 @@ class LeftPanel extends React.Component {
             loading: false,
             enabledLayers: [],
             shareText: 'Share',
-            displayHelpPopup: false
+            displayHelpPopup: false,
+            showDescription: false
         }
 
         this.share = this.share.bind(this);
@@ -170,7 +173,29 @@ class LeftPanel extends React.Component {
         return (
             <div className="left-panel">
                 <div id='left-panel-header' className="left-panel-header">
-
+                <div className="nbm-flex-row">
+                    <div className="mx-auto text-center">
+                        <span className="bioscape-title-text">{this.state.bioscape.title}</span>
+                        <span className="align-self-center">
+                            <InfoSign onClick={() => this.setState({ showDescription: !this.state.showDescription })}> </InfoSign>
+                        </span>
+                        { this.state.showDescription &&
+                            <div className="sbinfo-title">
+                                <CustomDialog
+                                    className="sbinfo-popout-window"
+                                    isResizable={true}
+                                    isDraggable={true}
+                                    title={this.state.bioscape.title}
+                                    modal={false}
+                                    onClose={() => this.setState({ showDescription: !this.state.showDescription })}
+                                    body={
+                                        <div className="sbinfo-body sbinfo-popout-window">{this.state.bioscape.description}</div>
+                                    }
+                                />
+                            </div>
+                        }
+                    </div>
+                </div>
                     <SearchBar
                         {...this.props}
                         enabledLayers={this.state.enabledLayers}>
@@ -182,7 +207,7 @@ class LeftPanel extends React.Component {
                     <div className="bap-popuptext" id="myPopup">Choose an Analysis</div>
                 </div>}
 
-                <div id='analysis-package-container' className="analysis-package-container" style={{ height: this.props.feature ? 'calc(100% - 250px)' : '100%' }} >
+                <div id='analysis-package-container' className="analysis-package-container">
 
                     {this.state.feature_name && <div className="analysis-available">Analyses available for {this.state.feature_name}</div>}
                     {!this.state.feature_name && <div className="analysis-package-text">Analysis Packages {this.state.feature_name}</div>}
