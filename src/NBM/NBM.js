@@ -328,8 +328,7 @@ class NBM extends React.PureComponent {
 
                             <div className="attrDiv">
                                 <strong>Mapping API: </strong>
-                                <a href="http://leafletjs.com" title="A JS library for interactive maps">{'Leaflet '}</a>
-                                powered by
+                                <a href="http://leafletjs.com" title="A JS library for interactive maps">{'Leaflet'}</a> powered by
                                 <a href="https://www.esri.com">{` Esri`}</a>.
                             </div>
                             <div className="attrDiv">
@@ -347,9 +346,7 @@ class NBM extends React.PureComponent {
                             <hr/>
                             <div className="attrDiv">
                                 <div id="footer-text">
-                                    <div>Contact Information:
-                                                <a href="mailto:bcb@usgs.gov" >bcb@usgs.gov</a>
-                                    </div>
+                                    <div>Contact Information: <a href="mailto:bcb@usgs.gov">bcb@usgs.gov</a></div>
                                     <div>Application Version:
                                             <span id="frontEndVersion"> {this.props.applicationVersion}</span>
                                     </div>

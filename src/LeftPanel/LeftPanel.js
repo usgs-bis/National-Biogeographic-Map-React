@@ -189,7 +189,7 @@ class LeftPanel extends React.Component {
                                         modal={false}
                                         onClose={() => this.setState({ showDescription: !this.state.showDescription })}
                                         body={
-                                            <div className="sbinfo-body sbinfo-popout-window">{this.state.bioscape.description}</div>
+                                            <div className="sbinfo-body">{this.state.bioscape.description}</div>
                                         }
                                     />
                                 </div>

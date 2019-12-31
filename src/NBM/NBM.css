@@ -18,14 +18,14 @@
     width: 80px;
     height: 80px;
     border-radius: 40px;
-    z-index: 9999999;
+    z-index: 2001;
     cursor: pointer;
 }
 
 .attribution-info{
     position: absolute;
     top: 18px;
-    z-index: 9999999;
+    z-index: 2001;
     left: 18px;
     font-size: 18px;
     color: rgb(119,119,119,.5);
