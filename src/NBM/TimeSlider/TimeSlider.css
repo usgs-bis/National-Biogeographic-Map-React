@@ -30,7 +30,7 @@ section.range-slider {
     width: 90%;
     height: 27px;
     text-align: center;
-    z-index: 99999;
+    z-index: 2000;
     margin-left: 5px;
     background-color: rgba(10,10,15,.6);
     top: 31px;

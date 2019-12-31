@@ -10,18 +10,6 @@
     z-index: 100;
 }
 
-.ui-dialog {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    outline: 0 none;
-    padding: 0 !important;;
-    z-index: 101;
-    background-color: white;
-    border: 1px solid #f6f6f6;
-    scrollbar-width: none;
-}
-
 .ui-dialog-content{
     scrollbar-width: none;
 }
@@ -43,31 +31,6 @@
     right: 0;
 }
 
-.ui-dialog .ui-dialog-titlebar {
-    position: relative;
-    font-size: 1em;
-    border-radius: 3px;
-    padding: 0.5em;
-    height: 35px;
-    border-bottom: 1px solid #f6f6f6;
-}
-
-.ui-dialog.react-draggable .ui-dialog-titlebar {
-    cursor: move;
-}
-
-.ui-dialog .ui-dialog-titlebar .action-items {
-    float: right;
-    position: relative;
-}
-
-.ui-dialog .ui-dialog-titlebar .title {
-    float: left;
-    margin-right: .5em;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 1.5em;
-}
-
 .icon {
     width: 24px;
     height: 24px;
@@ -76,13 +39,6 @@
     margin: 5px;
     cursor: pointer;
     background-size: cover;
-}
-
-.ui-dialog .ui-dialog-content {
-    background: none repeat scroll 0 0 transparent;
-    border: 0 none;
-    position: relative;
-    padding: 0.5em;
 }
 
 .ui-dialog .ui-dialog-buttonpane {
@@ -114,10 +70,18 @@
 }
 
 .ui-dialog {
-    z-index: 999;
-    color: white;
-    background-color: rgba(10, 10, 15, .6);
-    box-shadow: 0 3px 14px rgba(0,0,0,0.4)
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    outline: 0 none;
+    padding: 0 !important;
+    background-color: white;
+    border: 1px solid #f6f6f6;
+    scrollbar-width: none;
+    z-index: 2001;
+    color: #fff;
+    background-color: #555;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.4);
 }
 
 .icon.icon-close {
@@ -146,6 +110,7 @@
 }
 
 .ui-dialog .ui-dialog-content {
+    background: none repeat scroll 0 0 transparent;
     border: 0 none;
     position: absolute;
     width: 100%;
@@ -162,7 +127,6 @@
     position: sticky;
     top:0;
     font-size: 1em;
-    border-radius: 3px;
     padding: 0.5em;
     height: 35px;
     line-height: 5px;
