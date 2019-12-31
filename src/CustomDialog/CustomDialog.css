@@ -80,7 +80,6 @@
     scrollbar-width: none;
     z-index: 2001;
     color: #fff;
-    /* background-color: rgba(10, 10, 15, .6); */
     background-color: #555;
     box-shadow: 0 3px 14px rgba(0,0,0,0.4);
 }
