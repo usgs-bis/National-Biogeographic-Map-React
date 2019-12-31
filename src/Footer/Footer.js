@@ -8,18 +8,18 @@ class Footer extends React.Component {
     return (
       <>
       {/* <!-- BEGIN USGS Footer Template --> */}
-      <footer class="footer">
+      <footer className="footer">
         {/* <!-- .footer-wrap --> */}
-        <div class="tmp-container">
+        <div className="tmp-container">
           {/* <!-- .footer-doi --> */}
-          <div class="footer-doi">
+          <div className="footer-doi">
             {/* <!-- footer nav links --> */}
-            <ul class="menu nav">
-              <li class="first leaf menu-links menu-level-1"><a href="https://www.doi.gov/privacy">DOI Privacy Policy</a></li>
-              <li class="leaf menu-links menu-level-1"><a href="https://www.usgs.gov/laws/policies_notices.html">Legal</a></li>
-              <li class="leaf menu-links menu-level-1"><a href="https://www2.usgs.gov/laws/accessibility.html">Accessibility</a></li>
-              <li class="leaf menu-links menu-level-1"><a href="https://www.usgs.gov/sitemap.html">Site Map</a></li>
-              <li class="last leaf menu-links menu-level-1"><a href="https://answers.usgs.gov/">Contact USGS</a></li>
+            <ul className="menu nav">
+              <li className="first leaf menu-links menu-level-1"><a href="https://www.doi.gov/privacy">DOI Privacy Policy</a></li>
+              <li className="leaf menu-links menu-level-1"><a href="https://www.usgs.gov/laws/policies_notices.html">Legal</a></li>
+              <li className="leaf menu-links menu-level-1"><a href="https://www2.usgs.gov/laws/accessibility.html">Accessibility</a></li>
+              <li className="leaf menu-links menu-level-1"><a href="https://www.usgs.gov/sitemap.html">Site Map</a></li>
+              <li className="last leaf menu-links menu-level-1"><a href="https://answers.usgs.gov/">Contact USGS</a></li>
             </ul>
             {/* <!--/ footer nav links -->       */}
           </div>
@@ -28,14 +28,14 @@ class Footer extends React.Component {
           <hr/>
 
           {/* <!-- .footer-utl-links --> */}
-          <div class="footer-doi">
-            <ul class="menu nav">
-              <li class="first leaf menu-links menu-level-1"><a href="https://www.doi.gov/">U.S. Department of the Interior</a></li>
-              <li class="leaf menu-links menu-level-1"><a href="https://www.doioig.gov/">DOI Inspector General</a></li>
-              <li class="leaf menu-links menu-level-1"><a href="https://www.whitehouse.gov/">White House</a></li>
-              <li class="leaf menu-links menu-level-1"><a href="https://www.whitehouse.gov/omb/management/egov/">E-gov</a></li>
-              <li class="leaf menu-links menu-level-1"><a href="https://www.doi.gov/pmb/eeo/no-fear-act">No Fear Act</a></li>
-              <li class="last leaf menu-links menu-level-1"><a href="https://www2.usgs.gov/foia">FOIA</a></li>
+          <div className="footer-doi">
+            <ul className="menu nav">
+              <li className="first leaf menu-links menu-level-1"><a href="https://www.doi.gov/">U.S. Department of the Interior</a></li>
+              <li className="leaf menu-links menu-level-1"><a href="https://www.doioig.gov/">DOI Inspector General</a></li>
+              <li className="leaf menu-links menu-level-1"><a href="https://www.whitehouse.gov/">White House</a></li>
+              <li className="leaf menu-links menu-level-1"><a href="https://www.whitehouse.gov/omb/management/egov/">E-gov</a></li>
+              <li className="leaf menu-links menu-level-1"><a href="https://www.doi.gov/pmb/eeo/no-fear-act">No Fear Act</a></li>
+              <li className="last leaf menu-links menu-level-1"><a href="https://www2.usgs.gov/foia">FOIA</a></li>
             </ul>
             </div>			
           {/* <!-- /.footer-utl-links --> */}

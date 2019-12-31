@@ -30,16 +30,16 @@ class Header extends React.Component {
     render() {
         return (
             // <!-- BEGIN USGS Applications Header Template -->
-            <header id="navbar" class="header-nav"  role="banner">
+            <header id="navbar" className="header-nav"  role="banner">
                 {this.state.showBetaBanner && <span className="beta-banner">
                     <span className="beta-banner-text">{this.state.betaBannerText}</span>
                 </span>
                 }
-                <div class="tmp-container">
+                <div className="tmp-container">
                 {/* <!-- primary navigation bar --> */}
-                    <div class="header-search">
-                        <a class="logo-header" href="https://www.usgs.gov/" title="Home">
-                            <img class="img"  src={require('../images/logo.png')}  alt="Home" />
+                    <div className="header-search">
+                        <a className="logo-header" href="https://www.usgs.gov/" title="Home">
+                            <img className="img"  src={require('../images/logo.png')}  alt="Home" />
                         </a>
                     </div>
                 </div> 
