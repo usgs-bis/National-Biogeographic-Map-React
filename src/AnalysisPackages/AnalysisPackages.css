@@ -147,11 +147,8 @@ font-style: italic;
     z-index: 999;
     background-color: #555;
     opacity: 1;
-    /* height: 100%; */
-    border: 1px solid white;
     border-top: none;
     min-height: 300px;
-    /* display: grid; */
 }
 
 .priority-bap-raido{
