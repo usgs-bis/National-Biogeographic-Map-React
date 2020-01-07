@@ -44,6 +44,14 @@ class DonutChart extends React.Component {
         displayLabel: this.props.displayLabel
       })
     }
+    if (this.state.data !== this.props.data) {
+      this.setState({
+        id: this.props.id + '_PieChart',
+        config: this.getConfig(),
+        data: this.props.data,
+        displayLabel: this.props.displayLabel 
+      })
+    }
   }
 
   getConfig() {

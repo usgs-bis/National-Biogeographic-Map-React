@@ -22,11 +22,6 @@ https://www.sciencebase.gov/catalog/
 
 ## To Run:
 
-* yarn (uses `.env.dev-local`)
-
-        yarn install
-        yarn start
-
 * npm (uses `.env.dev-local`)
 
         npm install
