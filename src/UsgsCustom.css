@@ -67,3 +67,22 @@ display: none}
 /* If you would prefer not to have the social media links, you can remove the comment out slashes and astricks surrounding the content below */
 /* .footer-social-links { 
 display: none} */
+
+/* Suggestions from Rebecca Uribe */
+header.header-nav .tmp-container {
+  padding-bottom: 4px  !important;
+}
+
+footer.footer .tmp-container {
+  padding-top: 16px  !important;
+}
+
+footer.footer hr {
+  margin-bottom: 13px  !important;
+  border: 0px  !important;
+  border-top: 1px solid #ffffff  !important;
+}
+
+.nav {
+  display: block;
+}
