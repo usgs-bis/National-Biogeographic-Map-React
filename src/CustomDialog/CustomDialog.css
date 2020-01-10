@@ -112,6 +112,7 @@
     border: 0 none;
     width: 100%;
     padding: 0px;
+    flex: 1;
 }
 
 .ui-dialog.box.react-draggable.react-resizable {
