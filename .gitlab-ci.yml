@@ -106,6 +106,15 @@ trigger_deploy_development:
     refs:
       - development
 
+trigger_deploy_staging:
+  extends: .nbm_deploy_trigger
+  variables:
+    # run the deploy pipeline for the staging environment, this code is automatically deployed and scanned
+    DEPLOY_ENV: staging
+  only:
+    refs:
+      - beta
+
 trigger_deploy_beta:
   extends: .nbm_deploy_trigger
   variables:
