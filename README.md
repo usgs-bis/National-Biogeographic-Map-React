@@ -22,11 +22,6 @@ https://www.sciencebase.gov/catalog/
 
 ## To Run:
 
-* yarn (uses `.env.dev-local`)
-
-        yarn install
-        yarn start
-
 * npm (uses `.env.dev-local`)
 
         npm install
@@ -59,6 +54,8 @@ https://www.sciencebase.gov/catalog/
 * After code is reviewed and tested, open a pr to master branch to deploy to production
 
 ## Current Deploys:
+
+For the deploy process see the [Tech Project Page](https://my.usgs.gov/confluence/pages/viewpage.action?spaceKey=fortproj&title=National+Biogeographic+Map+%28NBM%29+Technical+Project+Page)
 
 * ### Biogeography
 

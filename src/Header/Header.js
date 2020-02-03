@@ -1,7 +1,7 @@
 import React from "react";
 import "./Header.css"
-import CustomDialog from "../CustomDialog/CustomDialog";
-import InfoSign from "../ InfoSign/InfoSign"
+import '../UsgsCommons.css'
+import '../UsgsCustom.css'
 
 const ENV = process.env.REACT_APP_ENV
 
@@ -29,30 +29,22 @@ class Header extends React.Component {
 
     render() {
         return (
-            <div className={"nbm-header"}>
-                <span className="usgs-Logo"></span>
+            // <!-- BEGIN USGS Applications Header Template -->
+            <header id="navbar" className="header-nav"  role="banner">
                 {this.state.showBetaBanner && <span className="beta-banner">
                     <span className="beta-banner-text">{this.state.betaBannerText}</span>
                 </span>
                 }
-                <span className="bioscape-title-text">{this.state.title}</span>
-                <InfoSign onClick={() => this.setState({ showDescription: !this.state.showDescription })}> </InfoSign>
-                {this.state.showDescription &&
-                    <div className="sbinfo-title">
-                        <CustomDialog
-                            className="sbinfo-popout-window"
-                            isResizable={true}
-                            isDraggable={true}
-                            title={this.state.title}
-                            modal={false}
-                            onClose={() => this.setState({ showDescription: !this.state.showDescription })}
-                            body={
-                                <div className="sbinfo-body sbinfo-popout-window">{this.props.description}</div>
-                            }
-                        /> </div>}
-
-            </div>
-
+                <div className="tmp-container">
+                {/* <!-- primary navigation bar --> */}
+                    <div className="header-search">
+                        <a className="logo-header" href="https://www.usgs.gov/" title="Home">
+                            <img className="img"  src={require('../images/logo.png')}  alt="Home" />
+                        </a>
+                    </div>
+                </div> 
+            </header>
+            // <!-- END USGS Applications Header Template -->
         );
     }
 }

@@ -62,7 +62,7 @@ padding-top: 15px;
     word-break: break-word;
 
 }
-.chart-footers .anotations a{
+.chart-footers .anotations a, .attrDiv a, .sbinfo-popout-window a {
 color: white;
 font-style: italic;
 }
@@ -147,11 +147,8 @@ font-style: italic;
     z-index: 999;
     background-color: #555;
     opacity: 1;
-    /* height: 100%; */
-    border: 1px solid white;
     border-top: none;
     min-height: 300px;
-    /* display: grid; */
 }
 
 .priority-bap-raido{
@@ -173,8 +170,8 @@ display: inline-flex;
 .sbinfo-popout-window{
     z-index: 999;
     opacity: 1;
-    background-color: white;
-    color: black;
+    background-color: #555;
+    color: #fff;
     padding: 16px;
     font-size: 12px;
     min-height: 270px;

@@ -19,18 +19,6 @@
         height: 100%;
     }
 
-    #header-area {
-        background-color: black;
-        color: white;
-        min-height: 55px;
-        line-height: 55px;
-        vertical-align: middle;
-        text-align: center;
-        font-size: 18px;
-        font-weight: bold;
-        height: 55px;
-    }
-
     #content-area {
         background-color: green;
         display: flex;
@@ -60,18 +48,6 @@
         align-items: stretch;
         align-content: stretch;
         height: 100%;
-    }
-
-    #header-area {
-        background-color: black;
-        color: white;
-        min-height: 55px;
-        line-height: 55px;
-        vertical-align: middle;
-        text-align: center;
-        font-size: 18px;
-        font-weight: bold;
-        height: 55px;
     }
 
     #content-area {

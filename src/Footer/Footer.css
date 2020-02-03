@@ -1,0 +1,9 @@
+hr {
+  background-color: white;
+  margin-top: 1rem;
+}
+
+.nav>li>a:focus, .nav>li>a:hover {
+  background: transparent;
+  cursor: pointer;
+}

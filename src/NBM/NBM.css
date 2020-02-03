@@ -18,41 +18,17 @@
     width: 80px;
     height: 80px;
     border-radius: 40px;
-    z-index: 9999999;
+    z-index: 2001;
     cursor: pointer;
 }
 
 .attribution-info{
     position: absolute;
     top: 18px;
-    z-index: 9999999;
+    z-index: 2001;
     left: 18px;
     font-size: 18px;
     color: rgb(119,119,119,.5);
-}
-
-.popup-footer-bar{
-    padding: 4px;
-    background-color: #666666;
-    margin: 20px 0 0 0;
-}
-
-.popup-footer-bar ul {
-    margin: 0;
-    padding-left: 15px;
-    padding-right: 15px;
-    list-style: none;
-}
-
-.popup-footer-bar ul li{
-    display: inline-block;
-    padding-left: 0px;
-    padding-right: 5px;
-}
-.popup-footer-bar ul li a{
-    color: white !important;
-    margin-left: 8px;
-    margin-right: 8px;
 }
 
 .leaflet-control label {

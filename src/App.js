@@ -11,6 +11,7 @@ import L from "leaflet";
 import "./App.css";
 import * as turf from '@turf/turf'
 import packageJson from '../package.json'
+import Footer from "./Footer/Footer";
 
 
 const bioscapeMap = {
@@ -647,9 +648,7 @@ class App extends React.Component {
     render() {
         return (
             <div className="vwrapper">
-                <div id="header-area">
-                    <Header title={this.state.bioscape.title} description={this.state.bioscape.description} />
-                </div>
+                <Header title={this.state.bioscape.title} description={this.state.bioscape.description} />
                 <div id="content-area">
                     <Resizable
                         className="panel-area"
@@ -710,8 +709,8 @@ class App extends React.Component {
                         />
                     </div>
                 </div>
+                <Footer/>
             </div>
-
         );
     }
 }

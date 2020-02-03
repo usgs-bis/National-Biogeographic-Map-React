@@ -1,6 +1,6 @@
 {
   "name": "biogeography",
-  "version": "2.11.1",
+  "version": "2.13.4",
   "homepage": "/biogeography/",
   "private": true,
   "dependencies": {
@@ -18,12 +18,12 @@
     "re-resizable": "^4.11.0",
     "react": "^16.6.3",
     "react-bootstrap": "^0.32.4",
-    "react-dialog": "^1.0.2",
+    "react-dialog": "github:blohre-usgs/react-dialog",
     "react-dom": "^16.6.3",
     "react-leaflet": "^2.1.2",
     "react-leaflet-control": "^2.1.1",
     "react-leaflet-draw": "^0.19.0",
-    "react-scripts": "^2.1.5",
+    "react-scripts": "^3.3.0",
     "react-spinners": "^0.6.1",
     "react-table": "^6.9.2",
     "reactstrap": "^6.5.0",
