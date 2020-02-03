@@ -113,7 +113,7 @@ trigger_deploy_staging:
     DEPLOY_ENV: staging
   only:
     refs:
-      - beta
+      - development
 
 trigger_deploy_beta:
   extends: .nbm_deploy_trigger
