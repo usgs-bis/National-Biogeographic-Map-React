@@ -17,6 +17,15 @@ const DEV_MODE = process.env.REACT_APP_DEV;
 const ENV = process.env.REACT_APP_ENV;
 const BUFFER = .5;
 
+//this is the total range of data for slider,
+// not the range of the analysis window
+const YEAR_RANGES = {
+    'bap1':{min:1981,max:2018},
+    'bap2':{min:1981,max:2018},
+    'bap3':{min:1981,max:2018},
+    'bap10':{min:2001,max:2061}
+}
+
 class NBM extends React.PureComponent {
     constructor(props) {
         super(props);
@@ -319,8 +328,7 @@ class NBM extends React.PureComponent {
 
                             <div className="attrDiv">
                                 <strong>Mapping API: </strong>
-                                <a href="http://leafletjs.com" title="A JS library for interactive maps">{'Leaflet '}</a>
-                                powered by
+                                <a href="http://leafletjs.com" title="A JS library for interactive maps">{'Leaflet'}</a> powered by
                                 <a href="https://www.esri.com">{` Esri`}</a>.
                             </div>
                             <div className="attrDiv">
@@ -335,29 +343,10 @@ class NBM extends React.PureComponent {
                             <div className="attrDiv">
                                 <strong>OpenStreetMap: </strong> © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors
                             </div>
+                            <hr/>
                             <div className="attrDiv">
-                                <div className="popup-footer-bar">
-                                    <ul>
-                                        <li>
-                                            <a href="https://www2.usgs.gov/laws/accessibility.html" >Accessibility</a>
-                                        </li>
-                                        <li>
-                                            <a href="https://www2.usgs.gov/foia/" >FOIA</a>
-                                        </li>
-                                        <li>
-                                            <a href="https://www2.usgs.gov/laws/privacy.html" >Privacy</a>
-                                        </li>
-                                        <li>
-                                            <a href="https://www2.usgs.gov/laws/policies_notices.html" >Policies and Notices</a>
-                                        </li>
-                                    </ul>
-                                </div>
                                 <div id="footer-text">
-                                    <a href="https://www.doi.gov/" >U.S. Department of the Interior</a> |
-                                        <a href="https://www.usgs.gov/" >{` U.S. Geological Survey`}</a>
-                                    <div>Contact Information:
-                                                <a href="mailto:bcb@usgs.gov" >bcb@usgs.gov</a>
-                                    </div>
+                                    <div>Contact Information: <a href="mailto:bcb@usgs.gov">bcb@usgs.gov</a></div>
                                     <div>Application Version:
                                             <span id="frontEndVersion"> {this.props.applicationVersion}</span>
                                     </div>
@@ -429,6 +418,7 @@ class NBM extends React.PureComponent {
                         rangeYearMin={this.props.rangeYearMin}
                         mapDisplayYear={this.props.mapDisplayYear}
                         priorityBap={this.props.priorityBap}
+                        bapYearRanges={YEAR_RANGES}
                     />}
                 </div>
                 <div className="attribution" onClick={() => { this.setState({ attributionOpen: !this.state.attributionOpen }) }} onMouseOver={this.disableDragging} onMouseOut={this.enableDragging}>

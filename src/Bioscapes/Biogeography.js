@@ -10,6 +10,8 @@ import PhenologyAnalysis from "../AnalysisPackages/PhenologyAnalysis";
 import OBISAnalysis from "../AnalysisPackages/OBISAnalysis";
 import BadNeighborAnalysis from "../AnalysisPackages/BadNeighborAnalysis";
 import ExpectedLandUseAnalysis from "../AnalysisPackages/ExpectedLandUseAnanlysis";
+import NVCSHierarchyByPixel from "../AnalysisPackages/NVCSHierarchyByPixel";
+import NVCSSummaryByRegion from "../AnalysisPackages/NVCSSummaryByRegion";
 const DEV_MODE = process.env.REACT_APP_DEV;
 
 class Biogeography extends React.Component {
@@ -62,6 +64,8 @@ class Biogeography extends React.Component {
             charts.push(this.PhenologyAnalysis.print())
             charts.push(this.BadNeighborAnalysis.print())
             charts.push(this.ExpectedLandUseAnalysis.print())
+            charts.push(this.NVCSHierarchyByPixel.print())
+            charts.push(this.NVCSSummaryByRegion.print())
         }
 
 
@@ -223,6 +227,35 @@ class Biogeography extends React.Component {
                         initBap={(this.props.initBaps || {})['bap10']}
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
                         setBapState={this.props.setBapState}
+                    />
+                </div> }
+                { DEV_MODE && <div className="nbm-flex-row-no-padding">
+                    <NVCSHierarchyByPixel
+                        onRef={ref => (this.NVCSHierarchyByPixel = ref)}
+                        updateAnalysisLayers={this.props.updateAnalysisLayers}
+                        setPriorityBap={this.props.setPriorityBap}
+                        feature={this.props.feature}
+                        priorityBap={this.props.priorityBap}
+                        bapId={`bap11`}
+                        initBap={(this.props.initBaps || {})['bap11']}
+                        getDefaultPriorityBap={this.getDefaultPriorityBap}
+                        setBapState={this.props.setBapState}
+                        point={this.props.point}
+                        overlay={this.props.overlay}
+                    />
+                </div> }
+                { DEV_MODE && <div className="nbm-flex-row-no-padding">
+                    <NVCSSummaryByRegion
+                        onRef={ref => (this.NVCSSummaryByRegion = ref)}
+                        updateAnalysisLayers={this.props.updateAnalysisLayers}
+                        setPriorityBap={this.props.setPriorityBap}
+                        feature={this.props.feature}
+                        priorityBap={this.props.priorityBap}
+                        bapId={`bap12`}
+                        initBap={(this.props.initBaps || {})['bap12']}
+                        getDefaultPriorityBap={this.getDefaultPriorityBap}
+                        setBapState={this.props.setBapState}
+                        overlay={this.props.overlay}
                     />
                 </div> }
             </div>
