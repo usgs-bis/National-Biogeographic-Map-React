@@ -29,11 +29,6 @@ stages:
   - publish_artifact
   - deploy
 
-variables:
-  # Specify the environment for the deployment pipeline
-  # Can/should be overridden in trigger_deploy jobs
-  DEPLOY_ENV: development
-
 #
 # Use npm to produce a static site artifact
 #
@@ -47,23 +42,20 @@ npm_build:
   script:
     - export PATH=${PWD}/node_modules/.bin:${PATH}
     - npm install
-    - npm run build:${CI_COMMIT_REF_NAME}
-    - echo $(grep '"version"' package.json | cut -d '"' -f 4) > .version
+    - npm run build
   artifacts:
     paths:
       - build
-      - .version
       - package-lock.json
 
 #
 # Compress and upload the build artifact to artifactory
 #
 # The ARTIFACTORY_TARGET_FILE is determined by evaluating the
-# version from the package.json file in the build artifact and adding
-# the short commit hash.
-# e.g. nbm-2.0.4-2643da4ec.zip
+# version from the tag or "latest" for a master build.
+# e.g. nbm-2.0.4.zip or nbm-latest.zip
 #
-upload_artifact:
+.nbm_upload_artifact:
   extends: .upload_artifact
   stage: publish_artifact
   variables:
@@ -71,13 +63,29 @@ upload_artifact:
     ARTIFACTORY_SOURCE_FILE: build
     ARTIFACTORY_COMPRESS: 'true'
   before_script:
-    - echo ARTIFACTORY_TARGET_FILE=nbm-$(cat .version)-${CI_COMMIT_SHORT_SHA}.zip > .vars
+    - echo ARTIFACTORY_TARGET_FILE=nbm-${BUILD_VERSION}.zip > .vars
     - set -a && source .vars
   artifacts:
     paths:
       - .vars
   dependencies:
     - npm_build
+
+upload_artifact_master:
+  extends: .nbm_upload_artifact
+  variables:
+    BUILD_VERSION: latest
+  only:
+    refs:
+      - BCB-1344
+
+upload_artifact_tag:
+  extends: .nbm_upload_artifact
+  variables:
+    BUILD_VERSION: ${CI_COMMIT_TAG}
+  only:
+    refs:
+      - tags
 
 #
 # Trigger the deployment pipeline using the GitLab API
@@ -96,39 +104,42 @@ upload_artifact:
     - upload_artifact
   variables:
     ARTIFACTORY_REPO: nbm
-    DEPLOY_TRIGGER_VARS: ARTIFACTORY_REPO ARTIFACTORY_TARGET_FILE DEPLOY_ENV
+    DEPLOY_TRIGGER_VARS: ARTIFACTORY_REPO ARTIFACTORY_TARGET_FILE
     # Trigger the 'development' branch on the deploy pipeline
-    DEPLOY_TRIGGER_REF: development
+    # DEPLOY_TRIGGER_REF: development
 
 trigger_deploy_development:
   extends: .nbm_deploy_trigger
+  variables:
+    DEPLOY_TRIGGER_REF: development
   only:
     refs:
-      - development
+      - BCB-1344
 
 trigger_deploy_staging:
   extends: .nbm_deploy_trigger
   variables:
     # run the deploy pipeline for the staging environment, this code is automatically deployed and scanned
-    DEPLOY_ENV: staging
+    # DEPLOY_ENV: staging
+    DEPLOY_TRIGGER_REF: release
   only:
     refs:
-      - beta
+      - tags
 
-trigger_deploy_beta:
-  extends: .nbm_deploy_trigger
-  variables:
-    # run the deploy pipeline for the beta environment
-    DEPLOY_ENV: beta
-  only:
-    refs:
-      - beta
+# trigger_deploy_beta:
+#   extends: .nbm_deploy_trigger
+#   variables:
+#     # run the deploy pipeline for the beta environment
+#     # DEPLOY_ENV: beta
+#   only:
+#     refs:
+#       - beta
 
-trigger_deploy_master:
-  extends: .nbm_deploy_trigger
-  variables:
-    # run the deploy pipeline for the prod environment
-    DEPLOY_ENV: prod
-  only:
-    refs:
-      - master
+# trigger_deploy_master:
+#   extends: .nbm_deploy_trigger
+#   variables:
+#     # run the deploy pipeline for the prod environment
+#     # DEPLOY_ENV: prod
+#   only:
+#     refs:
+#       - master
