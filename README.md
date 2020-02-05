@@ -22,7 +22,7 @@ https://www.sciencebase.gov/catalog/
 
 ## To Run:
 
-* npm (uses `.env.dev-local`)
+* npm
 
         npm install
         npm start
@@ -33,15 +33,11 @@ https://www.sciencebase.gov/catalog/
 
 ## Building:
 
-* `npm run build` or `npm run build:master`
-  * builds the app for production deploy using `.env.production`
+* `npm run build`
 
-* `npm run build:beta`
-  * builds the app for beta deploy using `.env.beta` to override values in `.env.production`
-
-* `npm run build:development`
-  * builds the app for development deploy using `.env.dev` to override values in `.env.production`
-
+## Configs:
+* Config values are loaded from `public/config.js`. This allows us to change the config at runtime and have one build for any environment. See the 
+[Tech Project Page](https://my.usgs.gov/confluence/pages/viewpage.action?spaceKey=fortproj&title=National+Biogeographic+Map+%28NBM%29+Technical+Project+Page) for config details.
 
 ## To review and publish
 
