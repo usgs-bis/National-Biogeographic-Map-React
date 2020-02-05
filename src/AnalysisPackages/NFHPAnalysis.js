@@ -4,9 +4,10 @@ import { BarLoader } from "react-spinners"
 import HorizontalBarChart from "../Charts/HorizontalBarChart";
 import "./AnalysisPackages.css";
 import withSharedAnalysisCharacteristics from "./AnalysisPackage"
+import AppConfig from "../config";
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/5aa2b21ae4b0b1c392e9d968?format=json"
-const NFHP_URL = process.env.REACT_APP_BIS_API + "/api/v1/nfhpmetrics/condition?feature_id=";
+const NFHP_URL = AppConfig.REACT_APP_BIS_API + "/api/v1/nfhpmetrics/condition?feature_id=";
 
 let sb_properties = {
     "title": "Fish Habitat Condition and Disturbance Summaries"

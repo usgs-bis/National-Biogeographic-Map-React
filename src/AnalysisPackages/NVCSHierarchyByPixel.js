@@ -4,6 +4,7 @@ import L from "leaflet";
 import AccordionChart from "../Charts/AccordionChart"
 import "./AnalysisPackages.css";
 import withSharedAnalysisCharacteristics from "./AnalysisPackage"
+import AppConfig from "../config";
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/582a1819e4b01fad8726554a?format=json"
 
@@ -11,7 +12,7 @@ let sb_properties = {
     "title": "NVCS Hierarchy by Pixel"
 }
 
-const HBP_URL = process.env.REACT_APP_BIS_API + "/api/v1/nvcs/hierarchy_by_point";
+const HBP_URL = AppConfig.REACT_APP_BIS_API + "/api/v1/nvcs/hierarchy_by_point";
 
 const layers = [
      {

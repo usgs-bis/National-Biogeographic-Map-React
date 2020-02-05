@@ -4,10 +4,11 @@ import withSharedAnalysisCharacteristics from "./AnalysisPackage"
 import DonutChart from "../Charts/DonutChart";
 import TableChart from "../Charts/TableChart"
 import "./AnalysisPackages.css";
+import AppConfig from "../config";
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/5cc34cbae4b09b8c0b7606b9?format=json"
 
-const BADNEIGHBOR_URL = process.env.REACT_APP_BIS_API + "/api/v1/nonnativespecies/"
+const BADNEIGHBOR_URL = AppConfig.REACT_APP_BIS_API + "/api/v1/nonnativespecies/"
 
 let sb_properties = {
     "title": "Bad Neighbor Invasives"

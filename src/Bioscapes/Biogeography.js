@@ -12,7 +12,8 @@ import BadNeighborAnalysis from "../AnalysisPackages/BadNeighborAnalysis";
 import ExpectedLandUseAnalysis from "../AnalysisPackages/ExpectedLandUseAnanlysis";
 import NVCSHierarchyByPixel from "../AnalysisPackages/NVCSHierarchyByPixel";
 import NVCSSummaryByRegion from "../AnalysisPackages/NVCSSummaryByRegion";
-const DEV_MODE = process.env.REACT_APP_DEV;
+import AppConfig from "../config";
+const DEV_MODE = AppConfig.REACT_APP_DEV;
 
 class Biogeography extends React.Component {
     constructor(props) {

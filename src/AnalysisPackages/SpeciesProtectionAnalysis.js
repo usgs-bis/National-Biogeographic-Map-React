@@ -8,9 +8,10 @@ import TableChart from "../Charts/TableChart"
 import CustomToolTip from "../ToolTip/ToolTip"
 import "./AnalysisPackages.css";
 import ChartLegend from "../Charts/ChartLegend";
+import AppConfig from "../config";
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/5b86d48ce4b0702d0e7962b5?format=json"
-const SPECIES_URL = process.env.REACT_APP_BIS_API + "/api/v1/gapmetrics/species/protection?feature_id=";
+const SPECIES_URL = AppConfig.REACT_APP_BIS_API + "/api/v1/gapmetrics/species/protection?feature_id=";
 
 let sb_properties = {
     "title": "Protection Status of Terrestrial Vertebrate Species"
