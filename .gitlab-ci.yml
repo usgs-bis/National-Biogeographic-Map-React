@@ -77,15 +77,15 @@ upload_artifact_master:
     BUILD_VERSION: latest
   only:
     refs:
-      - tags
+      - master
 
-# upload_artifact_tag:
-#   extends: .nbm_upload_artifact
-#   variables:
-#     BUILD_VERSION: ${CI_COMMIT_TAG}
-#   only:
-#     refs:
-#       - tags
+upload_artifact_tag:
+  extends: .nbm_upload_artifact
+  variables:
+    BUILD_VERSION: ${CI_COMMIT_TAG}
+  only:
+    refs:
+      - tags
 
 #
 # Trigger the deployment pipeline using the GitLab API
@@ -114,19 +114,19 @@ trigger_deploy_development:
     - upload_artifact_master
   only:
     refs:
-      - tags
+      - master
 
-# trigger_deploy_staging:
-#   extends: .nbm_deploy_trigger
-#   variables:
-#     # run the deploy pipeline for the staging environment, this code is automatically deployed and scanned
-#     # DEPLOY_ENV: staging
-#     DEPLOY_TRIGGER_REF: release
-#   dependencies:
-#     - upload_artifact_tag
-#   only:
-#     refs:
-#       - tags
+trigger_deploy_staging:
+  extends: .nbm_deploy_trigger
+  variables:
+    # run the deploy pipeline for the staging environment, this code is automatically deployed and scanned
+    # DEPLOY_ENV: staging
+    DEPLOY_TRIGGER_REF: release
+  dependencies:
+    - upload_artifact_tag
+  only:
+    refs:
+      - tags
 
 # trigger_deploy_beta:
 #   extends: .nbm_deploy_trigger
