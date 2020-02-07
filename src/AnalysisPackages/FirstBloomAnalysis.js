@@ -6,11 +6,12 @@ import BoxAndWhiskerChart from "../Charts/BoxAndWhiskerChart";
 import HistogramChart from "../Charts/HistogramChart";
 import RidgelinePlotChart from "../Charts/RidgelinePlotChart";
 import "./AnalysisPackages.css";
+import AppConfig from "../config";
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/5abd5fede4b081f61abfc472?format=json"
-const FIRSTBLOOM_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenology/place/firstbloom"
-const FIRSTBLOOM_POLY_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenology/polygon/firstbloom"
-const PUBLIC_TOKEN = process.env.REACT_APP_PUBLIC_TOKEN
+const FIRSTBLOOM_URL = AppConfig.REACT_APP_BIS_API + "/api/v1/phenology/place/firstbloom"
+const FIRSTBLOOM_POLY_URL = AppConfig.REACT_APP_BIS_API + "/api/v1/phenology/polygon/firstbloom"
+const PUBLIC_TOKEN = AppConfig.REACT_APP_PUBLIC_TOKEN
 
 let sb_properties = {
     "title": "First Bloom Spring Index"

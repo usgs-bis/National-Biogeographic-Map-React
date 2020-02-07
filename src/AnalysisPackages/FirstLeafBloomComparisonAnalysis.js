@@ -5,14 +5,15 @@ import { BarLoader } from "react-spinners"
 import withSharedAnalysisCharacteristics from "./AnalysisPackage"
 import ComparisonChart from "../Charts/ComparisonChart";
 import "./AnalysisPackages.css";
+import AppConfig from "../config";
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/5b685d1ce4b006a11f75b0a8?format=json"
-const FIRSTLEAF_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenology/place/firstleaf"
-const FIRSTLEAF_POLY_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenology/polygon/firstleaf"
-const FIRSTBLOOM_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenology/place/firstbloom"
-const FIRSTBLOOM_POLY_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenology/polygon/firstbloom"
+const FIRSTLEAF_URL = AppConfig.REACT_APP_BIS_API + "/api/v1/phenology/place/firstleaf"
+const FIRSTLEAF_POLY_URL = AppConfig.REACT_APP_BIS_API + "/api/v1/phenology/polygon/firstleaf"
+const FIRSTBLOOM_URL = AppConfig.REACT_APP_BIS_API + "/api/v1/phenology/place/firstbloom"
+const FIRSTBLOOM_POLY_URL = AppConfig.REACT_APP_BIS_API + "/api/v1/phenology/polygon/firstbloom"
 
-const PUBLIC_TOKEN = process.env.REACT_APP_PUBLIC_TOKEN
+const PUBLIC_TOKEN = AppConfig.REACT_APP_PUBLIC_TOKEN
 
 let sb_properties = {
     "title": "First Leaf / First Bloom Spring Index Comparison"

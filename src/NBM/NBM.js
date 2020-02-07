@@ -11,10 +11,12 @@ import Control from 'react-leaflet-control';
 import { Glyphicon } from 'react-bootstrap';
 import shp from 'shpjs';
 import loadingGif from './loading.gif';
-const DEV_MODE = process.env.REACT_APP_DEV;
+import AppConfig from '../config';
+
+const DEV_MODE = AppConfig.REACT_APP_DEV;
 
 
-const ENV = process.env.REACT_APP_ENV;
+const ENV = AppConfig.REACT_APP_ENV;
 const BUFFER = .5;
 
 //this is the total range of data for slider,

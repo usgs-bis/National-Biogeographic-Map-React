@@ -2,8 +2,9 @@ import React from "react";
 import "./Header.css"
 import '../UsgsCommons.css'
 import '../UsgsCustom.css'
+import AppConfig from "../config";
 
-const ENV = process.env.REACT_APP_ENV
+const ENV = AppConfig.REACT_APP_ENV
 
 class Header extends React.Component {
     constructor(props) {

@@ -5,8 +5,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import App from './App';
 
-require('dotenv').config();
-
 //let bioscapeName = "biogeography";
 let bioscapeName = "terrestrial-ecosystems-2011";
 

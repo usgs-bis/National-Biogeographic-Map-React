@@ -5,6 +5,7 @@ import TableChart from "../Charts/TableChart"
 import "./AnalysisPackages.css";
 
 import withSharedAnalysisCharacteristics from "./AnalysisPackage"
+import AppConfig from "../config";
 
 let SB_URL = "https://www.sciencebase.gov/catalog/item/5c6c58b3e4b0fe48cb3e5d13?format=json"
 
@@ -156,7 +157,7 @@ const layers = [
 
 ]
 
-const NVCS_SUMM = process.env.REACT_APP_BIS_API + "/api/v1/nvcs/summary";
+const NVCS_SUMM = AppConfig.REACT_APP_BIS_API + "/api/v1/nvcs/summary";
 
 
 class NVCSSummaryByRegionPackage extends React.Component {

@@ -6,11 +6,12 @@ import BoxAndWhiskerChart from "../Charts/BoxAndWhiskerChart";
 import HistogramChart from "../Charts/HistogramChart";
 import RidgelinePlotChart from "../Charts/RidgelinePlotChart";
 import "./AnalysisPackages.css";
+import AppConfig from "../config";
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/58bf0b61e4b014cc3a3a9c10?format=json"
-const FIRSTLEAF_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenology/place/firstleaf"
-const FIRSTLEAF_POLY_URL = process.env.REACT_APP_BIS_API + "/api/v1/phenology/polygon/firstleaf"
-const PUBLIC_TOKEN = process.env.REACT_APP_PUBLIC_TOKEN
+const FIRSTLEAF_URL = AppConfig.REACT_APP_BIS_API + "/api/v1/phenology/place/firstleaf"
+const FIRSTLEAF_POLY_URL = AppConfig.REACT_APP_BIS_API + "/api/v1/phenology/polygon/firstleaf"
+const PUBLIC_TOKEN = AppConfig.REACT_APP_PUBLIC_TOKEN
 
 let sb_properties = {
     "title": "First Leaf Spring Index"

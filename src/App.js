@@ -12,6 +12,7 @@ import "./App.css";
 import * as turf from '@turf/turf'
 import packageJson from '../package.json'
 import Footer from "./Footer/Footer";
+import AppConfig from "./config";
 
 
 const bioscapeMap = {
@@ -24,10 +25,10 @@ const ELEVATION_SOURCE = 'https://nationalmap.gov/epqs/pqs.php?'
 
 const NVCS_FEATURE_LOOKUP = ['Landscape Conservation Cooperatives', 'US County', 'Ecoregion III', 'US States and Territories']
 
-const TEXT_SEARCH_API = process.env.REACT_APP_BIS_API + "/api/v1/places/search/text?q=";
-const POINT_SEARCH_API = process.env.REACT_APP_BIS_API + "/api/v1/places/search/point?";
-const GET_FEATURE_API = process.env.REACT_APP_BIS_API + "/api/v1/places/search/feature?feature_id=";
-const API_VERSION_URL = process.env.REACT_APP_BIS_API + "/api"
+const TEXT_SEARCH_API = AppConfig.REACT_APP_BIS_API + "/api/v1/places/search/text?q=";
+const POINT_SEARCH_API = AppConfig.REACT_APP_BIS_API + "/api/v1/places/search/point?";
+const GET_FEATURE_API = AppConfig.REACT_APP_BIS_API + "/api/v1/places/search/feature?feature_id=";
+const API_VERSION_URL = AppConfig.REACT_APP_BIS_API + "/api"
 const REACT_VERSION = "v" + packageJson.version
 
 const numberWithCommas = (x) => {

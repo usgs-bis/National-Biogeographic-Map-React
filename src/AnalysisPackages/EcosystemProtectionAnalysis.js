@@ -8,9 +8,10 @@ import TableChart from "../Charts/TableChart"
 import HorizontalBarChart from "../Charts/HorizontalBarChart";
 import "./AnalysisPackages.css";
 import ChartLegend from "../Charts/ChartLegend";
+import AppConfig from "../config";
 
 const SB_URL = "https://www.sciencebase.gov/catalog/item/5b747802e4b0f5d5787ed299?format=json"
-const ECOSYSTEM_URL = process.env.REACT_APP_BIS_API + "/api/v1/gapmetrics/ecologicalsystems/protection?feature_id=";
+const ECOSYSTEM_URL = AppConfig.REACT_APP_BIS_API + "/api/v1/gapmetrics/ecologicalsystems/protection?feature_id=";
 
 let sb_properties = {
     "title": "Protection Status of Ecological Systems"
