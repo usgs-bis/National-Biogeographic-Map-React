@@ -90,7 +90,7 @@ upload_artifact_tag:
 #
 # Trigger the deployment pipeline using the GitLab API
 #
-# This passes along the artifactory repo and target filename.
+# This passes along the target filename.
 #
 # The 'upload_artifact' job provides a ".vars" file that provides
 # the filename, which is sourced here.
@@ -102,14 +102,12 @@ upload_artifact_tag:
     - set -a && source .vars
   variables:
     ARTIFACTORY_REPO: nbm
-    DEPLOY_TRIGGER_VARS: ARTIFACTORY_REPO ARTIFACTORY_TARGET_FILE
-    # Trigger the 'development' branch on the deploy pipeline
-    # DEPLOY_TRIGGER_REF: development
+    DEPLOY_TRIGGER_VARS: ARTIFACTORY_TARGET_FILE
 
 trigger_deploy_development:
   extends: .nbm_deploy_trigger
   variables:
-    DEPLOY_TRIGGER_REF: development
+    DEPLOY_TRIGGER_REF: develop
   dependencies:
     - upload_artifact_master
   only:
@@ -120,28 +118,9 @@ trigger_deploy_staging:
   extends: .nbm_deploy_trigger
   variables:
     # run the deploy pipeline for the staging environment, this code is automatically deployed and scanned
-    # DEPLOY_ENV: staging
     DEPLOY_TRIGGER_REF: release
   dependencies:
     - upload_artifact_tag
   only:
     refs:
       - tags
-
-# trigger_deploy_beta:
-#   extends: .nbm_deploy_trigger
-#   variables:
-#     # run the deploy pipeline for the beta environment
-#     # DEPLOY_ENV: beta
-#   only:
-#     refs:
-#       - beta
-
-# trigger_deploy_master:
-#   extends: .nbm_deploy_trigger
-#   variables:
-#     # run the deploy pipeline for the prod environment
-#     # DEPLOY_ENV: prod
-#   only:
-#     refs:
-#       - master
