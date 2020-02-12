@@ -165,7 +165,6 @@ class NBM extends React.PureComponent {
 
     handleLoadError(e){
         if (!this.layerError){
-            debugger
             this.layerError = true
             alert('Error loading map layer from the service at \n '+ e.target._url);
         }
