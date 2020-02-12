@@ -42,6 +42,7 @@ class NBM extends React.PureComponent {
         this.bounds = [[21, -134], [51, -63]];
         this.key = 1;
         this.clickable = true
+        this.layerError = false
         this.handleClick = this.handleClick.bind(this)
         this.handleMouseMove = this.handleMouseMove.bind(this)
         this.handleMouseOut = this.handleMouseOut.bind(this)
@@ -161,6 +162,15 @@ class NBM extends React.PureComponent {
             this.LocationOverlay.setLocation(e.latlng.lat, e.latlng.lng)
         }
     }
+
+    handleLoadError(e){
+        if (!this.layerError){
+            debugger
+            this.layerError = true
+            alert('Error loading map layer from the service at \n '+ e.target._url);
+        }
+    }
+
     handleMouseOut(e) {
         this.LocationOverlay.setLocation(null, null)
     }
@@ -403,6 +413,17 @@ class NBM extends React.PureComponent {
             <Map ref={"map"}
                 onClick={this.handleClick}
                 bounds={this.bounds}
+                onLayerAdd={(event) => {
+                     event.layer.on('tileerror',err =>{
+                         /* debugger  */
+                         this.handleLoadError(err)
+                     })
+
+                }}
+
+                onLayerRemove={(event) => {
+                     this.layerError = false
+                }}
                 onMouseMove={this.handleMouseMove}
                 onMouseOut={this.handleMouseOut}
                 attribution=""
