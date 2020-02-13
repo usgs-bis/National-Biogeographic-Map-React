@@ -73,12 +73,12 @@ class TimeSlider extends React.Component {
             this.initHandelPos()
         }
         if(!enableLookup[this.props.priorityBap]){
-            document.getElementById("range-slider").style.opacity = "0.4";
+            document.getElementById("range-slider").style.opacity = "0.0";
             this.enabled = false
  //           this.state.playing = false;
         }
         else{
-            document.getElementById("range-slider").style.opacity = "1";
+            document.getElementById("range-slider").style.opacity = "1.0";
             this.enabled = true
             this.minSliderValue = this.bapYearRanges[this.props.priorityBap].min
             this.maxSliderValue = this.bapYearRanges[this.props.priorityBap].max
