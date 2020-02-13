@@ -170,7 +170,6 @@ class NBM extends React.PureComponent {
         if (!this.layerError){
             this.layerError = true
             toast.notify('Error loading map layer from '+ e.target._url,{duration:10000,position:'top',font:'larger'});
-          //  alert('Error loading map layer from the service at \n '+ e.target._url);
         }
     }
 
