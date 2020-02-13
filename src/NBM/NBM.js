@@ -174,7 +174,7 @@ class NBM extends React.PureComponent {
             toast.notify(
                 <div>
                     `<h4>Error loading layer <i>{e.target.options.layers}</i> from <br/> <br/>{e.target._url}</h4>`
-                </div>, {duration: 20000, position: 'top'}
+                </div>, {duration: 15000, position: 'top'}
             );
         }
     }
