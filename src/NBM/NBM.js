@@ -167,9 +167,15 @@ class NBM extends React.PureComponent {
     }
 
     handleLoadError(e){
-        if (!this.layerError){
-            this.layerError = true
-            toast.notify('Error loading map layer from '+ e.target._url,{duration:10000,position:'top',font:'larger'});
+        let prevErr = this.layerError
+        this.layerError = true
+         // this sometimes reduces the bounce on a hard refresh...sometimes
+        if(!prevErr && this.layerError) {
+            toast.notify(
+                <div>
+                    `<h4>Error loading layer <i>{e.target.options.layers}</i> from <br/> <br/>{e.target._url}</h4>`
+                </div>, {duration: 20000, position: 'top'}
+            );
         }
     }
 
@@ -417,7 +423,6 @@ class NBM extends React.PureComponent {
                 bounds={this.bounds}
                 onLayerAdd={(event) => {
                      event.layer.on('tileerror',err =>{
-                         /* debugger  */
                          this.handleLoadError(err)
                      })
 
