@@ -169,7 +169,7 @@ class NBM extends React.PureComponent {
     handleLoadError(e){
         let prevErr = this.layerError
         this.layerError = true
-         // this sometimes reduces the bounce on a hard refresh...sometimes
+         // this sometimes reduces the bounce on a hard refresh.
         if(!prevErr && this.layerError) {
             toast.notify(
                 <div>
