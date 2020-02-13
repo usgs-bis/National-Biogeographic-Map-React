@@ -10,6 +10,9 @@ import InfoSign from '../ InfoSign/InfoSign';
 import Control from 'react-leaflet-control';
 import { Glyphicon } from 'react-bootstrap';
 import shp from 'shpjs';
+import toast from 'toasted-notes'
+import 'toasted-notes/src/styles.css'
+
 import loadingGif from './loading.gif';
 import AppConfig from '../config';
 
@@ -166,7 +169,8 @@ class NBM extends React.PureComponent {
     handleLoadError(e){
         if (!this.layerError){
             this.layerError = true
-            alert('Error loading map layer from the service at \n '+ e.target._url);
+            toast.notify('Error loading map layer from '+ e.target._url,{duration:10000,position:'top',font:'larger'});
+          //  alert('Error loading map layer from the service at \n '+ e.target._url);
         }
     }
 
