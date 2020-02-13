@@ -72,6 +72,7 @@ class TimeSlider extends React.Component {
             this.sliderSize = document.getElementById("rangeSliderContainer").clientWidth
             this.initHandelPos()
         }
+        // Per usability - hide slider if N/A
         if(!enableLookup[this.props.priorityBap]){
             document.getElementById("range-slider").style.opacity = "0.0";
             this.enabled = false
