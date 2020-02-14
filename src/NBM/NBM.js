@@ -10,6 +10,9 @@ import InfoSign from '../ InfoSign/InfoSign';
 import Control from 'react-leaflet-control';
 import { Glyphicon } from 'react-bootstrap';
 import shp from 'shpjs';
+import toast from 'toasted-notes'
+import 'toasted-notes/src/styles.css'
+
 import loadingGif from './loading.gif';
 import AppConfig from '../config';
 
@@ -42,6 +45,7 @@ class NBM extends React.PureComponent {
         this.bounds = [[21, -134], [51, -63]];
         this.key = 1;
         this.clickable = true
+        this.layerError = false
         this.handleClick = this.handleClick.bind(this)
         this.handleMouseMove = this.handleMouseMove.bind(this)
         this.handleMouseOut = this.handleMouseOut.bind(this)
@@ -161,6 +165,20 @@ class NBM extends React.PureComponent {
             this.LocationOverlay.setLocation(e.latlng.lat, e.latlng.lng)
         }
     }
+
+    handleLoadError(e){
+        let prevErr = this.layerError
+        this.layerError = true
+         // this sometimes reduces the bounce on a hard refresh.
+        if(!prevErr && this.layerError) {
+            toast.notify(
+                <div>
+                    `<h4>Error loading layer <i>{e.target.options.layers}</i> from <br/> <br/>{e.target._url}</h4>`
+                </div>, {duration: 15000, position: 'top'}
+            );
+        }
+    }
+
     handleMouseOut(e) {
         this.LocationOverlay.setLocation(null, null)
     }
@@ -403,6 +421,16 @@ class NBM extends React.PureComponent {
             <Map ref={"map"}
                 onClick={this.handleClick}
                 bounds={this.bounds}
+                onLayerAdd={(event) => {
+                     event.layer.on('tileerror',err =>{
+                         this.handleLoadError(err)
+                     })
+
+                }}
+
+                onLayerRemove={(event) => {
+                     this.layerError = false
+                }}
                 onMouseMove={this.handleMouseMove}
                 onMouseOut={this.handleMouseOut}
                 attribution=""
