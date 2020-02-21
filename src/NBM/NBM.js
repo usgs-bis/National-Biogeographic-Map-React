@@ -1,4 +1,5 @@
 import './NBM.css'
+import 'toasted-notes/src/styles.css'
 import AppConfig from '../config';
 import Control from 'react-leaflet-control';
 import CustomDialog from "../CustomDialog/CustomDialog";
@@ -7,8 +8,8 @@ import L from 'leaflet';
 import LocationOverlay from './LocationOverylays/LocationOverlay';
 import React from 'react'
 import TimeSlider from "./TimeSlider/TimeSlider"
-import loadingGif from './loading.gif';
 import shp from 'shpjs';
+import toast from 'toasted-notes'
 import {EditControl} from "react-leaflet-draw"
 import {Glyphicon} from 'react-bootstrap';
 import {Map, TileLayer, WMSTileLayer, Marker, Popup, GeoJSON, FeatureGroup, ZoomControl} from 'react-leaflet'
@@ -30,33 +31,34 @@ const YEAR_RANGES = {
 }
 
 class NBM extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = {
-      point: null,
-      attributionOpen: false,
-      showUploadDialog: false,
-      uploadError: '',
-      uploading: false
+    constructor(props) {
+        super(props);
+        this.state = {
+            point: null,
+            attributionOpen: false,
+            showUploadDialog: false,
+            uploadError: '',
+            uploading: false
+        }
+        this.bounds = [[21, -134], [51, -63]];
+        this.clickable = true
+        this.disableDragging = this.disableDragging.bind(this)
+        this.drawnpolygon = null
+        this.enableDragging = this.enableDragging.bind(this)
+        this.handleClick = this.handleClick.bind(this)
+        this.handleClose = this.handleClose.bind(this)
+        this.handleGeojson = this.handleGeojson.bind(this)
+        this.handleMouseMove = this.handleMouseMove.bind(this)
+        this.handleMouseOut = this.handleMouseOut.bind(this)
+        this.handleShow = this.handleShow.bind(this)
+        this.key = 1;
+        this.layerError = false
+        this.parseGeojsonFile = this.parseGeojsonFile.bind(this)
+        this.parseShapefile = this.parseShapefile.bind(this)
+        this.uploadFile = this.uploadFile.bind(this)
+        this.userDrawnPolygonStart = this.userDrawnPolygonStart.bind(this)
+        this.userDrawnPolygonStop = this.userDrawnPolygonStop.bind(this)
     }
-    this.drawnpolygon = null
-    this.bounds = [[21, -134], [51, -63]];
-    this.key = 1;
-    this.clickable = true
-    this.handleClick = this.handleClick.bind(this)
-    this.handleMouseMove = this.handleMouseMove.bind(this)
-    this.handleMouseOut = this.handleMouseOut.bind(this)
-    this.disableDragging = this.disableDragging.bind(this)
-    this.enableDragging = this.enableDragging.bind(this)
-    this.userDrawnPolygonStop = this.userDrawnPolygonStop.bind(this)
-    this.userDrawnPolygonStart = this.userDrawnPolygonStart.bind(this)
-    this.uploadFile = this.uploadFile.bind(this)
-    this.parseShapefile = this.parseShapefile.bind(this)
-    this.parseGeojsonFile = this.parseGeojsonFile.bind(this)
-    this.handleGeojson = this.handleGeojson.bind(this)
-    this.handleShow = this.handleShow.bind(this)
-    this.handleClose = this.handleClose.bind(this)
-  }
 
   componentWillReceiveProps(props) {
     if (props.feature && props.feature.properties) {
@@ -162,7 +164,20 @@ class NBM extends React.PureComponent {
     }
   }
 
-  handleMouseOut(e) {
+  handleLoadError(e){
+      let prevErr = this.layerError
+      this.layerError = true
+       // this sometimes reduces the bounce on a hard refresh.
+      if(!prevErr && this.layerError) {
+          toast.notify(
+              <div>
+                  `<h4>Error loading layer <i>{e.target.options.layers}</i> from <br/> <br/>{e.target._url}</h4>`
+              </div>, {duration: 15000, position: 'top'}
+          );
+      }
+  }
+
+  handleMouseOut() {
     this.LocationOverlay.setLocation(null, null)
   }
 
@@ -183,7 +198,7 @@ class NBM extends React.PureComponent {
     this.props.parentDrawHandler(geom)
   }
 
-  userDrawnPolygonStart(e) {
+  userDrawnPolygonStart() {
     this.setState({
       point: null
     });
@@ -230,7 +245,7 @@ class NBM extends React.PureComponent {
 
   parseShapefile(file) {
     const fileReader = new FileReader()
-    fileReader.onload = (event) => {
+    fileReader.onload = () => {
       shp(fileReader.result).then((geojson) => {
         this.handleGeojson(geojson)
       }).catch(ex => {
@@ -374,26 +389,78 @@ class NBM extends React.PureComponent {
           onClose={this.handleClose}
           body={
             <>
-              <ul>
-                <li>Only shapefile (.shp) and GeoJSON (.json , .geojson) files under 5MB are accepted.</li>
-                <li>Your shapefile must be zipped into a '.zip' extension and be under 5MB.</li>
-                <li>Only the first <b>polygon</b> feature in your file will be used. Point and line geometries are not accepted.</li>
-                <li>Valid .shp, .shx, .dbf, and .prj files must be included.</li>
-                <li>Most common coordinate systems are supported.</li>
-              </ul>
-              {
-                this.state.uploadError &&
-                <div className="text-danger"><b>Error: </b>{this.state.uploadError}</div>
-              }
-              <label className="mb-0 pt-1 rounded float-right" title="Upload a shp file">
-                <span className="btn submit-analysis-btn">Upload</span>
-                <input type="file" name="file-upload" id="file-upload" accept=".zip, .shp, json, .geojson" style={{display: 'none'}}
-                  onChange={this.uploadFile} />
-              </label>
-              {
-                this.state.uploading &&
-                <img src={loadingGif} alt="Loading..."></img>
-              }
+            <Map ref={"map"}
+                onClick={this.handleClick}
+                bounds={this.bounds}
+                onLayerAdd={(event) => {
+                     event.layer.on('tileerror',err =>{
+                         this.handleLoadError(err)
+                     })
+
+                }}
+
+                onLayerRemove={() => {
+                     this.layerError = false
+                }}
+                onMouseMove={this.handleMouseMove}
+                onMouseOut={this.handleMouseOut}
+                attribution=""
+                zoomControl={false} >
+                {basemap()}
+                <LocationOverlay onRef={ref => (this.LocationOverlay = ref)} map={this.refs.map} bioscapeName={this.props.bioscapeName} />
+                <MapMarker point={this.state.point} />
+                {geojson()}
+                <div className="global-time-slider" onMouseOver={this.disableDragging} onMouseOut={this.enableDragging}>
+                    {this.props.bioscapeName !== "terrestrial-ecosystems-2011" && <TimeSlider
+                        setMapDisplayYear={this.props.setMapDisplayYear}
+                        setMapDisplayYearFade={this.props.setMapDisplayYearFade}
+                        setYearRange={this.props.setYearRange}
+                        rangeYearMax={this.props.rangeYearMax}
+                        rangeYearMin={this.props.rangeYearMin}
+                        mapDisplayYear={this.props.mapDisplayYear}
+                        priorityBap={this.props.priorityBap}
+                        bapYearRanges={YEAR_RANGES}
+                    />}
+                </div>
+                <div className="attribution" onClick={() => { this.setState({ attributionOpen: !this.state.attributionOpen }) }} onMouseOver={this.disableDragging} onMouseOut={this.enableDragging}>
+                    <span className="attribution-info" style={{ color: 'rgb(107, 153, 197)' }}>
+                        <InfoSign></InfoSign>
+                    </span>
+                </div>
+                <span onMouseOver={this.disableDragging} onMouseOut={this.enableDragging} >{attribution()}</span>
+                <FeatureGroup>
+                    <ZoomControl position='topright'></ZoomControl>
+                    <EditControl
+                        position='topright'
+                        //onDeleted={() => { this.props.parentDrawHandler(null) }}
+                        onDrawStart={this.userDrawnPolygonStart}
+                        // onEditStart={this.disableDragging}
+                        // onEdited={this.userDrawnPolygon}
+                        //onEditStop={this.enableDragging}
+
+                        //onDeleteStart={this.userDrawnPolygonStart}
+                        onDrawStop={this.enableDragging}
+                        //onDeleteStop={this.enableDragging}
+                        onCreated={this.userDrawnPolygonStop}
+                        edit={{ edit: false, remove: false }}
+                        draw={{
+                            rectangle: false,
+                            marker: false,
+                            circlemarker: false,
+                            polyline: false,
+                            circle: false
+                        }}
+                    />
+                    { DEV_MODE &&
+                        <Control position='topright' className="leaflet-bar">
+                            <label className="mb-0 pt-1 rounded" title="Upload a shp file">
+                                <span className="add-more-label" onClick={this.handleShow}><Glyphicon className="inner-glyph" glyph="upload"/></span>
+                            </label>
+                        </Control>
+                    }
+                </FeatureGroup>
+            </Map>
+            { DEV_MODE && uploadShapefileDialog() }
             </>
           }
         />
