@@ -76,10 +76,8 @@ npm_build:
     - npm_build
   before_script:
     - echo ARTIFACT_FILE=nbm-${BUILD_VERSION}.zip > .vars
-    - echo ARTIFACT_URL=${ARTIFACTORY_URL}/${ARTIFACT_FILE} > .vars
+    - echo ARTIFACT_URL=${ARTIFACTORY_URL}/${ARTIFACT_FILE} >> .vars
     - source .vars
-    - cat .vars
-    - echo $ARTIFACT_URL
   script:
     # Zip the contents of the 'dist/' directory.
     - '(cd build && zip -9 -r ../${ARTIFACT_FILE} .)'
