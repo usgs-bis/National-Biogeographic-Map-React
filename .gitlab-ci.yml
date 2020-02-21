@@ -65,7 +65,7 @@ npm_build:
 # The URL to the artifact is passed in the deployment trigger.
 #
 .artifactory_deploy:
-  image: code.chs.usgs.gov:5001/sas/ops/ci-pipeline/sas-deploy-tool:latest
+  image: code.chs.usgs.gov:5001/sas/ops/ci-pipeline/sas-deploy-tool:v1
   stage: Package
   tags:
     - docker
@@ -145,7 +145,7 @@ upload_artifact_tag:
 trigger_deploy_development:
   extends: .deploy_trigger
   variables:
-    DEPLOY_TRIGGER_REF: artifactory
+    DEPLOY_TRIGGER_REF: refactor
   dependencies:
     # The '.vars' file with the ARTIFACT_URL is provided by this job.
     - upload_artifact_master
