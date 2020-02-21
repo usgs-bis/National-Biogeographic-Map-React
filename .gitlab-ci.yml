@@ -3,40 +3,51 @@
 # Reference:
 #   - https://docs.gitlab.com/ee/ci/yaml/
 #
-# CI Variables:
+# GitLab Group CI Variables:
 #   DEPLOY_TRIGGER_REF
-#     Set on the individual deployment jobs below. This is the branch name to trigger on the deployment pipeline.
+#     Set on the individual deployment jobs below. This is the branch name to
+#     trigger on the deployment pipeline.
 #
 #   DEPLOY_TRIGGER_TOKEN
+#     The GitLab API token for triggering the deployment pipeline. This is
+#     configured on the deployment repository.
 #     Specified external to this file as a CI variable.
 #
 #   DEPLOY_TRIGGER_URL
+#     API URL for triggering the deployment pipeline. This is configured on the
+#     deployment repository.
 #     Specified external to this file as a CI variable.
 #
-include:
-  # Include common variables
-  - project: 'sas/ops/ci-pipeline/gitlab-ci-pipeline'
-    file: '/common-vars.yml'
-  # Jobs for publishing artifacts to Artifactory
-  - project: 'sas/ops/ci-pipeline/gitlab-ci-pipeline'
-    file: '/util/artifactory.yml'
-  # Job to trigger a GitLab pipeline
-  - project: 'sas/ops/ci-pipeline/gitlab-ci-pipeline'
-    file: '/deploy/api_trigger.yml'
-
+#   ARTIFACTORY_BASE_URL
+#     Base URL for SAS Artifactory.
+#
+#   ARTIFACTORY_TOKEN
+#     An API token for uploading to Artifactory.
+#
+#   SAS_IMAGES_URL
+#     Base URL for SAS Docker image registry.
+#
+---
 stages:
-  - build
-  - publish_artifact
-  - deploy
+  - Build
+  - Package
+  - Deploy Trigger
 
+variables:
+  # Full URL to the target Artifactory repository
+  ARTIFACTORY_URL: ${ARTIFACTORY_BASE_URL}/nbm
+
+#
+# == Build
 #
 # Use npm to produce a static site artifact
 #
 npm_build:
-  stage: build
-  # Use an internal registry for node
-  # This variable is from the included '/common-vars.yml'
-  image: ${SAS_IMAGE_NODE}:10.15
+  stage: Build
+  # Use an internal image registry for the node image. The local image name
+  # and tags match the official upstream image.
+  # This variable is set in gitlab group vars
+  image: ${SAS_IMAGES_URL}/node:10.15
   tags:
     - docker
   script:
@@ -46,33 +57,48 @@ npm_build:
   artifacts:
     paths:
       - build
-      - package-lock.json
 
 #
-# Compress and upload the build artifact to artifactory
+# == Upload artifact to Artifactory
 #
-# The ARTIFACTORY_TARGET_FILE is determined by evaluating the
-# version from the tag or "latest" for a master build.
-# e.g. nbm-2.0.4.zip or nbm-latest.zip
+# This job zips the build directory and uploads it to Artifactory.
+# The URL to the artifact is passed in the deployment trigger.
 #
-.nbm_upload_artifact:
-  extends: .upload_artifact
-  stage: publish_artifact
-  variables:
-    ARTIFACTORY_REPO: nbm
-    ARTIFACTORY_SOURCE_FILE: build
-    ARTIFACTORY_COMPRESS: 'true'
+.artifactory_deploy:
+  image: code.chs.usgs.gov:5001/sas/ops/ci-pipeline/sas-deploy-tool:v1
+  stage: Package
+  tags:
+    - docker
+  only:
+    variables:
+      # This job must run on a protected ref due to the ARTIFACTORY_TOKEN
+      # exposure.
+      - $CI_COMMIT_REF_PROTECTED == "true"
+  dependencies:
+    - npm_build
   before_script:
-    - echo ARTIFACTORY_TARGET_FILE=nbm-${BUILD_VERSION}.zip > .vars
-    - set -a && source .vars
+    # Set the ARTIFACT_FILE and ARTIFACT_URL in the environment and output them
+    # to a .vars file that can be sourced for the deployment trigger jobs.
+    - export ARTIFACT_FILE=nbm-${BUILD_VERSION}.zip
+    - export ARTIFACT_URL=${ARTIFACTORY_URL}/${ARTIFACT_FILE}
+    - echo ARTIFACT_FILE=${ARTIFACT_FILE} > .vars
+    - echo ARTIFACT_URL=${ARTIFACT_URL} >> .vars
+  script:
+    # Zip the contents of the 'dist/' directory.
+    - '(cd build && zip -9 -r ../${ARTIFACT_FILE} .)'
+    # Compute the sha1sum of the .zip file for uploading to artifactory.
+    - export SHA1SUM=$(sha1sum ${ARTIFACT_FILE} | cut -d " " -f1)
+    - curl --fail -k
+      -H "X-JFrog-Art-Api:${ARTIFACTORY_TOKEN}"
+      -H "X-Checksum-Sha1:${SHA1SUM}"
+      -T ${ARTIFACT_FILE}
+      ${ARTIFACT_URL}
   artifacts:
     paths:
       - .vars
-  dependencies:
-    - npm_build
 
 upload_artifact_master:
-  extends: .nbm_upload_artifact
+  extends: .artifactory_deploy
   variables:
     BUILD_VERSION: latest
   only:
@@ -80,7 +106,7 @@ upload_artifact_master:
       - master
 
 upload_artifact_tag:
-  extends: .nbm_upload_artifact
+  extends: .artifactory_deploy
   variables:
     BUILD_VERSION: ${CI_COMMIT_TAG}
   only:
@@ -88,38 +114,56 @@ upload_artifact_tag:
       - tags
 
 #
-# Trigger the deployment pipeline using the GitLab API
+# == Deployment Triggers
 #
-# This passes along the target filename.
+# These jobs use 'curl' to make a request to the GitLab API to trigger the
+# deployment repository's pipeline. The pipeline trigger is configured on
+# the deployment repository under "Settings -> CI/CD -> Pipeline Triggers",
+# which provides an API URL and token. Those values are maintained as
+# GitLab group variables.
 #
-# The 'upload_artifact' job provides a ".vars" file that provides
-# the filename, which is sourced here.
+# References:
+#   - https://docs.gitlab.com/ee/ci/triggers/README.html
 #
-.nbm_deploy_trigger:
-  extends: .deploy_trigger
-  stage: deploy
-  before_script:
-    - set -a && source .vars
+.deploy_trigger:
+  image: code.chs.usgs.gov:5001/sas/ops/docker/base-images/curl:master-latest
+  stage: Deploy Trigger
+  tags:
+    - docker
+  only:
+    variables:
+      - $CI_COMMIT_REF_PROTECTED == "true"
   variables:
-    ARTIFACTORY_REPO: nbm
-    DEPLOY_TRIGGER_VARS: ARTIFACTORY_TARGET_FILE
+    DEPLOY_TRIGGER_VARS: ARTIFACT_URL
+  before_script:
+    - source .vars
+  script:
+    # Trigger the deployment pipeline, passing along the Artifactory URL for
+    # the artifact.
+    - curl -X POST --fail
+      -F variables[ARTIFACT_URL]=${ARTIFACT_URL}
+      -F token=${DEPLOY_TRIGGER_TOKEN}
+      -F ref=${DEPLOY_TRIGGER_REF}
+      ${DEPLOY_TRIGGER_URL}
 
 trigger_deploy_development:
-  extends: .nbm_deploy_trigger
+  extends: .deploy_trigger
   variables:
     DEPLOY_TRIGGER_REF: develop
   dependencies:
+    # The '.vars' file with the ARTIFACT_URL is provided by this job.
     - upload_artifact_master
   only:
     refs:
       - master
 
 trigger_deploy_staging:
-  extends: .nbm_deploy_trigger
+  extends: .deploy_trigger
   variables:
     # run the deploy pipeline for the staging environment, this code is automatically deployed and scanned
     DEPLOY_TRIGGER_REF: release
   dependencies:
+    # The '.vars' file with the ARTIFACT_URL is provided by this job.
     - upload_artifact_tag
   only:
     refs:
