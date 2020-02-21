@@ -16,9 +16,9 @@ import {isEmpty} from "lodash";
 
 const cloneLayer = require('leaflet-clonelayer')
 
-// @Matt TODO: #current fix the fetch cors stuff
+// @Matt TODO: #next fix the fetch cors stuff
 // @Matt TODO: #current merge in from github branch
-// @Matt TODO: #current implement eslint
+// @Matt TODO: implement eslint
 export interface IBioscapeProps {
   biogeography: any
   "nbm-react": any
