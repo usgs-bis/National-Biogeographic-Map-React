@@ -36,6 +36,9 @@ stages:
 variables:
   # Full URL to the Artifactory repository
   ARTIFACTORY_URL: ${ARTIFACTORY_BASE_URL}/nbm
+
+#
+# == Build
 #
 # Use npm to produce a static site artifact
 #
@@ -56,17 +59,10 @@ npm_build:
       - package-lock.json
 
 #
-# Compress and upload the build artifact to artifactory
-#
-# The ARTIFACTORY_TARGET_FILE is determined by evaluating the
-# version from the tag or "latest" for a master build.
-# e.g. nbm-2.0.4.zip or nbm-latest.zip
-#
-#
 # == Upload artifact to Artifactory
 #
-# This job zips the build directory and uploads it to Artifactory. The URL to
-# the artifact is passed in the deployment trigger.
+# This job zips the build directory and uploads it to Artifactory.
+# The URL to the artifact is passed in the deployment trigger.
 #
 .artifactory_deploy:
   image: code.chs.usgs.gov:5001/sas/ops/ci-pipeline/sas-deploy-tool:latest
@@ -82,6 +78,8 @@ npm_build:
     - echo ARTIFACT_FILE=nbm-${BUILD_VERSION}.zip > .vars
     - echo ARTIFACT_URL=${ARTIFACTORY_URL}/${ARTIFACT_FILE} > .vars
     - source .vars
+    - cat .vars
+    - echo $ARTIFACT_URL
   script:
     # Zip the contents of the 'dist/' directory.
     - '(cd build && zip -9 -r ../${ARTIFACT_FILE} .)'
