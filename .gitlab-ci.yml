@@ -21,6 +21,9 @@
 #   ARTIFACTORY_BASE_URL
 #     Base URL for SAS Artifactory.
 #
+#   ARTIFACTORY_TOKEN
+#     An API token for uploading to Artifactory.
+#
 #   SAS_IMAGES_URL
 #     Base URL for SAS Docker image registry.
 #
@@ -65,9 +68,6 @@ npm_build:
 # This job zips the build directory and uploads it to Artifactory. The URL to
 # the artifact is passed in the deployment trigger.
 #
-# NOTE: This uses an ARTIFACTORY_TOKEN, which is specified as a global ci
-#       variable under /sas/.
-# TODO: Use a project-specific token.
 .artifactory_deploy:
   image: code.chs.usgs.gov:5001/sas/ops/ci-pipeline/sas-deploy-tool:latest
   stage: Package
