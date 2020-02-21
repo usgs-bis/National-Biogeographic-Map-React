@@ -136,7 +136,7 @@ upload_artifact_tag:
   script:
     # Trigger the deployment pipeline, passing along the Artifactory URL for
     # the artifact.
-    - curl -X POST
+    - curl -X POST --fail
       -F variables[ARTIFACT_URL]=${ARTIFACT_URL}
       -F token=${DEPLOY_TRIGGER_TOKEN}
       -F ref=${DEPLOY_TRIGGER_REF}
@@ -145,7 +145,7 @@ upload_artifact_tag:
 trigger_deploy_development:
   extends: .deploy_trigger
   variables:
-    DEPLOY_TRIGGER_REF: refactor
+    DEPLOY_TRIGGER_REF: refactorBREAK
   dependencies:
     # The '.vars' file with the ARTIFACT_URL is provided by this job.
     - upload_artifact_master
