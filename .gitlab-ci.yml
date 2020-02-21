@@ -34,7 +34,7 @@ stages:
   - Deploy Trigger
 
 variables:
-  # Full URL to the Artifactory repository
+  # Full URL to the target Artifactory repository
   ARTIFACTORY_URL: ${ARTIFACTORY_BASE_URL}/nbm
 
 #
@@ -44,7 +44,8 @@ variables:
 #
 npm_build:
   stage: Build
-  # Use an internal registry for node
+  # Use an internal image registry for the node image. The local image name
+  # and tags match the official upstream image.
   # This variable is set in gitlab group vars
   image: ${SAS_IMAGES_URL}/node:10.15
   tags:
@@ -56,7 +57,6 @@ npm_build:
   artifacts:
     paths:
       - build
-      - package-lock.json
 
 #
 # == Upload artifact to Artifactory
@@ -71,15 +71,18 @@ npm_build:
     - docker
   only:
     variables:
+      # This job must run on a protected ref due to the ARTIFACTORY_TOKEN
+      # exposure.
       - $CI_COMMIT_REF_PROTECTED == "true"
   dependencies:
     - npm_build
   before_script:
+    # Set the ARTIFACT_FILE and ARTIFACT_URL in the environment and output them
+    # to a .vars file that can be sourced for the deployment trigger jobs.
     - export ARTIFACT_FILE=nbm-${BUILD_VERSION}.zip
     - export ARTIFACT_URL=${ARTIFACTORY_URL}/${ARTIFACT_FILE}
     - echo ARTIFACT_FILE=${ARTIFACT_FILE} > .vars
     - echo ARTIFACT_URL=${ARTIFACT_URL} >> .vars
-    - source .vars
   script:
     # Zip the contents of the 'dist/' directory.
     - '(cd build && zip -9 -r ../${ARTIFACT_FILE} .)'
