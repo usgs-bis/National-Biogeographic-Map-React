@@ -5,7 +5,6 @@ import React, { FunctionComponent, useState, useEffect } from 'react'
 import speechBubble from './bubble.png'
 import {Button, ButtonGroup} from 'reactstrap'
 import {Collapse, CardBody, Card} from 'reactstrap'
-// @Matt TODO: #current we need to get icons a better way
 import {Glyphicon} from 'react-bootstrap'
 import {RadioGroup} from '../CustomRadio/CustomRadio'
 
@@ -24,7 +23,6 @@ export interface ISearchBarProps {
   results: any[]
 }
 
-// @Matt TODO: #current convert to functioncomponent
 const SearchBar: FunctionComponent<ISearchBarProps> = ( { initBaps, point, mapClicked, textSearchHandler, enabledLayers, submitHandler, bioscape, results }) => {
 
   const [focused, setFocused] = useState(false)

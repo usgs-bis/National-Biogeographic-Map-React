@@ -120,7 +120,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
       overlay = state.bioscape.overlays.find((obj: any) => obj.selected === true)
     }
 
-    setState((prev) => Object.assign(prev, {
+    setState((prev) => Object.assign({}, prev, {
       basemap: basemap,
       overlay: overlay,
     }))
@@ -130,23 +130,25 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
   // @Matt TODO: check if we had componentWillUnmount
   // @Matt TODO: this needs to be checked and refactored
   useEffect(() => {
+    console.log('bioscape effect')
+
     parseBioscape()
     document.title = state.bioscape.title
 
     if (!isEmpty(state.feature)) {
       getHash()
     }
-  })
+  }, [state.bioscape.title, state.feature])
 
   useEffect(() => {
+    console.log('polygon effect')
+
     if (initState?.userDefined) {
       handelDrawnPolygon(initState.userDefined.geom, true)
     } else if (initState) {
       submitHandler(initState.feature, true)
     }
-
-
-  }, [initState])
+  })
 
   useEffect(() => {
     // @Matt TODO: #current refactor to only place it is used
@@ -196,11 +198,11 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
   }
 
   const basemapChanged = (e: any) => {
-    setState((prev) => Object.assign(prev, {basemap: e }))
+    setState((prev) => Object.assign({}, prev, {basemap: e }))
   }
 
   const overlayChanged = (e: any) => {
-    setState((prev) => Object.assign(prev, { overlay: e }))
+    setState((prev) => Object.assign({}, prev, { overlay: e }))
 
     if (state.lat && state.lng) {
       handleMapClick({
@@ -217,12 +219,12 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
     map.leafletElement.getPane('summarizationPane').style.zIndex = 402
     map.leafletElement.getPane('overlayPane').style.zIndex = 403
 
-    setState((prev) => Object.assign(prev, { map: map }))
+    setState((prev) => Object.assign({}, prev, { map: map }))
   }
 
   const handelDrawnPolygon = (geom: any, init: any) => {
     if (geom) {
-      setState((prev) => Object.assign(prev, {
+      setState((prev) => Object.assign({}, prev, {
         feature: {
           geometry: geom,
           properties: {
@@ -240,13 +242,13 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
       }))
 
       if (!init) {
-        setState((prev) => Object.assign(prev, {
+        setState((prev) => Object.assign({}, prev, {
           priorityBap: null,
           analysisLayers: [],
         }))
       }
     } else {
-      setState((prev) => Object.assign(prev, { feature: null }))
+      setState((prev) => Object.assign({}, prev, { feature: null }))
     }
   }
 
@@ -373,20 +375,20 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
           result.properties.approxArea = getApproxArea(result.geometry)
           result.geometry = parseGeom(result.geometry)
           result.properties = countyStateLookup([result.properties])[0]
-          setState((prev) => Object.assign(prev, {
+          setState((prev) => Object.assign({}, prev, {
             feature: result,
             mapClicked: false
           }))
 
         }
         else {
-          setState((prev) => Object.assign(prev, {
+          setState((prev) => Object.assign({}, prev, {
             feature: null,
             mapClicked: false
           }))
         }
         if (!init) {
-          setState((prev) => Object.assign(prev, {
+          setState((prev) => Object.assign({}, prev, {
             priorityBap: null,
             analysisLayers: []
           }))
@@ -419,7 +421,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
 
         if (state.overlay) {
           sendFeatureRequestFromOverlay(result.hits.hits.map((a: any) => a['_source']['properties']))
-          setState((prev) => Object.assign(prev, {
+          setState((prev) => Object.assign({}, prev, {
             lat: e.latlng.lat,
             lng: e.latlng.lng,
             clickDrivenEvent: true
@@ -434,7 +436,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
             return NVCS_FEATURE_LOOKUP.includes(a.feature_class)
           })
 
-          setState((prev) => Object.assign(prev, {
+          setState((prev) => Object.assign({}, prev, {
             lat: e.latlng.lat,
             lng: e.latlng.lng,
             results: r,
@@ -444,7 +446,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
         } else {
           let r = result.hits.hits.map((a: any) => a['_source']['properties'])
           r = countyStateLookup(r)
-          setState((prev) => Object.assign(prev, {
+          setState((prev) => Object.assign({}, prev, {
             lat: e.latlng.lat,
             lng: e.latlng.lng,
             results: r,
@@ -478,7 +480,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
         let identifiedElevationValue = result.USGS_Elevation_Point_Query_Service
         let elev = identifiedElevationValue.Elevation_Query.Elevation
         elev = elev > -400 ? numberWithCommas(parseInt(elev)) : 'No Data'
-        setState((prev) => Object.assign(prev, { elv: elev }))
+        setState((prev) => Object.assign({}, prev, { elv: elev }))
       })
       .catch(setErrorState)
   }
@@ -488,7 +490,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
   const handleSearchBox = (text: any) => {
 
     if (text.length < 5) {
-      setState((prev) => Object.assign(prev, {
+      setState((prev) => Object.assign({}, prev, {
         results: []
       }))
 
@@ -508,7 +510,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
           })
         }
 
-        setState((prev) => Object.assign(prev, {
+        setState((prev) => Object.assign({}, prev, {
           results: r,
           clickDrivenEvent: false
         }))
@@ -519,14 +521,14 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
   }
 
   const setYearRange = (years: any) => {
-    setState((prev) => Object.assign(prev, {
+    setState((prev) => Object.assign({}, prev, {
       rangeYearMin: years[0],
       rangeYearMax: years[1]
     }))
   }
 
   const setMapDisplayYear = (year: any) => {
-    setState((prev) => Object.assign(prev, {
+    setState((prev) => Object.assign({}, prev, {
       mapDisplayYear: year
     }))
 
@@ -547,7 +549,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
   // unfortunate that we need to use timeouts to acount for rendering time
   // for a smooth transition. on 'load' is network only, not time it takes to paint
   const setMapDisplayYearFade = (year: any) => {
-    setState((prev) => Object.assign(prev, {
+    setState((prev) => Object.assign({}, prev, {
       mapDisplayYear: year
     }))
 
@@ -617,11 +619,11 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
   }
 
   const updateAnalysisLayers = (layers: any) => {
-    setState((prev) => Object.assign(prev, { analysisLayers: layers, }))
+    setState((prev) => Object.assign({}, prev, { analysisLayers: layers, }))
   }
 
   const setPriorityBap = (bapId: any) => {
-    setState((prev) => Object.assign(prev, { priorityBap: bapId }))
+    setState((prev) => Object.assign({}, prev, { priorityBap: bapId }))
   }
 
   // @Matt TODO: #current need to use contexts to pass props down?
