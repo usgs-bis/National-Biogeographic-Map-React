@@ -1,14 +1,14 @@
-import React from "react";
-import "./LeftPanel.css";
-import SearchBar from "./searchBar/searchBar.js"
-import PDFReport from "../PDF/PdfReport";
-import Biogeography from "../Bioscapes/Biogeography";
-import TerrestrialEcosystems2011 from "../Bioscapes/TerrestrialEcosystems2011";
-import CustomToolTip from "../ToolTip/ToolTip";
-import speechBubble from './bubble.png'
+import "./LeftPanel.css"
+import Biogeography from "../Bioscapes/Biogeography"
+import CustomDialog from "../CustomDialog/CustomDialog"
+import CustomToolTip from "../ToolTip/ToolTip"
+import InfoSign from "../ InfoSign/InfoSign"
+import PDFReport from "../PDF/PdfReport"
+import React from "react"
+import SearchBar from "./SearchBar"
+import TerrestrialEcosystems2011 from "../Bioscapes/TerrestrialEcosystems2011"
 import loadingGif from './ajax-loader.gif'
-import InfoSign from "../ InfoSign/InfoSign";
-import CustomDialog from "../CustomDialog/CustomDialog";
+import speechBubble from './bubble.png'
 
 
 class LeftPanel extends React.Component {
@@ -24,10 +24,10 @@ class LeftPanel extends React.Component {
       showDescription: false
     }
 
-    this.share = this.share.bind(this);
-    this.report = this.report.bind(this);
+    this.share = this.share.bind(this)
+    this.report = this.report.bind(this)
     this.updateAnalysisLayers = this.updateAnalysisLayers.bind(this)
-    this.loaderRef = React.createRef();
+    this.loaderRef = React.createRef()
     this.listnerAdded = false
   }
 
@@ -37,8 +37,8 @@ class LeftPanel extends React.Component {
   }
   componentWillUnmount() {
     if (this.listnerAdded) {
-      document.body.removeEventListener('click', () => {this.setState({displayHelpPopup: false})}, true);
-      document.body.removeEventListener('keydown', () => {this.setState({displayHelpPopup: false})}, true);
+      document.body.removeEventListener('click', () => {this.setState({displayHelpPopup: false})}, true)
+      document.body.removeEventListener('keydown', () => {this.setState({displayHelpPopup: false})}, true)
     }
   }
 
@@ -67,8 +67,8 @@ class LeftPanel extends React.Component {
       !this.props.initBaps) {
       this.listnerAdded = true
       this.setState({displayHelpPopup: true})
-      document.body.addEventListener('click', () => {this.setState({displayHelpPopup: false})}, true);
-      document.body.addEventListener('keydown', () => {this.setState({displayHelpPopup: false})}, true);
+      document.body.addEventListener('click', () => {this.setState({displayHelpPopup: false})}, true)
+      document.body.addEventListener('keydown', () => {this.setState({displayHelpPopup: false})}, true)
     }
 
   }
@@ -114,7 +114,7 @@ class LeftPanel extends React.Component {
           this.setState({
             loading: false
           })
-        }, 1000);
+        }, 1000)
       }, (error) => {
         console.log(error)
         this.setState({
@@ -236,4 +236,4 @@ class LeftPanel extends React.Component {
     )
   }
 }
-export default LeftPanel;
+export default LeftPanel

@@ -1,28 +1,27 @@
-import "./App.css";
+import './App.css'
 import * as turf from '@turf/turf'
-import AppConfig from "./config";
-import Footer from "./Footer/Footer";
-import Header from "./Header/Header";
-import L from "leaflet";
-import LeftPanel from "./LeftPanel/LeftPanel";
-import NBM from "./NBM/NBM";
-import React, {FunctionComponent, useState, useEffect} from "react";
-import Resizable from 're-resizable';
-import nbmBioscape from "./Bioscapes/biogeography.json"
-import nvcsBioscape from "./Bioscapes/terrestrial-ecosystems-2011.json"
+import AppConfig from './config'
+import Footer from './Footer/Footer'
+import Header from './Header/Header'
+import L from 'leaflet'
+import LeftPanel from './LeftPanel/LeftPanel'
+import NBM from './NBM/NBM'
+import React, {FunctionComponent, useState, useEffect} from 'react'
+import Resizable from 're-resizable'
+import nbmBioscape from './Bioscapes/biogeography.json'
+import nvcsBioscape from './Bioscapes/terrestrial-ecosystems-2011.json'
 import packageJson from '../package.json'
-import states from "./states.json"
-import {isEmpty} from "lodash";
+import states from './states.json'
+import {isEmpty} from 'lodash'
 
 const cloneLayer = require('leaflet-clonelayer')
 
 // @Matt TODO: #next fix the fetch cors stuff
-// @Matt TODO: #current merge in from github branch
 // @Matt TODO: implement eslint
 export interface IBioscapeProps {
   biogeography: any
-  "nbm-react": any
-  "terrestrial-ecosystems-2011": any
+  'nbm-react': any
+  'terrestrial-ecosystems-2011': any
 }
 
 export interface IFeature {
@@ -34,21 +33,21 @@ export interface IFeature {
 }
 
 const bioscapeMap: IBioscapeProps = {
-  "biogeography": nbmBioscape,
-  "nbm-react": nbmBioscape,
-  "terrestrial-ecosystems-2011": nvcsBioscape
+  'biogeography': nbmBioscape,
+  'nbm-react': nbmBioscape,
+  'terrestrial-ecosystems-2011': nvcsBioscape
 }
 
-const API_VERSION_URL = AppConfig.REACT_APP_BIS_API + "/api"
+const API_VERSION_URL = AppConfig.REACT_APP_BIS_API + '/api'
 const ELEVATION_SOURCE = 'https://nationalmap.gov/epqs/pqs.php?'
-const GET_FEATURE_API = AppConfig.REACT_APP_BIS_API + "/api/v1/places/search/feature?feature_id=";
+const GET_FEATURE_API = AppConfig.REACT_APP_BIS_API + '/api/v1/places/search/feature?feature_id='
 const NVCS_FEATURE_LOOKUP = ['Landscape Conservation Cooperatives', 'US County', 'Ecoregion III', 'US States and Territories']
-const POINT_SEARCH_API = AppConfig.REACT_APP_BIS_API + "/api/v1/places/search/point?";
-const REACT_VERSION = "v" + packageJson.version
-const TEXT_SEARCH_API = AppConfig.REACT_APP_BIS_API + "/api/v1/places/search/text?q=";
+const POINT_SEARCH_API = AppConfig.REACT_APP_BIS_API + '/api/v1/places/search/point?'
+const REACT_VERSION = 'v' + packageJson.version
+const TEXT_SEARCH_API = AppConfig.REACT_APP_BIS_API + '/api/v1/places/search/text?q='
 
 const numberWithCommas = (x: number) => {
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }
 
 const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }) => {
@@ -105,16 +104,16 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
   const parseBioscape = () => {
 
     let basemap = state.basemap ? state.basemap : state.bioscape.basemaps.find((obj: any) => {
-      return obj.selected === true;
+      return obj.selected === true
     })
 
     let overlay: any = null
     if (state.bioscape.overlays) {
       for (let i = 0; i < state.bioscape.overlays.length; i++) {
         let overlay = state.bioscape.overlays[i]
-        overlay["layer"] = L.tileLayer.wms(
-          state.bioscape.overlays[i]["serviceUrl"],
-          state.bioscape.overlays[i]["leafletProperties"]
+        overlay['layer'] = L.tileLayer.wms(
+          state.bioscape.overlays[i]['serviceUrl'],
+          state.bioscape.overlays[i]['leafletProperties']
         )
       }
 
@@ -128,24 +127,34 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
 
   }
 
+  // @Matt TODO: check if we had componentWillUnmount
+  // @Matt TODO: this needs to be checked and refactored
   useEffect(() => {
-
     parseBioscape()
     document.title = state.bioscape.title
-    if (initState && initState.userDefined) {
-      handelDrawnPolygon(initState.userDefined.geom, true)
-    }
-    else if (initState) submitHandler(initState.feature, true)
-    // @Matt TODO: #current refactor to only place it is used
-    fetch(API_VERSION_URL)
-      .then((res) => res.json())
-      .then((res) => setAPIVersion(res.Version))
-      .catch(() => setAPIVersion('UNKNOWN'))
 
     if (!isEmpty(state.feature)) {
       getHash()
     }
   })
+
+  useEffect(() => {
+    if (initState?.userDefined) {
+      handelDrawnPolygon(initState.userDefined.geom, true)
+    } else if (initState) {
+      submitHandler(initState.feature, true)
+    }
+
+
+  }, [initState])
+
+  useEffect(() => {
+    // @Matt TODO: #current refactor to only place it is used
+    fetch(API_VERSION_URL)
+      .then((res) => res.json())
+      .then((res) => setAPIVersion(res.Version))
+      .catch(() => setAPIVersion('UNKNOWN'))
+  }, [APIVersion])
 
   const getHash = () => {
     shareStateBeforeHash = {
@@ -159,7 +168,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
     if (state.feature.properties.userDefined) {
       shareStateBeforeHash.userDefined = {geom: state.feature.geometry}
     }
-    window.location.hash = Buffer.from(JSON.stringify(shareStateBeforeHash)).toString("base64")
+    window.location.hash = Buffer.from(JSON.stringify(shareStateBeforeHash)).toString('base64')
   }
 
   // @Matt TODO: double check this
@@ -170,7 +179,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
       // @Matt TODO: this used to be just 'location'
       copyText.value = window.location.href
       copyText.select()
-      document.execCommand("copy")
+      document.execCommand('copy')
       copyText.style.display = 'none'
       return copyText.value
     }
@@ -204,9 +213,9 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
   }
 
   const setMap = (map: any) => {
-    map.leafletElement.createPane('summarizationPane');
-    map.leafletElement.getPane('summarizationPane').style.zIndex = 402;
-    map.leafletElement.getPane('overlayPane').style.zIndex = 403;
+    map.leafletElement.createPane('summarizationPane')
+    map.leafletElement.getPane('summarizationPane').style.zIndex = 402
+    map.leafletElement.getPane('overlayPane').style.zIndex = 403
 
     setState((prev) => Object.assign(prev, { map: map }))
   }
@@ -219,14 +228,14 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
           properties: {
             approxArea: getApproxArea(geom),
             userDefined: true,
-            feature_class: "Polygon",
+            feature_class: 'Polygon',
             gid: null,
-            feature_name: "User Defined Polygon",
+            feature_name: 'User Defined Polygon',
             feature_code: null,
             feature_id: Math.random().toString(36).substring(7),
             feature_description: 'User Defined Polygon',
           },
-          type: "Feature"
+          type: 'Feature'
         }
       }))
 
@@ -248,21 +257,21 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
 
     let edgeOfMap = 10
     let leftEdge = false // close to left edge
-    let polyLineCollection: any[] = [];
-    let polyLineCollectionOtherWorld: any[] = [];
+    let polyLineCollection: any[] = []
+    let polyLineCollectionOtherWorld: any[] = []
     let rightEdge = false // close to right edge
 
     // convert
     geometry.coordinates.forEach((feature: any) => {
       feature.forEach((polygon: any) => {
         let lineCoord = {
-          "type": "LineString",
-          "coordinates": [] as any[],
+          'type': 'LineString',
+          'coordinates': [] as any[],
         }
 
         let lineCoordCopy = {
-          "type": "LineString",
-          "coordinates": [] as any[]
+          'type': 'LineString',
+          'coordinates': [] as any[]
         }
 
         let crossed22 = false
@@ -274,8 +283,8 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
               polyLineCollection.push(lineCoord)
               if (crossed22) {
                 lineCoordCopy = {
-                  "type": "LineString",
-                  "coordinates": []
+                  'type': 'LineString',
+                  'coordinates': []
                 }
                 // eslint-disable-next-line
                 lineCoord.coordinates.forEach((coordinates) => {
@@ -286,8 +295,8 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
               }
             }
             lineCoord = {
-              "type": "LineString",
-              "coordinates": []
+              'type': 'LineString',
+              'coordinates': []
             }
           }
           if (coordinates[0] > -179.99 && coordinates[0] < 179.99) {
@@ -307,8 +316,8 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
         polyLineCollection.push(lineCoord)
         if (crossed22) {
           lineCoordCopy = {
-            "type": "LineString",
-            "coordinates": []
+            'type': 'LineString',
+            'coordinates': []
           }
           lineCoord.coordinates.forEach(coordinates => {
             lineCoordCopy.coordinates.push([coordinates[0] - 360, coordinates[1]])
@@ -316,7 +325,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
           polyLineCollectionOtherWorld.push(lineCoordCopy)
         }
       })
-    });
+    })
 
     if (rightEdge && leftEdge) { // if its close to both edges draw on both sides of map
       polyLineCollectionOtherWorld.forEach(line => {
@@ -359,8 +368,8 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
     fetch(GET_FEATURE_API + feature.feature_id)
       .then((res) => res.json())
       .then((data) => {
-        if (data && data.hits.hits.length && data.hits.hits[0]["_source"]) {
-          let result = data.hits.hits[0]["_source"]
+        if (data && data.hits.hits.length && data.hits.hits[0]['_source']) {
+          let result = data.hits.hits[0]['_source']
           result.properties.approxArea = getApproxArea(result.geometry)
           result.geometry = parseGeom(result.geometry)
           result.properties = countyStateLookup([result.properties])[0]
@@ -387,12 +396,12 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
   }
 
   const sendFeatureRequestFromOverlay = (results: any) => {
-    let overlay = state.overlay;
+    let overlay = state.overlay
     if (!overlay) { return }
 
     for (let i = 0; i < results.length; i++) {
       let feature = results[i]
-      if (feature["feature_class"] === overlay.featureClass) {
+      if (feature['feature_class'] === overlay.featureClass) {
         i = results.length
         submitHandler({
           feature_id: feature.feature_id
@@ -409,7 +418,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
         if (!result || !result.hits) { return }
 
         if (state.overlay) {
-          sendFeatureRequestFromOverlay(result.hits.hits.map((a: any) => a["_source"]["properties"]))
+          sendFeatureRequestFromOverlay(result.hits.hits.map((a: any) => a['_source']['properties']))
           setState((prev) => Object.assign(prev, {
             lat: e.latlng.lat,
             lng: e.latlng.lng,
@@ -418,7 +427,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
         }
 
         else if (state.bioscape.overlays) {
-          let r = result.hits.hits.map((a: any) => a["_source"]["properties"])
+          let r = result.hits.hits.map((a: any) => a['_source']['properties'])
 
           r = countyStateLookup(r)
           r = r.filter((a: any) => {
@@ -433,7 +442,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
             clickDrivenEvent: true
           }))
         } else {
-          let r = result.hits.hits.map((a: any) => a["_source"]["properties"])
+          let r = result.hits.hits.map((a: any) => a['_source']['properties'])
           r = countyStateLookup(r)
           setState((prev) => Object.assign(prev, {
             lat: e.latlng.lat,
@@ -467,8 +476,8 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
       .then(res => res.json())
       .then((result) => {
         let identifiedElevationValue = result.USGS_Elevation_Point_Query_Service
-        let elev = identifiedElevationValue.Elevation_Query.Elevation;
-        elev = elev > -400 ? numberWithCommas(parseInt(elev)) : "No Data"
+        let elev = identifiedElevationValue.Elevation_Query.Elevation
+        elev = elev > -400 ? numberWithCommas(parseInt(elev)) : 'No Data'
         setState((prev) => Object.assign(prev, { elv: elev }))
       })
       .catch(setErrorState)
@@ -489,7 +498,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
     fetch(TEXT_SEARCH_API + text)
       .then(res => res.json())
       .then((result) => {
-        let r = result.hits.hits.map((a: any) => a["_source"]["properties"])
+        let r = result.hits.hits.map((a: any) => a['_source']['properties'])
 
         r = countyStateLookup(r)
 
@@ -546,7 +555,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
       state.analysisLayers.forEach((item) => {
         if (item.timeEnabled) {
           let currentOpacity = Number(item.layer.options.opacity).toFixed(2)
-          let clone = cloneLayer(item.layer);
+          let clone = cloneLayer(item.layer)
           clone.setParams({time: item.layer.wmsParams.time})
           clone.setOpacity(0)
           clone.addTo(state.map.leafletElement)
@@ -580,12 +589,12 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
     let recurse = false
 
     if (currentOpacitylayer2 > .11) {
-      layer2.setOpacity(currentOpacitylayer2 - 0.10);
+      layer2.setOpacity(currentOpacitylayer2 - 0.10)
       recurse = true
     }
 
     if (currentOpacityLayer < targetOpacity) {
-      layer.setOpacity(currentOpacityLayer + 0.10);
+      layer.setOpacity(currentOpacityLayer + 0.10)
       recurse = true
     }
 
