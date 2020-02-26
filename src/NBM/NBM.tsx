@@ -79,7 +79,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
   const [locationOverlay, setLocationOverlay] = useState()
   const [oldLayers, setOldLayers] = useState<any[]>([])
 
-  const map: Map = useRef(null)
+  const map: Map = useRef()
 
   let clickable = true
   let drawnpolygon: any = null
@@ -88,7 +88,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
 
   useEffect(() => {
     console.log('bounds effect')
-    if (isEmpty(props.feature)) { return }
+    if (isEmpty(props.feature)) {return }
 
     if (!props.feature.type) {
       props.feature.type = 'Feature'
@@ -115,7 +115,6 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
     setTimeout(() => {
       if (!map.current) { return }
       map.current.leafletElement.invalidateSize()
-      map.current.leafletElement.fitBounds(bounds)
       L.control.scale({metric: false, imperial: true, position: 'bottomleft'}).addTo(map.current.leafletElement)
       map.current.leafletElement.removeControl(map.current.leafletElement.attributionControl)
       L.control.attribution({position: 'topleft'}).addTo(map.current.leafletElement)
@@ -123,8 +122,13 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
 
     setMap(map)
 
-  }, [map, bounds])
+  }, [map])
 
+  useEffect(() => {
+    map.current.leafletElement.fitBounds(bounds)
+  }, [bounds])
+
+  // @Matt TODO: basemap not updating
   useEffect(() => {
     console.log('layer adding/removing effect')
     const currentLayers = props.analysisLayers || []
@@ -132,7 +136,6 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
     for (const oldItem of oldLayers) {
       map.current.leafletElement.removeLayer(oldItem.layer)
     }
-    setOldLayers(currentLayers)
 
     for (const newItem of currentLayers) {
       map.current.leafletElement.addLayer(newItem.layer)
@@ -144,6 +147,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
         )
       }
     }
+    setOldLayers(currentLayers)
   }, [props.analysisLayers, props.mapDisplayYear])
 
   useEffect(() => {
@@ -207,7 +211,9 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
 
   const disableDragging = () => {
     clickable = false
-    map.current.leafletElement.dragging.disable()
+    if (map.current) {
+      map.current.leafletElement.dragging.disable()
+    }
   }
 
   const enableDragging = () => {
@@ -223,8 +229,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
   }
 
   const userDrawnPolygonStart = () => {
-    // @Matt TODO: does this mess this up? used to be null
-    setPoint([])
+    setPoint(null)
     props.parentDrawHandler(null)
     if (drawnpolygon) {
       map.current.leafletElement.removeLayer(drawnpolygon)
@@ -467,14 +472,86 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
                   }
                 </FeatureGroup>
               </Map>
-              {DEV_MODE && uploadShapefileDialog()}
             </>
           }
-        />
+        >
+          <Map ref={map}
+            onClick={handleClick}
+            bounds={bounds}
+            onLayerAdd={(event: any) => {
+              event.layer.on('tileerror', (err: any) => {
+                handleLoadError(err)
+              })
+            }}
+            onLayerRemove={() => {
+              layerError = false
+            }}
+            onMouseMove={handleMouseMove}
+            onMouseOut={handleMouseOut}
+            attribution=""
+            zoomControl={false} >
+            {basemap()}
+            <LocationOverlay onRef={(ref: any) => setLocationOverlay(ref)} map={map} bioscapeName={props.bioscapeName} />
+            <MapMarker point={point} />
+            {geojson()}
+            <div className="global-time-slider" onMouseOver={disableDragging} onMouseOut={enableDragging}>
+              {props.bioscapeName !== 'terrestrial-ecosystems-2011' && <TimeSlider
+                setMapDisplayYear={props.setMapDisplayYear}
+                setMapDisplayYearFade={props.setMapDisplayYearFade}
+                setYearRange={props.setYearRange}
+                rangeYearMax={props.rangeYearMax}
+                rangeYearMin={props.rangeYearMin}
+                mapDisplayYear={props.mapDisplayYear}
+                priorityBap={props.priorityBap}
+                bapYearRanges={YEAR_RANGES}
+              />}
+            </div>
+            <div className="attribution" onClick={() => {setAttributionOpen(!attributionOpen)}} onMouseOver={disableDragging} onMouseOut={enableDragging}>
+              <span className="attribution-info" style={{color: 'rgb(107, 153, 197)'}}>
+                <InfoSign></InfoSign>
+              </span>
+            </div>
+            <span onMouseOver={disableDragging} onMouseOut={enableDragging} >{attribution()}</span>
+            <FeatureGroup>
+              <ZoomControl position='topright'></ZoomControl>
+              <EditControl
+                position='topright'
+                //onDeleted={() => { props.parentDrawHandler(null) }}
+                onDrawStart={userDrawnPolygonStart}
+                // onEditStart={disableDragging}
+                // onEdited={userDrawnPolygon}
+                //onEditStop={enableDragging}
+
+                //onDeleteStart={userDrawnPolygonStart}
+                onDrawStop={enableDragging}
+                //onDeleteStop={enableDragging}
+                onCreated={userDrawnPolygonStop}
+                edit={{edit: false, remove: false}}
+                draw={{
+                  rectangle: false,
+                  marker: false,
+                  circlemarker: false,
+                  polyline: false,
+                  circle: false
+                }}
+              />
+              {DEV_MODE &&
+                <Control position="topright">
+                  <label className="mb-0 pt-1 rounded" title="Upload a shp file">
+                    <span className="add-more-label" onClick={handleShow}><Glyphicon className="inner-glyph" glyph="upload" /></span>
+                  </label>
+                </Control>
+              }
+            </FeatureGroup>
+          </Map>
+
+        </Dialog>
       )
     }
   }
 
+  // @Matt DEBUG
+  console.log(props.bioscapeName)
   return (
     <>
       <Map ref={map}

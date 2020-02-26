@@ -37,7 +37,6 @@ class LocationOverlay extends React.Component<ILocationOverlayProps, ILocationOv
     }
     this.map = null
     this.updateOffset = this.updateOffset.bind(this)
-
   }
 
   componentDidMount() {
@@ -51,8 +50,8 @@ class LocationOverlay extends React.Component<ILocationOverlayProps, ILocationOv
   componentDidUpdate() {
     if (!this.map && this.props.map.current.leafletElement) {
       this.map = this.props.map.current.leafletElement
-      this.updateOffset()
       this.map.on('zoomend', this.updateOffset)
+      this.updateOffset()
     }
   }
 
@@ -61,9 +60,12 @@ class LocationOverlay extends React.Component<ILocationOverlayProps, ILocationOv
     let offset = this.state.leftOffset
     const scale = document.getElementsByClassName('leaflet-control-scale leaflet-control')
     if (scale.length) offset = (scale[0].clientWidth + 30).toString() + 'px'
-    this.setState({
-      leftOffset: offset
-    })
+
+    if (offset !== this.state.leftOffset) {
+      this.setState({
+        leftOffset: offset
+      })
+    }
   }
 
   setLocation(lat: null|string, lng: null|string) {

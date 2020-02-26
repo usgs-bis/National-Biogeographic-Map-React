@@ -562,9 +562,9 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
           let clone = cloneLayer(item.layer)
           clone.setParams({time: item.layer.wmsParams.time})
           clone.setOpacity(0)
-          clone.addTo(state.map.leafletElement)
+          clone.addTo(state.map.current.leafletElement)
           // weird case where layer 'load' doesent fire and clone doesnt get removed.
-          setTimeout(() => {state.map.leafletElement.removeLayer(clone)}, 5000)
+          setTimeout(() => {state.map.current.leafletElement.removeLayer(clone)}, 5000)
 
           clone.on('load', () => {
             setTimeout(() => {
@@ -609,7 +609,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
     // Idealy we would only remove clone here but about 5% of the time layer 'load' doesnt fire
     // see comment in setMapDisplayYear above
     else {
-      state.map.leafletElement.removeLayer(layer2)
+      state.map.current.leafletElement.removeLayer(layer2)
     }
 
     // This shouldn't happen, but does when cycling the map. this is crude, but
@@ -639,7 +639,9 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
           defaultSize={{width: 540}}
           minWidth={250}
           maxWidth={1000}
-          onResizeStop={() => {state.map.leafletElement.invalidateSize(); setMapDisplayYear(state.mapDisplayYear + 1); setMapDisplayYear(state.mapDisplayYear - 1)}}
+          onResizeStop={() => {
+            state.map.current.leafletElement.invalidateSize(); setMapDisplayYear(state.mapDisplayYear + 1); setMapDisplayYear(state.mapDisplayYear - 1)
+          }}
         >
           <LeftPanel
             basemapChanged={basemapChanged}
