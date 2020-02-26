@@ -77,6 +77,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
   const [oldOverlay, setOldOverlay] = useState(null)
   const [bounds, setBounds] = useState([[21, -134], [51, -63]])
   const [locationOverlay, setLocationOverlay] = useState()
+  const [oldLayers, setOldLayers] = useState<any[]>([])
 
   const map: Map = useRef(null)
 
@@ -126,23 +127,23 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
 
   useEffect(() => {
     console.log('layer adding/removing effect')
-    let currentLayers = props.analysisLayers || []
+    const currentLayers = props.analysisLayers || []
 
-    // @Matt TODO: check to make sure we are ok removing all and adding again
-    map.current.leafletElement.eachLayer((l: any) => {
-      map.current.leafletElement.removeLayer(l)
-    })
+    for (const oldItem of oldLayers) {
+      map.current.leafletElement.removeLayer(oldItem.layer)
+    }
+    setOldLayers(currentLayers)
 
-    currentLayers.forEach((item) => {
-      map.current.leafletElement.addLayer(item.layer)
-      if (item.timeEnabled) {
-        item.layer.setParams(
+    for (const newItem of currentLayers) {
+      map.current.leafletElement.addLayer(newItem.layer)
+      if (newItem.timeEnabled) {
+        newItem.layer.setParams(
           {
             time: `${props.mapDisplayYear}-01-01`
           }
         )
       }
-    })
+    }
   }, [props.analysisLayers, props.mapDisplayYear])
 
   useEffect(() => {
