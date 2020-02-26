@@ -1,4 +1,5 @@
 import './App.css'
+import './CustomDialog/CustomDialog.css'
 import * as turf from '@turf/turf'
 import AppConfig from './config'
 import Footer from './Footer/Footer'
@@ -52,7 +53,8 @@ const numberWithCommas = (x: number) => {
 
 const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }) => {
 
-  // @Matt TODO: #current do we want to use one state or many
+  // @Matt TODO: fix the always popping up 'choose an analysis'
+  // @Matt TODO: #current fix the bootstrap issues
   let initState: any = null
   let shareStateBeforeHash: any = null
 
@@ -81,7 +83,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
       mapClicked: null as any,
     }
 
-    // @Matt TODO: #current put in state init
+    // @Matt TODO: this would probably be better as a hook
     let loc = window.location.href
     let split = loc.split('#')
 
@@ -215,9 +217,9 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
   }
 
   const setMap = (map: any) => {
-    map.leafletElement.createPane('summarizationPane')
-    map.leafletElement.getPane('summarizationPane').style.zIndex = 402
-    map.leafletElement.getPane('overlayPane').style.zIndex = 403
+    map.current.leafletElement.createPane('summarizationPane')
+    map.current.leafletElement.getPane('summarizationPane').style.zIndex = 402
+    map.current.leafletElement.getPane('overlayPane').style.zIndex = 403
 
     setState((prev) => Object.assign({}, prev, { map: map }))
   }
@@ -640,7 +642,6 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
           onResizeStop={() => {state.map.leafletElement.invalidateSize(); setMapDisplayYear(state.mapDisplayYear + 1); setMapDisplayYear(state.mapDisplayYear - 1)}}
         >
           <LeftPanel
-            overlayChanged={overlayChanged}
             basemapChanged={basemapChanged}
             bioscape={state.bioscape}
             results={state.results}
