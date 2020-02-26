@@ -39,7 +39,6 @@ const bioscapeMap: IBioscapeProps = {
   'terrestrial-ecosystems-2011': nvcsBioscape
 }
 
-const API_VERSION_URL = AppConfig.REACT_APP_BIS_API + '/api'
 const ELEVATION_SOURCE = 'https://nationalmap.gov/epqs/pqs.php?'
 const GET_FEATURE_API = AppConfig.REACT_APP_BIS_API + '/api/v1/places/search/feature?feature_id='
 const NVCS_FEATURE_LOOKUP = ['Landscape Conservation Cooperatives', 'US County', 'Ecoregion III', 'US States and Territories']
@@ -58,7 +57,6 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
   let initState: any = null
   let shareStateBeforeHash: any = null
 
-  const [APIVersion, setAPIVersion] = useState('')
   // @Matt TODO: do something with the errorState
   const [errorState, setErrorState] = useState(null)
   const [state, setState] = useState(() => {
@@ -151,14 +149,6 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
       submitHandler(initState.feature, true)
     }
   })
-
-  useEffect(() => {
-    // @Matt TODO: #current refactor to only place it is used
-    fetch(API_VERSION_URL)
-      .then((res) => res.json())
-      .then((res) => setAPIVersion(res.Version))
-      .catch(() => setAPIVersion('UNKNOWN'))
-  }, [APIVersion])
 
   const getHash = () => {
     shareStateBeforeHash = {
@@ -628,7 +618,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
     setState((prev) => Object.assign({}, prev, { priorityBap: bapId }))
   }
 
-  // @Matt TODO: #current need to use contexts to pass props down?
+  // @Matt TODO: need to use contexts to pass props down?
   return (
     <div className="vwrapper">
       <Header title={state.bioscape.title} description={state.bioscape.description} />
@@ -684,7 +674,6 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
             mapDisplayYear={state.mapDisplayYear}
             bioscapeName={state.bioscapeName}
             applicationVersion={REACT_VERSION}
-            APIVersion={APIVersion}
             priorityBap={state.priorityBap}
             clickDrivenEvent={state.clickDrivenEvent}
             initPoint={(initState || {}).point}

@@ -50,7 +50,6 @@ export interface INBMProps {
   parentDrawHandler: Function
   basemap: any
   applicationVersion: string
-  APIVersion: string
   bioscapeName: string
   setYearRange: Function
   setMapDisplayYear: Function
@@ -60,7 +59,8 @@ export interface INBMProps {
   priorityBap: any
 }
 
-// @Matt TODO: #current convert to functioncomponent
+const API_VERSION_URL = AppConfig.REACT_APP_BIS_API + '/api'
+
 const NBM: FunctionComponent<INBMProps> = (props) => {
 
   const {setMap} = props
@@ -78,6 +78,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
   const [bounds, setBounds] = useState([[21, -134], [51, -63]])
   const [locationOverlay, setLocationOverlay] = useState()
   const [oldLayers, setOldLayers] = useState<any[]>([])
+  const [APIVersion, setAPIVersion] = useState('')
 
   const map: Map = useRef()
 
@@ -85,6 +86,14 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
   let drawnpolygon: any = null
   let key = 1
   let layerError = false
+
+  useEffect(() => {
+    console.log('api version effect')
+    fetch(API_VERSION_URL)
+      .then((res) => res.json())
+      .then((res) => setAPIVersion(res.Version))
+      .catch(() => setAPIVersion('UNKNOWN'))
+  }, [APIVersion])
 
   useEffect(() => {
     console.log('bounds effect')
@@ -383,7 +392,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
                   <span id="frontEndVersion"> {props.applicationVersion}</span>
                 </div>
                 <div>API Version:
-                  <span id="apiVersion"> {props.APIVersion}</span>
+                  <span id="apiVersion"> {APIVersion}</span>
                 </div>
               </div>
             </div>
