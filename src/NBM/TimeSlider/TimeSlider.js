@@ -135,6 +135,8 @@ class TimeSlider extends React.Component {
   }
 
   initHandelPos() {
+    if (!document.getElementById('rangeSliderContainer')) { return }
+
     this.sliderSize = document.getElementById('rangeSliderContainer').clientWidth
     // init middle
     let left = ((this.state.mapDisplayYear - this.minSliderValue) / (this.maxSliderValue - this.minSliderValue)) * this.sliderSize

@@ -367,11 +367,16 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
           result.properties.approxArea = getApproxArea(result.geometry)
           result.geometry = parseGeom(result.geometry)
           result.properties = countyStateLookup([result.properties])[0]
-          setState((prev) => Object.assign({}, prev, {
-            feature: result,
-            mapClicked: false
-          }))
-
+          try {
+            // Need this to validate result
+            L.geoJSON(result)
+            setState((prev) => Object.assign({}, prev, {
+              feature: result,
+              mapClicked: false
+            }))
+          } catch(err) {
+            console.error(err)
+          }
         }
         else {
           setState((prev) => Object.assign({}, prev, {

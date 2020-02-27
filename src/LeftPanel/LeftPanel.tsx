@@ -142,7 +142,6 @@ class LeftPanel extends React.Component<ILeftPanelProps, ILeftPanelState> {
       })
     }, 2000)
 
-
   }
 
   report() {

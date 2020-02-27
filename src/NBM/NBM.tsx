@@ -79,12 +79,12 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
   const [locationOverlay, setLocationOverlay] = useState()
   const [oldLayers, setOldLayers] = useState<any[]>([])
   const [APIVersion, setAPIVersion] = useState('')
+  const [drawnpolygon, setDrawnpolygon] = useState<any>()
 
+  // @Matt TODO: #current picking a new thing doesn't change the outline
   const map: Map = useRef()
 
   let clickable = true
-  let drawnpolygon: any = null
-  let key = 1
   let layerError = false
 
   useEffect(() => {
@@ -93,11 +93,11 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
       .then((res) => res.json())
       .then((res) => setAPIVersion(res.Version))
       .catch(() => setAPIVersion('UNKNOWN'))
-  }, [APIVersion])
+  }, [])
 
   useEffect(() => {
     console.log('bounds effect')
-    if (isEmpty(props.feature)) {return }
+    if (isEmpty(props.feature)) { return }
 
     if (!props.feature.type) {
       props.feature.type = 'Feature'
@@ -134,6 +134,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
   }, [map])
 
   useEffect(() => {
+    console.log('fitbounds effect')
     map.current.leafletElement.fitBounds(bounds)
   }, [bounds])
 
@@ -186,7 +187,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
 
     if (drawnpolygon) {
       map.current.leafletElement.removeLayer(drawnpolygon)
-      drawnpolygon = null
+      setDrawnpolygon(null)
     }
     props.parentClickHandler(e)
   }
@@ -231,8 +232,8 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
   }
 
   const userDrawnPolygonStop = (e: any) => {
-    drawnpolygon = e.layer
-    let geom = drawnpolygon.toGeoJSON().geometry
+    setDrawnpolygon(e.layer)
+    let geom = e.layer.toGeoJSON().geometry
     geom.crs = {type: 'name', properties: {name: 'EPSG:4326'}}
     props.parentDrawHandler(geom)
   }
@@ -242,7 +243,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
     props.parentDrawHandler(null)
     if (drawnpolygon) {
       map.current.leafletElement.removeLayer(drawnpolygon)
-      drawnpolygon = null
+      setDrawnpolygon(null)
     }
     disableDragging()
   }
@@ -328,10 +329,11 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
 
   const geojson = () => {
     if (!isEmpty(props.feature)) {
+      const key = props.feature.properties.feature_id
       return (
         <div>
-          <GeoJSON style={{color: 'black', fill: false, weight: 4}} key={key++} data={props.feature} />
-          <GeoJSON style={{color: 'red', fill: false, weight: 2}} key={key++} data={props.feature} />
+          <GeoJSON style={{color: 'black', fill: false, weight: 4}} key={key + 'black'} data={props.feature} />
+          <GeoJSON style={{color: 'red', fill: false, weight: 2}} key={key + 'red'} data={props.feature} />
         </div>
       )
     }
@@ -410,79 +412,6 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
           title={'Upload a shapefile'}
           modal={true}
           onClose={handleClose}
-          body={
-            <>
-              <Map ref={map}
-                onClick={handleClick}
-                bounds={bounds}
-                onLayerAdd={(event: any) => {
-                  event.layer.on('tileerror', (err: any) => {
-                    handleLoadError(err)
-                  })
-                }}
-                onLayerRemove={() => {
-                  layerError = false
-                }}
-                onMouseMove={handleMouseMove}
-                onMouseOut={handleMouseOut}
-                attribution=""
-                zoomControl={false} >
-                {basemap()}
-                <LocationOverlay onRef={(ref: any) => setLocationOverlay(ref)} map={map} bioscapeName={props.bioscapeName} />
-                <MapMarker point={point} />
-                {geojson()}
-                <div className="global-time-slider" onMouseOver={disableDragging} onMouseOut={enableDragging}>
-                  {props.bioscapeName !== 'terrestrial-ecosystems-2011' && <TimeSlider
-                    setMapDisplayYear={props.setMapDisplayYear}
-                    setMapDisplayYearFade={props.setMapDisplayYearFade}
-                    setYearRange={props.setYearRange}
-                    rangeYearMax={props.rangeYearMax}
-                    rangeYearMin={props.rangeYearMin}
-                    mapDisplayYear={props.mapDisplayYear}
-                    priorityBap={props.priorityBap}
-                    bapYearRanges={YEAR_RANGES}
-                  />}
-                </div>
-                <div className="attribution" onClick={() => {setAttributionOpen(!attributionOpen)}} onMouseOver={disableDragging} onMouseOut={enableDragging}>
-                  <span className="attribution-info" style={{color: 'rgb(107, 153, 197)'}}>
-                    <InfoSign></InfoSign>
-                  </span>
-                </div>
-                <span onMouseOver={disableDragging} onMouseOut={enableDragging} >{attribution()}</span>
-                <FeatureGroup>
-                  <ZoomControl position='topright'></ZoomControl>
-                  <EditControl
-                    position='topright'
-                    //onDeleted={() => { props.parentDrawHandler(null) }}
-                    onDrawStart={userDrawnPolygonStart}
-                    // onEditStart={disableDragging}
-                    // onEdited={userDrawnPolygon}
-                    //onEditStop={enableDragging}
-
-                    //onDeleteStart={userDrawnPolygonStart}
-                    onDrawStop={enableDragging}
-                    //onDeleteStop={enableDragging}
-                    onCreated={userDrawnPolygonStop}
-                    edit={{edit: false, remove: false}}
-                    draw={{
-                      rectangle: false,
-                      marker: false,
-                      circlemarker: false,
-                      polyline: false,
-                      circle: false
-                    }}
-                  />
-                  {DEV_MODE &&
-                    <Control position="topright">
-                      <label className="mb-0 pt-1 rounded" title="Upload a shp file">
-                        <span className="add-more-label" onClick={handleShow}><Glyphicon className="inner-glyph" glyph="upload" /></span>
-                      </label>
-                    </Control>
-                  }
-                </FeatureGroup>
-              </Map>
-            </>
-          }
         >
           <Map ref={map}
             onClick={handleClick}
@@ -559,8 +488,6 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
     }
   }
 
-  // @Matt DEBUG
-  console.log(props.bioscapeName)
   return (
     <>
       <Map ref={map}
