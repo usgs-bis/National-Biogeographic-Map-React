@@ -12,6 +12,11 @@
     font-size:  calc(14px + 0.5vw)
 }
 
+.placeholder-button {
+    height: 35px;
+    width: 35px;
+}
+
 .inner-glyph {
     font-size: 18px;
 }

@@ -55,7 +55,6 @@ const numberWithCommas = (x: number) => {
 
 const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }) => {
 
-  // @Matt TODO: #next fix the bootstrap issues
   let initState: any = null
   let shareStateBeforeHash: any = null
 
