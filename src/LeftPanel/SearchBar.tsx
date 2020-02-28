@@ -85,7 +85,7 @@ const SearchBar: FunctionComponent<ISearchBarProps> = ( { initBaps, point, mapCl
     <div>
       <div className="nbm-flex-row">
         <div className="settings-btn-group nbm-flex-column">
-          <Button id="settings-tooltip" onClick={toggleBasemapDropdown} className='submit-analysis-btn placeholder-button' >
+          <Button id="settings-tooltip" onClick={toggleBasemapDropdown} className="submit-analysis-btn placeholder-button" >
             <Glyphicon className="inner-glyph" glyph="menu-hamburger" />
           </Button>
           <CustomToolTip target="settings-tooltip" text="Settings" placement="right" ></CustomToolTip>

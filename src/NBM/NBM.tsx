@@ -2,21 +2,24 @@ import './NBM.css'
 import 'toasted-notes/src/styles.css'
 import AppConfig from '../config'
 import Control from 'react-leaflet-control'
-// @ts-ignore
-import Dialog from 'react-dialog'
 import InfoSign from '../InfoSign/InfoSign'
-import L from 'leaflet'
+import L, {LatLngBoundsExpression, Layer} from 'leaflet'
 import LocationOverlay from './LocationOverylays/LocationOverlay'
 import React, {FunctionComponent, useState, useEffect, useRef} from 'react'
 import TimeSlider from './TimeSlider/TimeSlider'
 import shp from 'shpjs'
-import toast from 'toasted-notes'
+import {Glyphicon} from 'react-bootstrap'
+import {isEmpty} from 'lodash'
+
+// @Matt TODO: remove
+/* import toast from 'toasted-notes' */
+
+// @ts-ignore
+import Dialog from 'react-dialog'
 // @ts-ignore
 import {EditControl} from 'react-leaflet-draw'
-import {Glyphicon} from 'react-bootstrap'
 // @ts-ignore
 import {Map, TileLayer, WMSTileLayer, Marker, Popup, GeoJSON, FeatureGroup, ZoomControl} from 'react-leaflet'
-import {isEmpty} from 'lodash'
 
 const DEV_MODE = AppConfig.REACT_APP_DEV
 
@@ -74,16 +77,16 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
   // @Matt TODO: do something with the uploading?
   const [uploadError, setUploadError] = useState('')
   const [uploading, setUploading] = useState(false)
-  const [oldOverlay, setOldOverlay] = useState(null)
-  const [bounds, setBounds] = useState([[21, -134], [51, -63]])
+  const [oldOverlay, setOldOverlay] = useState<Layer>()
+  const [bounds, setBounds] = useState<LatLngBoundsExpression>([[21, -134], [51, -63]])
   const [locationOverlay, setLocationOverlay] = useState()
   const [oldLayers, setOldLayers] = useState<any[]>([])
   const [APIVersion, setAPIVersion] = useState('')
   const [drawnpolygon, setDrawnpolygon] = useState<any>()
 
-  // @Matt TODO: #current picking a new thing doesn't change the outline
-  const map: Map = useRef()
+  const map = useRef<Map>()
 
+  // @Matt TODO: #next all things in functioncomponents can't do it this way
   let clickable = true
   let layerError = false
 
@@ -135,7 +138,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
 
   useEffect(() => {
     console.log('fitbounds effect')
-    map.current.leafletElement.fitBounds(bounds)
+    map?.current?.leafletElement.fitBounds(bounds)
   }, [bounds])
 
   // @Matt TODO: basemap not updating
@@ -144,11 +147,11 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
     const currentLayers = props.analysisLayers || []
 
     for (const oldItem of oldLayers) {
-      map.current.leafletElement.removeLayer(oldItem.layer)
+      map?.current?.leafletElement.removeLayer(oldItem.layer)
     }
 
     for (const newItem of currentLayers) {
-      map.current.leafletElement.addLayer(newItem.layer)
+      map?.current?.leafletElement.addLayer(newItem.layer)
       if (newItem.timeEnabled) {
         newItem.layer.setParams(
           {
@@ -163,11 +166,11 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
   useEffect(() => {
     console.log('overlay effect')
     if (oldOverlay) {
-      map.current.leafletElement.removeLayer(oldOverlay)
+      map?.current?.leafletElement.removeLayer(oldOverlay)
     }
     if (props.overlay) {
       setOldOverlay(props.overlay)
-      map.current.leafletElement.addLayer(props.overlay)
+      map?.current?.leafletElement.addLayer(props.overlay)
     }
   }, [props.overlay, oldOverlay])
 
@@ -186,7 +189,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
     setPoint([e.latlng.lat, e.latlng.lng])
 
     if (drawnpolygon) {
-      map.current.leafletElement.removeLayer(drawnpolygon)
+      map?.current?.leafletElement.removeLayer(drawnpolygon)
       setDrawnpolygon(null)
     }
     props.parentClickHandler(e)
@@ -201,17 +204,20 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
     }
   }
 
+  // @Matt TODO: #current find where to check validity of api and display a notice when it is inaccsessible, don't show baps who's api's are not accessible or grey them out
+
+  // @Matt TODO: #next user drawn polygons still load the single data, need to disallow that
   const handleLoadError = (e: any) => {
     let prevErr = layerError
     layerError = true
     // sometimes reduces the bounce on a hard refresh.
     if (!prevErr && layerError) {
-      // @Matt TODO: double check
-      toast.notify(
-        <div>
-          <h4>Error loading layer <i>{e.target.options.layers}</i> from <br /> <br />{e.target._url}</h4>
-        </div>, {duration: 15000, position: 'top'}
-      )
+      // @Matt TODO: #next this toast isn't very performant, need to replace with a better version
+      /* toast.notify( */
+      /*   <div> */
+      /*     <h4>Error loading layer <i>{e.target.options.layers}</i> from <br /> <br />{e.target._url}</h4> */
+      /*   </div>, {duration: 15000, position: 'top'} */
+      /* ) */
     }
   }
 
@@ -228,7 +234,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
 
   const enableDragging = () => {
     clickable = true
-    map.current.leafletElement.dragging.enable()
+    map?.current?.leafletElement.dragging.enable()
   }
 
   const userDrawnPolygonStop = (e: any) => {
@@ -242,7 +248,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
     setPoint(null)
     props.parentDrawHandler(null)
     if (drawnpolygon) {
-      map.current.leafletElement.removeLayer(drawnpolygon)
+      map?.current?.leafletElement.removeLayer(drawnpolygon)
       setDrawnpolygon(null)
     }
     disableDragging()
@@ -312,7 +318,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
     handleClose()
     userDrawnPolygonStart()
     const layer = L.geoJSON(geojson)
-    map.current.leafletElement.fitBounds(layer.getBounds())
+    map?.current?.leafletElement.fitBounds(layer.getBounds())
     enableDragging()
     props.parentDrawHandler(geometry)
   }

@@ -18,18 +18,18 @@ class CustomToolTip extends React.Component {
             return (
 
                 <Tooltip
-                    style={{ fontSize: "14px" }} isOpen={this.state.open}
+                    style={{fontSize: '14px'}} isOpen={this.state.open}
                     target={this.props.target}
-                    toggle={() => this.setState({ open: !this.state.open })}
+                    toggle={() => this.setState({open: !this.state.open})}
                     delay={0}
                     placement={this.props.placement ? this.props.placement : 'auto'}>
                     {this.props.text}
                 </Tooltip>
-            );
+            )
         }
         return null
-         
+
     }
 }
-export default CustomToolTip;
+export default CustomToolTip
 

@@ -13,9 +13,8 @@ import nbmBioscape from './Bioscapes/biogeography.json'
 import nvcsBioscape from './Bioscapes/terrestrial-ecosystems-2011.json'
 import packageJson from '../package.json'
 import states from './states.json'
+import {Alert} from 'react-bootstrap'
 import {isEmpty} from 'lodash'
-
-const cloneLayer = require('leaflet-clonelayer')
 
 // @Matt TODO: #next fix the fetch cors stuff
 // @Matt TODO: implement eslint
@@ -33,11 +32,7 @@ export interface IFeature {
   geometry: boolean
 }
 
-const bioscapeMap: IBioscapeProps = {
-  'biogeography': nbmBioscape,
-  'nbm-react': nbmBioscape,
-  'terrestrial-ecosystems-2011': nvcsBioscape
-}
+// @Matt TODO: #current check reactappbisapi for accessibility, show indicator if not
 
 const ELEVATION_SOURCE = 'https://nationalmap.gov/epqs/pqs.php?'
 const GET_FEATURE_API = AppConfig.REACT_APP_BIS_API + '/api/v1/places/search/feature?feature_id='
@@ -46,14 +41,21 @@ const POINT_SEARCH_API = AppConfig.REACT_APP_BIS_API + '/api/v1/places/search/po
 const REACT_VERSION = 'v' + packageJson.version
 const TEXT_SEARCH_API = AppConfig.REACT_APP_BIS_API + '/api/v1/places/search/text?q='
 
+const cloneLayer = require('leaflet-clonelayer')
+
+const bioscapeMap: IBioscapeProps = {
+  'biogeography': nbmBioscape,
+  'nbm-react': nbmBioscape,
+  'terrestrial-ecosystems-2011': nvcsBioscape
+}
+
 const numberWithCommas = (x: number) => {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }
 
 const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }) => {
 
-  // @Matt TODO: fix the always popping up 'choose an analysis'
-  // @Matt TODO: #current fix the bootstrap issues
+  // @Matt TODO: #next fix the bootstrap issues
   let initState: any = null
   let shareStateBeforeHash: any = null
 
@@ -375,7 +377,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
               mapClicked: false
             }))
           } catch(err) {
-            console.error(err)
+            setErrorState(err)
           }
         }
         else {
@@ -627,6 +629,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
   return (
     <div className="vwrapper">
       <Header title={state.bioscape.title} description={state.bioscape.description} />
+      <Alert className="app-alert">Test</Alert>
       <div id="content-area">
         <Resizable
           className="panel-area"

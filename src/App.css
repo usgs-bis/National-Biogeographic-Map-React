@@ -57,9 +57,6 @@
         min-height: 0px;
         min-width: 0px;
     }
-    .panel-area {
-        
-    }
 
     #map-area {
         background-color: orange;
@@ -82,4 +79,8 @@
     display: block;
     width: 13px;
     height: 13px;
+}
+
+.app-alert {
+    margin-bottom: 0;
 }

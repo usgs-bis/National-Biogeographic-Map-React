@@ -111,10 +111,7 @@ class LeftPanel extends React.Component<ILeftPanelProps, ILeftPanelState> {
     // previous state and do not want to display the help popup ever. Otherwise,
     // we want to display it after a suer has selected a feature but before they
     // pick a bap.
-    if (!this.listenerAdded &&
-      !this.props.priorityBap &&
-      props.feature &&
-      !this.props.initBaps) {
+    if (!this.listenerAdded && !this.props.priorityBap && props.feature && !this.props.initBaps) {
       this.listenerAdded = true
       this.setState({displayHelpPopup: true})
       document.body.addEventListener('click', () => {this.setState({displayHelpPopup: false})}, true)
