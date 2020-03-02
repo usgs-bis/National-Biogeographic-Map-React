@@ -10,6 +10,7 @@ import LeftPanel from './LeftPanel/LeftPanel'
 import NBM from './NBM/NBM'
 import React, {FunctionComponent, useState, useEffect} from 'react'
 import Resizable from 're-resizable'
+import cloneLayer from 'leaflet-clonelayer'
 import nbmBioscape from './Bioscapes/biogeography.json'
 import nvcsBioscape from './Bioscapes/terrestrial-ecosystems-2011.json'
 import packageJson from '../package.json'
@@ -39,8 +40,6 @@ const POINT_SEARCH_API = AppConfig.REACT_APP_BIS_API + '/api/v1/places/search/po
 const REACT_VERSION = 'v' + packageJson.version
 const TEXT_SEARCH_API = AppConfig.REACT_APP_BIS_API + '/api/v1/places/search/text?q='
 
-const cloneLayer = require('leaflet-clonelayer')
-
 const bioscapeMap: IBioscapeProps = {
   'biogeography': nbmBioscape,
   'nbm-react': nbmBioscape,
@@ -58,6 +57,10 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
 
   // @Matt TODO: do something with the errorState
   const [errorState, setErrorState] = useState(null)
+  useEffect(() => {
+    console.log(errorState)
+  }, [errorState])
+
   const [state, setState] = useState(() => {
 
     const s = {
@@ -137,6 +140,8 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
     if (!isEmpty(state.feature)) {
       getHash()
     }
+  // @Matt TODO: need a better fix then ignore
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.bioscape.title, state.feature])
 
   useEffect(() => {
@@ -192,18 +197,18 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
     setState((prev) => Object.assign({}, prev, {basemap: e }))
   }
 
-  const overlayChanged = (e: any) => {
-    setState((prev) => Object.assign({}, prev, { overlay: e }))
+  /* const overlayChanged = (e: any) => { */
+  /*   setState((prev) => Object.assign({}, prev, { overlay: e })) */
 
-    if (state.lat && state.lng) {
-      handleMapClick({
-        latlng: {
-          lat: state.lat,
-          lng: state.lng
-        }
-      }, false)
-    }
-  }
+  /*   if (state.lat && state.lng) { */
+  /*     handleMapClick({ */
+  /*       latlng: { */
+  /*         lat: state.lat, */
+  /*         lng: state.lng */
+  /*       } */
+  /*     }, false) */
+  /*   } */
+  /* } */
 
   const setMap = (map: any) => {
     map.current.leafletElement.createPane('summarizationPane')
