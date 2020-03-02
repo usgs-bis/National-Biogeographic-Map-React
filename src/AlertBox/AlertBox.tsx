@@ -9,16 +9,17 @@ const AlertBox: FunctionComponent = () => {
   useEffect(() => {
     console.log('api check effect')
     const apiUrl = AppConfig.REACT_APP_BIS_API + '/api'
+    const apiDownMessage = `Api '${apiUrl}' is unreachable, this will greatly degrade the performance of this site!`
     fetch(apiUrl)
       .then((res) => {
         if (!res.ok) {
-          setApiCheck(`Api '${apiUrl}' is unreachable, this will greatly degrade the performance of this site!`)
+          setApiCheck(apiDownMessage)
         } else {
           setApiCheck(null)
         }
       })
-      .catch((err) => {
-        setApiCheck(err)
+      .catch(() => {
+        setApiCheck(apiDownMessage)
       })
   }, [])
 
