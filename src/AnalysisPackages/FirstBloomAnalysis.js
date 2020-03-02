@@ -352,7 +352,7 @@ class FirstBloomAnalysisPackage extends React.Component {
                             First Bloom Spring Index data was provided by the <a href="https://www.usanpn.org">USA National Phenology Network</a>, data retrieved {new Date().toDateString()}
                             <br></br>
                             <br></br>
-                            <a target={"_blank"} href={"https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&service=WMSlayers=average_bloom_prism"}>https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=average_bloom_prism</a>
+                            <a target={"_blank"} rel="noopener noreferrer" href={"https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&service=WMSlayers=average_bloom_prism"}>https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=average_bloom_prism</a>
                         </div>
                     </div>
                 </div>
