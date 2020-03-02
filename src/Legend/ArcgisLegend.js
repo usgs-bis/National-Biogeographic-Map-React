@@ -1,7 +1,7 @@
-import React from "react";
-import { BarLoader } from "react-spinners"
+import React from 'react'
+import { BarLoader } from 'react-spinners'
 
-import "./Legend.css"
+import './Legend.css'
 
 let legendCache = {
 
@@ -20,8 +20,8 @@ class AcrgisLegend extends React.Component {
 
     addItemsToLegend(layer) {
         let legendItems = []
-        for (let i = 0; i < layer["legend"].length; i++) {
-            let itemInfo = layer["legend"][i]
+        for (let i = 0; i < layer['legend'].length; i++) {
+            let itemInfo = layer['legend'][i]
             legendItems.push(
                 <div>
                     <img src={`data:image/png;base64,${itemInfo.imageData}`} alt={itemInfo.label}/>
@@ -34,7 +34,7 @@ class AcrgisLegend extends React.Component {
     }
 
     processResults(result) {
-        let layerList = result["layers"]
+        let layerList = result['layers']
         let legendItems = []
         for (let layerIdx in this.props.layers) {
             legendItems = legendItems.concat(this.addItemsToLegend(layerList[layerIdx]))
@@ -62,11 +62,11 @@ class AcrgisLegend extends React.Component {
                         this.processResults(result)
                     },
                     (error) => {
-                        console.log("Error: ", error)
+                        console.log('Error: ', error)
                         this.setState({
                             error,
                             loading: false
-                        });
+                        })
                     },
                 )
         }
@@ -86,12 +86,12 @@ class AcrgisLegend extends React.Component {
         return (
             <div>
                 {this.state.legendItems.map(function(item, idx) {
-                    return <div key={"legendItem" + idx}>{item}</div>
+                    return <div key={'legendItem' + idx}>{item}</div>
                 })}
-                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
+                <BarLoader width={'100%'} color={'white'} loading={this.state.loading} />
             </div>
-        );
+        )
     }
 }
-export default AcrgisLegend;
+export default AcrgisLegend
 

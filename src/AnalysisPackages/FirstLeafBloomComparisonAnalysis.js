@@ -1,56 +1,56 @@
-import React from "react";
-import L from "leaflet"
-import { BarLoader } from "react-spinners"
+import React from 'react'
+import L from 'leaflet'
+import { BarLoader } from 'react-spinners'
 
-import withSharedAnalysisCharacteristics from "./AnalysisPackage"
-import ComparisonChart from "../Charts/ComparisonChart";
-import "./AnalysisPackages.css";
-import AppConfig from "../config";
+import withSharedAnalysisCharacteristics from './AnalysisPackage'
+import ComparisonChart from '../Charts/ComparisonChart'
+import './AnalysisPackages.css'
+import AppConfig from '../config'
 
-const SB_URL = "https://www.sciencebase.gov/catalog/item/5b685d1ce4b006a11f75b0a8?format=json"
-const FIRSTLEAF_URL = AppConfig.REACT_APP_BIS_API + "/api/v1/phenology/place/firstleaf"
-const FIRSTLEAF_POLY_URL = AppConfig.REACT_APP_BIS_API + "/api/v1/phenology/polygon/firstleaf"
-const FIRSTBLOOM_URL = AppConfig.REACT_APP_BIS_API + "/api/v1/phenology/place/firstbloom"
-const FIRSTBLOOM_POLY_URL = AppConfig.REACT_APP_BIS_API + "/api/v1/phenology/polygon/firstbloom"
+const SB_URL = 'https://www.sciencebase.gov/catalog/item/5b685d1ce4b006a11f75b0a8?format=json'
+const FIRSTLEAF_URL = AppConfig.REACT_APP_BIS_API + '/api/v1/phenology/place/firstleaf'
+const FIRSTLEAF_POLY_URL = AppConfig.REACT_APP_BIS_API + '/api/v1/phenology/polygon/firstleaf'
+const FIRSTBLOOM_URL = AppConfig.REACT_APP_BIS_API + '/api/v1/phenology/place/firstbloom'
+const FIRSTBLOOM_POLY_URL = AppConfig.REACT_APP_BIS_API + '/api/v1/phenology/polygon/firstbloom'
 
 const PUBLIC_TOKEN = AppConfig.REACT_APP_PUBLIC_TOKEN
 
 let sb_properties = {
-    "title": "First Leaf / First Bloom Spring Index Comparison"
+    'title': 'First Leaf / First Bloom Spring Index Comparison'
 }
 
 const layers = [
     {
-        title: "Average Leaf PRISM",
+        title: 'Average Leaf PRISM',
         layer: L.tileLayer.wms(
-            "https://geoserver.usanpn.org/geoserver/si-x/wms",
+            'https://geoserver.usanpn.org/geoserver/si-x/wms',
             {
-                format: "image/png",
-                layers: "average_leaf_prism",
+                format: 'image/png',
+                layers: 'average_leaf_prism',
                 opacity: .5,
                 transparent: true
             }
         ),
         legend: {
-            imageUrl: "https://geoserver.usanpn.org/geoserver/si-x/wms??service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=average_leaf_prism"
+            imageUrl: 'https://geoserver.usanpn.org/geoserver/si-x/wms??service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=average_leaf_prism'
         },
         timeEnabled: true,
         checked: false,
         sb_item: '591c6ec6e4b0a7fdb43dea8a'
     },
     {
-        title: "Average Bloom PRISM",
+        title: 'Average Bloom PRISM',
         layer: L.tileLayer.wms(
-            "https://geoserver.usanpn.org/geoserver/si-x/wms",
+            'https://geoserver.usanpn.org/geoserver/si-x/wms',
             {
-                format: "image/png",
-                layers: "average_bloom_prism",
+                format: 'image/png',
+                layers: 'average_bloom_prism',
                 opacity: .5,
                 transparent: true
             }
         ),
         legend: {
-            imageUrl: "https://geoserver.usanpn.org/geoserver/si-x/wms??service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=average_bloom_prism"
+            imageUrl: 'https://geoserver.usanpn.org/geoserver/si-x/wms??service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=average_bloom_prism'
         },
         timeEnabled: true,
         checked: false,
@@ -63,7 +63,7 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
         super(props)
         this.state = {
             charts: {
-                ComparisonChart: { id: "", config: {}, data: null },
+                ComparisonChart: { id: '', config: {}, data: null },
             },
             loading: false,
             canSubmit: false,
@@ -94,7 +94,7 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
     clearCharts() {
         let charts = {}
         for (let chart of Object.keys(this.state.charts)) {
-            charts[chart] = { id: "", config: {}, data: null }
+            charts[chart] = { id: '', config: {}, data: null }
         }
         this.setState({
             charts: charts,
@@ -154,14 +154,14 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
                     (error) => {
                         this.setState({
                             error: true
-                        });
+                        })
                     })
             let firstBloomFetch = fetch(FIRSTBLOOM_URL + `?year_min=${this.props.yearMin}&year_max=${this.props.yearMax}&feature_id=${this.props.feature.properties.feature_id}&token=${PUBLIC_TOKEN}`)
                 .then(res => { return res.json() },
                     (error) => {
                         this.setState({
                             error: true
-                        });
+                        })
                     })
             Promise.all([firstLeafFetch, firstBloomFetch]).then(results => {
                 if (results && results.length === 2) {
@@ -203,14 +203,14 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
                     (error) => {
                         this.setState({
                             error: true
-                        });
+                        })
                     })
             let firstBloomFetch = fetch(FIRSTBLOOM_POLY_URL + `?year_min=${this.props.yearMin}&year_max=${this.props.yearMax}&token=${PUBLIC_TOKEN}`, request)
                 .then(res => { return res.json() },
                     (error) => {
                         this.setState({
                             error: true
-                        });
+                        })
                     })
             Promise.all([firstLeafFetch, firstBloomFetch]).then(results => {
                 if (results && results.length === 2) {
@@ -246,16 +246,16 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
 
         for (let chart of Object.keys(this.state.charts)) {
 
-            if (chart.toString() === "ComparisonChart" && datas[chart]) {
+            if (chart.toString() === 'ComparisonChart' && datas[chart]) {
                 const data = datas[chart]
                 let firstYear = Object.keys(data.bloom)[0]
                 let lastYear = Object.keys(data.bloom)[Object.keys(data.bloom).length - 1]
-                const chartId = "FL_FB_Comparison"
+                const chartId = 'FL_FB_Comparison'
                 const chartConfig = {
                     margins: { left: 80, right: 20, top: 20, bottom: 70 },
                     chart: { title: `First Bloom Spring Index/First Leaf Spring Index for  ${this.props.feature.properties.feature_name}`, subtitle: `By Year for the Period ${firstYear} to ${lastYear}` },
-                    xAxis: { label: "Day of Year" },
-                    yAxis: { label: "Year" }
+                    xAxis: { label: 'Day of Year' },
+                    yAxis: { label: 'Year' }
                 }
                 charts[chart] = { id: chartId, config: chartConfig, data: data }
             }
@@ -298,7 +298,7 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
                             First Leaf / First Bloom Spring Index Comparison data were provided by the <a href="https://www.usanpn.org">USA National Phenology Network</a>, data retrieved {new Date().toDateString()}
                             <br></br>
                             <br></br>
-                            <a target={"_blank"} rel="noopener noreferrer" href={"https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&service=WMS&layers=average_leaf_prism,average_bloom_prism"}>https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=average_leaf_prism,average_bloom_prism</a>
+                            <a target={'_blank'} rel="noopener noreferrer" href={'https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&service=WMS&layers=average_leaf_prism,average_bloom_prism'}>https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=average_leaf_prism,average_bloom_prism</a>
                         </div>
                     </div>
                 </div>
@@ -309,7 +309,7 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
     render() {
         return (
             <div>
-                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
+                <BarLoader width={'100%'} color={'white'} loading={this.state.loading} />
                 {this.props.getBapContents(this.createUniqueBapContents)}
             </div>
 
@@ -321,6 +321,6 @@ class FirstLeafBloomComparisonAnalysisPackage extends React.Component {
 const FirstLeafBloomComparisonAnalysis = withSharedAnalysisCharacteristics(FirstLeafBloomComparisonAnalysisPackage,
     layers,
     sb_properties,
-    SB_URL);
+    SB_URL)
 
-export default FirstLeafBloomComparisonAnalysis;
+export default FirstLeafBloomComparisonAnalysis

@@ -1,74 +1,74 @@
-import React from "react";
-import L from "leaflet"
-import { BarLoader } from "react-spinners"
-import { TiledMapLayer } from "esri-leaflet";
-import withSharedAnalysisCharacteristics from "./AnalysisPackage"
-import DonutChart from "../Charts/DonutChart";
-import TableChart from "../Charts/TableChart"
-import CustomToolTip from "../ToolTip/ToolTip"
-import "./AnalysisPackages.css";
-import ChartLegend from "../Charts/ChartLegend";
-import AppConfig from "../config";
+import React from 'react'
+import L from 'leaflet'
+import { BarLoader } from 'react-spinners'
+import { TiledMapLayer } from 'esri-leaflet'
+import withSharedAnalysisCharacteristics from './AnalysisPackage'
+import DonutChart from '../Charts/DonutChart'
+import TableChart from '../Charts/TableChart'
+import CustomToolTip from '../ToolTip/ToolTip'
+import './AnalysisPackages.css'
+import ChartLegend from '../Charts/ChartLegend'
+import AppConfig from '../config'
 
-const SB_URL = "https://www.sciencebase.gov/catalog/item/5b86d48ce4b0702d0e7962b5?format=json"
-const SPECIES_URL = AppConfig.REACT_APP_BIS_API + "/api/v1/gapmetrics/species/protection?feature_id=";
+const SB_URL = 'https://www.sciencebase.gov/catalog/item/5b86d48ce4b0702d0e7962b5?format=json'
+const SPECIES_URL = AppConfig.REACT_APP_BIS_API + '/api/v1/gapmetrics/species/protection?feature_id='
 
 let sb_properties = {
-    "title": "Protection Status of Terrestrial Vertebrate Species"
+    'title': 'Protection Status of Terrestrial Vertebrate Species'
 }
 
 const layers = [
     {
-        title: "PAD-US v1.4 GAP Status Code",
+        title: 'PAD-US v1.4 GAP Status Code',
         layer: new TiledMapLayer({
-            url: "https://gis1.usgs.gov/arcgis/rest/services/PADUS1_4/GAP_Status_Code/MapServer",
+            url: 'https://gis1.usgs.gov/arcgis/rest/services/PADUS1_4/GAP_Status_Code/MapServer',
             opacity: .5
         }),
         legend: {
-            arcgisUrl: "https://gis1.usgs.gov/arcgis/rest/services/PADUS1_4/GAP_Status_Code/MapServer/legend?f=pjson",
+            arcgisUrl: 'https://gis1.usgs.gov/arcgis/rest/services/PADUS1_4/GAP_Status_Code/MapServer/legend?f=pjson',
             layers: [0]
         },
         checked: false,
         disabled: true,
-        sb_item: "56bba50ce4b08d617f657956"
+        sb_item: '56bba50ce4b08d617f657956'
     },
     {
-        title: "Species Range",
+        title: 'Species Range',
         layer: L.tileLayer.wms(
-            "https://www.sciencebase.gov/geoserver/CONUS_Range_2001/wms",
+            'https://www.sciencebase.gov/geoserver/CONUS_Range_2001/wms',
             {
-                format: "image/png",
+                format: 'image/png',
                 opacity: .5,
                 transparent: true
             }
         ),
         legend: {
-            baseLegendUrl: "https://www.sciencebase.gov/geoserver/CONUS_Range_2001/wms?" +
-                "service=wms&request=GetLegendGraphic&format=image%2Fpng",
-            imageUrl: ""
+            baseLegendUrl: 'https://www.sciencebase.gov/geoserver/CONUS_Range_2001/wms?' +
+                'service=wms&request=GetLegendGraphic&format=image%2Fpng',
+            imageUrl: ''
         },
         checked: false,
         hideCheckbox: true,
-        sb_item: "5951527de4b062508e3b1e79"
+        sb_item: '5951527de4b062508e3b1e79'
     },
     {
-        title: "Habitat Map",
+        title: 'Habitat Map',
         layer: L.tileLayer.wms(
-            "https://www.sciencebase.gov/geoserver/CONUS_HabMap_2001/wms",
+            'https://www.sciencebase.gov/geoserver/CONUS_HabMap_2001/wms',
             {
-                format: "image/png",
+                format: 'image/png',
                 opacity: .5,
                 transparent: true
             }
         ),
         legend: {
-            baseLegendUrl: "https://www.sciencebase.gov/geoserver/CONUS_HabMap_2001/wms?" +
-                "service=wms&request=GetLegendGraphic&format=image%2Fpng",
-            imageUrl: ""
+            baseLegendUrl: 'https://www.sciencebase.gov/geoserver/CONUS_HabMap_2001/wms?' +
+                'service=wms&request=GetLegendGraphic&format=image%2Fpng',
+            imageUrl: ''
         },
         checked: false,
         hideCheckbox: true,
-        sb_item: "527d0a83e4b0850ea0518326"
+        sb_item: '527d0a83e4b0850ea0518326'
     }
 ]
 
@@ -77,12 +77,12 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
         super(props)
         this.state = {
             charts: {
-                gap12: { id: "", config: {}, data: null },
-                gap123: { id: "", config: {}, data: null },
-                gapTable: { id: "", config: {}, data: null }
+                gap12: { id: '', config: {}, data: null },
+                gap123: { id: '', config: {}, data: null },
+                gapTable: { id: '', config: {}, data: null }
             },
             data: null,
-            taxaLetter: "ALL",
+            taxaLetter: 'ALL',
             gapSelection: {
                 status: 'ALL',
                 range: 'ALL',
@@ -188,9 +188,9 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                     } else {
                         this.setState({
                             charts: {
-                                gap12: { id: "", config: {}, data: null },
-                                gap123: { id: "", config: {}, data: null },
-                                gapTable: { id: "", config: {}, data: null }
+                                gap12: { id: '', config: {}, data: null },
+                                gap123: { id: '', config: {}, data: null },
+                                gapTable: { id: '', config: {}, data: null }
                             }
                         })
                         this.props.isEnabled(false)
@@ -201,7 +201,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                     this.setState({
                         error: true,
                         loading: false
-                    });
+                    })
                 }
             )
     }
@@ -223,10 +223,10 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
             charts: charts,
             loading: false
         })
-        let otherTitle = layerTitle === "Species Range" ? "Habitat Map" : "Species Range"
+        let otherTitle = layerTitle === 'Species Range' ? 'Habitat Map' : 'Species Range'
 
         let layer = layers.find((l) => { return l.title === layerTitle })
-        layer["legend"]["imageUrl"] = ["legend"]["baseLegendUrl"] + `&layer=${e.currentTarget.value}`
+        layer['legend']['imageUrl'] = ['legend']['baseLegendUrl'] + `&layer=${e.currentTarget.value}`
 
         layer.checked = false
         layers.find((l) => { return l.title === otherTitle }).checked = false
@@ -240,7 +240,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
     }
 
     getCharts(data) {
-        let that = this;
+        let that = this
         let charts = {}
         let dataTemplate = {
             status_1_2: [
@@ -268,8 +268,8 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
 
         for (let row of data) {
             let c = {
-                common_name: row.spp_comname ? row.spp_comname : "",
-                scientific_name: row.spp_sciname ? row.spp_sciname : "",
+                common_name: row.spp_comname ? row.spp_comname : '',
+                scientific_name: row.spp_sciname ? row.spp_sciname : '',
                 status_1_2: row.gapstat12perc,
                 status_1_2_3: row.gapstat123perc,
                 taxaletter: row.taxa,
@@ -306,12 +306,12 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
         }
 
         for (let chart of Object.keys(this.state.charts)) {
-            if (chart.toString() === "gap12" && data) {
-                const chartId = "SP_GAP12"
+            if (chart.toString() === 'gap12' && data) {
+                const chartId = 'SP_GAP12'
                 const chartConfig = {
                     margins: { left: 0, right: 0, top: 0, bottom: 0 },
-                    chart: { title: `GAP Status 1 & 2`, subtitle: `` },
-                    tooltip: { data: { name: "", count: "Species" } },
+                    chart: { title: 'GAP Status 1 & 2', subtitle: '' },
+                    tooltip: { data: { name: '', count: 'Species' } },
                     width: 150,
                     height: 150,
                     innerRadius: .8,
@@ -321,12 +321,12 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                 const chartData = dataTemplate.status_1_2
                 charts[chart] = { id: chartId, config: chartConfig, data: chartData }
             }
-            else if (chart.toString() === "gap123" && data) {
-                const chartId = "SP_GAP123"
+            else if (chart.toString() === 'gap123' && data) {
+                const chartId = 'SP_GAP123'
                 const chartConfig = {
                     margins: { left: 0, right: 0, top: 0, bottom: 0 },
-                    chart: { title: `GAP Status 1, 2 & 3`, subtitle: `` },
-                    tooltip: { data: { name: "", count: "Species" } },
+                    chart: { title: 'GAP Status 1, 2 & 3', subtitle: '' },
+                    tooltip: { data: { name: '', count: 'Species' } },
                     width: 150,
                     height: 150,
                     innerRadius: .8,
@@ -337,29 +337,29 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                 const chartData = dataTemplate.status_1_2_3
                 charts[chart] = { id: chartId, config: chartConfig, data: chartData }
             }
-            else if (chart.toString() === "gapTable" && data) {
-                const chartId = "SP_GAPTABLE"
+            else if (chart.toString() === 'gapTable' && data) {
+                const chartId = 'SP_GAPTABLE'
                 let preData = dataTemplate.species.all
-                let tableType = "All Species"
+                let tableType = 'All Species'
                 if (this.state.taxaLetter === 'A') {
                     preData = dataTemplate.species.amphibian_species
-                    tableType = "Amphibians";
+                    tableType = 'Amphibians'
                 } else if (this.state.taxaLetter === 'B') {
                     preData = dataTemplate.species.bird_species
-                    tableType = "Birds";
+                    tableType = 'Birds'
                 } else if (this.state.taxaLetter === 'M') {
                     preData = dataTemplate.species.mammal_species
-                    tableType = "Mammals";
+                    tableType = 'Mammals'
                 } else if (this.state.taxaLetter === 'R') {
                     preData = dataTemplate.species.reptile_species
-                    tableType = "Reptiles";
+                    tableType = 'Reptiles'
                 }
 
                 let chartTitle = `${tableType} in ${this.props.feature.properties.feature_name} (${preData.length})`
                 let chartData = [
                     ['Species Name',
-                        <span id="Range_Title_Target">Range  <CustomToolTip target="Range_Title_Target" text={"Known Range Map"} > </CustomToolTip></span>,
-                        <span id="Habitat_Title_Target">Habitat <CustomToolTip target="Habitat_Title_Target" text={"Predicted Habitat Map"} > </CustomToolTip></span>,
+                        <span id="Range_Title_Target">Range  <CustomToolTip target="Range_Title_Target" text={'Known Range Map'} > </CustomToolTip></span>,
+                        <span id="Habitat_Title_Target">Habitat <CustomToolTip target="Habitat_Title_Target" text={'Predicted Habitat Map'} > </CustomToolTip></span>,
                     ]]
                 let protectedPercent = ''
 
@@ -371,13 +371,13 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                     chartData = [
                         ['Species Name',
                             'Protected',
-                            <span id="Range_Title_Target">Range  <CustomToolTip target="Range_Title_Target" text={"Known Range Map"} > </CustomToolTip></span>,
-                            <span id="Habitat_Title_Target">Habitat <CustomToolTip target="Habitat_Title_Target" text={"Predicted Habitat Map"} > </CustomToolTip></span>,
+                            <span id="Range_Title_Target">Range  <CustomToolTip target="Range_Title_Target" text={'Known Range Map'} > </CustomToolTip></span>,
+                            <span id="Habitat_Title_Target">Habitat <CustomToolTip target="Habitat_Title_Target" text={'Predicted Habitat Map'} > </CustomToolTip></span>,
                         ]]
                 }
 
                 for (let row of preData) {
-                    const name = <span className={this.previous_row_sppcode === row.sppcode ? "highlight-table-row" : ""}>{`${row.common_name} ${row.common_name ? '(' + row.scientific_name : 'No common name recorded (' + row.scientific_name})`}</span>
+                    const name = <span className={this.previous_row_sppcode === row.sppcode ? 'highlight-table-row' : ''}>{`${row.common_name} ${row.common_name ? '(' + row.scientific_name : 'No common name recorded (' + row.scientific_name})`}</span>
                     if (gapSelection.range !== 'ALL') {
                         if (gapSelection.status === this.gap12StatusGroup) protectedPercent = `${parseFloat(row.status_1_2).toFixed(2)}%`
                         if (gapSelection.status === this.gap123StatusGroup) protectedPercent = `${parseFloat(row.status_1_2_3).toFixed(2)}%`
@@ -387,24 +387,24 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                             id={`Range_${row.sppcode}`}
                             style={{ marginLeft: '10px' }}
                             type="radio"
-                            name={`sp_radio`}
+                            name={'sp_radio'}
                             checked={this.previous_row_sppcode === row.sppcode && this.previous_type === 'Species Range'}
-                            onClick={(e) => { that.changeFilter(e, "Species Range", row.sppcode) }}
+                            onClick={(e) => { that.changeFilter(e, 'Species Range', row.sppcode) }}
                             onChange={() => { }}
                             value={`${row.common_name} (${row.scientific_name}) ${row.sppcode} v1`} />
-                        <CustomToolTip target={`Range_${row.sppcode}`} text={"Known Range Map"} placement={preData.length === 1 ? 'right' : null} > </CustomToolTip>
+                        <CustomToolTip target={`Range_${row.sppcode}`} text={'Known Range Map'} placement={preData.length === 1 ? 'right' : null} > </CustomToolTip>
 
                     </span>
                     const radio2 = <span className="no-sort">
                         <input
                             id={`Habitat_${row.sppcode}`}
                             type="radio"
-                            name={`sp_radio`}
+                            name={'sp_radio'}
                             checked={this.previous_row_sppcode === row.sppcode && this.previous_type === 'Habitat Map'}
-                            onClick={(e) => { that.changeFilter(e, "Habitat Map", row.sppcode) }}
+                            onClick={(e) => { that.changeFilter(e, 'Habitat Map', row.sppcode) }}
                             onChange={() => { }}
                             value={`${row.common_name} (${row.scientific_name}) ${row.sppcode} v1`} />
-                        <CustomToolTip target={`Habitat_${row.sppcode}`} text={"Predicted Habitat Map"} placement={preData.length === 1 ? 'right' : null} > </CustomToolTip>
+                        <CustomToolTip target={`Habitat_${row.sppcode}`} text={'Predicted Habitat Map'} placement={preData.length === 1 ? 'right' : null} > </CustomToolTip>
                     </span>
 
                     if (protectedPercent) {
@@ -416,7 +416,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                 }
                 const chartConfig = {
                     margins: { left: 20, right: 20, top: 20, bottom: 125 },
-                    chart: { title: chartTitle, subtitle: ``, color: gapSelection.color },
+                    chart: { title: chartTitle, subtitle: '', color: gapSelection.color },
                 }
                 charts[chart] = { id: chartId, config: chartConfig, data: chartData }
 
@@ -451,7 +451,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                 range: 'ALL',
                 color: 'white'
             },
-            taxaLetter: "ALL"
+            taxaLetter: 'ALL'
         }, () => {
             const charts = this.getCharts(this.state.data)
             this.setState({
@@ -475,8 +475,8 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
     }
 
     resetRaidoBtn() {
-        this.previous_row_sppcode = ""
-        this.previous_type = ""
+        this.previous_row_sppcode = ''
+        this.previous_type = ''
         if (this.props.bapId === this.props.priorityBap) {
             if (this.currentSppLayer) {
                 this.currentSppLayer.checked = true
@@ -613,11 +613,11 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                         <div className="title">Protection Status of Species in {this.props.feature ? this.props.feature.properties.feature_name : ''}</div>
                         <div className="subtitle">(Click on a slice to filter the table and see only species whose habitat falls in that percent of protection. Click on a radio button to see only species of that type.)</div>
                         <div className="spp-radio-btn">
-                            <div><input type="radio" name="species" value={"ALL"} checked={this.state.taxaLetter === "ALL"} onClick={this.onSpeciesChanged} onChange={() => { }} />All</div>
-                            <div><input type="radio" name="species" value={"A"} checked={this.state.taxaLetter === "A"} onClick={this.onSpeciesChanged} onChange={() => { }} />Amphibians</div>
-                            <div><input type="radio" name="species" value={"B"} checked={this.state.taxaLetter === "B"} onClick={this.onSpeciesChanged} onChange={() => { }} />Birds</div>
-                            <div><input type="radio" name="species" value={"M"} checked={this.state.taxaLetter === "M"} onClick={this.onSpeciesChanged} onChange={() => { }} />Mammals</div>
-                            <div><input type="radio" name="species" value={"R"} checked={this.state.taxaLetter === "R"} onClick={this.onSpeciesChanged} onChange={() => { }} />Reptiles</div>
+                            <div><input type="radio" name="species" value={'ALL'} checked={this.state.taxaLetter === 'ALL'} onClick={this.onSpeciesChanged} onChange={() => { }} />All</div>
+                            <div><input type="radio" name="species" value={'A'} checked={this.state.taxaLetter === 'A'} onClick={this.onSpeciesChanged} onChange={() => { }} />Amphibians</div>
+                            <div><input type="radio" name="species" value={'B'} checked={this.state.taxaLetter === 'B'} onClick={this.onSpeciesChanged} onChange={() => { }} />Birds</div>
+                            <div><input type="radio" name="species" value={'M'} checked={this.state.taxaLetter === 'M'} onClick={this.onSpeciesChanged} onChange={() => { }} />Mammals</div>
+                            <div><input type="radio" name="species" value={'R'} checked={this.state.taxaLetter === 'R'} onClick={this.onSpeciesChanged} onChange={() => { }} />Reptiles</div>
                         </div>
                     </div>
                     <div>
@@ -664,7 +664,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
     render() {
         return (
             <div>
-                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
+                <BarLoader width={'100%'} color={'white'} loading={this.state.loading} />
                 {this.props.getBapContents(this.createUniqueBapContents)}
             </div>
 
@@ -678,6 +678,6 @@ const SpeciesProtectionAnalysis = withSharedAnalysisCharacteristics(
     SpeciesProtectionAnalysisPackage,
     layers,
     sb_properties,
-    SB_URL);
+    SB_URL)
 
-export default SpeciesProtectionAnalysis;
+export default SpeciesProtectionAnalysis

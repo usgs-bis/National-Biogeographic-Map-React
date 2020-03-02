@@ -1,17 +1,17 @@
-import React from "react";
+import React from 'react'
 // import { DynamicMapLayer } from "esri-leaflet"
-import { BarLoader } from "react-spinners"
+import { BarLoader } from 'react-spinners'
 
-import SpeciesCountChart from "../Charts/SpeciesCountChart";
-import "./AnalysisPackages.css";
+import SpeciesCountChart from '../Charts/SpeciesCountChart'
+import './AnalysisPackages.css'
 
-import withSharedAnalysisCharacteristics from "./AnalysisPackage"
+import withSharedAnalysisCharacteristics from './AnalysisPackage'
 
-const SB_URL = "https://www.sciencebase.gov/catalog/item/5b7c1ef2e4b0f5d5788601be?format=json"
-const OBIS_URL = "https://api.obis.org/v3/statistics/composition/class?areaid=";
+const SB_URL = 'https://www.sciencebase.gov/catalog/item/5b7c1ef2e4b0f5d5788601be?format=json'
+const OBIS_URL = 'https://api.obis.org/v3/statistics/composition/class?areaid='
 
 let sb_properties = {
-    "title": "Most Reported Marine Species per Exclusive Economic Zone"
+    'title': 'Most Reported Marine Species per Exclusive Economic Zone'
 }
 
 const layers = []
@@ -22,7 +22,7 @@ class OBISAnalysisPackage extends React.Component {
         super(props)
         this.state = {
             charts: {
-                speciesCountChart: { id: "", config: {}, data: null }
+                speciesCountChart: { id: '', config: {}, data: null }
             },
             loading: false
         }
@@ -70,7 +70,7 @@ class OBISAnalysisPackage extends React.Component {
     handelNoData() {
         this.setState({
             charts: {
-                speciesCountChart: { id: "", config: {}, data: null }
+                speciesCountChart: { id: '', config: {}, data: null }
             }
         })
         this.props.isEnabled(false)
@@ -104,7 +104,7 @@ class OBISAnalysisPackage extends React.Component {
                     this.setState({
                         error: true,
                         loading: false
-                    });
+                    })
                 }
             )
     }
@@ -118,7 +118,7 @@ class OBISAnalysisPackage extends React.Component {
     getCharts(data) {
 
         const numberWithCommas = (x) => {
-            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
         }
 
         let charts = {}
@@ -139,14 +139,14 @@ class OBISAnalysisPackage extends React.Component {
             })
 
 
-            if (chart.toString() === "speciesCountChart" && data) {
+            if (chart.toString() === 'speciesCountChart' && data) {
 
-                const chartId = "NFHP_speciesCountChart"
+                const chartId = 'NFHP_speciesCountChart'
                 const chartConfig = {
                     margins: { left: 225, right: 20, top: 20, bottom: 70 },
-                    chart: { title: `Observation By Class For OBIS Area In ${this.props.feature.properties.feature_name}`, subtitle: `` },
-                    xAxis: { key: 'records', label: "Records", ticks: 5, tickFormat: (d) => { return `${numberWithCommas(parseInt(d))}` } },
-                    yAxis: { key: 'class', label: "Class", ticks: 5, tickFormat: (d) => { return d } },
+                    chart: { title: `Observation By Class For OBIS Area In ${this.props.feature.properties.feature_name}`, subtitle: '' },
+                    xAxis: { key: 'records', label: 'Records', ticks: 5, tickFormat: (d) => { return `${numberWithCommas(parseInt(d))}` } },
+                    yAxis: { key: 'class', label: 'Class', ticks: 5, tickFormat: (d) => { return d } },
                     tooltip: {
                         label: (d) => {
                             return `<p>
@@ -197,7 +197,7 @@ class OBISAnalysisPackage extends React.Component {
     render() {
         return (
             <div>
-                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
+                <BarLoader width={'100%'} color={'white'} loading={this.state.loading} />
                 {this.props.getBapContents(this.createUniqueBapContents)}
             </div>
 
@@ -206,6 +206,6 @@ class OBISAnalysisPackage extends React.Component {
 
 
 }
-const OBISAnalysis = withSharedAnalysisCharacteristics(OBISAnalysisPackage, layers, sb_properties, SB_URL);
+const OBISAnalysis = withSharedAnalysisCharacteristics(OBISAnalysisPackage, layers, sb_properties, SB_URL)
 
-export default OBISAnalysis;
+export default OBISAnalysis

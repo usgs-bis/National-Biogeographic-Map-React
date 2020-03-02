@@ -1,33 +1,33 @@
-import React from "react";
-import L from "leaflet"
-import { BarLoader } from "react-spinners"
-import { RadioButton } from "../CustomRadio/CustomRadio"
-import "./AnalysisPackages.css";
-import withSharedAnalysisCharacteristics from "./AnalysisPackage"
-import ChartLegend from "../Charts/ChartLegend";
+import React from 'react'
+import L from 'leaflet'
+import { BarLoader } from 'react-spinners'
+import { RadioButton } from '../CustomRadio/CustomRadio'
+import './AnalysisPackages.css'
+import withSharedAnalysisCharacteristics from './AnalysisPackage'
+import ChartLegend from '../Charts/ChartLegend'
 
-const SB_URL = "https://www.sciencebase.gov/catalog/item/5b96d589e4b0702d0e82700a?format=json"
+const SB_URL = 'https://www.sciencebase.gov/catalog/item/5b96d589e4b0702d0e82700a?format=json'
 
 let sb_properties = {
-    "title": "Phenology Forecasts"
+    'title': 'Phenology Forecasts'
 }
 
-let baseLegendUrl = "https://geoserver.usanpn.org/geoserver/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng"
-const pestDescriptions = "https://data.usanpn.org:3006/v1/phenoforecasts/pestDescriptions"
+let baseLegendUrl = 'https://geoserver.usanpn.org/geoserver/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng'
+const pestDescriptions = 'https://data.usanpn.org:3006/v1/phenoforecasts/pestDescriptions'
 
 let layers = [
      {
-        title: "Phenocasts",
+        title: 'Phenocasts',
         layer: L.tileLayer.wms(
-            "https://geoserver.usanpn.org/geoserver/wms",
+            'https://geoserver.usanpn.org/geoserver/wms',
             {
-                format: "image/png",
+                format: 'image/png',
                 opacity: .5,
                 transparent: true
             }
         ),
         legend: {
-            imageUrl: ""
+            imageUrl: ''
         },
         checked: true,
         hideCheckbox: true
@@ -112,7 +112,7 @@ class PhenologyAnalysisPackage extends React.Component {
     }
 
     turnOnLayer(layer, style, date) {
-        layers[0]["legend"]["imageUrl"] = baseLegendUrl + `&layer=${layer}&style=${style}`
+        layers[0]['legend']['imageUrl'] = baseLegendUrl + `&layer=${layer}&style=${style}`
 
         // this will get flipped to turn on the layer in analysysPackage 
         layers[0].checked = false
@@ -120,7 +120,7 @@ class PhenologyAnalysisPackage extends React.Component {
             this.props.toggleLayer(layers[0])
         }
 
-        layers[0]["layer"].setParams({
+        layers[0]['layer'].setParams({
             layers: layer,
             styles: style,
             time: this.getFormattedDate(date)
@@ -136,8 +136,8 @@ class PhenologyAnalysisPackage extends React.Component {
 
     getFormattedDate(date) {
         const year = date.getFullYear()
-        let month = ('0' + (date.getMonth() + 1)).slice(-2);
-        const day = ('0' + date.getDate()).slice(-2);
+        let month = ('0' + (date.getMonth() + 1)).slice(-2)
+        const day = ('0' + date.getDate()).slice(-2)
         return `${year}-${month}-${day}`
     }
 
@@ -149,7 +149,7 @@ class PhenologyAnalysisPackage extends React.Component {
                 (error) => {
                     this.setState({
                         error: true
-                    });
+                    })
                 })
     }
 
@@ -160,7 +160,7 @@ class PhenologyAnalysisPackage extends React.Component {
             .catch(error => {
                 this.setState({
                     error: true
-                });
+                })
             })
     }
 
@@ -279,16 +279,16 @@ class PhenologyAnalysisPackage extends React.Component {
      * @param {Object {}} data
      */
     getCharts(data, idx) {
-        let selectedIndex = idx;
-        if (!selectedIndex) selectedIndex = 0;
+        let selectedIndex = idx
+        if (!selectedIndex) selectedIndex = 0
 
         try {
 
             const getControl = (timeLabel, layerName, date, style, i) => {
                 return (
-                    <div key={`${layerName}${i}`} className="nbm-flex-row-no-padding px-2" style={{ borderBottom: "1px solid gray" }}>
+                    <div key={`${layerName}${i}`} className="nbm-flex-row-no-padding px-2" style={{ borderBottom: '1px solid gray' }}>
                         <div>{`${timeLabel}  ${this.getFormattedDate(date)}`}</div>
-                        <div style={{ justifyContent: "center", paddingRight: "5px" }} className="nbm-flex-column">
+                        <div style={{ justifyContent: 'center', paddingRight: '5px' }} className="nbm-flex-column">
                             <RadioButton
                                 isChecked={(selectedIndex === i)}
                                 value={[layerName, style, date]}
@@ -301,7 +301,7 @@ class PhenologyAnalysisPackage extends React.Component {
             }
 
             let charts = []
-            let i = 0;
+            let i = 0
             data.forEach(layer => {
                 const layerName = layer.name
                 layer.species.forEach(species => {
@@ -351,7 +351,7 @@ class PhenologyAnalysisPackage extends React.Component {
             this.setState({
                 error: true,
                 loading: false
-            });
+            })
             return null
         }
     }
@@ -411,7 +411,7 @@ class PhenologyAnalysisPackage extends React.Component {
                             Phenology Forecasts data were provided by the <a href="https://www.usanpn.org">USA National Phenology Network</a>, data retrieved {new Date().toDateString()}
                             <br></br>
                             <br></br>
-                            <a target={"_blank"} rel="noopener noreferrer" href={"https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&service=WMS&layers=agdd_50f,agdd"}>https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=agdd_50f,agdd</a>
+                            <a target={'_blank'} rel="noopener noreferrer" href={'https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&service=WMS&layers=agdd_50f,agdd'}>https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=agdd_50f,agdd</a>
                         </div>
                     </div>
                 </div>
@@ -422,7 +422,7 @@ class PhenologyAnalysisPackage extends React.Component {
     render() {
         return (
             <div>
-                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
+                <BarLoader width={'100%'} color={'white'} loading={this.state.loading} />
                 {this.props.getBapContents(this.createUniqueBapContents)}
             </div>
 
@@ -435,6 +435,6 @@ const PhenologyAnalysis = withSharedAnalysisCharacteristics(
     PhenologyAnalysisPackage,
     layers,
     sb_properties,
-    SB_URL);
+    SB_URL)
 
-export default PhenologyAnalysis;
+export default PhenologyAnalysis

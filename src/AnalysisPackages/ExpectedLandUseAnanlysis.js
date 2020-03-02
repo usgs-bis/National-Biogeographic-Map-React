@@ -1,32 +1,32 @@
 import React from 'react'
-import { BarLoader } from 'react-spinners';
-import L from "leaflet"
+import { BarLoader } from 'react-spinners'
+import L from 'leaflet'
 import * as turf from '@turf/turf'
-import withSharedAnalysisCharacteristics from './AnalysisPackage';
-import HorizontalBarChart from '../Charts/HorizontalBarChart';
-import AppConfig from '../config';
+import withSharedAnalysisCharacteristics from './AnalysisPackage'
+import HorizontalBarChart from '../Charts/HorizontalBarChart'
+import AppConfig from '../config'
 
-const SB_URL = 'https://www.sciencebase.gov/catalog/item/5a87249de4b00f54eb3a2e1e?format=json';
-const EXPECTED_LAND_USE_ENDPOINT = AppConfig.REACT_APP_BIS_API + '/api/v1/expectedlanduse/';
+const SB_URL = 'https://www.sciencebase.gov/catalog/item/5a87249de4b00f54eb3a2e1e?format=json'
+const EXPECTED_LAND_USE_ENDPOINT = AppConfig.REACT_APP_BIS_API + '/api/v1/expectedlanduse/'
 
 
 const sb_properties = {
-  title: "Expected Land Use"
+  title: 'Expected Land Use'
 }
 const layers = [
     {
         title: 'Expected Land Use over time 2001-2061',
         layer: L.tileLayer.wms(
-            "https://dev-blm.sciencebase.gov/geoserver/bcb/wms",
+            'https://dev-blm.sciencebase.gov/geoserver/bcb/wms',
             {
-                format: "image/png",
+                format: 'image/png',
                 layers: 'expected_land_use',
                 opacity: .5,
                 transparent: true
             }
         ),
         legend: {
-            imageUrl: "https://dev-blm.sciencebase.gov/geoserver/bcb/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=expected_land_use"
+            imageUrl: 'https://dev-blm.sciencebase.gov/geoserver/bcb/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=expected_land_use'
         },
         timeEnabled: true,
         checked: false,
@@ -35,16 +35,16 @@ const layers = [
   {
     title: 'Expected Land Use 2061',
     layer: L.tileLayer.wms(
-        "https://sciencebase.usgs.gov/geoserver/bcb/wms",
+        'https://sciencebase.usgs.gov/geoserver/bcb/wms',
         {
           layers: ['classified_chance_of_development'],
-          format: "image/png",
+          format: 'image/png',
           opacity: .5,
           transparent: true
         }
     ),
     legend: {
-        imageUrl: "https://sciencebase.usgs.gov/geoserver/bcb/wms?service=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=classified_chance_of_development"
+        imageUrl: 'https://sciencebase.usgs.gov/geoserver/bcb/wms?service=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=classified_chance_of_development'
     },
     checked: false,
     sb_item: '5a87249de4b00f54eb3a2e1e'
@@ -121,7 +121,7 @@ class ExpectedLandUseAnalysisPackage extends React.Component {
   }
 
   numberWithCommas = (x) => {
-    return x.toFixed(0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return x.toFixed(0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   }
 
   /**
@@ -146,8 +146,8 @@ class ExpectedLandUseAnalysisPackage extends React.Component {
         const chartConfig = {
           margins: { left: 100, right: 20, top: 20, bottom: 70 },
           chart: { title: 'Expected Land Use Change' },
-          xAxis: { key: 'area', label: "Area (acres)", ticks: 5, },
-          yAxis: { key: 'value', label: "Threat", ticks: 4, tickFormat: (d, idx) => { return labels[idx + 1].short } },
+          xAxis: { key: 'area', label: 'Area (acres)', ticks: 5, },
+          yAxis: { key: 'value', label: 'Threat', ticks: 4, tickFormat: (d, idx) => { return labels[idx + 1].short } },
           tooltip: { label: (d, idx) => { return `<p>${d.label.long}: ${this.numberWithCommas(d.area)} acres</p>` } }
         }
         const chartData = data.map((d, idx) => {
@@ -212,13 +212,13 @@ class ExpectedLandUseAnalysisPackage extends React.Component {
   render() {
     return (
       <div>
-        <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
+        <BarLoader width={'100%'} color={'white'} loading={this.state.loading} />
         {this.props.getBapContents(this.createUniqueBapContents)}
       </div>
     )
   }
 }
 
-const ExpectedLandUseAnalysis = withSharedAnalysisCharacteristics(ExpectedLandUseAnalysisPackage, layers, sb_properties, SB_URL);
+const ExpectedLandUseAnalysis = withSharedAnalysisCharacteristics(ExpectedLandUseAnalysisPackage, layers, sb_properties, SB_URL)
 
-export default ExpectedLandUseAnalysis;
+export default ExpectedLandUseAnalysis

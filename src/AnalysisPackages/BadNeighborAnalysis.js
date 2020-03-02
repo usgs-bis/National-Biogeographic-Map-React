@@ -1,17 +1,17 @@
-import React from "react";
-import { BarLoader } from "react-spinners"
-import withSharedAnalysisCharacteristics from "./AnalysisPackage"
-import DonutChart from "../Charts/DonutChart";
-import TableChart from "../Charts/TableChart"
-import "./AnalysisPackages.css";
-import AppConfig from "../config";
+import React from 'react'
+import { BarLoader } from 'react-spinners'
+import withSharedAnalysisCharacteristics from './AnalysisPackage'
+import DonutChart from '../Charts/DonutChart'
+import TableChart from '../Charts/TableChart'
+import './AnalysisPackages.css'
+import AppConfig from '../config'
 
-const SB_URL = "https://www.sciencebase.gov/catalog/item/5cc34cbae4b09b8c0b7606b9?format=json"
+const SB_URL = 'https://www.sciencebase.gov/catalog/item/5cc34cbae4b09b8c0b7606b9?format=json'
 
-const BADNEIGHBOR_URL = AppConfig.REACT_APP_BIS_API + "/api/v1/nonnativespecies/"
+const BADNEIGHBOR_URL = AppConfig.REACT_APP_BIS_API + '/api/v1/nonnativespecies/'
 
 let sb_properties = {
-    "title": "Bad Neighbor Invasives"
+    'title': 'Bad Neighbor Invasives'
 }
 
 const layers = []
@@ -21,10 +21,10 @@ class BadNeighborAnalysisPackage extends React.Component {
         super(props)
         this.state = {
             charts: {
-                donutChart: { id: "", config: {}, data: null },
-                tableChart: { id: "", config: {}, data: null },
+                donutChart: { id: '', config: {}, data: null },
+                tableChart: { id: '', config: {}, data: null },
             },
-            tableGroup: "All Invasives",
+            tableGroup: 'All Invasives',
         }
 
         this.donutChart = React.createRef()
@@ -59,7 +59,7 @@ class BadNeighborAnalysisPackage extends React.Component {
 
     featureChange() {
         if (this.props.feature) {
-            if (this.props.feature.properties.feature_class === "US States and Territories") {
+            if (this.props.feature.properties.feature_class === 'US States and Territories') {
                 this.fetch()
             }
             else {
@@ -96,8 +96,8 @@ class BadNeighborAnalysisPackage extends React.Component {
                     } else {
                         this.setState({
                             charts: {
-                                donutChart: { id: "", config: {}, data: null },
-                                tableChart: { id: "", config: {}, data: null }
+                                donutChart: { id: '', config: {}, data: null },
+                                tableChart: { id: '', config: {}, data: null }
                             },
                             data: null
                         })
@@ -109,7 +109,7 @@ class BadNeighborAnalysisPackage extends React.Component {
                     this.setState({
                         error: true,
                         loading: false
-                    });
+                    })
                 }
             )
     }
@@ -129,37 +129,37 @@ class BadNeighborAnalysisPackage extends React.Component {
         let charts = {}
 
         for (let chart of Object.keys(this.state.charts)) {
-            if (chart.toString() === "donutChart" && data) {
+            if (chart.toString() === 'donutChart' && data) {
 
-                const chartId = "BadNeighbor_DonutChart"
+                const chartId = 'BadNeighbor_DonutChart'
                 let formattedData = []
                 let total = 0
                 for (let key of Object.keys(data)) {
                     let k = key.split('_').map(a => a.charAt(0).toUpperCase() + a.slice(1)).join(' ')
                     let count = 0
                     if ('bad_neighbor_count' in data[key]) {
-                        count = parseInt(data[key]["bad_neighbor_count"])
+                        count = parseInt(data[key]['bad_neighbor_count'])
                     }
                     else {
                         for (let subkey of Object.keys(data[key])) {
                             if ('bad_neighbor_count' in data[key][subkey]) {
-                                count += parseInt(data[key][subkey]["bad_neighbor_count"])
+                                count += parseInt(data[key][subkey]['bad_neighbor_count'])
                             }
                         }
                     }
                     total += count
-                    formattedData.push({ "name": k, "percent": 0, "Count": count, "color": "random" })
+                    formattedData.push({ 'name': k, 'percent': 0, 'Count': count, 'color': 'random' })
                 }
                 formattedData = formattedData.map(d => {
-                    d["percent"] = getPercent(d["Count"], total)
+                    d['percent'] = getPercent(d['Count'], total)
                     return d
                 })
 
 
                 const chartConfig = {
                     margins: { left: 75, right: 80, top: 100, bottom: 0 },
-                    chart: { title: `Percent Threat of Sample Groups Bad Neighbors in ${this.props.feature.properties.feature_name}`, subtitle: `` },
-                    tooltip: { data: { name: "Group", percent: "Contribution", Count: "Count" } },
+                    chart: { title: `Percent Threat of Sample Groups Bad Neighbors in ${this.props.feature.properties.feature_name}`, subtitle: '' },
+                    tooltip: { data: { name: 'Group', percent: 'Contribution', Count: 'Count' } },
                     lables: { fontSize: '8px', label: ({data}) => `${data.name} ${(parseFloat(data.percent)).toFixed(2).toString()}%` },
                     onClick: (d) => { this.filterTableData(d) }
                 }
@@ -171,29 +171,29 @@ class BadNeighborAnalysisPackage extends React.Component {
                 }).reverse()
                 charts[chart] = { id: chartId, config: chartConfig, data: formattedData }
             }
-            if (chart.toString() === "tableChart" && data) {
-                const chartId = "BadNeighbor_tableChart"
+            if (chart.toString() === 'tableChart' && data) {
+                const chartId = 'BadNeighbor_tableChart'
                 let chartTitle = `${this.props.feature.properties.feature_name} Bad Neighbors: ${this.state.tableGroup}`
-                const chartSubTitle = `(Click on a bar above to filter the table and see only neighboring invasive species within a catagory.)`
+                const chartSubTitle = '(Click on a bar above to filter the table and see only neighboring invasive species within a catagory.)'
                 let formattedData = []
                 for (let key of Object.keys(data)) {
                     let k = key.split('_').map(a => a.charAt(0).toUpperCase() + a.slice(1)).join(' ')
                     let list = []
                     if ('species_list' in data[key]) {
-                        list = data[key]["species_list"].map((d) => {
+                        list = data[key]['species_list'].map((d) => {
                             return [d.name, <a href={`https://bison.usgs.gov/index.jsp?scientificName=${d.name}&ITIS=itis`} target='_blank' rel='noopener noreferrer' > {d.tsn}</a>]
                         })
                     }
                     else {
                         for (let subkey of Object.keys(data[key])) {
                             if ('species_list' in data[key][subkey]) {
-                                list = list.concat(data[key][subkey]["species_list"].map((d) => {
+                                list = list.concat(data[key][subkey]['species_list'].map((d) => {
                                     return [d.name, <a href={`https://bison.usgs.gov/index.jsp?scientificName=${d.name}&ITIS=itis`} target='_blank' rel='noopener noreferrer' > {d.tsn}</a>]
                                 }))
                             }
                         }
                     }
-                    formattedData.push({ "Group": k, "List": list })
+                    formattedData.push({ 'Group': k, 'List': list })
                 }
                 let chartData = [['Species', 'TSN']]
                 for (let d in formattedData) {
@@ -230,7 +230,7 @@ class BadNeighborAnalysisPackage extends React.Component {
     }
     resetTable() {
         this.setState({
-            tableGroup: "All Invasives",
+            tableGroup: 'All Invasives',
         }, () => {
             const charts = this.getCharts(this.state.data)
             this.setState({
@@ -315,13 +315,13 @@ class BadNeighborAnalysisPackage extends React.Component {
     render() {
         return (
             <div>
-                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
+                <BarLoader width={'100%'} color={'white'} loading={this.state.loading} />
                 {this.props.getBapContents(this.createUniqueBapContents)}
             </div>
         )
     }
 }
 
-const BadNeighborAnalysis = withSharedAnalysisCharacteristics(BadNeighborAnalysisPackage, layers, sb_properties, SB_URL);
+const BadNeighborAnalysis = withSharedAnalysisCharacteristics(BadNeighborAnalysisPackage, layers, sb_properties, SB_URL)
 
-export default BadNeighborAnalysis;
+export default BadNeighborAnalysis

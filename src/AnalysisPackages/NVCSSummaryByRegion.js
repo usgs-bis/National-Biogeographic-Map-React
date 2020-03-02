@@ -1,155 +1,155 @@
-import "./AnalysisPackages.css";
-import L from "leaflet";
-import React from "react";
-import TableChart from "../Charts/TableChart"
-import {BarLoader} from "react-spinners"
+import './AnalysisPackages.css'
+import L from 'leaflet'
+import React from 'react'
+import TableChart from '../Charts/TableChart'
+import {BarLoader} from 'react-spinners'
 import {isEmpty} from 'lodash'
 
-import withSharedAnalysisCharacteristics from "./AnalysisPackage"
-import AppConfig from "../config";
+import withSharedAnalysisCharacteristics from './AnalysisPackage'
+import AppConfig from '../config'
 
-let SB_URL = "https://www.sciencebase.gov/catalog/item/5c6c58b3e4b0fe48cb3e5d13?format=json"
+let SB_URL = 'https://www.sciencebase.gov/catalog/item/5c6c58b3e4b0fe48cb3e5d13?format=json'
 
 let sb_properties = {
-  "title": "NVCS Summary"
+  'title': 'NVCS Summary'
 }
 
 const layers = [
   {
-    title: "Class",
-    titlePrefix: "GAP Landcover 2011 ",
+    title: 'Class',
+    titlePrefix: 'GAP Landcover 2011 ',
     elasticTerm: 'class',
     layer: L.tileLayer.wms(
-      "https://www.sciencebase.gov/geoserver/nvcs/wms",
+      'https://www.sciencebase.gov/geoserver/nvcs/wms',
       {
-        format: "image/png",
-        layers: "class",
+        format: 'image/png',
+        layers: 'class',
         opacity: .5,
         transparent: true
       }
     ),
     legend: {
-      imageUrl: "https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=class"
+      imageUrl: 'https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=class'
     },
     timeEnabled: true,
     checked: false,
     sb_item: '58d1b8ade4b0236b68f6b88e'
   },
   {
-    title: "Subclass",
-    titlePrefix: "GAP Landcover 2011 ",
+    title: 'Subclass',
+    titlePrefix: 'GAP Landcover 2011 ',
     elasticTerm: 'subclass',
     layer: L.tileLayer.wms(
-      "https://www.sciencebase.gov/geoserver/nvcs/wms",
+      'https://www.sciencebase.gov/geoserver/nvcs/wms',
       {
-        format: "image/png",
-        layers: "subclass",
+        format: 'image/png',
+        layers: 'subclass',
         opacity: .5,
         transparent: true
       }
     ),
     legend: {
-      imageUrl: "https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=subclass"
+      imageUrl: 'https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=subclass'
     },
     timeEnabled: true,
     checked: false,
     sb_item: '58d2b96ce4b0236b68f84d9f'
   },
   {
-    title: "Formation",
-    titlePrefix: "GAP Landcover 2011 ",
+    title: 'Formation',
+    titlePrefix: 'GAP Landcover 2011 ',
     elasticTerm: 'formation',
     layer: L.tileLayer.wms(
-      "https://www.sciencebase.gov/geoserver/nvcs/wms",
+      'https://www.sciencebase.gov/geoserver/nvcs/wms',
       {
-        format: "image/png",
-        layers: "formation",
+        format: 'image/png',
+        layers: 'formation',
         opacity: .5,
         transparent: true
       }
     ),
     legend: {
-      imageUrl: "https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=formation"
+      imageUrl: 'https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=formation'
     },
     timeEnabled: true,
     checked: false,
     sb_item: '58d1ba7ae4b0236b68f6b8a3'
   },
   {
-    title: "Division",
-    titlePrefix: "GAP Landcover 2011 ",
+    title: 'Division',
+    titlePrefix: 'GAP Landcover 2011 ',
     elasticTerm: 'division',
     layer: L.tileLayer.wms(
-      "https://www.sciencebase.gov/geoserver/nvcs/wms",
+      'https://www.sciencebase.gov/geoserver/nvcs/wms',
       {
-        format: "image/png",
-        layers: "division",
+        format: 'image/png',
+        layers: 'division',
         opacity: .5,
         transparent: true
       }
     ),
     legend: {
-      imageUrl: "https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=division"
+      imageUrl: 'https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=division'
     },
     timeEnabled: true,
     checked: false,
     sb_item: '58d2ba5ae4b0236b68f84db5'
   },
   {
-    title: "Macrogroup",
-    titlePrefix: "GAP Landcover 2011 ",
+    title: 'Macrogroup',
+    titlePrefix: 'GAP Landcover 2011 ',
     elasticTerm: 'macrogroup',
     layer: L.tileLayer.wms(
-      "https://www.sciencebase.gov/geoserver/nvcs/wms",
+      'https://www.sciencebase.gov/geoserver/nvcs/wms',
       {
-        format: "image/png",
-        layers: "macrogroup",
+        format: 'image/png',
+        layers: 'macrogroup',
         opacity: .5,
         transparent: true
       }
     ),
     legend: {
-      imageUrl: "https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=macrogroup"
+      imageUrl: 'https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=macrogroup'
     },
     timeEnabled: true,
     checked: false,
     sb_item: '58d1bad8e4b0236b68f6b8a5'
   },
   {
-    title: "Group",
-    titlePrefix: "GAP Landcover 2011 ",
+    title: 'Group',
+    titlePrefix: 'GAP Landcover 2011 ',
     elasticTerm: 'group',
     layer: L.tileLayer.wms(
-      "https://www.sciencebase.gov/geoserver/nvcs/wms",
+      'https://www.sciencebase.gov/geoserver/nvcs/wms',
       {
-        format: "image/png",
-        layers: "group",
+        format: 'image/png',
+        layers: 'group',
         opacity: .5,
         transparent: true
       }
     ),
     legend: {
-      imageUrl: "https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=group"
+      imageUrl: 'https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=group'
     },
     timeEnabled: true,
     checked: false,
     sb_item: '58d2bab6e4b0236b68f84dba'
   },
   {
-    title: "Ecological System",
-    titlePrefix: "GAP Landcover 2011 ",
+    title: 'Ecological System',
+    titlePrefix: 'GAP Landcover 2011 ',
     elasticTerm: 'ecosystem',
     layer: L.tileLayer.wms(
-      "https://www.sciencebase.gov/geoserver/nvcs/wms",
+      'https://www.sciencebase.gov/geoserver/nvcs/wms',
       {
-        format: "image/png",
-        layers: "ecological_system",
+        format: 'image/png',
+        layers: 'ecological_system',
         opacity: .5,
         transparent: true
       }
     ),
     legend: {
-      imageUrl: "https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=ecological_system"
+      imageUrl: 'https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=ecological_system'
     },
     timeEnabled: true,
     checked: false,
@@ -158,7 +158,7 @@ const layers = [
 
 ]
 
-const NVCS_SUMM = AppConfig.REACT_APP_BIS_API + "/api/v1/nvcs/summary";
+const NVCS_SUMM = AppConfig.REACT_APP_BIS_API + '/api/v1/nvcs/summary'
 
 
 class NVCSSummaryByRegionPackage extends React.Component {
@@ -167,7 +167,7 @@ class NVCSSummaryByRegionPackage extends React.Component {
     this.state = {
       layersOpen: false,
       charts: {
-        nvcsSummTable: {id: "", config: {}, data: null}
+        nvcsSummTable: {id: '', config: {}, data: null}
       },
     }
     this.enabledLayer = null
@@ -211,7 +211,7 @@ class NVCSSummaryByRegionPackage extends React.Component {
       error: false
     })
 
-    let level = "class"
+    let level = 'class'
     if (this.enabledLayer) {
       level = this.enabledLayer.elasticTerm
     }
@@ -232,7 +232,7 @@ class NVCSSummaryByRegionPackage extends React.Component {
         } else {
           this.setState({
             charts: {
-              nvcsSummTable: {id: "", config: {}, data: null}
+              nvcsSummTable: {id: '', config: {}, data: null}
             }
           })
           this.props.isEnabled(false)
@@ -243,7 +243,7 @@ class NVCSSummaryByRegionPackage extends React.Component {
         this.setState({
           error: true,
           loading: false
-        });
+        })
       })
 
   }
@@ -251,13 +251,13 @@ class NVCSSummaryByRegionPackage extends React.Component {
   getCharts(datas) {
 
     const numberWithCommas = (x) => {
-      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
     }
 
-    const chartId = "NVCS_SUMMTABLE"
+    const chartId = 'NVCS_SUMMTABLE'
     const chartConfig = {
       margins: {left: 20, right: 20, top: 20, bottom: 125},
-      chart: {title: "NVCS " + (this.enabledLayer ? this.enabledLayer.title : "Class"), subtitle: ``},
+      chart: {title: 'NVCS ' + (this.enabledLayer ? this.enabledLayer.title : 'Class'), subtitle: ''},
     }
     let data = [['Land Cover Name', 'Acres']]
 
@@ -316,7 +316,7 @@ class NVCSSummaryByRegionPackage extends React.Component {
         <div className="chartsDiv">
           <div style={{padding: '10px'}}>
 
-            {`The data displayed in this table defaults to the 'Class' hierarchy level. To change levels, select a new one from the above 'Analysis Inputs'.`}
+            {'The data displayed in this table defaults to the \'Class\' hierarchy level. To change levels, select a new one from the above \'Analysis Inputs\'.'}
 
           </div>
           <TableChart
@@ -332,7 +332,7 @@ class NVCSSummaryByRegionPackage extends React.Component {
   render() {
     return (
       <div>
-        <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
+        <BarLoader width={'100%'} color={'white'} loading={this.state.loading} />
         {this.props.getBapContents(this.createUniqueBapContents)}
       </div>
 
@@ -341,6 +341,6 @@ class NVCSSummaryByRegionPackage extends React.Component {
 
 
 }
-const NVCSSummaryByRegion = withSharedAnalysisCharacteristics(NVCSSummaryByRegionPackage, layers, sb_properties, SB_URL, true);
+const NVCSSummaryByRegion = withSharedAnalysisCharacteristics(NVCSSummaryByRegionPackage, layers, sb_properties, SB_URL, true)
 
-export default NVCSSummaryByRegion;
+export default NVCSSummaryByRegion
