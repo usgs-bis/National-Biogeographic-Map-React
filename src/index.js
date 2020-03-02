@@ -1,3 +1,5 @@
+// @Matt TODO: unify how we are using bootstrap, right now we use 3.x and 4.x,
+// we should stick to one, as well as one react library for it
 import 'bootstrap/dist/css/bootstrap.min.css'
 
 import App from './App'

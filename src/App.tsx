@@ -1,6 +1,7 @@
 import './App.css'
 import './CustomDialog/CustomDialog.css'
 import * as turf from '@turf/turf'
+import AlertBox from './AlertBox/AlertBox'
 import AppConfig from './config'
 import Footer from './Footer/Footer'
 import Header from './Header/Header'
@@ -13,7 +14,6 @@ import nbmBioscape from './Bioscapes/biogeography.json'
 import nvcsBioscape from './Bioscapes/terrestrial-ecosystems-2011.json'
 import packageJson from '../package.json'
 import states from './states.json'
-import {Alert} from 'react-bootstrap'
 import {isEmpty} from 'lodash'
 
 // @Matt TODO: #next fix the fetch cors stuff
@@ -31,8 +31,6 @@ export interface IFeature {
   }
   geometry: boolean
 }
-
-// @Matt TODO: #current check reactappbisapi for accessibility, show indicator if not
 
 const ELEVATION_SOURCE = 'https://nationalmap.gov/epqs/pqs.php?'
 const GET_FEATURE_API = AppConfig.REACT_APP_BIS_API + '/api/v1/places/search/feature?feature_id='
@@ -628,7 +626,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
   return (
     <div className="vwrapper">
       <Header title={state.bioscape.title} description={state.bioscape.description} />
-      <Alert className="app-alert">Test</Alert>
+      <AlertBox />
       <div id="content-area">
         <Resizable
           className="panel-area"

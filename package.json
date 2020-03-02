@@ -21,6 +21,7 @@
     "leaflet": "^1.6.0",
     "leaflet-clonelayer": "^1.0.7",
     "leaflet-draw": "^1.0.4",
+    "node-sass": "4.13.1",
     "pdfmake": "^0.1.51",
     "re-resizable": "^4.11.0",
     "react": "^16.12.0",

@@ -204,8 +204,6 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
     }
   }
 
-  // @Matt TODO: #current find where to check validity of api and display a notice when it is inaccsessible, don't show baps who's api's are not accessible or grey them out
-
   // @Matt TODO: #next user drawn polygons still load the single data, need to disallow that
   const handleLoadError = (e: any) => {
     let prevErr = layerError
