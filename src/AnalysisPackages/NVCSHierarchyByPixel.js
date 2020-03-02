@@ -1,34 +1,34 @@
-import React from "react";
-import { BarLoader } from "react-spinners"
-import L from "leaflet";
-import AccordionChart from "../Charts/AccordionChart"
-import "./AnalysisPackages.css";
-import withSharedAnalysisCharacteristics from "./AnalysisPackage"
-import AppConfig from "../config";
+import React from 'react'
+import { BarLoader } from 'react-spinners'
+import L from 'leaflet'
+import AccordionChart from '../Charts/AccordionChart'
+import './AnalysisPackages.css'
+import withSharedAnalysisCharacteristics from './AnalysisPackage'
+import AppConfig from '../config'
 
-const SB_URL = "https://www.sciencebase.gov/catalog/item/582a1819e4b01fad8726554a?format=json"
+const SB_URL = 'https://www.sciencebase.gov/catalog/item/582a1819e4b01fad8726554a?format=json'
 
 let sb_properties = {
-    "title": "NVCS Hierarchy by Pixel"
+    'title': 'NVCS Hierarchy by Pixel'
 }
 
-const HBP_URL = AppConfig.REACT_APP_BIS_API + "/api/v1/nvcs/hierarchy_by_point";
+const HBP_URL = AppConfig.REACT_APP_BIS_API + '/api/v1/nvcs/hierarchy_by_point'
 
 const layers = [
      {
-        title: "Class",
-        titlePrefix: "GAP Landcover 2011 ",
+        title: 'Class',
+        titlePrefix: 'GAP Landcover 2011 ',
         layer: L.tileLayer.wms(
-            "https://www.sciencebase.gov/geoserver/nvcs/wms",
+            'https://www.sciencebase.gov/geoserver/nvcs/wms',
             {
-                format: "image/png",
-                layers: "class",
+                format: 'image/png',
+                layers: 'class',
                 opacity: .5,
                 transparent: true
             }
         ),
         legend: {
-            imageUrl: "https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=class"
+            imageUrl: 'https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=class'
         },
         timeEnabled: true,
         checked: false,
@@ -36,19 +36,19 @@ const layers = [
 
     },
      {
-        title: "Subclass",
-        titlePrefix: "GAP Landcover 2011 ",
+        title: 'Subclass',
+        titlePrefix: 'GAP Landcover 2011 ',
         layer: L.tileLayer.wms(
-            "https://www.sciencebase.gov/geoserver/nvcs/wms",
+            'https://www.sciencebase.gov/geoserver/nvcs/wms',
             {
-                format: "image/png",
-                layers: "subclass",
+                format: 'image/png',
+                layers: 'subclass',
                 opacity: .5,
                 transparent: true
             }
         ),
         legend: {
-            imageUrl: "https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=subclass"
+            imageUrl: 'https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=subclass'
         },
         timeEnabled: true,
         checked: false,
@@ -56,19 +56,19 @@ const layers = [
 
     },
      {
-        title: "Formation",
-        titlePrefix: "GAP Landcover 2011 ",
+        title: 'Formation',
+        titlePrefix: 'GAP Landcover 2011 ',
         layer: L.tileLayer.wms(
-            "https://www.sciencebase.gov/geoserver/nvcs/wms",
+            'https://www.sciencebase.gov/geoserver/nvcs/wms',
             {
-                format: "image/png",
-                layers: "formation",
+                format: 'image/png',
+                layers: 'formation',
                 opacity: .5,
                 transparent: true
             }
         ),
         legend: {
-            imageUrl: "https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=formation"
+            imageUrl: 'https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=formation'
         },
         timeEnabled: true,
         checked: false,
@@ -76,19 +76,19 @@ const layers = [
 
     },
      {
-        title: "Division",
-        titlePrefix: "GAP Landcover 2011 ",
+        title: 'Division',
+        titlePrefix: 'GAP Landcover 2011 ',
         layer: L.tileLayer.wms(
-            "https://www.sciencebase.gov/geoserver/nvcs/wms",
+            'https://www.sciencebase.gov/geoserver/nvcs/wms',
             {
-                format: "image/png",
-                layers: "division",
+                format: 'image/png',
+                layers: 'division',
                 opacity: .5,
                 transparent: true
             }
         ),
         legend: {
-            imageUrl: "https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=division"
+            imageUrl: 'https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=division'
         },
         timeEnabled: true,
         checked: false,
@@ -96,19 +96,19 @@ const layers = [
 
     },
      {
-        title: "Macrogroup",
-        titlePrefix: "GAP Landcover 2011 ",
+        title: 'Macrogroup',
+        titlePrefix: 'GAP Landcover 2011 ',
         layer: L.tileLayer.wms(
-            "https://www.sciencebase.gov/geoserver/nvcs/wms",
+            'https://www.sciencebase.gov/geoserver/nvcs/wms',
             {
-                format: "image/png",
-                layers: "macrogroup",
+                format: 'image/png',
+                layers: 'macrogroup',
                 opacity: .5,
                 transparent: true
             }
         ),
         legend: {
-            imageUrl: "https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=macrogroup"
+            imageUrl: 'https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=macrogroup'
         },
         timeEnabled: true,
         checked: false,
@@ -116,19 +116,19 @@ const layers = [
 
     },
      {
-        title: "Group",
-        titlePrefix: "GAP Landcover 2011 ",
+        title: 'Group',
+        titlePrefix: 'GAP Landcover 2011 ',
         layer: L.tileLayer.wms(
-            "https://www.sciencebase.gov/geoserver/nvcs/wms",
+            'https://www.sciencebase.gov/geoserver/nvcs/wms',
             {
-                format: "image/png",
-                layers: "group",
+                format: 'image/png',
+                layers: 'group',
                 opacity: .5,
                 transparent: true
             }
         ),
         legend: {
-            imageUrl: "https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=group"
+            imageUrl: 'https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=group'
         },
         timeEnabled: true,
         checked: false,
@@ -136,19 +136,19 @@ const layers = [
 
     },
      {
-        title: "Ecological System",
-        titlePrefix: "GAP Landcover 2011 ",
+        title: 'Ecological System',
+        titlePrefix: 'GAP Landcover 2011 ',
         layer: L.tileLayer.wms(
-            "https://www.sciencebase.gov/geoserver/nvcs/wms",
+            'https://www.sciencebase.gov/geoserver/nvcs/wms',
             {
-                format: "image/png",
-                layers: "ecological_system",
+                format: 'image/png',
+                layers: 'ecological_system',
                 opacity: .5,
                 transparent: true
             }
         ),
         legend: {
-            imageUrl: "https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=ecological_system"
+            imageUrl: 'https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=ecological_system'
         },
         timeEnabled: true,
         checked: false,
@@ -163,7 +163,7 @@ class NVCSHierarchyByPixelPackage extends React.Component {
         this.state = {
             layersOpen: false,
             charts: {
-                pixelHierarchy: { id: "", config: {}, data: null }
+                pixelHierarchy: { id: '', config: {}, data: null }
             },
             enabledLayer: null
         }
@@ -230,7 +230,7 @@ class NVCSHierarchyByPixelPackage extends React.Component {
             .then(
                 (result) => {
                     if (result && result.hits && result.hits.hits.length) {
-                        const hbpData = result.hits.hits[0]["_source"]["properties"]
+                        const hbpData = result.hits.hits[0]['_source']['properties']
                         const charts = this.getCharts({ pixelHierarchy: hbpData })
                         this.setState({
                             loading: false,
@@ -243,7 +243,7 @@ class NVCSHierarchyByPixelPackage extends React.Component {
                         this.setState({
                             loading: false,
                             charts: {
-                                pixelHierarchy: { id: "", config: {}, data: null }
+                                pixelHierarchy: { id: '', config: {}, data: null }
                             }
                         })
                         this.props.isEnabled(false)
@@ -254,30 +254,30 @@ class NVCSHierarchyByPixelPackage extends React.Component {
                     this.setState({
                         error,
                         loading: false
-                    });
+                    })
                 }
             )
     }
 
     getCharts(datas) {
-        if (!datas || !datas.pixelHierarchy) return { pixelHierarchy: { id: "", config: {}, data: null } }
+        if (!datas || !datas.pixelHierarchy) return { pixelHierarchy: { id: '', config: {}, data: null } }
         datas = datas.pixelHierarchy
         const chartId = 'HBPAccordian'
-        const chartTitle = `NVCS Hierarchy by Pixel`
+        const chartTitle = 'NVCS Hierarchy by Pixel'
         const chartConfig = {
             margins: { left: 20, right: 20, top: 20, bottom: 125 },
-            chart: { title: chartTitle, subtitle: `` },
+            chart: { title: chartTitle, subtitle: '' },
         }
         let data = []
         const prefixes = [
-            "ecosystem_",
-            "group_",
-            "macrogroup_",
-            "division_",
-            "formation_",
-            "subclass_",
-            "class_"
-        ];
+            'ecosystem_',
+            'group_',
+            'macrogroup_',
+            'division_',
+            'formation_',
+            'subclass_',
+            'class_'
+        ]
 
         for (let prefix of prefixes) {
             let title = `${datas[`${prefix}type`]} ${datas[`${prefix}code`]} ${datas[`${prefix}title`]}`
@@ -332,7 +332,7 @@ class NVCSHierarchyByPixelPackage extends React.Component {
     render() {
         return (
             <div>
-                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
+                <BarLoader width={'100%'} color={'white'} loading={this.state.loading} />
                 {this.props.getBapContents(this.createUniqueBapContents)}
             </div>
 
@@ -340,6 +340,6 @@ class NVCSHierarchyByPixelPackage extends React.Component {
     }
 
 }
-const NVCSHierarchyByPixel = withSharedAnalysisCharacteristics(NVCSHierarchyByPixelPackage, layers, sb_properties, SB_URL, true);
+const NVCSHierarchyByPixel = withSharedAnalysisCharacteristics(NVCSHierarchyByPixelPackage, layers, sb_properties, SB_URL, true)
 
-export default NVCSHierarchyByPixel;
+export default NVCSHierarchyByPixel

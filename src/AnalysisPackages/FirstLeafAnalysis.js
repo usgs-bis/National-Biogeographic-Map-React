@@ -1,37 +1,37 @@
-import React from "react";
-import L from "leaflet"
-import { BarLoader } from "react-spinners"
-import withSharedAnalysisCharacteristics from "./AnalysisPackage"
-import BoxAndWhiskerChart from "../Charts/BoxAndWhiskerChart";
-import HistogramChart from "../Charts/HistogramChart";
-import RidgelinePlotChart from "../Charts/RidgelinePlotChart";
-import "./AnalysisPackages.css";
-import AppConfig from "../config";
+import React from 'react'
+import L from 'leaflet'
+import { BarLoader } from 'react-spinners'
+import withSharedAnalysisCharacteristics from './AnalysisPackage'
+import BoxAndWhiskerChart from '../Charts/BoxAndWhiskerChart'
+import HistogramChart from '../Charts/HistogramChart'
+import RidgelinePlotChart from '../Charts/RidgelinePlotChart'
+import './AnalysisPackages.css'
+import AppConfig from '../config'
 
-const SB_URL = "https://www.sciencebase.gov/catalog/item/58bf0b61e4b014cc3a3a9c10?format=json"
-const FIRSTLEAF_URL = AppConfig.REACT_APP_BIS_API + "/api/v1/phenology/place/firstleaf"
-const FIRSTLEAF_POLY_URL = AppConfig.REACT_APP_BIS_API + "/api/v1/phenology/polygon/firstleaf"
+const SB_URL = 'https://www.sciencebase.gov/catalog/item/58bf0b61e4b014cc3a3a9c10?format=json'
+const FIRSTLEAF_URL = AppConfig.REACT_APP_BIS_API + '/api/v1/phenology/place/firstleaf'
+const FIRSTLEAF_POLY_URL = AppConfig.REACT_APP_BIS_API + '/api/v1/phenology/polygon/firstleaf'
 const PUBLIC_TOKEN = AppConfig.REACT_APP_PUBLIC_TOKEN
 
 let sb_properties = {
-    "title": "First Leaf Spring Index"
+    'title': 'First Leaf Spring Index'
 }
 
 const layers = [
     {
-        title: "Average Leaf PRISM",
+        title: 'Average Leaf PRISM',
         layer: L.tileLayer.wms(
-            "https://geoserver.usanpn.org/geoserver/si-x/wms",
+            'https://geoserver.usanpn.org/geoserver/si-x/wms',
             {
-                format: "image/png",
-                layers: "average_leaf_prism",
+                format: 'image/png',
+                layers: 'average_leaf_prism',
                 opacity: .5,
                 transparent: true
             }
         ),
         legend: {
-            imageUrl: "https://geoserver.usanpn.org/geoserver/si-x/wms??service=wms&request=GetLegendGraphic&" +
-                "format=image%2Fpng&layer=average_leaf_prism"
+            imageUrl: 'https://geoserver.usanpn.org/geoserver/si-x/wms??service=wms&request=GetLegendGraphic&' +
+                'format=image%2Fpng&layer=average_leaf_prism'
         },
         timeEnabled: true,
         checked: false,
@@ -44,9 +44,9 @@ class FirstLeafAnalysisPackage extends React.Component {
         super(props)
         this.state = {
             charts: {
-                histogram: { id: "", config: {}, data: null },
-                ridgelinePlot: { id: "", config: {}, data: null },
-                boxAndWhisker: { id: "", config: {}, data: null }
+                histogram: { id: '', config: {}, data: null },
+                ridgelinePlot: { id: '', config: {}, data: null },
+                boxAndWhisker: { id: '', config: {}, data: null }
             },
             loading: false,
             bucketSize: 3,
@@ -83,14 +83,14 @@ class FirstLeafAnalysisPackage extends React.Component {
     toggleDropdown() {
         this.setState({
             isOpen: !this.state.isOpen,
-            glyph: !this.state.isOpen ? "menu-down" : "menu-right"
+            glyph: !this.state.isOpen ? 'menu-down' : 'menu-right'
         })
     }
 
     clearCharts() {
         let charts = {}
         for (let chart of Object.keys(this.state.charts)) {
-            charts[chart] = { id: "", config: {}, data: null }
+            charts[chart] = { id: '', config: {}, data: null }
         }
         this.setState({
             charts: charts,
@@ -174,7 +174,7 @@ class FirstLeafAnalysisPackage extends React.Component {
                         this.setState({
                             error: true,
                             loading: false
-                        });
+                        })
                     }
                 )
         }
@@ -217,7 +217,7 @@ class FirstLeafAnalysisPackage extends React.Component {
                         this.setState({
                             error: true,
                             loading: false
-                        });
+                        })
                     }
                 )
         }
@@ -235,44 +235,44 @@ class FirstLeafAnalysisPackage extends React.Component {
 
         for (let chart of Object.keys(this.state.charts)) {
 
-            if (chart.toString() === "histogram" && datas[chart]) {
+            if (chart.toString() === 'histogram' && datas[chart]) {
                 const data = datas[chart]
                 let firstYear = Object.keys(data)[0]
                 let lastYear = Object.keys(data)[Object.keys(data).length - 1]
-                const chartId = "FL_Histogram"
+                const chartId = 'FL_Histogram'
                 const chartConfig = {
                     margins: { left: 80, right: 20, top: 20, bottom: 70 },
                     chart: { title: `First Leaf Spring Index for ${this.props.feature.properties.feature_name}`, subtitle: `All Years for the Period ${firstYear} to ${lastYear}` },
-                    xAxis: { label: "Day of Year" },
-                    yAxis: { label: "Number of Grid Cells" }
+                    xAxis: { label: 'Day of Year' },
+                    yAxis: { label: 'Number of Grid Cells' }
                 }
                 charts[chart] = { id: chartId, config: chartConfig, data: data }
             }
-            else if (chart.toString() === "ridgelinePlot" && datas[chart]) {
+            else if (chart.toString() === 'ridgelinePlot' && datas[chart]) {
                 // To Do
                 const data = datas[chart]
                 let firstYear = Object.keys(data)[0]
                 let lastYear = Object.keys(data)[Object.keys(data).length - 1]
-                const chartId = "FL_RidgelinePlot"
+                const chartId = 'FL_RidgelinePlot'
                 const chartConfig = {
                     margins: { left: 80, right: 20, top: 35, bottom: 70 },
                     chart: { title: `First Leaf Spring Index for ${this.props.feature.properties.feature_name}`, subtitle: `By Year for the Period ${firstYear} to ${lastYear}` },
-                    xAxis: { label: "Day of Year" },
-                    yAxis: { label: "Year" }
+                    xAxis: { label: 'Day of Year' },
+                    yAxis: { label: 'Year' }
                 }
                 charts[chart] = { id: chartId, config: chartConfig, data: data }
             }
-            else if (chart.toString() === "boxAndWhisker" && datas[chart]) {
+            else if (chart.toString() === 'boxAndWhisker' && datas[chart]) {
 
                 const data = datas[chart]
                 let firstYear = Object.keys(data)[0]
                 let lastYear = Object.keys(data)[Object.keys(data).length - 1]
-                const chartId = "FL_BoxAndWhisker"
+                const chartId = 'FL_BoxAndWhisker'
                 const chartConfig = {
                     margins: { left: 80, right: 20, top: 20, bottom: 70 },
                     chart: { title: `First Leaf Spring Index for ${this.props.feature.properties.feature_name}`, subtitle: `All Years for the Period ${firstYear} to ${lastYear}` },
-                    xAxis: { label: "Year" },
-                    yAxis: { label: "Day of Year" }
+                    xAxis: { label: 'Year' },
+                    yAxis: { label: 'Day of Year' }
                 }
                 charts[chart] = { id: chartId, config: chartConfig, data: data }
             }
@@ -339,7 +339,7 @@ class FirstLeafAnalysisPackage extends React.Component {
                 <div className="chartsDiv" >
                     <div className="chart-headers" >
                         <button className="submit-analysis-btn" onClick={this.submitAnalysis}>Analyze Time Period: {this.props.yearMin} to  {this.props.yearMax}</button>
-                        <div className="bucket-size-div" style={{ display: this.state.charts.histogram.data ? "block" : "none" }}>
+                        <div className="bucket-size-div" style={{ display: this.state.charts.histogram.data ? 'block' : 'none' }}>
                             <span>Binwidth: {this.state.bucketSize}</span>
                             <input
                                 onChange={(e) => this.setBucketSize(e)}
@@ -358,7 +358,7 @@ class FirstLeafAnalysisPackage extends React.Component {
                             First Leaf Spring Index data was provided by the <a href="https://www.usanpn.org">USA National Phenology Network</a>, data retrieved {new Date().toDateString()}
                             <br></br>
                             <br></br>
-                            <a target={"_blank"} rel="noopener noreferrer" href={"https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&service=WMS&layers=average_leaf_prism"}>https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=average_leaf_prism</a>
+                            <a target={'_blank'} rel="noopener noreferrer" href={'https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&service=WMS&layers=average_leaf_prism'}>https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=average_leaf_prism</a>
                         </div>
                     </div>
                 </div>
@@ -369,7 +369,7 @@ class FirstLeafAnalysisPackage extends React.Component {
     render() {
         return (
             <div>
-                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
+                <BarLoader width={'100%'} color={'white'} loading={this.state.loading} />
                 {this.props.getBapContents(this.createUniqueBapContents)}
             </div>
 
@@ -377,5 +377,5 @@ class FirstLeafAnalysisPackage extends React.Component {
     }
 }
 
-const FirstLeafAnalysis = withSharedAnalysisCharacteristics(FirstLeafAnalysisPackage, layers, sb_properties, SB_URL);
-export default FirstLeafAnalysis;
+const FirstLeafAnalysis = withSharedAnalysisCharacteristics(FirstLeafAnalysisPackage, layers, sb_properties, SB_URL)
+export default FirstLeafAnalysis

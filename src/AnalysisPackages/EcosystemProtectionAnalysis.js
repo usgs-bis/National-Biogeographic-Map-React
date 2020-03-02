@@ -1,31 +1,31 @@
-import React from "react";
-import L from "leaflet"
-import { BarLoader } from "react-spinners"
-import { TiledMapLayer } from "esri-leaflet";
-import withSharedAnalysisCharacteristics from "./AnalysisPackage"
-import DonutChart from "../Charts/DonutChart";
-import TableChart from "../Charts/TableChart"
-import HorizontalBarChart from "../Charts/HorizontalBarChart";
-import "./AnalysisPackages.css";
-import ChartLegend from "../Charts/ChartLegend";
-import AppConfig from "../config";
+import React from 'react'
+import L from 'leaflet'
+import { BarLoader } from 'react-spinners'
+import { TiledMapLayer } from 'esri-leaflet'
+import withSharedAnalysisCharacteristics from './AnalysisPackage'
+import DonutChart from '../Charts/DonutChart'
+import TableChart from '../Charts/TableChart'
+import HorizontalBarChart from '../Charts/HorizontalBarChart'
+import './AnalysisPackages.css'
+import ChartLegend from '../Charts/ChartLegend'
+import AppConfig from '../config'
 
-const SB_URL = "https://www.sciencebase.gov/catalog/item/5b747802e4b0f5d5787ed299?format=json"
-const ECOSYSTEM_URL = AppConfig.REACT_APP_BIS_API + "/api/v1/gapmetrics/ecologicalsystems/protection?feature_id=";
+const SB_URL = 'https://www.sciencebase.gov/catalog/item/5b747802e4b0f5d5787ed299?format=json'
+const ECOSYSTEM_URL = AppConfig.REACT_APP_BIS_API + '/api/v1/gapmetrics/ecologicalsystems/protection?feature_id='
 
 let sb_properties = {
-    "title": "Protection Status of Ecological Systems"
+    'title': 'Protection Status of Ecological Systems'
 }
 
 const layers = [
     {
-        title: "PAD-US v1.4 GAP Status Code",
+        title: 'PAD-US v1.4 GAP Status Code',
         layer: new TiledMapLayer({
-            url: "https://gis1.usgs.gov/arcgis/rest/services/PADUS1_4/GAP_Status_Code/MapServer",
+            url: 'https://gis1.usgs.gov/arcgis/rest/services/PADUS1_4/GAP_Status_Code/MapServer',
             opacity: .5
         }),
         legend: {
-            arcgisUrl: "https://gis1.usgs.gov/arcgis/rest/services/PADUS1_4/GAP_Status_Code/MapServer/legend?f=pjson",
+            arcgisUrl: 'https://gis1.usgs.gov/arcgis/rest/services/PADUS1_4/GAP_Status_Code/MapServer/legend?f=pjson',
             layers: [0]
         },
         checked: false,
@@ -33,19 +33,19 @@ const layers = [
         sb_item: '56bba50ce4b08d617f657956'
     },
     {
-        title: "GAP Landcover 2011 Ecological System",
+        title: 'GAP Landcover 2011 Ecological System',
         layer: L.tileLayer.wms(
-            "https://www.sciencebase.gov/geoserver/nvcs/wms",
+            'https://www.sciencebase.gov/geoserver/nvcs/wms',
             {
-                format: "image/png",
+                format: 'image/png',
                 opacity: .5,
                 transparent: true,
-                layers: "ecological_system"
+                layers: 'ecological_system'
             }
         ),
         legend: {
-            imageUrl: "https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic" +
-                "&format=image%2Fpng&layer=ecological_system"
+            imageUrl: 'https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic' +
+                '&format=image%2Fpng&layer=ecological_system'
         },
         checked: false,
         sb_item: '58d1bb47e4b0236b68f6b8a7'
@@ -57,11 +57,11 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
         super(props)
         this.state = {
             charts: {
-                protectionStatus: { id: "", config: {}, data: null },
-                gap12: { id: "", config: {}, data: null },
-                gap123: { id: "", config: {}, data: null },
-                gapTable: { id: "", config: {}, data: null },
-                gapCoverage: { id: "", config: {}, data: null }
+                protectionStatus: { id: '', config: {}, data: null },
+                gap12: { id: '', config: {}, data: null },
+                gap123: { id: '', config: {}, data: null },
+                gapTable: { id: '', config: {}, data: null },
+                gapCoverage: { id: '', config: {}, data: null }
             },
             data: null,
             gapSelection: {
@@ -148,11 +148,11 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                     } else {
                         this.setState({
                             charts: {
-                                protectionStatus: { id: "", config: {}, data: null },
-                                gap12: { id: "", config: {}, data: null },
-                                gap123: { id: "", config: {}, data: null },
-                                gapTable: { id: "", config: {}, data: null },
-                                gapCoverage: { id: "", config: {}, data: null }
+                                protectionStatus: { id: '', config: {}, data: null },
+                                gap12: { id: '', config: {}, data: null },
+                                gap123: { id: '', config: {}, data: null },
+                                gapTable: { id: '', config: {}, data: null },
+                                gapCoverage: { id: '', config: {}, data: null }
                             },
                             submitted: true,
                         })
@@ -164,7 +164,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                     this.setState({
                         error: true,
                         loading: false
-                    });
+                    })
                 }
             )
     }
@@ -212,14 +212,14 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
     getCharts(data) {
 
         const numberWithCommas = (x) => {
-            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
         }
 
         let charts = {}
         let dataTemplate = {
             ecoregion_protection: [
                 {
-                    name: "CONUS",
+                    name: 'CONUS',
                     chart_data: []
                 },
                 {
@@ -249,20 +249,20 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
             let total = parseFloat(data.protection.CONUS.gapstat1ac)
                 + parseFloat(data.protection.CONUS.gapstat2ac)
                 + parseFloat(data.protection.CONUS.gapstat3ac)
-                + parseFloat(data.protection.CONUS.gapstat4ac);
+                + parseFloat(data.protection.CONUS.gapstat4ac)
             let temp = [
                 {
-                    id: "Status12",
+                    id: 'Status12',
                     value: numberWithCommas(parseInt(data.protection.CONUS.gapstat1ac + data.protection.CONUS.gapstat2ac)),
                     percent: ((data.protection.CONUS.gapstat1ac + data.protection.CONUS.gapstat2ac) / total) * 100
                 },
                 {
-                    id: "Status3",
+                    id: 'Status3',
                     value: numberWithCommas(parseInt(data.protection.CONUS.gapstat3ac)),
                     percent: (data.protection.CONUS.gapstat3ac / total) * 100
                 },
                 {
-                    id: "Status4",
+                    id: 'Status4',
                     value: numberWithCommas(parseInt(data.protection.CONUS.gapstat4ac)),
                     percent: (data.protection.CONUS.gapstat4ac / total) * 100
                 }
@@ -273,20 +273,20 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
             let total = parseFloat(data.protection[placeName].gapstat1ac)
                 + parseFloat(data.protection[placeName].gapstat2ac)
                 + parseFloat(data.protection[placeName].gapstat3ac)
-                + parseFloat(data.protection[placeName].gapstat4ac);
+                + parseFloat(data.protection[placeName].gapstat4ac)
             let temp = [
                 {
-                    id: "Status12",
+                    id: 'Status12',
                     value: numberWithCommas(parseInt(data.protection[placeName].gapstat1ac + data.protection[placeName].gapstat2ac)),
                     percent: ((data.protection[placeName].gapstat1ac + data.protection[placeName].gapstat2ac) / total) * 100
                 },
                 {
-                    id: "Status3",
+                    id: 'Status3',
                     value: numberWithCommas(parseInt(data.protection[placeName].gapstat3ac)),
                     percent: (data.protection[placeName].gapstat3ac / total) * 100
                 },
                 {
-                    id: "Status4",
+                    id: 'Status4',
                     value: numberWithCommas(parseInt(data.protection[placeName].gapstat4ac)),
                     percent: (data.protection[placeName].gapstat4ac / total) * 100
                 }
@@ -342,47 +342,47 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
         dataTemplate.ecosystem_coverage.sort((a, b) => { return a.percent > b.percent ? -1 : 1 })
 
         for (let chart of Object.keys(this.state.charts)) {
-            if (chart.toString() === "protectionStatus" && data) {
+            if (chart.toString() === 'protectionStatus' && data) {
 
-                const chartId = "EP_protectionStatus"
+                const chartId = 'EP_protectionStatus'
                 const chartConfig = {
                     height: 200,
                     width: 400,
                     margins: { left: 50 + (6 * this.props.feature.properties.feature_name.length), right: 20, top: 20, bottom: 100 },
-                    chart: { title: `Protection Status of ${this.props.feature.properties.feature_name} Compared to the Continental United States`, subtitle: `` },
-                    xAxis: { key: 'Percent', label: "", ticks: 5, tickFormat: (d) => { return `${parseInt(d)}%` } },
-                    yAxis: { key: 'name', label: "", ticks: 2, tickFormat: (d) => { return d } },
+                    chart: { title: `Protection Status of ${this.props.feature.properties.feature_name} Compared to the Continental United States`, subtitle: '' },
+                    xAxis: { key: 'Percent', label: '', ticks: 5, tickFormat: (d) => { return `${parseInt(d)}%` } },
+                    yAxis: { key: 'name', label: '', ticks: 2, tickFormat: (d) => { return d } },
                     tooltip: {
                         label: (d) => {
-                            let p = ""
-                            let v = ""
-                            let g = ""
+                            let p = ''
+                            let v = ''
+                            let g = ''
                             if (d && Math.abs(d[1] - d[0] - d.data['Gap Status 1 & 2']) < 0.01) {
-                                p = parseFloat(d.data['Gap Status 1 & 2']).toFixed(2).toString() + "%"
-                                v = d.data.status12_v + " acres"
-                                g = "Gap Status 1 & 2"
+                                p = parseFloat(d.data['Gap Status 1 & 2']).toFixed(2).toString() + '%'
+                                v = d.data.status12_v + ' acres'
+                                g = 'Gap Status 1 & 2'
                             }
                             else if (d && Math.abs(d[1] - d[0] - d.data['Gap Status 3']) < 0.01) {
-                                p = parseFloat(d.data['Gap Status 3']).toFixed(2).toString() + "%"
-                                v = d.data.status3_v + " acres"
-                                g = "Gap Status 3"
+                                p = parseFloat(d.data['Gap Status 3']).toFixed(2).toString() + '%'
+                                v = d.data.status3_v + ' acres'
+                                g = 'Gap Status 3'
                             }
                             else if (d && Math.abs(d[1] - d[0] - d.data['Gap Status 4']) < 0.01) {
-                                p = parseFloat(d.data['Gap Status 4']).toFixed(2).toString() + "%"
-                                v = d.data.status4_v + " acres"
-                                g = "Gap Status 4"
+                                p = parseFloat(d.data['Gap Status 4']).toFixed(2).toString() + '%'
+                                v = d.data.status4_v + ' acres'
+                                g = 'Gap Status 4'
                             }
                             return `<div"><div>${g}</div><div>${p}</div><div>${v}</div></div>`
                         },
                         color: (d) => {
                             if (d && d[1] - d[0] === d.data['Gap Status 1 & 2']) {
-                                return "rgb(90,143,41)"
+                                return 'rgb(90,143,41)'
                             }
                             else if (d && d[1] - d[0] === d.data['Gap Status 3']) {
-                                return "rgb(204,204,204)"
+                                return 'rgb(204,204,204)'
                             }
                             else if (d && d[1] - d[0] === d.data['Gap Status 4']) {
-                                return "rgb(66,66,67)"
+                                return 'rgb(66,66,67)'
                             }
                             return 'black'
                         }
@@ -412,15 +412,15 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                         'Gap Status 4': dataTemplate.ecoregion_protection[0].chart_data[2].percent
                     }
                 ]
-                chartData.columns = ["name", 'Gap Status 1 & 2', 'Gap Status 3', 'Gap Status 4']
+                chartData.columns = ['name', 'Gap Status 1 & 2', 'Gap Status 3', 'Gap Status 4']
                 charts[chart] = { id: chartId, config: chartConfig, data: chartData }
             }
-            else if (chart.toString() === "gap12" && data) {
-                const chartId = "EP_GAP12"
+            else if (chart.toString() === 'gap12' && data) {
+                const chartId = 'EP_GAP12'
                 const chartConfig = {
                     margins: { left: 0, right: 0, top: 0, bottom: 0 },
-                    chart: { title: `GAP Status 1 & 2`, subtitle: `` },
-                    tooltip: { data: { name: "", count: "Ecosystems" } },
+                    chart: { title: 'GAP Status 1 & 2', subtitle: '' },
+                    tooltip: { data: { name: '', count: 'Ecosystems' } },
                     width: 150,
                     height: 150,
                     innerRadius: .8,
@@ -430,12 +430,12 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                 const chartData = dataTemplate.gap1_2
                 charts[chart] = { id: chartId, config: chartConfig, data: chartData }
             }
-            else if (chart.toString() === "gap123" && data) {
-                const chartId = "EP_GAP123"
+            else if (chart.toString() === 'gap123' && data) {
+                const chartId = 'EP_GAP123'
                 const chartConfig = {
                     margins: { left: 0, right: 0, top: 0, bottom: 0 },
-                    chart: { title: `GAP Status 1, 2 & 3`, subtitle: `` },
-                    tooltip: { data: { name: "", count: "Ecosystems" } },
+                    chart: { title: 'GAP Status 1, 2 & 3', subtitle: '' },
+                    tooltip: { data: { name: '', count: 'Ecosystems' } },
                     width: 150,
                     height: 150,
                     innerRadius: .8,
@@ -445,12 +445,12 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                 const chartData = dataTemplate.gap1_2_3
                 charts[chart] = { id: chartId, config: chartConfig, data: chartData }
             }
-            else if (chart.toString() === "gapTable" && data) {
-                const chartId = "EP_GAPTABLE"
+            else if (chart.toString() === 'gapTable' && data) {
+                const chartId = 'EP_GAPTABLE'
                 let preData = dataTemplate.ecological_systems
-                let tableType = "All Ecological Systems"
+                let tableType = 'All Ecological Systems'
                 let chartTitle = `${tableType} in ${this.props.feature.properties.feature_name} (${preData.length})`
-                let chartData = [['Ecological System', `Gap 1 & 2 Protection (%)`, `Gap 1, 2 & 3 Protection (%)`]]
+                let chartData = [['Ecological System', 'Gap 1 & 2 Protection (%)', 'Gap 1, 2 & 3 Protection (%)']]
                 let percentProtected = ''
                 let acresProtected = ''
                 const gapSelection = this.state.gapSelection
@@ -482,17 +482,17 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                 }
                 const chartConfig = {
                     margins: { left: 20, right: 20, top: 20, bottom: 125 },
-                    chart: { title: chartTitle, subtitle: ``, color: gapSelection.color },
+                    chart: { title: chartTitle, subtitle: '', color: gapSelection.color },
                 }
                 charts[chart] = { id: chartId, config: chartConfig, data: chartData }
 
             }
-            if (chart.toString() === "gapCoverage" && data) {
-                const chartId = "EP_gapCoverage"
+            if (chart.toString() === 'gapCoverage' && data) {
+                const chartId = 'EP_gapCoverage'
                 const chartConfig = {
                     margins: { left: 75, right: 75, top: 80, bottom: 225 },
-                    chart: { title: `Percent Coverage by National Vegetation Classification Class`, subtitle: `` },
-                    tooltip: { data: { name: '', percent: "Percent" } },
+                    chart: { title: 'Percent Coverage by National Vegetation Classification Class', subtitle: '' },
+                    tooltip: { data: { name: '', percent: 'Percent' } },
                     legend: { rectSize: 12, spacing: 2, leftOffset: 1.3, verticalSpacing: 16, fontSize: '11px' },
                     lables: { fontSize: '8px' },
                     width: 200,
@@ -722,7 +722,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
     render() {
         return (
             <div>
-                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
+                <BarLoader width={'100%'} color={'white'} loading={this.state.loading} />
                 {this.props.getBapContents(this.createUniqueBapContents)}
             </div>
 
@@ -734,6 +734,6 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
 const EcosystemProtectionAnalysis = withSharedAnalysisCharacteristics(EcosystemProtectionAnalysisPackage,
     layers,
     sb_properties,
-    SB_URL);
+    SB_URL)
 
-export default EcosystemProtectionAnalysis;
+export default EcosystemProtectionAnalysis

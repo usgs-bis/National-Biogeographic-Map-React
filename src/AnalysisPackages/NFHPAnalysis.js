@@ -1,27 +1,27 @@
-import React from "react";
-import { DynamicMapLayer } from "esri-leaflet"
-import { BarLoader } from "react-spinners"
-import HorizontalBarChart from "../Charts/HorizontalBarChart";
-import "./AnalysisPackages.css";
-import withSharedAnalysisCharacteristics from "./AnalysisPackage"
-import AppConfig from "../config";
+import React from 'react'
+import { DynamicMapLayer } from 'esri-leaflet'
+import { BarLoader } from 'react-spinners'
+import HorizontalBarChart from '../Charts/HorizontalBarChart'
+import './AnalysisPackages.css'
+import withSharedAnalysisCharacteristics from './AnalysisPackage'
+import AppConfig from '../config'
 
-const SB_URL = "https://www.sciencebase.gov/catalog/item/5aa2b21ae4b0b1c392e9d968?format=json"
-const NFHP_URL = AppConfig.REACT_APP_BIS_API + "/api/v1/nfhpmetrics/condition?feature_id=";
+const SB_URL = 'https://www.sciencebase.gov/catalog/item/5aa2b21ae4b0b1c392e9d968?format=json'
+const NFHP_URL = AppConfig.REACT_APP_BIS_API + '/api/v1/nfhpmetrics/condition?feature_id='
 
 let sb_properties = {
-    "title": "Fish Habitat Condition and Disturbance Summaries"
+    'title': 'Fish Habitat Condition and Disturbance Summaries'
 }
 
 const layers = [
     {
-        title: "Risk to Fish Habitat Degradation",
+        title: 'Risk to Fish Habitat Degradation',
         layer: new DynamicMapLayer({
-            url: "https://gis1.usgs.gov/arcgis/rest/services/nfhp2015/HCI_Dissolved_NFHP2015_v20160907/MapServer",
+            url: 'https://gis1.usgs.gov/arcgis/rest/services/nfhp2015/HCI_Dissolved_NFHP2015_v20160907/MapServer',
             opacity: .5
         }),
         legend: {
-            arcgisUrl: "https://gis1.usgs.gov/arcgis/rest/services/nfhp2015/HCI_Dissolved_NFHP2015_v20160907/MapServer/legend?f=pjson",
+            arcgisUrl: 'https://gis1.usgs.gov/arcgis/rest/services/nfhp2015/HCI_Dissolved_NFHP2015_v20160907/MapServer/legend?f=pjson',
             layers: [0]
         },
         checked: false,
@@ -34,7 +34,7 @@ class NFHPAnalysisPackage extends React.Component {
         super(props)
         this.state = {
             charts: {
-                horizontalBarChart: { id: "", config: {}, data: null }
+                horizontalBarChart: { id: '', config: {}, data: null }
             },
             loading: false
         }
@@ -100,7 +100,7 @@ class NFHPAnalysisPackage extends React.Component {
                     } else {
                         this.setState({
                             charts: {
-                                horizontalBarChart: { id: "", config: {}, data: null }
+                                horizontalBarChart: { id: '', config: {}, data: null }
                             }
                         })
                         this.props.isEnabled(false)
@@ -111,7 +111,7 @@ class NFHPAnalysisPackage extends React.Component {
                     this.setState({
                         error: true,
                         loading: false
-                    });
+                    })
                 }
             )
     }
@@ -130,30 +130,30 @@ class NFHPAnalysisPackage extends React.Component {
             return parseFloat(((value / parseFloat(scoredKm)) * 100).toFixed(1))
         }
         const numberWithCommas = (x) => {
-            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
         }
 
         let charts = {}
 
         for (let chart of Object.keys(this.state.charts)) {
 
-            if (chart.toString() === "horizontalBarChart" && datas[chart]) {
+            if (chart.toString() === 'horizontalBarChart' && datas[chart]) {
 
                 const data = datas[chart]
-                const chartId = "NFHP_HorizontalBarChart"
+                const chartId = 'NFHP_HorizontalBarChart'
                 const chartConfig = {
                     margins: { left: 100, right: 20, top: 20, bottom: 70 },
                     chart: { title: `Risk to Fish Habitat Degradation ${this.props.feature.properties.feature_name}`, subtitle: `Fish habitat condition was scored on ${numberWithCommas(parseFloat(data.scored_km).toFixed(0))} of ${numberWithCommas((parseFloat(data.scored_km) + parseFloat(data.not_scored_km)).toFixed(0))}' NHDPlusV1 stream kilometers within ${data.place_name}` },
-                    xAxis: { key: 'Percent', label: "NFHP Scored Stream Kilometers [%]", ticks: 5, tickFormat: (d) => { return `${parseInt(d)}%` } },
-                    yAxis: { key: 'Risk', label: "Risk To Fish Habitat Degradation", ticks: 5, tickFormat: (d) => { return d } },
+                    xAxis: { key: 'Percent', label: 'NFHP Scored Stream Kilometers [%]', ticks: 5, tickFormat: (d) => { return `${parseInt(d)}%` } },
+                    yAxis: { key: 'Risk', label: 'Risk To Fish Habitat Degradation', ticks: 5, tickFormat: (d) => { return d } },
                     tooltip: { label: (d) => { return `<p>${d.Risk}: ${d.Percent}%</p>` } }
                 }
                 const chartData = [
-                    { "Risk": "Very high", "Percent": getPercent(data.veryhigh_km, data.scored_km), "color": "rgb(255,0,0)" },
-                    { "Risk": "High", "Percent": getPercent(data.high_km, data.scored_km), "color": "rgb(255,170,0)" },
-                    { "Risk": "Moderate", "Percent": getPercent(data.moderate_km, data.scored_km), "color": "rgb(163,255,115)" },
-                    { "Risk": "Low", "Percent": getPercent(data.low_km, data.scored_km), "color": "rgb(0,197,255)" },
-                    { "Risk": "Very low", "Percent": getPercent(data.verylow_km, data.scored_km), "color": "rgb(197,0,255)" }
+                    { 'Risk': 'Very high', 'Percent': getPercent(data.veryhigh_km, data.scored_km), 'color': 'rgb(255,0,0)' },
+                    { 'Risk': 'High', 'Percent': getPercent(data.high_km, data.scored_km), 'color': 'rgb(255,170,0)' },
+                    { 'Risk': 'Moderate', 'Percent': getPercent(data.moderate_km, data.scored_km), 'color': 'rgb(163,255,115)' },
+                    { 'Risk': 'Low', 'Percent': getPercent(data.low_km, data.scored_km), 'color': 'rgb(0,197,255)' },
+                    { 'Risk': 'Very low', 'Percent': getPercent(data.verylow_km, data.scored_km), 'color': 'rgb(197,0,255)' }
                 ]
                 chartData.reverse()
                 charts[chart] = { id: chartId, config: chartConfig, data: chartData }
@@ -200,7 +200,7 @@ class NFHPAnalysisPackage extends React.Component {
     render() {
         return (
             <div>
-                <BarLoader width={100} widthUnit={"%"} color={"white"} loading={this.state.loading} />
+                <BarLoader width={'100%'} color={'white'} loading={this.state.loading} />
                 {this.props.getBapContents(this.createUniqueBapContents)}
             </div>
 
@@ -209,6 +209,6 @@ class NFHPAnalysisPackage extends React.Component {
 }
 
 
-const NFHPAnalysis = withSharedAnalysisCharacteristics(NFHPAnalysisPackage, layers, sb_properties, SB_URL);
+const NFHPAnalysis = withSharedAnalysisCharacteristics(NFHPAnalysisPackage, layers, sb_properties, SB_URL)
 
-export default NFHPAnalysis;
+export default NFHPAnalysis
