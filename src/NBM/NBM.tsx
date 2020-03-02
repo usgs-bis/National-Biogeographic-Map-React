@@ -1,25 +1,23 @@
+/* import shp from 'shpjs' */
 import './NBM.css'
 import 'toasted-notes/src/styles.css'
 import AppConfig from '../config'
 import Control from 'react-leaflet-control'
+import Dialog from 'react-dialog'
 import InfoSign from '../InfoSign/InfoSign'
 import L, {LatLngBoundsExpression, Layer} from 'leaflet'
 import LocationOverlay from './LocationOverylays/LocationOverlay'
 import React, {FunctionComponent, useState, useEffect, useRef} from 'react'
 import TimeSlider from './TimeSlider/TimeSlider'
-import shp from 'shpjs'
+import {EditControl} from 'react-leaflet-draw'
 import {Glyphicon} from 'react-bootstrap'
 import {isEmpty} from 'lodash'
 
+// @ts-ignore
+import {Map, TileLayer, WMSTileLayer, Marker, Popup, GeoJSON, FeatureGroup, ZoomControl} from 'react-leaflet'
 // @Matt TODO: remove
 /* import toast from 'toasted-notes' */
 
-// @ts-ignore
-import Dialog from 'react-dialog'
-// @ts-ignore
-import {EditControl} from 'react-leaflet-draw'
-// @ts-ignore
-import {Map, TileLayer, WMSTileLayer, Marker, Popup, GeoJSON, FeatureGroup, ZoomControl} from 'react-leaflet'
 
 const DEV_MODE = AppConfig.REACT_APP_DEV
 
@@ -75,8 +73,8 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
   const [attributionOpen, setAttributionOpen] = useState(false)
   const [showUploadDialog, setShowUploadDialog] = useState(false)
   // @Matt TODO: do something with the uploading?
-  const [uploadError, setUploadError] = useState('')
-  const [uploading, setUploading] = useState(false)
+  /* const [uploadError, setUploadError] = useState('') */
+  /* const [uploading, setUploading] = useState(false) */
   const [oldOverlay, setOldOverlay] = useState<Layer>()
   const [bounds, setBounds] = useState<LatLngBoundsExpression>([[21, -134], [51, -63]])
   const [locationOverlay, setLocationOverlay] = useState()
@@ -134,6 +132,8 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
 
     setMap(map)
 
+  // @Matt TODO: need a better fix then ignore
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [map])
 
   useEffect(() => {
@@ -161,7 +161,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
       }
     }
     setOldLayers(currentLayers)
-  }, [props.analysisLayers, props.mapDisplayYear])
+  }, [props.analysisLayers, props.mapDisplayYear, oldLayers])
 
   useEffect(() => {
     console.log('overlay effect')
@@ -181,6 +181,9 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
       setPoint([center.lat, center.lng])
       props.parentClickHandler({latlng: {lat: center.lat, lng: center.lng}}, true)
     }
+
+  // @Matt TODO: need a better fix then ignore
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.feature])
 
   const handleClick = (e: any) => {
@@ -205,7 +208,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
   }
 
   // @Matt TODO: #next user drawn polygons still load the single data, need to disallow that
-  const handleLoadError = (e: any) => {
+  const handleLoadError = () => {
     let prevErr = layerError
     layerError = true
     // sometimes reduces the bounce on a hard refresh.
@@ -252,74 +255,74 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
     disableDragging()
   }
 
-  const uploadFile = (event: any) => {
-    const file = event.target.files[0]
-    if (file.size > 5000000) {
-      setUploadError('File size is greater than 5MB')
+  /* const uploadFile = (event: any) => { */
+  /*   const file = event.target.files[0] */
+  /*   if (file.size > 5000000) { */
+  /*     setUploadError('File size is greater than 5MB') */
 
-      return
-    }
+  /*     return */
+  /*   } */
 
-    setUploading(true)
+  /*   setUploading(true) */
 
-    try {
-      const fileNameArr = file.name.split('.')
-      const fileExt = fileNameArr[fileNameArr.length - 1]
-      if (fileExt === 'zip') {
-        parseShapefile(file)
-      } else if (fileExt === 'geojson' || fileExt === 'json') {
-        parseGeojsonFile(file)
-      } else {
-        setUploadError(`Uploads of files with the extension ${fileExt} are not supported.`)
-        setUploading(false)
-      }
-    } catch (ex) {
-      setUploadError('File read failure: ' + ex.message)
-      setUploading(false)
-    }
-    event.target.value = '' // make sure the user can upload the same file again
-  }
+  /*   try { */
+  /*     const fileNameArr = file.name.split('.') */
+  /*     const fileExt = fileNameArr[fileNameArr.length - 1] */
+  /*     if (fileExt === 'zip') { */
+  /*       parseShapefile(file) */
+  /*     } else if (fileExt === 'geojson' || fileExt === 'json') { */
+  /*       parseGeojsonFile(file) */
+  /*     } else { */
+  /*       setUploadError(`Uploads of files with the extension ${fileExt} are not supported.`) */
+  /*       setUploading(false) */
+  /*     } */
+  /*   } catch (ex) { */
+  /*     setUploadError('File read failure: ' + ex.message) */
+  /*     setUploading(false) */
+  /*   } */
+  /*   event.target.value = '' // make sure the user can upload the same file again */
+  /* } */
 
-  const parseShapefile = (file: Blob) => {
-    const fileReader = new FileReader()
-    fileReader.onload = () => {
-      shp(fileReader.result as string)
-        .then((geojson: any) => {
-          handleGeojson(geojson)
-        })
-        .catch((ex: any) => {
-          setUploadError('Shapefile parse issue: ' + ex.message)
-          setUploading(false)
-        })
-    }
-    fileReader.readAsArrayBuffer(file)
-  }
+  /* const parseShapefile = (file: Blob) => { */
+  /*   const fileReader = new FileReader() */
+  /*   fileReader.onload = () => { */
+  /*     shp(fileReader.result as string) */
+  /*       .then((geojson: any) => { */
+  /*         handleGeojson(geojson) */
+  /*       }) */
+  /*       .catch((ex: any) => { */
+  /*         setUploadError('Shapefile parse issue: ' + ex.message) */
+  /*         setUploading(false) */
+  /*       }) */
+  /*   } */
+  /*   fileReader.readAsArrayBuffer(file) */
+  /* } */
 
-  const parseGeojsonFile = (file: Blob) => {
-    const fileReader = new FileReader()
-    fileReader.onload = (event) => {
-      const result = event?.target?.result as string
-      const geojson = JSON.parse(result)
-      handleGeojson(geojson)
-    }
-    fileReader.readAsText(file)
-  }
+  /* const parseGeojsonFile = (file: Blob) => { */
+  /*   const fileReader = new FileReader() */
+  /*   fileReader.onload = (event) => { */
+  /*     const result = event?.target?.result as string */
+  /*     const geojson = JSON.parse(result) */
+  /*     handleGeojson(geojson) */
+  /*   } */
+  /*   fileReader.readAsText(file) */
+  /* } */
 
-  const handleGeojson = (geojson: any) => {
-    const geometry = geojson.type === 'FeatureCollection' ? geojson = geojson.features[0].geometry : geojson.geometry
-    geometry.crs = {type: 'name', properties: {name: 'EPSG:4326'}}
-    if (geometry.type !== 'Polygon' && geometry.type !== 'MultiPolygon') {
-      setUploadError('Only Polygons are accepted for upload.')
-      setUploading(false)
-      return
-    }
-    handleClose()
-    userDrawnPolygonStart()
-    const layer = L.geoJSON(geojson)
-    map?.current?.leafletElement.fitBounds(layer.getBounds())
-    enableDragging()
-    props.parentDrawHandler(geometry)
-  }
+  /* const handleGeojson = (geojson: any) => { */
+  /*   const geometry = geojson.type === 'FeatureCollection' ? geojson = geojson.features[0].geometry : geojson.geometry */
+  /*   geometry.crs = {type: 'name', properties: {name: 'EPSG:4326'}} */
+  /*   if (geometry.type !== 'Polygon' && geometry.type !== 'MultiPolygon') { */
+  /*     setUploadError('Only Polygons are accepted for upload.') */
+  /*     setUploading(false) */
+  /*     return */
+  /*   } */
+  /*   handleClose() */
+  /*   userDrawnPolygonStart() */
+  /*   const layer = L.geoJSON(geojson) */
+  /*   map?.current?.leafletElement.fitBounds(layer.getBounds()) */
+  /*   enableDragging() */
+  /*   props.parentDrawHandler(geometry) */
+  /* } */
 
   const handleShow = () => {
     setShowUploadDialog(true)
@@ -327,8 +330,8 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
 
   const handleClose = () => {
     setShowUploadDialog(false)
-    setUploadError('')
-    setUploading(false)
+    /* setUploadError('') */
+    /* setUploading(false) */
   }
 
   const geojson = () => {
@@ -421,8 +424,8 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
             onClick={handleClick}
             bounds={bounds}
             onLayerAdd={(event: any) => {
-              event.layer.on('tileerror', (err: any) => {
-                handleLoadError(err)
+              event.layer.on('tileerror', () => {
+                handleLoadError()
               })
             }}
             onLayerRemove={() => {
