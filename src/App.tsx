@@ -16,8 +16,8 @@ import nvcsBioscape from './Bioscapes/terrestrial-ecosystems-2011.json'
 import packageJson from '../package.json'
 import states from './states.json'
 import {isEmpty} from 'lodash'
+import BasemapContext from './Contexts/BasemapContext'
 
-// @Matt TODO: #next fix the fetch cors stuff
 // @Matt TODO: implement eslint
 export interface IBioscapeProps {
   biogeography: any
@@ -61,6 +61,8 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
     console.log(errorState)
   }, [errorState])
 
+  const [basemap, setBasemap] = useState(null)
+
   const [state, setState] = useState(() => {
 
     const s = {
@@ -75,7 +77,6 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
       analysisLayers: [] as any[],
       priorityBap: null,
       clickDrivenEvent: false,
-      basemap: '',
       lat: 0,
       lng: 0,
       elv: 0,
@@ -89,7 +90,9 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
 
     if (split.length === 2 && split[1]) {
       initState = JSON.parse(atob(split[1]))
-      s.basemap = initState.basemap
+
+      setBasemap(initState.basemap)
+
       s.rangeYearMin = initState.timeSlider.rangeYearMin
       s.rangeYearMax = initState.timeSlider.rangeYearMax
       s.mapDisplayYear = initState.timeSlider.mapDisplayYear
@@ -105,7 +108,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
 
   const parseBioscape = () => {
 
-    let basemap = state.basemap ? state.basemap : state.bioscape.basemaps.find((obj: any) => {
+    const bm = basemap || state.bioscape.basemaps.find((obj: any) => {
       return obj.selected === true
     })
 
@@ -122,8 +125,8 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
       overlay = state.bioscape.overlays.find((obj: any) => obj.selected === true)
     }
 
+    setBasemap(bm)
     setState((prev) => Object.assign({}, prev, {
-      basemap: basemap,
       overlay: overlay,
     }))
 
@@ -157,7 +160,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
   const getHash = () => {
     shareStateBeforeHash = {
       feature: {feature_id: state.feature.properties.feature_id},
-      basemap: state.basemap,
+      basemap,
       timeSlider: {rangeYearMin: state.rangeYearMin, rangeYearMax: state.rangeYearMax, mapDisplayYear: state.mapDisplayYear},
       priorityBap: state.priorityBap,
       baps: shareStateBeforeHash ? shareStateBeforeHash.baps : initState ? initState.baps : {},
@@ -191,10 +194,6 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
         getHash()
       }
     }
-  }
-
-  const basemapChanged = (e: any) => {
-    setState((prev) => Object.assign({}, prev, {basemap: e }))
   }
 
   /* const overlayChanged = (e: any) => { */
@@ -633,6 +632,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
       <Header title={state.bioscape.title} description={state.bioscape.description} />
       <AlertBox />
       <div id="content-area">
+      <BasemapContext.Provider value={[basemap, setBasemap]} >
         <Resizable
           className="panel-area"
           enable={{top: false, right: true, bottom: false, left: false, topRight: false, bottomRight: false, bottomLeft: false, topLeft: false}}
@@ -644,7 +644,6 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
           }}
         >
           <LeftPanel
-            basemapChanged={basemapChanged}
             bioscape={state.bioscape}
             results={state.results}
             textSearchHandler={handleSearchBox}
@@ -669,7 +668,6 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
         <div id="map-area">
           <NBM
             className="relative-map"
-            basemap={state.basemap}
             overlay={state.overlay}
             feature={state.feature}
             parentClickHandler={handleMapClick}
@@ -689,6 +687,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
             initPoint={(initState || {}).point}
           />
         </div>
+      </BasemapContext.Provider>
       </div>
       <Footer />
     </div>

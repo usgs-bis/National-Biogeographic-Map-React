@@ -1,12 +1,13 @@
 import './SearchBar.css'
 import CustomToolTip from '../ToolTip/ToolTip'
 import Legend from '../Legend/Legend'
-import React, { FunctionComponent, useState, useEffect } from 'react'
+import React, { FunctionComponent, useState, useEffect, useContext } from 'react'
 import speechBubble from './bubble.png'
 import {Button, ButtonGroup} from 'reactstrap'
 import {Collapse, CardBody, Card} from 'reactstrap'
 import {Glyphicon} from 'react-bootstrap'
 import {RadioGroup} from '../CustomRadio/CustomRadio'
+import BasemapContext from '../Contexts/BasemapContext'
 
 
 export interface ISearchBarProps {
@@ -23,7 +24,10 @@ export interface ISearchBarProps {
   results: any[]
 }
 
-const SearchBar: FunctionComponent<ISearchBarProps> = ( { initBaps, point, mapClicked, textSearchHandler, enabledLayers, submitHandler, bioscape, results }) => {
+const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
+  const { initBaps, point, mapClicked, textSearchHandler, enabledLayers, submitHandler, bioscape, results } = props
+
+  const setBasemap = useContext(BasemapContext)[1]
 
   const [focused, setFocused] = useState(false)
   const [layersDropdownOpen, setLayersDropdownOpen] = useState(false)
@@ -74,11 +78,10 @@ const SearchBar: FunctionComponent<ISearchBarProps> = ( { initBaps, point, mapCl
     setLayersDropdownOpen(!layersDropdownOpen)
   }
 
-  // @Matt TODO: check if we need this anymore, seems like an infinite loop
-  const basemapChanged = () => {
+  const basemapChanged = (e: any) => {
     // Fixes bug in FF where search bar gains focus
-    /* setFocused(false) */
-    /* basemapChanged(e) */
+    setFocused(false)
+    setBasemap(e)
   }
 
   return (
