@@ -8,7 +8,7 @@ import Header from './Header/Header'
 import L from 'leaflet'
 import LeftPanel from './LeftPanel/LeftPanel'
 import NBM from './NBM/NBM'
-import React, {FunctionComponent, useState, useEffect} from 'react'
+import React, {FunctionComponent, useState, useEffect, useRef} from 'react'
 import Resizable from 're-resizable'
 import cloneLayer from 'leaflet-clonelayer'
 import nbmBioscape from './Bioscapes/biogeography.json'
@@ -33,6 +33,24 @@ export interface IFeature {
   geometry: boolean
 }
 
+export interface IShareState {
+  feature: { feature_id: string }
+  basemap: any
+  timeSlider: {
+    rangeYearMin: number
+    rangeYearMax: number
+    mapDisplayYear: number
+  }
+  priorityBap: null | string
+  baps: any
+  point: {
+    lat: number
+    lng: number
+    elv?: number
+  }
+  userDefined?: { geom: any }
+}
+
 const ELEVATION_SOURCE = 'https://nationalmap.gov/epqs/pqs.php?'
 const GET_FEATURE_API = AppConfig.REACT_APP_BIS_API + '/api/v1/places/search/feature?feature_id='
 const NVCS_FEATURE_LOOKUP = ['Landscape Conservation Cooperatives', 'US County', 'Ecoregion III', 'US States and Territories']
@@ -53,7 +71,7 @@ const numberWithCommas = (x: number) => {
 const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }) => {
 
   let initState: any = null
-  let shareStateBeforeHash: any = null
+  let shareStateBeforeHash = useRef<null | IShareState>(null)
 
   // @Matt TODO: do something with the errorState
   const [errorState, setErrorState] = useState(null)
@@ -155,18 +173,18 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
   })
 
   const getHash = () => {
-    shareStateBeforeHash = {
+    shareStateBeforeHash.current = {
       feature: {feature_id: state.feature.properties.feature_id},
       basemap: state.basemap,
       timeSlider: {rangeYearMin: state.rangeYearMin, rangeYearMax: state.rangeYearMax, mapDisplayYear: state.mapDisplayYear},
       priorityBap: state.priorityBap,
-      baps: shareStateBeforeHash ? shareStateBeforeHash.baps : initState ? initState.baps : {},
+      baps: shareStateBeforeHash.current ? shareStateBeforeHash.current.baps : initState ? initState.baps : {},
       point: {lat: state.lat, lng: state.lng, elv: state.elv}
     }
     if (state.feature.properties.userDefined) {
-      shareStateBeforeHash.userDefined = {geom: state.feature.geometry}
+      shareStateBeforeHash.current.userDefined = {geom: state.feature.geometry}
     }
-    window.location.hash = Buffer.from(JSON.stringify(shareStateBeforeHash)).toString('base64')
+    window.location.hash = Buffer.from(JSON.stringify(shareStateBeforeHash.current)).toString('base64')
   }
 
   // @Matt TODO: double check this
@@ -185,8 +203,8 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
   }
 
   const setBapState = (bapId: string, bapState: any) => {
-    if (shareStateBeforeHash && shareStateBeforeHash.baps) {
-      shareStateBeforeHash.baps[bapId] = bapState
+    if (shareStateBeforeHash.current && shareStateBeforeHash.current.baps) {
+      shareStateBeforeHash.current.baps[bapId] = bapState
       if (!isEmpty(state.feature)) {
         getHash()
       }
