@@ -33,7 +33,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
 
   const HOC: React.FunctionComponent<IAnalysisPackageProps> = (props: IAnalysisPackageProps) => {
     const [sbProperties, setSbProperties] = useState(sb_properties)
-    const [error, setError] = useState({})
+    const [error, setError] = useState()
     const [layers, setLayers] = useState(layers_init)
     const [isOpen, setIsOpen] = useState(props.priorityBap === props.bapId)
     const [canOpen, setCanOpen] = useState(false)

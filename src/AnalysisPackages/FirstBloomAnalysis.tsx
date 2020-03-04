@@ -62,12 +62,14 @@ export interface IFirstBloomAnalysisPackageCharts {
     boxAndWhisker: IChart
 }
 
+const EMPTY_CHARTS = {
+  histogram: { id: '', config: {}, data: null },
+  ridgelinePlot: { id: '', config: {}, data: null },
+  boxAndWhisker: { id: '', config: {}, data: null }
+}
+
 const FirstBloomAnalysisPackage: FunctionComponent<any> = (props: IFirstBloomAnalysisPackageProps, ref) => {
-  const [charts, setCharts] = useState<IFirstBloomAnalysisPackageCharts>({
-    histogram: { id: '', config: {}, data: null },
-    ridgelinePlot: { id: '', config: {}, data: null },
-    boxAndWhisker: { id: '', config: {}, data: null }
-  })
+  const [charts, setCharts] = useState<IFirstBloomAnalysisPackageCharts>(EMPTY_CHARTS)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
   const [bucketSize, setBucketSize] = useState(3)
@@ -76,6 +78,7 @@ const FirstBloomAnalysisPackage: FunctionComponent<any> = (props: IFirstBloomAna
   const HistogramChartRef: any = useRef(null)
   const RidgelinePlotChartRef: any = useRef(null)
   const BoxAndWhiskerChartRef: any = useRef(null)
+  const featureRef = useRef(props.feature)
 
   useImperativeHandle(ref, () => ({
     print: print
@@ -89,7 +92,6 @@ const FirstBloomAnalysisPackage: FunctionComponent<any> = (props: IFirstBloomAna
       setBucketSize(props.initBap.bucketSize)
       setDidSubmit(props.initBap.didSubmit)
       if (props.initBap.didSubmit) {
-        console.log('set timeout')
         setTimeout(submitAnalysis, 3000)
       }
     }
@@ -97,7 +99,6 @@ const FirstBloomAnalysisPackage: FunctionComponent<any> = (props: IFirstBloomAna
   }, [])
 
   useEffect(() => {
-    console.log('firstBloomAnalysis componentDidUpdate')
     props.setShareState({
       bucketSize: bucketSize,
       didSubmit: didSubmit
@@ -107,6 +108,7 @@ const FirstBloomAnalysisPackage: FunctionComponent<any> = (props: IFirstBloomAna
   useEffect(() => {
     clearCharts()
     featureChange()
+    featureRef.current = props.feature
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.feature])
 
@@ -118,11 +120,9 @@ const FirstBloomAnalysisPackage: FunctionComponent<any> = (props: IFirstBloomAna
       } else if (props.feature.properties.userDefined) {
         props.isEnabled(true)
         props.canOpen(true)
-        // setCanSubmit(true)
       } else {
         props.isEnabled(true)
         props.canOpen(true)
-        // setCanSubmit(true)
       }
     } else {
       props.canOpen(false)
@@ -131,17 +131,18 @@ const FirstBloomAnalysisPackage: FunctionComponent<any> = (props: IFirstBloomAna
   }
 
   const submitAnalysis = () => {
-    if (props.feature && !props.feature.properties.userDefined) {
+    const feature = featureRef.current
+    if (feature && !feature.properties.userDefined) {
       setLoading(true)
       setError(false)
       clearCharts()
-      fetch(FIRSTBLOOM_URL + `?year_min=${props.yearMin}&year_max=${props.yearMax}&feature_id=${props.feature.properties.feature_id}&token=${PUBLIC_TOKEN}`)
+      fetch(FIRSTBLOOM_URL + `?year_min=${props.yearMin}&year_max=${props.yearMax}&feature_id=${feature.properties.feature_id}&token=${PUBLIC_TOKEN}`)
         .then(res => res.json())
         .then(
           (result) => {
             if (result) {
               props.setBapJson(result)
-              const charts = getCharts({ histogram: result, ridgelinePlot: result, boxAndWhisker: result })
+              const charts = getCharts({ histogram: result, ridgelinePlot: result, boxAndWhisker: result }, feature.properties.feature_name)
               setCharts(charts)
               setLoading(false)
               setDidSubmit(true)
@@ -158,7 +159,7 @@ const FirstBloomAnalysisPackage: FunctionComponent<any> = (props: IFirstBloomAna
             setError(true)
           }
         )
-    } else if (props.feature) {
+    } else if (feature) {
       setLoading(true)
       setError(false)
       clearCharts()
@@ -166,7 +167,7 @@ const FirstBloomAnalysisPackage: FunctionComponent<any> = (props: IFirstBloomAna
         headers: new Headers({ 'Content-Type': 'application/json' }),
         method: 'post',
         body: JSON.stringify({
-          geojson: props.feature.geometry
+          geojson: feature.geometry
         })
       }
       fetch(FIRSTBLOOM_POLY_URL + `?year_min=${props.yearMin}&year_max=${props.yearMax}&token=${PUBLIC_TOKEN}`, request)
@@ -175,7 +176,7 @@ const FirstBloomAnalysisPackage: FunctionComponent<any> = (props: IFirstBloomAna
           (result) => {
             if (result) {
               props.setBapJson(result)
-              const charts = getCharts({ histogram: result, ridgelinePlot: result, boxAndWhisker: result })
+              const charts = getCharts({ histogram: result, ridgelinePlot: result, boxAndWhisker: result }, feature.properties.feature_name)
               setCharts(charts)
               setLoading(false)
               setDidSubmit(true)
@@ -196,13 +197,7 @@ const FirstBloomAnalysisPackage: FunctionComponent<any> = (props: IFirstBloomAna
   }
 
   const clearCharts = () => {
-    console.log('clearCharts??')
-    let newCharts: any = {}
-    for (let chart of Object.keys(charts)) {
-      newCharts[chart] = { id: '', config: {}, data: null }
-    }
-    setCharts(newCharts)
-    // setCanSubmit(false)
+    setCharts(EMPTY_CHARTS)
     setDidSubmit(false)
   }
 
@@ -211,7 +206,7 @@ const FirstBloomAnalysisPackage: FunctionComponent<any> = (props: IFirstBloomAna
    * Create the chart id, data, and config as documented in the chart type.
    * @param {Object {}} datas - one enrty for each chart named the same as defined in the state
    */
-  const getCharts = (datas: any): IFirstBloomAnalysisPackageCharts => {
+  const getCharts = (datas: any, featureName: string): IFirstBloomAnalysisPackageCharts => {
 
     let newCharts = {
       histogram: { id: '', config: {}, data: null },
@@ -227,7 +222,7 @@ const FirstBloomAnalysisPackage: FunctionComponent<any> = (props: IFirstBloomAna
       const chartConfig = {
           margins: { left: 80, right: 20, top: 20, bottom: 70 },
           chart: {
-          title: `First Bloom Spring Index for ${props.feature.properties.feature_name}`,
+          title: `First Bloom Spring Index for ${featureName}`,
           subtitle: `All Years for the Period ${firstYear} to ${lastYear}`
           },
           xAxis: { label: 'Day of Year' },
@@ -245,7 +240,7 @@ const FirstBloomAnalysisPackage: FunctionComponent<any> = (props: IFirstBloomAna
       const chartConfig = {
         margins: { left: 80, right: 20, top: 35, bottom: 70 },
         chart: {
-          title: `First Bloom Spring Index for ${props.feature.properties.feature_name}`,
+          title: `First Bloom Spring Index for ${featureName}`,
           subtitle: `By Year for the Period ${firstYear} to ${lastYear}`
         },
         xAxis: { label: 'Day of Year' },
@@ -263,7 +258,7 @@ const FirstBloomAnalysisPackage: FunctionComponent<any> = (props: IFirstBloomAna
       const chartConfig = {
         margins: { left: 80, right: 20, top: 20, bottom: 70 },
         chart: {
-          title: `First Bloom Spring Index for ${props.feature.properties.feature_name}`,
+          title: `First Bloom Spring Index for ${featureName}`,
           subtitle: `All Years for the Period ${firstYear} to ${lastYear}`
         },
         xAxis: { label: 'Year' },
