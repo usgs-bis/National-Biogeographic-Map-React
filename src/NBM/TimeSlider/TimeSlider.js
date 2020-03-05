@@ -33,7 +33,7 @@ class TimeSlider extends React.Component {
     }
     this.setIntermittentYearRange = this.setIntermittentYearRange.bind(this)
     this.setIntermittentMapDisplayYear = this.setIntermittentMapDisplayYear.bind(this)
-    this.initHandelPos = this.initHandelPos.bind(this)
+    this.initHandlePos = this.initHandlePos.bind(this)
     this.playTimeSlider = this.playTimeSlider.bind(this)
     this.playCycle = this.playCycle.bind(this)
     this.dragElement = this.dragElement.bind(this)
@@ -51,26 +51,26 @@ class TimeSlider extends React.Component {
     // looking for a better way
     for (let i = 1; i < 6; i++) {
       setTimeout(() => {
-        this.initHandelPos()
+        this.initHandlePos()
       }, 1500 * i)
     }
-    window.addEventListener('resize', this.initHandelPos)
-    this.dragElement(document.getElementById('leftHandelOutputGlyph'))
-    this.dragElement(document.getElementById('rightHandelOutputGlyph'))
-    this.dragElement(document.getElementById('middleHandelOutputGlyph'))
+    window.addEventListener('resize', this.initHandlePos)
+    this.dragElement(document.getElementById('leftHandleOutputGlyph'))
+    this.dragElement(document.getElementById('rightHandleOutputGlyph'))
+    this.dragElement(document.getElementById('middleHandleOutputGlyph'))
 
 
   }
 
   componentWillUnmount() {
-    window.removeEventListener('resize', this.initHandelPos)
+    window.removeEventListener('resize', this.initHandlePos)
   }
 
   componentDidUpdate() {
 
     if (document.getElementById('rangeSliderContainer').clientWidth !== this.sliderSize) {
       this.sliderSize = document.getElementById('rangeSliderContainer').clientWidth
-      this.initHandelPos()
+      this.initHandlePos()
     }
     // Per usability - hide slider if N/A
     if (!enableLookup[this.props.priorityBap]) {
@@ -89,8 +89,8 @@ class TimeSlider extends React.Component {
   }
 
   setIntermittentYearRange() {
-    let l = document.getElementById('leftHandelOutputGlyph').offsetLeft
-    let r = document.getElementById('rightHandelOutputGlyph').offsetLeft
+    let l = document.getElementById('leftHandleOutputGlyph').offsetLeft
+    let r = document.getElementById('rightHandleOutputGlyph').offsetLeft
 
     let leftpos = l >= r ? r : l
     let rightpos = r > l ? r : l
@@ -101,11 +101,11 @@ class TimeSlider extends React.Component {
     let leftYear = this.minSliderValue + parseInt((this.maxSliderValue - this.minSliderValue) * leftWidthRatio)
     let rightYear = this.minSliderValue + parseInt((this.maxSliderValue - this.minSliderValue) * rightWidthRatio)
 
-    document.getElementById('leftHandelOutput').style.left = (leftpos - 12) + 'px'
-    document.getElementById('leftHandelOutputText').innerHTML = leftYear
+    document.getElementById('leftHandleOutput').style.left = (leftpos - 12) + 'px'
+    document.getElementById('leftHandleOutputText').innerHTML = leftYear
 
-    document.getElementById('rightHandelOutput').style.left = (rightpos - 12) + 'px'
-    document.getElementById('rightHandelOutputText').innerHTML = rightYear
+    document.getElementById('rightHandleOutput').style.left = (rightpos - 12) + 'px'
+    document.getElementById('rightHandleOutputText').innerHTML = rightYear
 
     document.getElementById('sliderRangeFill').style.left = leftpos + 'px'
     document.getElementById('sliderRangeFill').style.width = (rightpos - leftpos) + 'px'
@@ -120,13 +120,13 @@ class TimeSlider extends React.Component {
 
   setIntermittentMapDisplayYear() {
 
-    let pos = document.getElementById('middleHandelOutputGlyph').offsetLeft
+    let pos = document.getElementById('middleHandleOutputGlyph').offsetLeft
     let widthRatio = pos / this.sliderSize
 
     let year = this.minSliderValue + parseInt((this.maxSliderValue - this.minSliderValue) * widthRatio)
 
-    document.getElementById('middleHandelOutput').style.left = (pos - 48) + 'px'
-    document.getElementById('middleHandelOutputText').innerHTML = 'Map Display: ' + year
+    document.getElementById('middleHandleOutput').style.left = (pos - 48) + 'px'
+    document.getElementById('middleHandleOutputText').innerHTML = 'Map Display: ' + year
     if (this.state.mapDisplayYear !== year) {
       this.setState({
         mapDisplayYear: year
@@ -134,22 +134,22 @@ class TimeSlider extends React.Component {
     }
   }
 
-  initHandelPos() {
+  initHandlePos() {
     if (!document.getElementById('rangeSliderContainer')) { return }
 
     this.sliderSize = document.getElementById('rangeSliderContainer').clientWidth
     // init middle
     let left = ((this.state.mapDisplayYear - this.minSliderValue) / (this.maxSliderValue - this.minSliderValue)) * this.sliderSize
-    document.getElementById('middleHandelOutputGlyph').style.left = (left + 5) + 'px'
+    document.getElementById('middleHandleOutputGlyph').style.left = (left + 5) + 'px'
 
     // init left 
     left = ((this.state.rangeYearMin - this.minSliderValue) / (this.maxSliderValue - this.minSliderValue)) * this.sliderSize
-    document.getElementById('leftHandelOutputGlyph').style.left = (left + 5) + 'px'
+    document.getElementById('leftHandleOutputGlyph').style.left = (left + 5) + 'px'
 
     // init right
     left = ((this.state.rangeYearMax - this.minSliderValue) / (this.maxSliderValue - this.minSliderValue)) * this.sliderSize
     if (left >= this.sliderSize) left = this.sliderSize
-    document.getElementById('rightHandelOutputGlyph').style.left = (left + 5) + 'px'
+    document.getElementById('rightHandleOutputGlyph').style.left = (left + 5) + 'px'
 
     this.setIntermittentMapDisplayYear()
     this.setIntermittentYearRange()
@@ -173,7 +173,7 @@ class TimeSlider extends React.Component {
           this.setState({
             mapDisplayYear: this.minSliderValue
           }, () => {
-            this.initHandelPos()
+            this.initHandlePos()
             this.props.setMapDisplayYearFade(this.state.mapDisplayYear)
           })
         }
@@ -181,7 +181,7 @@ class TimeSlider extends React.Component {
           this.setState({
             mapDisplayYear: this.state.mapDisplayYear + 1
           }, () => {
-            this.initHandelPos()
+            this.initHandlePos()
             this.props.setMapDisplayYearFade(this.state.mapDisplayYear)
           })
         }
@@ -230,7 +230,7 @@ class TimeSlider extends React.Component {
       /* stop moving when mouse button is released:*/
       document.onmouseup = null
       document.onmousemove = null
-      if (elmnt.id.toString() === 'middleHandelOutputGlyph') {
+      if (elmnt.id.toString() === 'middleHandleOutputGlyph') {
         that.props.setMapDisplayYear(that.state.mapDisplayYear)
       }
       else {
@@ -251,22 +251,22 @@ class TimeSlider extends React.Component {
           <span id="rangeSliderContainer" className="range-slider-container">
             <span id="sliderRangeFill" className="slider-range-fill"></span>
 
-            <span id="leftHandelOutput" className="range-handle" >
-              <span id="leftHandelOutputText"></span>
+            <span id="leftHandleOutput" className="range-handle" >
+              <span id="leftHandleOutputText"></span>
             </span>
-            <Glyphicon id="leftHandelOutputGlyph" className="edge-glyph-tag inner-glyph" glyph="tag" />
+            <Glyphicon id="leftHandleOutputGlyph" className="edge-glyph-tag inner-glyph" glyph="tag" />
 
-            <span id="middleHandelOutput" className="range-handle handel-overlap" >
-              <span id="middleHandelOutputText"></span>
+            <span id="middleHandleOutput" className="range-handle handle-overlap" >
+              <span id="middleHandleOutputText"></span>
             </span>
             <span></span>
-            <Glyphicon id="middleHandelOutputGlyph" className="center-glyph-tag inner-glyph" glyph="tag" />
+            <Glyphicon id="middleHandleOutputGlyph" className="center-glyph-tag inner-glyph" glyph="tag" />
 
 
-            <span id="rightHandelOutput" className="range-handle" >
-              <span id="rightHandelOutputText"></span>
+            <span id="rightHandleOutput" className="range-handle" >
+              <span id="rightHandleOutputText"></span>
             </span>
-            <Glyphicon id="rightHandelOutputGlyph" className="edge-glyph-tag inner-glyph" glyph="tag" />
+            <Glyphicon id="rightHandleOutputGlyph" className="edge-glyph-tag inner-glyph" glyph="tag" />
 
           </span>
 

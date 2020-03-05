@@ -11,7 +11,7 @@ import BasemapContext from '../Contexts/BasemapContext'
 
 
 export interface ISearchBarProps {
-  initBaps: boolean
+  initBaps: any[]
   point: {
     lat: number
     lng: number
@@ -27,7 +27,9 @@ export interface ISearchBarProps {
 const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
   const { initBaps, point, mapClicked, textSearchHandler, enabledLayers, submitHandler, bioscape, results } = props
 
-  const setBasemap = useContext(BasemapContext)[1]
+  const [basemap, setBasemap] = useContext(BasemapContext)
+  // @Matt TODO: #current maybe overkill
+  const [basemapOptions, setBasemapOptions] = useState(bioscape.basemaps)
 
   const [focused, setFocused] = useState(false)
   const [layersDropdownOpen, setLayersDropdownOpen] = useState(false)
@@ -55,6 +57,16 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
       setFocused(true)
     }
   }, [mapClicked, point.lat, point.lng, textInput])
+
+  useEffect(() => {
+    setBasemapOptions((prev: any[]) => {
+      return prev.map((p: any) => {
+        // @Matt TODO: #current get basemap by id
+        p.selected = (basemap?.serviceUrl === p.serviceUrl)
+        return p
+      })
+    })
+  }, [basemap])
 
   // @Matt TODO: test that this works
   const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -133,7 +145,7 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
             <span className="header">Basemaps</span>
             <CardBody>
               <RadioGroup style={{width: '100%'}}
-                options={bioscape.basemaps}
+                options={basemapOptions}
                 onChange={basemapChanged}
                 canDeselect={true}
               />

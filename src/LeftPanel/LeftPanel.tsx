@@ -16,7 +16,7 @@ export interface ILeftPanelProps {
   bioscape: any,
   priorityBap: any,
   feature: any,
-  initBaps: boolean,
+  initBaps: any[],
   shareState: Function,
   bioscapeName: string,
   point: any,

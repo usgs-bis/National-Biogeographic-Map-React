@@ -140,7 +140,7 @@ input.map-display-slider[type='range']::-webkit-slider-thumb {
     line-height: 16px;
   }
 
-.handel-overlap{
+.handle-overlap{
     top: -43px;
   }
 
