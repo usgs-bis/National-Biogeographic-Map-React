@@ -8,6 +8,7 @@ import {Collapse, CardBody, Card} from 'reactstrap'
 import {Glyphicon} from 'react-bootstrap'
 import {RadioGroup} from '../CustomRadio/CustomRadio'
 import BasemapContext from '../Contexts/BasemapContext'
+import {isEmpty} from 'lodash'
 
 
 export interface ISearchBarProps {
@@ -37,7 +38,7 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
 
   const [focused, setFocused] = useState(false)
   const [layersDropdownOpen, setLayersDropdownOpen] = useState(false)
-  const [displayHelpPopup, setDisplayHelpPopup] = useState(initBaps ? false : true)
+  const [displayHelpPopup, setDisplayHelpPopup] = useState(isEmpty(initBaps))
 
   let textInput: HTMLInputElement|null = null
 
