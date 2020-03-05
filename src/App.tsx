@@ -3,6 +3,7 @@ import './CustomDialog/CustomDialog.css'
 import * as turf from '@turf/turf'
 import AlertBox from './AlertBox/AlertBox'
 import AppConfig from './config'
+import BasemapContext from './Contexts/BasemapContext'
 import Footer from './Footer/Footer'
 import Header from './Header/Header'
 import L from 'leaflet'
@@ -10,14 +11,14 @@ import LeftPanel from './LeftPanel/LeftPanel'
 import NBM from './NBM/NBM'
 import React, {FunctionComponent, useState, useEffect, useRef} from 'react'
 import Resizable from 're-resizable'
+import _ from 'lodash'
 import cloneLayer from 'leaflet-clonelayer'
 import nbmBioscape from './Bioscapes/biogeography.json'
 import nvcsBioscape from './Bioscapes/terrestrial-ecosystems-2011.json'
 import packageJson from '../package.json'
 import states from './states.json'
-import {isEmpty} from 'lodash'
+import useLocationHash from './Hooks/LocationHashHook'
 
-// @Matt TODO: #next fix the fetch cors stuff
 // @Matt TODO: implement eslint
 export interface IBioscapeProps {
   biogeography: any
@@ -34,8 +35,8 @@ export interface IFeature {
 }
 
 export interface IShareState {
-  feature: { feature_id: string }
-  basemap: any
+  feature?: { feature_id: string }
+  basemapServiceUrl: string
   timeSlider: {
     rangeYearMin: number
     rangeYearMax: number
@@ -70,14 +71,18 @@ const numberWithCommas = (x: number) => {
 
 const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }) => {
 
-  let initState: any = null
-  let shareStateBeforeHash = useRef<null | IShareState>(null)
-
   // @Matt TODO: do something with the errorState
   const [errorState, setErrorState] = useState(null)
   useEffect(() => {
     console.log(errorState)
   }, [errorState])
+
+  const [hashState, setHash] = useLocationHash()
+
+  const [baps, setBaps] = useState(hashState?.baps)
+  const [basemap, setBasemap] = useState(() => {
+    return bioscapeMap[bioscape].basemaps.find((m: any) => m.serviceUrl === hashState?.basemapServiceUrl)
+  })
 
   const [state, setState] = useState(() => {
 
@@ -93,7 +98,6 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
       analysisLayers: [] as any[],
       priorityBap: null,
       clickDrivenEvent: false,
-      basemap: '',
       lat: 0,
       lng: 0,
       elv: 0,
@@ -101,31 +105,24 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
       mapClicked: null as any,
     }
 
-    // @Matt TODO: this would probably be better as a hook
-    let loc = window.location.href
-    let split = loc.split('#')
-
-    if (split.length === 2 && split[1]) {
-      initState = JSON.parse(atob(split[1]))
-      s.basemap = initState.basemap
-      s.rangeYearMin = initState.timeSlider.rangeYearMin
-      s.rangeYearMax = initState.timeSlider.rangeYearMax
-      s.mapDisplayYear = initState.timeSlider.mapDisplayYear
-      s.priorityBap = initState.priorityBap
-      s.lat = initState.point.lat
-      s.lng = initState.point.lng
-      s.elv = initState.point.elv
-      s.clickDrivenEvent = initState.point.lat ? true : false
+    if (hashState) {
+      s.rangeYearMin = hashState.timeSlider.rangeYearMin
+      s.rangeYearMax = hashState.timeSlider.rangeYearMax
+      s.mapDisplayYear = hashState.timeSlider.mapDisplayYear
+      s.priorityBap = hashState.priorityBap
+      s.lat = hashState.point.lat
+      s.lng = hashState.point.lng
+      s.elv = hashState.point.elv
+      s.clickDrivenEvent = hashState.point.lat ? true : false
     }
 
     return s
   })
 
-  const parseBioscape = () => {
+  useEffect(() => {
+    console.log('bioscape effect')
 
-    let basemap = state.basemap ? state.basemap : state.bioscape.basemaps.find((obj: any) => {
-      return obj.selected === true
-    })
+    const bm = basemap || state.bioscape.basemaps[0]
 
     let overlay: any = null
     if (state.bioscape.overlays) {
@@ -140,59 +137,56 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
       overlay = state.bioscape.overlays.find((obj: any) => obj.selected === true)
     }
 
+    setBasemap(bm)
     setState((prev) => Object.assign({}, prev, {
-      basemap: basemap,
       overlay: overlay,
     }))
-
-  }
-
-  // @Matt TODO: check if we had componentWillUnmount
-  // @Matt TODO: this needs to be checked and refactored
-  useEffect(() => {
-    console.log('bioscape effect')
-
-    parseBioscape()
     document.title = state.bioscape.title
 
-    if (!isEmpty(state.feature)) {
-      getHash()
-    }
-  // @Matt TODO: need a better fix then ignore
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.bioscape.title, state.feature])
 
+  const hashTimeout = useRef<any>()
+
   useEffect(() => {
-    console.log('polygon effect')
+    hashTimeout.current = setTimeout(() => {
+      console.log('set hash effect')
+      let tmpState: IShareState = {
+        basemapServiceUrl: basemap.serviceUrl,
+        timeSlider: {rangeYearMin: state.rangeYearMin, rangeYearMax: state.rangeYearMax, mapDisplayYear: state.mapDisplayYear},
+        priorityBap: state.priorityBap,
+        baps,
+        point: {lat: state.lat, lng: state.lng, elv: state.elv}
+      }
+      if (state.feature?.properties) {
+        tmpState.feature = {feature_id: state.feature.properties.feature_id}
+      }
+      if (state.feature?.properties?.userDefined) {
+        tmpState.userDefined = {geom: state.feature.geometry}
+      }
+      setHash(tmpState)
+    }, 1000)
 
-    if (initState?.userDefined) {
-      handelDrawnPolygon(initState.userDefined.geom, true)
-    } else if (initState) {
-      submitHandler(initState.feature, true)
+    return () => {
+      clearTimeout(hashTimeout.current)
     }
-  })
+  }, [baps, state, basemap, setHash])
 
-  const getHash = () => {
-    shareStateBeforeHash.current = {
-      feature: {feature_id: state.feature.properties.feature_id},
-      basemap: state.basemap,
-      timeSlider: {rangeYearMin: state.rangeYearMin, rangeYearMax: state.rangeYearMax, mapDisplayYear: state.mapDisplayYear},
-      priorityBap: state.priorityBap,
-      baps: shareStateBeforeHash.current ? shareStateBeforeHash.current.baps : initState ? initState.baps : {},
-      point: {lat: state.lat, lng: state.lng, elv: state.elv}
-    }
-    if (state.feature.properties.userDefined) {
-      shareStateBeforeHash.current.userDefined = {geom: state.feature.geometry}
-    }
-    window.location.hash = Buffer.from(JSON.stringify(shareStateBeforeHash.current)).toString('base64')
-  }
+  useEffect(() => {
+    console.log('initState effect')
 
-  // @Matt TODO: double check this
+    if (hashState?.userDefined) {
+      handleDrawnPolygon(hashState.userDefined.geom, true)
+    } else if (hashState?.feature) {
+      submitHandler(hashState.feature, true)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hashState])
+
   const shareState = () => {
     if (state.feature) {
       let copyText = document.getElementsByClassName('share-url-input')[0] as HTMLInputElement
       copyText.style.display = 'inline-block'
-      // @Matt TODO: this used to be just 'location'
       copyText.value = window.location.href
       copyText.select()
       document.execCommand('copy')
@@ -203,16 +197,9 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
   }
 
   const setBapState = (bapId: string, bapState: any) => {
-    if (shareStateBeforeHash.current && shareStateBeforeHash.current.baps) {
-      shareStateBeforeHash.current.baps[bapId] = bapState
-      if (!isEmpty(state.feature)) {
-        getHash()
-      }
+    if (!_.isEqual(baps?.[bapId], bapState)) {
+      setBaps((prev: any) => Object.assign({}, prev, { [bapId]: bapState }))
     }
-  }
-
-  const basemapChanged = (e: any) => {
-    setState((prev) => Object.assign({}, prev, {basemap: e }))
   }
 
   /* const overlayChanged = (e: any) => { */
@@ -236,7 +223,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
     setState((prev) => Object.assign({}, prev, { map: map }))
   }
 
-  const handelDrawnPolygon = (geom: any, init: any) => {
+  const handleDrawnPolygon = (geom: any, init: any) => {
     if (geom) {
       setState((prev) => Object.assign({}, prev, {
         feature: {
@@ -651,6 +638,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
       <Header title={state.bioscape.title} description={state.bioscape.description} />
       <AlertBox />
       <div id="content-area">
+      <BasemapContext.Provider value={[basemap, setBasemap]} >
         <Resizable
           className="panel-area"
           enable={{top: false, right: true, bottom: false, left: false, topRight: false, bottomRight: false, bottomLeft: false, topLeft: false}}
@@ -662,7 +650,6 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
           }}
         >
           <LeftPanel
-            basemapChanged={basemapChanged}
             bioscape={state.bioscape}
             results={state.results}
             textSearchHandler={handleSearchBox}
@@ -676,7 +663,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
             shareState={shareState}
             setBapState={setBapState}
             map={state.map}
-            initBaps={(initState || {}).baps}
+            initBaps={hashState?.baps}
             priorityBap={state.priorityBap}
             bioscapeName={state.bioscapeName}
             point={{lat: state.lat, lng: state.lng, elv: state.elv}}
@@ -687,11 +674,10 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
         <div id="map-area">
           <NBM
             className="relative-map"
-            basemap={state.basemap}
             overlay={state.overlay}
             feature={state.feature}
             parentClickHandler={handleMapClick}
-            parentDrawHandler={handelDrawnPolygon}
+            parentDrawHandler={handleDrawnPolygon}
             setYearRange={setYearRange}
             setMapDisplayYear={setMapDisplayYear}
             setMapDisplayYearFade={setMapDisplayYearFade}
@@ -704,9 +690,10 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
             applicationVersion={REACT_VERSION}
             priorityBap={state.priorityBap}
             clickDrivenEvent={state.clickDrivenEvent}
-            initPoint={(initState || {}).point}
+            initPoint={hashState?.point}
           />
         </div>
+      </BasemapContext.Provider>
       </div>
       <Footer />
     </div>

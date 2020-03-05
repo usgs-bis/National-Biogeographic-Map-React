@@ -7,7 +7,7 @@ import Dialog from 'react-dialog'
 import InfoSign from '../InfoSign/InfoSign'
 import L, {LatLngBoundsExpression, Layer} from 'leaflet'
 import LocationOverlay from './LocationOverylays/LocationOverlay'
-import React, {FunctionComponent, useState, useEffect, useRef} from 'react'
+import React, {FunctionComponent, useState, useEffect, useRef, useContext} from 'react'
 import TimeSlider from './TimeSlider/TimeSlider'
 import {EditControl} from 'react-leaflet-draw'
 import {Glyphicon} from 'react-bootstrap'
@@ -15,6 +15,7 @@ import {isEmpty} from 'lodash'
 
 // @ts-ignore
 import {Map, TileLayer, WMSTileLayer, Marker, Popup, GeoJSON, FeatureGroup, ZoomControl} from 'react-leaflet'
+import BasemapContext from '../Contexts/BasemapContext'
 // @Matt TODO: remove
 /* import toast from 'toasted-notes' */
 
@@ -49,7 +50,6 @@ export interface INBMProps {
   clickDrivenEvent: any
   parentClickHandler: Function
   parentDrawHandler: Function
-  basemap: any
   applicationVersion: string
   bioscapeName: string
   setYearRange: Function
@@ -65,6 +65,8 @@ const API_VERSION_URL = AppConfig.REACT_APP_BIS_API + '/api'
 const NBM: FunctionComponent<INBMProps> = (props) => {
 
   const {setMap} = props
+
+  const [basemap] = useContext(BasemapContext)
 
   const [point, setPoint] = useState(() => {
     if (!props.initPoint) return null
@@ -141,7 +143,6 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
     map?.current?.leafletElement.fitBounds(bounds)
   }, [bounds])
 
-  // @Matt TODO: basemap not updating
   useEffect(() => {
     console.log('layer adding/removing effect')
     const currentLayers = props.analysisLayers || []
@@ -153,11 +154,9 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
     for (const newItem of currentLayers) {
       map?.current?.leafletElement.addLayer(newItem.layer)
       if (newItem.timeEnabled) {
-        newItem.layer.setParams(
-          {
-            time: `${props.mapDisplayYear}-01-01`
-          }
-        )
+        newItem.layer.setParams({
+          time: `${props.mapDisplayYear}-01-01`
+        })
       }
     }
     setOldLayers(currentLayers)
@@ -346,17 +345,17 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
     }
   }
 
-  const basemap = () => {
-    if (props.basemap) {
-      if (props.basemap.type === 'TileLayer') {
-        return <TileLayer url={props.basemap.serviceUrl} attribution={props.basemap.attribution} />
-      } else if (props.basemap.type === 'WMSTileLayer') {
+  const renderBasemap = () => {
+    if (basemap) {
+      if (basemap.type === 'TileLayer') {
+        return <TileLayer url={basemap.serviceUrl} attribution={basemap.attribution} />
+      } else if (basemap.type === 'WMSTileLayer') {
         return (
           <WMSTileLayer
-            url={props.basemap.serviceUrl}
-            format={props.basemap.leafletProperties.format}
-            layers={props.basemap.leafletProperties.layers}
-            attribution={props.basemap.attribution}
+            url={basemap.serviceUrl}
+            format={basemap.leafletProperties.format}
+            layers={basemap.leafletProperties.layers}
+            attribution={basemap.attribution}
           />
         )
       }
@@ -435,7 +434,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
             onMouseOut={handleMouseOut}
             attribution=""
             zoomControl={false} >
-            {basemap()}
+            {renderBasemap()}
             <LocationOverlay onRef={(ref: any) => setLocationOverlay(ref)} map={map} bioscapeName={props.bioscapeName} />
             <MapMarker point={point} />
             {geojson()}
@@ -504,7 +503,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
         onMouseOut={handleMouseOut}
         attribution=""
         zoomControl={false} >
-        {basemap()}
+        {renderBasemap()}
         <LocationOverlay onRef={(ref: LocationOverlay) => setLocationOverlay(ref)} map={map} bioscapeName={props.bioscapeName} />
         <MapMarker point={point} />
         {geojson()}
