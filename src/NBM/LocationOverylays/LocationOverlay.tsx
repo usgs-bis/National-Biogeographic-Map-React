@@ -24,7 +24,10 @@ export interface ILocationOverlayState {
 }
 
 class LocationOverlay extends React.Component<ILocationOverlayProps, ILocationOverlayState> {
-  map: any
+  map: null|{
+    off: Function
+    on: Function
+  }
 
   constructor(props: ILocationOverlayProps) {
     super(props)
@@ -44,13 +47,13 @@ class LocationOverlay extends React.Component<ILocationOverlayProps, ILocationOv
   }
 
   componentWillUnmount() {
-    this.map.off('zoomend', this.updateOffset)
+    this.map?.off('zoomend', this.updateOffset)
   }
 
   componentDidUpdate() {
     if (!this.map && this.props.map.current.leafletElement) {
       this.map = this.props.map.current.leafletElement
-      this.map.on('zoomend', this.updateOffset)
+      this.map?.on('zoomend', this.updateOffset)
       this.updateOffset()
     }
   }
