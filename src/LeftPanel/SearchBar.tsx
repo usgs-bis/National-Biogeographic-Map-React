@@ -28,8 +28,12 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
   const { initBaps, point, mapClicked, textSearchHandler, enabledLayers, submitHandler, bioscape, results } = props
 
   const [basemap, setBasemap] = useContext(BasemapContext)
-  // @Matt TODO: #current maybe overkill
-  const [basemapOptions, setBasemapOptions] = useState(bioscape.basemaps)
+  const [basemapOptions] = useState(() => {
+    return bioscape.basemaps.map((p: any) => {
+      p.selected = (basemap?.serviceUrl === p.serviceUrl)
+      return p
+    })
+  })
 
   const [focused, setFocused] = useState(false)
   const [layersDropdownOpen, setLayersDropdownOpen] = useState(false)
@@ -57,16 +61,6 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
       setFocused(true)
     }
   }, [mapClicked, point.lat, point.lng, textInput])
-
-  useEffect(() => {
-    setBasemapOptions((prev: any[]) => {
-      return prev.map((p: any) => {
-        // @Matt TODO: #current get basemap by id
-        p.selected = (basemap?.serviceUrl === p.serviceUrl)
-        return p
-      })
-    })
-  }, [basemap])
 
   // @Matt TODO: test that this works
   const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {

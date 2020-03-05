@@ -36,7 +36,7 @@ export interface IFeature {
 
 export interface IShareState {
   feature?: { feature_id: string }
-  basemap: any
+  basemapServiceUrl: string
   timeSlider: {
     rangeYearMin: number
     rangeYearMax: number
@@ -78,23 +78,11 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
   }, [errorState])
 
   const [hashState, setHash] = useLocationHash()
+
   const [baps, setBaps] = useState(hashState?.baps)
-
-  const [basemap, setBasemap] = useState(null)
-  // @Matt TODO: #current convert to a hook, and instead of init, call it hashState
-  // @Matt TODO: #current maybe don't hash the whole thing, use params instead and just hash the complex ones
-  // @Matt TODO: #current remove if commented
-  /* const [initState] = useState(() => { */
-  /*   // @Matt TODO: #current this is copied */
-  /*   // @Matt TODO: #current use window.location.hash instead */
-  /*   let loc = window.location.href */
-  /*   let split = loc.split('#') */
-  /*   if (split[1]) { */
-  /*     return JSON.parse(atob(split[1])) */
-  /*   } */
-
-  /*   return null */
-  /* }) */
+  const [basemap, setBasemap] = useState(() => {
+    return bioscapeMap[bioscape].basemaps.find((m: any) => m.serviceUrl === hashState?.basemapServiceUrl)
+  })
 
   const [state, setState] = useState(() => {
 
@@ -118,8 +106,6 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
     }
 
     if (hashState) {
-      setBasemap(hashState.basemap)
-
       s.rangeYearMin = hashState.timeSlider.rangeYearMin
       s.rangeYearMax = hashState.timeSlider.rangeYearMax
       s.mapDisplayYear = hashState.timeSlider.mapDisplayYear
@@ -148,10 +134,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
         )
       }
 
-      // @Matt DEBUG
-      debugger
       // @Matt TODO: #current need to set the selected on the basemaps in the bioscapes
-      // @Matt TODO: #current cleanup basemap name A issue
       overlay = state.bioscape.overlays.find((obj: any) => obj.selected === true)
     }
 
@@ -161,7 +144,6 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
     }))
     document.title = state.bioscape.title
 
-  // @Matt TODO: need a better fix then ignore
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.bioscape.title, state.feature])
 
@@ -171,13 +153,13 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
     hashTimeout.current = setTimeout(() => {
       console.log('set hash effect')
       let tmpState: IShareState = {
-        // @Matt TODO: #current use a smaller version
-        basemap,
+        basemapServiceUrl: basemap.serviceUrl,
         timeSlider: {rangeYearMin: state.rangeYearMin, rangeYearMax: state.rangeYearMax, mapDisplayYear: state.mapDisplayYear},
         priorityBap: state.priorityBap,
         baps,
         point: {lat: state.lat, lng: state.lng, elv: state.elv}
       }
+      // @Matt TODO: #current sometimes this will clear the feature, why?
       if (state.feature?.properties) {
         tmpState.feature = {feature_id: state.feature.properties.feature_id}
       }
@@ -193,7 +175,6 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
   }, [baps, state, basemap, setHash])
 
   useEffect(() => {
-    // @Matt TODO: #current we could probably move this to a once only function
     console.log('initState effect')
 
     if (hashState?.userDefined) {
@@ -204,12 +185,10 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hashState])
 
-  // @Matt TODO: double check this
   const shareState = () => {
     if (state.feature) {
       let copyText = document.getElementsByClassName('share-url-input')[0] as HTMLInputElement
       copyText.style.display = 'inline-block'
-      // @Matt TODO: this used to be just 'location'
       copyText.value = window.location.href
       copyText.select()
       document.execCommand('copy')
