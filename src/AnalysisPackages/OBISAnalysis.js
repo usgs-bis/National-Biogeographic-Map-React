@@ -28,7 +28,7 @@ class OBISAnalysisPackage extends React.Component {
         }
 
         this.getCharts = this.getCharts.bind(this)
-        this.handelNoData = this.handelNoData.bind(this)
+        this.handleNoData = this.handleNoData.bind(this)
         this.print = this.print.bind(this)
         this.featureChange = this.featureChange.bind(this)
         this.fetch = this.fetch.bind(this)
@@ -67,7 +67,7 @@ class OBISAnalysisPackage extends React.Component {
 
     }
 
-    handelNoData() {
+    handleNoData() {
         this.setState({
             charts: {
                 speciesCountChart: { id: '', config: {}, data: null }
@@ -97,7 +97,7 @@ class OBISAnalysisPackage extends React.Component {
                         this.props.canOpen(true)
 
                     } else {
-                        this.handelNoData()
+                        this.handleNoData()
                     }
                 },
                 (error) => {

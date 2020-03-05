@@ -1,16 +1,17 @@
 import './SearchBar.css'
 import CustomToolTip from '../ToolTip/ToolTip'
 import Legend from '../Legend/Legend'
-import React, { FunctionComponent, useState, useEffect } from 'react'
+import React, { FunctionComponent, useState, useEffect, useContext } from 'react'
 import speechBubble from './bubble.png'
 import {Button, ButtonGroup} from 'reactstrap'
 import {Collapse, CardBody, Card} from 'reactstrap'
 import {Glyphicon} from 'react-bootstrap'
 import {RadioGroup} from '../CustomRadio/CustomRadio'
+import BasemapContext from '../Contexts/BasemapContext'
 
 
 export interface ISearchBarProps {
-  initBaps: boolean
+  initBaps: any[]
   point: {
     lat: number
     lng: number
@@ -23,7 +24,16 @@ export interface ISearchBarProps {
   results: any[]
 }
 
-const SearchBar: FunctionComponent<ISearchBarProps> = ( { initBaps, point, mapClicked, textSearchHandler, enabledLayers, submitHandler, bioscape, results }) => {
+const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
+  const { initBaps, point, mapClicked, textSearchHandler, enabledLayers, submitHandler, bioscape, results } = props
+
+  const [basemap, setBasemap] = useContext(BasemapContext)
+  const [basemapOptions] = useState(() => {
+    return bioscape.basemaps.map((p: any) => {
+      p.selected = (basemap?.serviceUrl === p.serviceUrl)
+      return p
+    })
+  })
 
   const [focused, setFocused] = useState(false)
   const [layersDropdownOpen, setLayersDropdownOpen] = useState(false)
@@ -74,11 +84,10 @@ const SearchBar: FunctionComponent<ISearchBarProps> = ( { initBaps, point, mapCl
     setLayersDropdownOpen(!layersDropdownOpen)
   }
 
-  // @Matt TODO: check if we need this anymore, seems like an infinite loop
-  const basemapChanged = () => {
+  const basemapChanged = (e: any) => {
     // Fixes bug in FF where search bar gains focus
-    /* setFocused(false) */
-    /* basemapChanged(e) */
+    setFocused(false)
+    setBasemap(e)
   }
 
   return (
@@ -130,7 +139,7 @@ const SearchBar: FunctionComponent<ISearchBarProps> = ( { initBaps, point, mapCl
             <span className="header">Basemaps</span>
             <CardBody>
               <RadioGroup style={{width: '100%'}}
-                options={bioscape.basemaps}
+                options={basemapOptions}
                 onChange={basemapChanged}
                 canDeselect={true}
               />

@@ -21,7 +21,6 @@ class Biogeography extends React.Component {
         this.state = {
             results: props.results,
             textSearchHandler: props.textSearchHandler,
-            basemapChanged: props.basemapChanged,
             submitHandler: props.submitHandler,
             layersDropdownOpen: false,
             bioscape: props.bioscape,
