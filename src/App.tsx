@@ -134,7 +134,6 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
         )
       }
 
-      // @Matt TODO: #current need to set the selected on the basemaps in the bioscapes
       overlay = state.bioscape.overlays.find((obj: any) => obj.selected === true)
     }
 
@@ -159,7 +158,6 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
         baps,
         point: {lat: state.lat, lng: state.lng, elv: state.elv}
       }
-      // @Matt TODO: #current sometimes this will clear the feature, why?
       if (state.feature?.properties) {
         tmpState.feature = {feature_id: state.feature.properties.feature_id}
       }

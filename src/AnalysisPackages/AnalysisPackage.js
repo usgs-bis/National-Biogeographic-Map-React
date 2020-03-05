@@ -164,7 +164,6 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
     // anything common (enabledLayers) among all baps gets set here.
     // specific things get set in bap themselves
     setShareState(state) {
-      // @Matt TODO: #current need to not update if not changed
       this.shareState = state
       this.shareState.isOpen = this.state.isOpen
       if (this.props.bapId === this.props.priorityBap) {

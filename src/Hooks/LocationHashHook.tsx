@@ -1,7 +1,6 @@
 import {useState} from 'react'
 
 const useLocationHash = () => {
-  // @Matt TODO: #current on setState, can we set the hash as well?
   const [state] = useState(() => {
     let hash = window.location.hash.substr(1)
     if (hash.length > 0) {
