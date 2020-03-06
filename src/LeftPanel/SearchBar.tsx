@@ -30,10 +30,14 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
 
   const [basemap, setBasemap] = useContext(BasemapContext)
   const [basemapOptions] = useState(() => {
-    return bioscape.basemaps.map((p: any) => {
-      p.selected = (basemap?.serviceUrl === p.serviceUrl)
-      return p
-    })
+    if (!isEmpty(basemap)) {
+      return bioscape.basemaps.map((p: any) => {
+        p.selected = (basemap?.serviceUrl === p.serviceUrl)
+        return p
+      })
+    } else {
+      return bioscape.basemaps
+    }
   })
 
   const [focused, setFocused] = useState(false)
