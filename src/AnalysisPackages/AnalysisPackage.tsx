@@ -470,7 +470,6 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
     }
 
     const canOpenFunction = (co: boolean) => {
-      console.log('canOpenFunc', co)
       if (!co && isOpen) {
         toggleDropdown()
       }

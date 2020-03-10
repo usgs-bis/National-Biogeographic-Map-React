@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle, FunctionComponent } from 'react'
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle, FunctionComponent, useContext } from 'react'
 import L from 'leaflet'
 import { BarLoader } from 'react-spinners'
 import withSharedAnalysisCharacteristics from './AnalysisPackage'
@@ -8,6 +8,7 @@ import RidgelinePlotChart from '../Charts/RidgelinePlotChart'
 import './AnalysisPackages.css'
 import AppConfig from '../config'
 import { IChart } from '../Charts/Chart'
+import { TimeSliderContext } from '../Contexts/TimeSliderContext'
 
 const SB_URL = 'https://www.sciencebase.gov/catalog/item/5abd5fede4b081f61abfc472?format=json'
 const FIRSTBLOOM_URL = AppConfig.REACT_APP_BIS_API + '/api/v1/phenology/place/firstbloom'
@@ -45,8 +46,6 @@ export interface IFirstBloomAnalysisPackageProps {
   feature: null | any
   isEnabled: Function
   canOpen: Function
-  yearMin: number
-  yearMax: number
   setBapJson: Function
   // HOC props
   isOpen: boolean
@@ -69,6 +68,7 @@ const EMPTY_CHARTS = {
 }
 
 const FirstBloomAnalysisPackage: FunctionComponent<any> = (props: IFirstBloomAnalysisPackageProps, ref) => {
+  const [timeSliderState, setTimeSliderState] = useContext(TimeSliderContext)
   const [charts, setCharts] = useState<IFirstBloomAnalysisPackageCharts>(EMPTY_CHARTS)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
@@ -95,6 +95,7 @@ const FirstBloomAnalysisPackage: FunctionComponent<any> = (props: IFirstBloomAna
         setTimeout(submitAnalysis, 3000)
       }
     }
+    setTimeSliderState({display: true, minSliderValue: 1982, maxSliderValue: 2018})
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -136,7 +137,7 @@ const FirstBloomAnalysisPackage: FunctionComponent<any> = (props: IFirstBloomAna
       setLoading(true)
       setError(false)
       clearCharts()
-      fetch(FIRSTBLOOM_URL + `?year_min=${props.yearMin}&year_max=${props.yearMax}&feature_id=${feature.properties.feature_id}&token=${PUBLIC_TOKEN}`)
+      fetch(FIRSTBLOOM_URL + `?year_min=${timeSliderState.rangeYearMin}&year_max=${timeSliderState.rangeYearMax}&feature_id=${feature.properties.feature_id}&token=${PUBLIC_TOKEN}`)
         .then(res => res.json())
         .then(
           (result) => {
@@ -170,7 +171,7 @@ const FirstBloomAnalysisPackage: FunctionComponent<any> = (props: IFirstBloomAna
           geojson: feature.geometry
         })
       }
-      fetch(FIRSTBLOOM_POLY_URL + `?year_min=${props.yearMin}&year_max=${props.yearMax}&token=${PUBLIC_TOKEN}`, request)
+      fetch(FIRSTBLOOM_POLY_URL + `?year_min=${timeSliderState.rangeYearMin}&year_max=${timeSliderState.rangeYearMax}&token=${PUBLIC_TOKEN}`, request)
         .then(res => res.json())
         .then(
           (result) => {
@@ -324,7 +325,7 @@ const FirstBloomAnalysisPackage: FunctionComponent<any> = (props: IFirstBloomAna
         <div className="chartsDiv">
           <div className="chart-headers" >
 
-            <button className="submit-analysis-btn" onClick={submitAnalysis}>Analyze Time Period: {props.yearMin} to  {props.yearMax}</button>
+            <button className="submit-analysis-btn" onClick={submitAnalysis}>Analyze Time Period: {timeSliderState.rangeYearMin} to {timeSliderState.rangeYearMax}</button>
             <div className="bucket-size-div" style={{ display: charts.histogram.data ? 'block' : 'none' }}>
               <span>Binwidth: {bucketSize}</span>
               <input

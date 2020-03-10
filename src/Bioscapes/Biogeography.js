@@ -2,7 +2,7 @@ import React from "react";
 import "../LeftPanel/LeftPanel.css";
 import NFHPAnalysis from "../AnalysisPackages/NFHPAnalysis";
 import FirstLeafAnalysis from "../AnalysisPackages/FirstLeafAnalysis";
-import FirstBloomAnalysis from "../AnalysisPackages/FirstBloomAnalysis";
+import FirstBloomAnalysis from '../AnalysisPackages/FirstBloomAnalysis'
 import FirstLeafBloomComparisonAnalysis from "../AnalysisPackages/FirstLeafBloomComparisonAnalysis";
 import SpeciesProtectionAnalysis from "../AnalysisPackages/SpeciesProtectionAnalysis";
 import EcosystemProtectionAnalysis from "../AnalysisPackages/EcosystemProtectionAnalysis";
@@ -98,8 +98,8 @@ class Biogeography extends React.Component {
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
                         setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
-                        yearMin={this.props.rangeYearMin}
-                        yearMax={this.props.rangeYearMax}
+                        // yearMin={this.props.rangeYearMin}
+                        // yearMax={this.props.rangeYearMax}
                         priorityBap={this.props.priorityBap}
                         bapId={`bap1`}
                         initBap={(this.props.initBaps || {})['bap1']}
@@ -113,8 +113,6 @@ class Biogeography extends React.Component {
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
                         setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
-                        yearMin={this.props.rangeYearMin}
-                        yearMax={this.props.rangeYearMax}
                         priorityBap={this.props.priorityBap}
                         bapId={`bap2`}
                         initBap={(this.props.initBaps || {})['bap2']}
@@ -128,8 +126,8 @@ class Biogeography extends React.Component {
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
                         setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
-                        yearMin={this.props.rangeYearMin}
-                        yearMax={this.props.rangeYearMax}
+                        // yearMin={this.props.rangeYearMin}
+                        // yearMax={this.props.rangeYearMax}
                         priorityBap={this.props.priorityBap}
                         bapId={`bap3`}
                         initBap={(this.props.initBaps || {})['bap3']}

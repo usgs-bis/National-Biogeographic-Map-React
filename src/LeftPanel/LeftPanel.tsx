@@ -25,8 +25,6 @@ export interface ILeftPanelProps {
   mapClicked: boolean,
   textSearchHandler: Function,
   submitHandler: Function,
-  rangeYearMin: number,
-  rangeYearMax: number,
   setPriorityBap: Function,
   setBapState: Function,
   overlay: any,
