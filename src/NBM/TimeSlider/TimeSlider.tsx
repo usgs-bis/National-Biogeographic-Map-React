@@ -11,7 +11,6 @@ const TimeSlider: React.FunctionComponent = () => {
   const [displayYear, setDisplayYear] = useState(state.mapDisplayYear)
 
   const [sliderSize, setSliderSize] = useState(0)
-  let enabled = state.display
   let maxSliderValue = state.maxSliderValue
   let minSliderValue = state.minSliderValue
 
@@ -30,6 +29,9 @@ const TimeSlider: React.FunctionComponent = () => {
   }, [])
 
   useEffect(() => {
+    if (!state.display) {
+      return
+    }
     const width = slider.current!.clientWidth
     setSliderSize(width)
     const middle = getPositionFromYear(displayYear, width)
@@ -41,12 +43,12 @@ const TimeSlider: React.FunctionComponent = () => {
     let right = getPositionFromYear(rightYear, width)
     rightUpdate(right, width)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [windowSize])
+  }, [windowSize, state.display])
 
   const playTimeout = useRef<any>()
   useEffect(() => {
     // Keep slider from moving when slider is not applicable
-    if (!enabled || !playing) {
+    if (!state.display || !playing) {
       clearTimeout(playTimeout.current)
       return
     }
@@ -133,7 +135,7 @@ const TimeSlider: React.FunctionComponent = () => {
         setSubmit(true)
       }
       doc.onmousemove = (e: MouseEvent) => {
-        if (!enabled) return
+        if (!state.display) return
         e = e || window.event
         e.preventDefault()
         // calculate the new cursor position:
@@ -147,9 +149,9 @@ const TimeSlider: React.FunctionComponent = () => {
     }
   }
 
-  return (
+  return !state.display ? (<div></div>) : (
     <div>
-      <section id="range-slider" className="range-slider">
+      <section className="range-slider">
         <Glyphicon onClick={playTimeSlider} className="play-glyph inner-glyph" glyph={playing ? 'pause' : 'play-circle'}
           data-toggle="tooltip" data-placement="top" title={playing ? 'Pause' : 'Play'} />
         <span className="range-values" style={{left: '30px'}}>{minSliderValue}</span>
