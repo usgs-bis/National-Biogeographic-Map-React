@@ -8,40 +8,42 @@ import HistogramChart from '../Charts/HistogramChart'
 import RidgelinePlotChart from '../Charts/RidgelinePlotChart'
 import './AnalysisPackages.css'
 import AppConfig from '../config'
+// import xml2js from 'xml2js'
 import { IChart } from '../Charts/Chart'
 import { TimeSliderContext } from '../Contexts/TimeSliderContext'
 
-const SB_URL = 'https://www.sciencebase.gov/catalog/item/5abd5fede4b081f61abfc472?format=json'
-const FIRSTBLOOM_URL = AppConfig.REACT_APP_BIS_API + '/api/v1/phenology/place/firstbloom'
-const FIRSTBLOOM_POLY_URL = AppConfig.REACT_APP_BIS_API + '/api/v1/phenology/polygon/firstbloom'
+const SB_URL = 'https://www.sciencebase.gov/catalog/item/58bf0b61e4b014cc3a3a9c10?format=json'
+const FIRSTLEAF_URL = AppConfig.REACT_APP_BIS_API + '/api/v1/phenology/place/firstleaf'
+const FIRSTLEAF_POLY_URL = AppConfig.REACT_APP_BIS_API + '/api/v1/phenology/polygon/firstleaf'
 const PUBLIC_TOKEN = AppConfig.REACT_APP_PUBLIC_TOKEN
 
 let sb_properties = {
-  'title': 'First Bloom Spring Index'
+  'title': 'First Leaf Spring Index'
 }
 
 const layers = [
   {
-    title: 'Average Bloom PRISM',
+    title: 'Average Leaf PRISM',
     layer: L.tileLayer.wms(
       'https://geoserver.usanpn.org/geoserver/si-x/wms',
       {
         format: 'image/png',
-        layers: 'average_bloom_prism',
+        layers: 'average_leaf_prism',
         opacity: .5,
         transparent: true
       }
     ),
     legend: {
-      imageUrl: 'https://geoserver.usanpn.org/geoserver/si-x/wms??service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=average_bloom_prism'
+      imageUrl: 'https://geoserver.usanpn.org/geoserver/si-x/wms??service=wms&request=GetLegendGraphic&' +
+        'format=image%2Fpng&layer=average_leaf_prism'
     },
     timeEnabled: true,
     checked: false,
-    sb_item: '5ac3b12ee4b0e2c2dd0c2b95'
+    sb_item: '591c6ec6e4b0a7fdb43dea8a'
   }
 ]
 
-export interface IFirstBloomAnalysisPackageProps {
+export interface IFirstLeafAnalysisPackageProps {
   initBap: { bucketSize: number, didSubmit: boolean }
   setShareState: Function
   feature: null | any
@@ -56,7 +58,7 @@ export interface IFirstBloomAnalysisPackageProps {
   getBapContents: Function
 }
 
-export interface IFirstBloomAnalysisPackageCharts {
+export interface IFirstLeafAnalysisPackageCharts {
   histogram: IChart
   ridgelinePlot: IChart
   boxAndWhisker: IChart
@@ -68,16 +70,16 @@ const EMPTY_CHARTS = {
   boxAndWhisker: { id: '', config: {}, data: null }
 }
 
-const FirstBloomAnalysisPackage: FunctionComponent<IFirstBloomAnalysisPackageProps> = (props, ref) => {
+const FirstLeafAnalysisPackage: FunctionComponent<IFirstLeafAnalysisPackageProps> = (props: IFirstLeafAnalysisPackageProps, ref) => {
   const [timeSliderState, setTimeSliderState] = useContext(TimeSliderContext)
-  const [charts, setCharts] = useState<IFirstBloomAnalysisPackageCharts>(EMPTY_CHARTS)
+  const [charts, setCharts] = useState<IFirstLeafAnalysisPackageCharts>(EMPTY_CHARTS)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
   const [bucketSize, setBucketSize] = useState(3)
   const [didSubmit, setDidSubmit] = useState(false)
 
   const HistogramChartRef = useRef<any>(null)
-  const RidgelinePlotChartRef= useRef<any>(null)
+  const RidgelinePlotChartRef = useRef<any>(null)
   const BoxAndWhiskerChartRef = useRef<any>(null)
   const featureRef = useRef(props.feature)
 
@@ -146,7 +148,7 @@ const FirstBloomAnalysisPackage: FunctionComponent<IFirstBloomAnalysisPackagePro
       setLoading(true)
       setError(false)
       clearCharts()
-      fetch(FIRSTBLOOM_URL + `?year_min=${timeSliderState.rangeYearMin}&year_max=${timeSliderState.rangeYearMax}&feature_id=${feature.properties.feature_id}&token=${PUBLIC_TOKEN}`)
+      fetch(FIRSTLEAF_URL + `?year_min=${timeSliderState.rangeYearMin}&year_max=${timeSliderState.rangeYearMax}&feature_id=${feature.properties.feature_id}&token=${PUBLIC_TOKEN}`)
         .then(res => res.json())
         .then(
           (result) => {
@@ -180,7 +182,7 @@ const FirstBloomAnalysisPackage: FunctionComponent<IFirstBloomAnalysisPackagePro
           geojson: feature.geometry
         })
       }
-      fetch(FIRSTBLOOM_POLY_URL + `?year_min=${timeSliderState.rangeYearMin}&year_max=${timeSliderState.rangeYearMax}&token=${PUBLIC_TOKEN}`, request)
+      fetch(FIRSTLEAF_POLY_URL + `?year_min=${timeSliderState.rangeYearMin}&year_max=${timeSliderState.rangeYearMax}&token=${PUBLIC_TOKEN}`, request)
         .then(res => res.json())
         .then(
           (result) => {
@@ -216,7 +218,7 @@ const FirstBloomAnalysisPackage: FunctionComponent<IFirstBloomAnalysisPackagePro
    * Create the chart id, data, and config as documented in the chart type.
    * @param {Object {}} datas - one enrty for each chart named the same as defined in the state
    */
-  const getCharts = (datas: any, featureName: string): IFirstBloomAnalysisPackageCharts => {
+  const getCharts = (datas: any, featureName: string): IFirstLeafAnalysisPackageCharts => {
 
     let newCharts = EMPTY_CHARTS
 
@@ -224,11 +226,11 @@ const FirstBloomAnalysisPackage: FunctionComponent<IFirstBloomAnalysisPackagePro
       const data = datas.histogram
       let firstYear = Object.keys(data)[0]
       let lastYear = Object.keys(data)[Object.keys(data).length - 1]
-      const chartId = 'FB_Histogram'
+      const chartId = 'FL_Histogram'
       const chartConfig = {
         margins: { left: 80, right: 20, top: 20, bottom: 70 },
         chart: {
-          title: `First Bloom Spring Index for ${featureName}`,
+          title: `First Leaf Spring Index for ${featureName}`,
           subtitle: `All Years for the Period ${firstYear} to ${lastYear}`
         },
         xAxis: { label: 'Day of Year' },
@@ -242,11 +244,11 @@ const FirstBloomAnalysisPackage: FunctionComponent<IFirstBloomAnalysisPackagePro
       const data = datas.ridgelinePlot
       let firstYear = Object.keys(data)[0]
       let lastYear = Object.keys(data)[Object.keys(data).length - 1]
-      const chartId = 'FB_RidgelinePlot'
+      const chartId = 'FL_RidgelinePlot'
       const chartConfig = {
         margins: { left: 80, right: 20, top: 35, bottom: 70 },
         chart: {
-          title: `First Bloom Spring Index for ${featureName}`,
+          title: `First Leaf Spring Index for ${featureName}`,
           subtitle: `By Year for the Period ${firstYear} to ${lastYear}`
         },
         xAxis: { label: 'Day of Year' },
@@ -259,11 +261,11 @@ const FirstBloomAnalysisPackage: FunctionComponent<IFirstBloomAnalysisPackagePro
       const data = datas.boxAndWhisker
       let firstYear = Object.keys(data)[0]
       let lastYear = Object.keys(data)[Object.keys(data).length - 1]
-      const chartId = 'FB_BoxAndWhisker'
+      const chartId = 'FL_BoxAndWhisker'
       const chartConfig = {
         margins: { left: 80, right: 20, top: 20, bottom: 70 },
         chart: {
-          title: `First Bloom Spring Index for ${featureName}`,
+          title: `First Leaf Spring Index for ${featureName}`,
           subtitle: `All Years for the Period ${firstYear} to ${lastYear}`
         },
         xAxis: { label: 'Year' },
@@ -307,7 +309,7 @@ const FirstBloomAnalysisPackage: FunctionComponent<IFirstBloomAnalysisPackagePro
                   { text: RidgelinePlotChartRef.current.props.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
                   { text: RidgelinePlotChartRef.current.props.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
                   { image: contents[2], alignment: 'center', width: 250 },
-                  { text: 'First Bloom Spring Index data was provided by the', style: 'annotation', margin: [5, 10, 5, 0] },
+                  { text: 'First Leaf Spring Index data was provided by the', style: 'annotation', margin: [5, 10, 5, 0] },
                   { text: 'USA National Phenology Network', style: 'annotationLink', margin: [5, 0, 5, 0], link: 'https://www.usanpn.org' },
                   { text: `Data retrieved ${new Date().toDateString()}`, style: 'annotation', margin: [5, 0, 5, 0] }
                 ]
@@ -345,10 +347,10 @@ const FirstBloomAnalysisPackage: FunctionComponent<IFirstBloomAnalysisPackagePro
           <BoxAndWhiskerChart ref={BoxAndWhiskerChartRef} data={charts.boxAndWhisker.data} id={charts.boxAndWhisker.id} config={charts.boxAndWhisker.config} />
           <div className="chart-footers" >
             <div className="anotations">
-              First Bloom Spring Index data was provided by the <a href="https://www.usanpn.org">USA National Phenology Network</a>, data retrieved {new Date().toDateString()}
+              First Leaf Spring Index data was provided by the <a href="https://www.usanpn.org">USA National Phenology Network</a>, data retrieved {new Date().toDateString()}
               <br></br>
               <br></br>
-              <a target={'_blank'} rel="noopener noreferrer" href={'https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&service=WMSlayers=average_bloom_prism'}>https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=average_bloom_prism</a>
+              <a target={'_blank'} rel="noopener noreferrer" href={'https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&service=WMS&layers=average_leaf_prism'}>https://geoserver.usanpn.org/geoserver/si-x/wms?request=GetCapabilities&amp;service=WMS&amp;layers=average_leaf_prism</a>
             </div>
           </div>
         </div>
@@ -364,5 +366,5 @@ const FirstBloomAnalysisPackage: FunctionComponent<IFirstBloomAnalysisPackagePro
   )
 }
 
-const FirstBloomAnalysis = withSharedAnalysisCharacteristics(forwardRef(FirstBloomAnalysisPackage), layers, sb_properties, SB_URL)
-export default FirstBloomAnalysis
+const FirstLeafAnalysis = withSharedAnalysisCharacteristics(forwardRef(FirstLeafAnalysisPackage), layers, sb_properties, SB_URL)
+export default FirstLeafAnalysis

@@ -45,6 +45,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
     const [jsonWindowOpen, setJsonWindowOpen] = useState(false)
     const [sbInfoLayerPopUp, setSbInfoLayerPopUp] = useState<{[key: string]: boolean}>({})
     const [prettyJson, setPrettyJson] = useState(false)
+    const [isPriorityBap, setIsPriorityBap] = useState(props.priorityBap === props.bapId)
 
     // BL TODO: probably needs to be useRef
     let shareState: any = {}
@@ -52,7 +53,6 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
     let jsonData: any = null
   
     useEffect(() => {
-      props.onRef({print})
       fetch(sb_url)
         .then(res => res.json())
         .then(
@@ -86,6 +86,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
       // priorityBap has changed, this bap is not it
       if (props.priorityBap !== props.bapId) {
         toggleLayer(null)
+        setIsPriorityBap(false)
       }
       // priorityBap has changed, this bap is it
       else if (props.priorityBap === props.bapId) {
@@ -94,6 +95,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
           toggleLayer(firstLayer)
         }
         setIsOpen(true)
+        setIsPriorityBap(true)
         setGlyph('menu-down')
       }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -104,6 +106,10 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
         console.error(error)
       }
     }, [error])
+
+    useEffect(() => {
+      props.onRef({print})
+    }, [isOpen])
 
     const initilize = () => {
       let newLayers = layers
@@ -131,7 +137,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
       if (props.initBap) {
         setIsOpen(props.initBap.isOpen)
         setGlyph(props.initBap.isOpen ? 'menu-down' : 'menu-right')
-        if (props.priorityBap === props.bapId) {
+        if (isPriorityBap) {
           layers.forEach((layer) => {
             // @ts-ignore: Object is possibly 'undefined'
             let enabledLayer = props.initBap.enabledLayers.find((l) => {
@@ -463,7 +469,9 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
       }
       pdfDoc.push({text: text})
       pdfDoc.push({text: 'ScienceBase Item', style: 'sbPropertiesTitle'})
-      pdfDoc.push({text: sbProperties.link.url, style: 'annotationLink', margin: [15, 10, 5, 0], link: sbProperties.link.url})
+      if (sbProperties.link) {
+        pdfDoc.push({text: sbProperties.link.url, style: 'annotationLink', margin: [15, 10, 5, 0], link: sbProperties.link.url})
+      }
       // pdfDoc.push({ text: '', pageBreak: 'after' })
   
       return pdfDoc
@@ -502,9 +510,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
     }
 
     const print = () => {
-      console.log('HOC print')
-      console.log(AnalysisPackageInstance)
-      if (AnalysisPackageInstance.current) {
+      if (AnalysisPackageInstance.current && isOpen) {
         return AnalysisPackageInstance.current.print()
       }
       return []
@@ -559,6 +565,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
             layers={layers}
             handleBapError={handleBapError}
             isOpen={isOpen}
+            isPriorityBap={isPriorityBap}
             setBapJson={(data: any) => jsonData = data}
           />
         </Collapse>
