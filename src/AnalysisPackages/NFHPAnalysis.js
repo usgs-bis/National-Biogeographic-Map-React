@@ -17,11 +17,11 @@ const layers = [
     {
         title: 'Risk to Fish Habitat Degradation',
         layer: new DynamicMapLayer({
-            url: 'https://gis1.usgs.gov/arcgis/rest/services/nfhp2015/HCI_Dissolved_NFHP2015_v20160907/MapServer',
+            url: 'https://gis1.usgs.gov/arcgis/rest/services/nfhp2015/HCI_Dissolved_v20170426/MapServer',
             opacity: .5
         }),
         legend: {
-            arcgisUrl: 'https://gis1.usgs.gov/arcgis/rest/services/nfhp2015/HCI_Dissolved_NFHP2015_v20160907/MapServer/legend?f=pjson',
+            arcgisUrl: 'https://gis1.usgs.gov/arcgis/rest/services/nfhp2015/HCI_Dissolved_v20170426/MapServer/legend?f=pjson',
             layers: [0]
         },
         checked: false,
