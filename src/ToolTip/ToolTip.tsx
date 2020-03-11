@@ -2,13 +2,8 @@ import './ToolTip.css'
 import React, {FunctionComponent, useState} from 'react'
 import {Tooltip, TooltipProps} from 'reactstrap'
 
-export interface ICustomTooltip extends TooltipProps {
-  text: string
-  target: string
-}
-
 // @Matt TODO: #current this doesn't appear to be working, maybe another ticket
-const CustomToolTip: FunctionComponent<ICustomTooltip> = ({ text, target, placement }) => {
+const CustomToolTip: FunctionComponent<TooltipProps> = ({ text, target, placement, children }) => {
   const [open, setOpen] = useState(false)
 
   if (text) {
@@ -21,12 +16,10 @@ const CustomToolTip: FunctionComponent<ICustomTooltip> = ({ text, target, placem
         delay={0}
         placement={placement || 'auto'}
       >
-        {text}
+        {children}
       </Tooltip>
     )
   }
 
   return null
 }
-
-export default CustomToolTip

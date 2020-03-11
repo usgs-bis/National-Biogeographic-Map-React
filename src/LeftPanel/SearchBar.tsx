@@ -1,13 +1,12 @@
 import './SearchBar.css'
-import CustomToolTip from '../ToolTip/ToolTip'
+import BasemapContext from '../Contexts/BasemapContext'
 import Legend from '../Legend/Legend'
 import React, { FunctionComponent, useState, useEffect, useContext } from 'react'
 import speechBubble from './bubble.png'
-import {Button, ButtonGroup} from 'reactstrap'
+import {Button, ButtonGroup, Tooltip} from 'reactstrap'
 import {Collapse, CardBody, Card} from 'reactstrap'
-import {Glyphicon} from 'react-bootstrap'
+import {IoMdSettings} from 'react-icons/io'
 import {RadioGroup} from '../CustomRadio/CustomRadio'
-import BasemapContext from '../Contexts/BasemapContext'
 import {isEmpty} from 'lodash'
 
 
@@ -100,9 +99,9 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
       <div className="nbm-flex-row">
         <div className="settings-btn-group nbm-flex-column">
           <Button id="settings-tooltip" onClick={toggleBasemapDropdown} className="submit-analysis-btn placeholder-button" >
-            <Glyphicon className="inner-glyph" glyph="menu-hamburger" />
+            <IoMdSettings />
           </Button>
-          <CustomToolTip target="settings-tooltip" text="Settings" placement="right" ></CustomToolTip>
+          <Tooltip target="settings-tooltip" placement="right" >Settings</Tooltip>
         </div>
         <div className="settings-btn-group nbm-flex-column">
           <Legend enabledLayers={enabledLayers} />

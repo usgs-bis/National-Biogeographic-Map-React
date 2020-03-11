@@ -1,11 +1,11 @@
 import './AnalysisPackages.css'
-import CustomToolTip from '../ToolTip/ToolTip'
 import Dialog from 'react-dialog'
 import InfoSign from '../InfoSign/InfoSign'
 import React from 'react'
-import {Collapse, Button} from 'reactstrap'
-import {FormGroup, Label} from 'reactstrap'
-import {Glyphicon} from 'react-bootstrap'
+import {Button, Collapse, FormGroup, Label} from 'reactstrap'
+import {FaTerminal, FaExclamationCircle, FaChevronDown, FaChevronRight} from 'react-icons/fa'
+import {IoMdOpen} from 'react-icons/io'
+import {Tooltip} from 'reactstrap'
 
 const withSharedAnalysisCharacteristics = (AnalysisPackage,
   layers,
@@ -19,8 +19,8 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
         sb_properties: sb_properties,
         submitted: false,
         canOpen: false,
+        // @Matt TODO: #current check this functionality
         isOpen: props.priorityBap === props.bapId,
-        glyph: 'menu-right',
         value: [],
         layers: layers,
         isEnabled: true,
@@ -134,7 +134,6 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
       if (this.props.initBap) {
         this.setState({
           isOpen: this.props.initBap.isOpen,
-          glyph: this.props.initBap.isOpen ? 'menu-down' : 'menu-right'
         })
         if (this.props.priorityBap === this.props.bapId) {
           this.state.layers.forEach((layer) => {
@@ -239,9 +238,9 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
       if (error) {
         return (
           <div className='analysis-error'>
-            <Glyphicon style={{paddingRight: '5px', fontSize: '13px'}} className="inner-glyph" glyph="exclamation-sign" />
+            <FaExclamationCircle />
             There was an error producing this analysis. Please try again.
-                </div>
+          </div>
         )
       }
       return []
@@ -258,26 +257,25 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             <div className="analysis-layers-dropdown">
               <span onClick={this.toggleLayerDropdown} >
                 {'Analysis Inputs'}
-                <Glyphicon
-                  className="analysis-dropdown-glyph"
-                  glyph={this.state.layersOpen ? 'menu-down' : 'menu-right'}
-                />
+                { this.state.layersOpen ?
+                    <FaChevronDown className="analysis-dropdown-glyph" /> :
+                    <FaChevronRight className="analysis-dropdown-glyph" />
+                }
               </span>
               <span>
                 <Button id={`openBapWindow${this.props.bapId}`} className='bap-window-button'
                   style={{display: this.state.bapWindowOpen ? 'none' : 'inline-block'}}
                   onClick={() => {this.setState({bapWindowOpen: !this.state.bapWindowOpen})}}>
-                  <Glyphicon className="inner-glyph" glyph="resize-full"
-                  />
+                  <IoMdOpen />
                 </Button>
                 <Button id={`viewJsonWindow${this.props.bapId}`} className='bap-window-button'
                   style={{display: this.state.jsonWindowOpen || !this.jsonData ? 'none' : 'inline-block'}}
                   onClick={() => {this.setState({jsonWindowOpen: !this.state.jsonWindowOpen})}}>
-                  <Glyphicon className="inner-glyph" glyph="console"
-                  />
+                  <FaTerminal />
+                />
                 </Button>
-                <CustomToolTip placement="top" target={`openBapWindow${this.props.bapId}`} text="View Bap in new window" ></CustomToolTip>
-                <CustomToolTip placement="top" target={`viewJsonWindow${this.props.bapId}`} text="View the raw JSON used for analysis" ></CustomToolTip>
+                <Tooltip placement="top" target={`openBapWindow${this.props.bapId}`} >View Bap in new window</Tooltip>
+                <Tooltip placement="top" target={`viewJsonWindow${this.props.bapId}`} >View the raw JSON used for analysis</Tooltip>
 
               </span>
             </div>
@@ -465,7 +463,6 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
         }
         this.setState({
           isOpen: !this.state.isOpen,
-          glyph: !this.state.isOpen ? 'menu-down' : 'menu-right'
         })
       }
     }
@@ -576,9 +573,10 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
 
           <div className="bap-title-content" style={{width: '20px'}}>
             <span onClick={this.toggleDropdown} className="bapTitle">
-              <Glyphicon style={{display: this.state.canOpen ? 'inline-block' : 'none'}}
-                className="dropdown-glyph"
-                glyph={this.state.glyph} />
+              { this.state.isOpen ?
+                  <FaChevronDown style={{display: this.state.canOpen ? 'inline-block' : 'none'}} className="dropdown-glyph" /> :
+                  <FaChevronRight style={{display: this.state.canOpen ? 'inline-block' : 'none'}} className="dropdown-glyph" />
+              }
             </span>
           </div>
           <div className="bap-title-content" style={{width: 'calc(100% - 40px)'}}>
@@ -593,8 +591,11 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
             <input id={`pBapToolTip${this.props.bapId}`} className="priority-bap-raido"
               style={{display: this.state.canOpen ? 'block' : 'none'}} type='radio'
               readOnly={true} checked={this.props.bapId === this.props.priorityBap}
-              onClick={() => {this.props.setPriorityBap(this.props.bapId)}} ></input>
-            <CustomToolTip placement="top" target={`pBapToolTip${this.props.bapId}`} text={this.props.bapId === this.props.priorityBap ? '' : 'Select Priority Bap'} ></CustomToolTip>
+              onClick={() => {this.props.setPriorityBap(this.props.bapId)}} >
+            </input>
+            <Tooltip placement="top" target={`pBapToolTip${this.props.bapId}`} >
+              { this.props.bapId === this.props.priorityBap ? '' : 'Select Priority Bap' }
+            </Tooltip>
           </div>
           <Collapse className="settings-dropdown" isOpen={this.state.isOpen && this.state.isEnabled}>
             <AnalysisPackage

@@ -1,7 +1,5 @@
 import './LeftPanel.css'
 import Biogeography from '../Bioscapes/Biogeography'
-import CustomToolTip from '../ToolTip/ToolTip'
-// @ts-ignore
 import Dialog from 'react-dialog'
 import InfoSign from '../InfoSign/InfoSign'
 import PDFReport from '../PDF/PdfReport'
@@ -10,6 +8,7 @@ import SearchBar from './SearchBar'
 import TerrestrialEcosystems2011 from '../Bioscapes/TerrestrialEcosystems2011'
 import loadingGif from './ajax-loader.gif'
 import speechBubble from './bubble.png'
+import {Tooltip} from 'reactstrap'
 
 export interface ILeftPanelProps {
   results: any[],
@@ -205,13 +204,17 @@ class LeftPanel extends React.Component<ILeftPanelProps, ILeftPanelState> {
             </div>
             <div className="panel-buttons">
               <button id="ShareTooltip" className="submit-analysis-btn" onClick={this.share}>{this.state.shareText}</button>
+              <Tooltip target="ShareTooltip" placement="top" >
+                Share this map by copying a url to your clipboard.
+              </Tooltip>
               <input className="share-url-input" type="text"></input>
-              <CustomToolTip target="ShareTooltip" placement="top" text={'Share this map by copying a url to your clipboard.'} > </CustomToolTip>
 
               <button id="ReportTooltip" className="submit-analysis-btn" onClick={this.report}>
                 <PDFReport onRef={(ref: PDFReport) => (this.pdfReportRef = ref)} getShareUrl={this.props.shareState}></PDFReport>
               </button>
-              <CustomToolTip target="ReportTooltip" placement="top" text={'Only expanded sections will appear in the PDF and all user selections/filters will be reflected.'} > </CustomToolTip>
+              <Tooltip target="ReportTooltip" placement="top" text={''} >
+                Only expanded sections will appear in the PDF and all user selections/filters will be reflected.
+              </Tooltip>
             </div>
             {this.state.loading && <div className="pdf-loading-gif">
               <img src={loadingGif} alt="Loading..."></img>

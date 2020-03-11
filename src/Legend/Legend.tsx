@@ -1,10 +1,9 @@
 import ArcgisLegend from './ArcgisLegend'
-import CustomToolTip from '../ToolTip/ToolTip'
 import Dialog from 'react-dialog'
 import React, {FunctionComponent, useState} from 'react'
 import WmsLegend from './WmsLegend'
-import {Button} from 'reactstrap'
-import {Glyphicon} from 'react-bootstrap'
+import {Button, Tooltip} from 'reactstrap'
+import {FaKey} from 'react-icons/fa'
 
 import './Legend.css'
 
@@ -28,10 +27,10 @@ const Legend: FunctionComponent<{ enabledLayers: any[] }> = ({ enabledLayers }) 
 
   return (
     <div>
-      <Button id={'LegendTooltip'} className='submit-analysis-btn placeholder-button' onClick={toggleDialog} >
-        <Glyphicon className="inner-glyph" glyph="th-list" />
+      <Button id="LegendTooltip" className='submit-analysis-btn placeholder-button' onClick={toggleDialog} >
+        <FaKey />
       </Button>
-      <CustomToolTip target={'LegendTooltip'} text="Legend" placement="left" ></CustomToolTip>
+      <Tooltip target="LegendTooltip" placement="left" >Legend</Tooltip>
       { isDialogOpen &&
         <Dialog
           height={450}

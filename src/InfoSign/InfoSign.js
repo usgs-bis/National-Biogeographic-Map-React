@@ -1,9 +1,9 @@
-import React from "react";
-import { Tooltip } from "reactstrap"
-import { Glyphicon } from "react-bootstrap";
+import React from 'react'
+import {FaInfoCircle} from 'react-icons/fa'
+import {Tooltip} from 'reactstrap'
 
 
-import "./InfoSign.css"
+import './InfoSign.css'
 
 class InfoSign extends React.Component {
     constructor(props) {
@@ -12,11 +12,11 @@ class InfoSign extends React.Component {
             open: false
         }
         this.makeid = (length) => {
-            var text = "";
-            var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+            var text = ''
+            var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
             for (var i = 0; i < length; i++)
-                text += possible.charAt(Math.floor(Math.random() * possible.length));
-            return text;
+                text += possible.charAt(Math.floor(Math.random() * possible.length))
+            return text
         }
         this.id = this.makeid(15)
     }
@@ -27,19 +27,19 @@ class InfoSign extends React.Component {
         return (
             <React.Fragment>
                 <span id={this.id} onClick={this.props.onClick} className="main-title-info">
-                    <Glyphicon glyph="info-sign" />
+                    <FaInfoCircle />
                 </span>
                 <Tooltip
-                    style={{ fontSize: "14px" }} isOpen={this.state.open}
+                    style={{fontSize: '14px'}} isOpen={this.state.open}
                     target={this.id}
-                    toggle={() => this.setState({ open: !this.state.open })}
+                    toggle={() => this.setState({open: !this.state.open})}
                     delay={0}>
                     Information
-        </Tooltip>
+                </Tooltip>
             </React.Fragment>
 
-        );
+        )
     }
 }
-export default InfoSign;
+export default InfoSign
 

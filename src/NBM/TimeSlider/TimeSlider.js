@@ -1,6 +1,6 @@
 import './TimeSlider.css'
 import React from 'react'
-import {Glyphicon} from 'react-bootstrap'
+import {FaTag, FaPlay, FaPause} from 'react-icons/fa'
 
 // only used initial values for now
 const minSliderValue = 1981
@@ -18,9 +18,9 @@ class TimeSlider extends React.Component {
     super(props)
 
     // State in this component is used only for driving whats displayed
-    // in the tooltips/summary box. The actual values, since they are 
+    // in the tooltips/summary box. The actual values, since they are
     // used by many different components are stored in the state of app.js.
-    // This also allows us to initilize this component when loading from a 
+    // This also allows us to initilize this component when loading from a
     // share url.
 
     this.state = {
@@ -91,6 +91,10 @@ class TimeSlider extends React.Component {
   setIntermittentYearRange() {
     let l = document.getElementById('leftHandleOutputGlyph').offsetLeft
     let r = document.getElementById('rightHandleOutputGlyph').offsetLeft
+    if (!l || !r) { return }
+    // @Matt DEBUG
+    console.log('l: ', l)
+    console.log('r: ', r)
 
     let leftpos = l >= r ? r : l
     let rightpos = r > l ? r : l
@@ -121,6 +125,9 @@ class TimeSlider extends React.Component {
   setIntermittentMapDisplayYear() {
 
     let pos = document.getElementById('middleHandleOutputGlyph').offsetLeft
+    // @Matt DEBUG
+    console.log('pos: ', pos)
+
     let widthRatio = pos / this.sliderSize
 
     let year = this.minSliderValue + parseInt((this.maxSliderValue - this.minSliderValue) * widthRatio)
@@ -135,14 +142,14 @@ class TimeSlider extends React.Component {
   }
 
   initHandlePos() {
-    if (!document.getElementById('rangeSliderContainer')) { return }
+    if (!document.getElementById('rangeSliderContainer')) {return }
 
     this.sliderSize = document.getElementById('rangeSliderContainer').clientWidth
     // init middle
     let left = ((this.state.mapDisplayYear - this.minSliderValue) / (this.maxSliderValue - this.minSliderValue)) * this.sliderSize
     document.getElementById('middleHandleOutputGlyph').style.left = (left + 5) + 'px'
 
-    // init left 
+    // init left
     left = ((this.state.rangeYearMin - this.minSliderValue) / (this.maxSliderValue - this.minSliderValue)) * this.sliderSize
     document.getElementById('leftHandleOutputGlyph').style.left = (left + 5) + 'px'
 
@@ -245,8 +252,24 @@ class TimeSlider extends React.Component {
       <div>
 
         <section id="range-slider" className="range-slider">
-          <Glyphicon onClick={this.playTimeSlider} className="play-glyph inner-glyph" glyph={this.state.playGlyph}
-            data-toggle="tooltip" data-placement="top" title={this.state.playing ? 'Pause' : 'Play'} />
+          { this.state.playing ?
+              <FaPause
+                onClick={this.playTimeSlider}
+                className="play-glyph inner-glyph"
+                glyph={this.state.playGlyph}
+                data-toggle="tooltip"
+                data-placement="top"
+                title={this.state.playing ? 'Pause' : 'Play'}
+              /> :
+              <FaPlay
+                onClick={this.playTimeSlider}
+                className="play-glyph inner-glyph"
+                glyph={this.state.playGlyph}
+                data-toggle="tooltip"
+                data-placement="top"
+                title={this.state.playing ? 'Pause' : 'Play'}
+              />
+          }
           <span className="range-values" style={{left: '30px'}}>{this.minSliderValue}</span>
           <span id="rangeSliderContainer" className="range-slider-container">
             <span id="sliderRangeFill" className="slider-range-fill"></span>
@@ -254,19 +277,23 @@ class TimeSlider extends React.Component {
             <span id="leftHandleOutput" className="range-handle" >
               <span id="leftHandleOutputText"></span>
             </span>
-            <Glyphicon id="leftHandleOutputGlyph" className="edge-glyph-tag inner-glyph" glyph="tag" />
+            <span id="leftHandleOutputGlyph" className="edge-glyph-tag inner-glyph" >
+              <FaTag />
+            </span>
 
             <span id="middleHandleOutput" className="range-handle handle-overlap" >
               <span id="middleHandleOutputText"></span>
             </span>
-            <span></span>
-            <Glyphicon id="middleHandleOutputGlyph" className="center-glyph-tag inner-glyph" glyph="tag" />
-
+            <span id="middleHandleOutputGlyph" className="center-glyph-tag inner-glyph" >
+              <FaTag />
+            </span>
 
             <span id="rightHandleOutput" className="range-handle" >
               <span id="rightHandleOutputText"></span>
             </span>
-            <Glyphicon id="rightHandleOutputGlyph" className="edge-glyph-tag inner-glyph" glyph="tag" />
+            <span id="rightHandleOutputGlyph" className="edge-glyph-tag inner-glyph" >
+              <FaTag />
+            </span>
 
           </span>
 

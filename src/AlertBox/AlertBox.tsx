@@ -1,8 +1,9 @@
 import './AlertBox.scss'
 import React, {FunctionComponent, useState, useEffect} from 'react'
-import {Alert} from 'react-bootstrap'
+import {Alert} from 'reactstrap'
 import AppConfig from '../config'
 
+// @Matt TODO: #current re-test
 const AlertBox: FunctionComponent = () => {
   const [apiCheck, setApiCheck] = useState<null|string>(null)
 
