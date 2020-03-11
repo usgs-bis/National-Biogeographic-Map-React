@@ -57,6 +57,9 @@ npm_build:
   artifacts:
     paths:
       - build
+  only:
+    - master
+    - tags
 
 #
 # == Upload artifact to Artifactory

@@ -549,9 +549,8 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
       .catch(setErrorState)
   }
 
-  // @Matt TODO: need to debounce this, too many fetches
   // @Matt TODO: refactor to leftpanel
-  const handleSearchBox = (text: any) => {
+  const handleSearchBox = _.debounce((text: any) => {
 
     if (text.length < 5) {
       setState((prev) => Object.assign({}, prev, {
@@ -582,7 +581,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
       })
       .catch(setErrorState)
 
-  }
+  }, 250)
 
   // brings layer 1 up and layer 2 down; removes layer 2.
   const layerTransitionFade = (layer: any, layer2: any, targetOpacity: any) => {

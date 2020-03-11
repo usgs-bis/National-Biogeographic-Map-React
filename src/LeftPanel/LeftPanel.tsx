@@ -106,7 +106,7 @@ class LeftPanel extends React.Component<ILeftPanelProps, ILeftPanelState> {
     // only add the event listner when we are ready to remove it.
     // If there is a layer or the layer is empty string then we are loading a
     // previous state and do not want to display the help popup ever. Otherwise,
-    // we want to display it after a suer has selected a feature but before they
+    // we want to display it after a user has selected a feature but before they
     // pick a bap.
     if (!this.listenerAdded && !this.props.priorityBap && props.feature && !this.props.initBaps) {
       this.listenerAdded = true
