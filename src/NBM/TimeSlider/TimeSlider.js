@@ -1,4 +1,4 @@
-import './TimeSlider.css'
+import './TimeSlider.scss'
 import React from 'react'
 import {FaTag, FaPlay, FaPause} from 'react-icons/fa'
 
@@ -91,10 +91,8 @@ class TimeSlider extends React.Component {
   setIntermittentYearRange() {
     let l = document.getElementById('leftHandleOutputGlyph').offsetLeft
     let r = document.getElementById('rightHandleOutputGlyph').offsetLeft
+
     if (!l || !r) { return }
-    // @Matt DEBUG
-    console.log('l: ', l)
-    console.log('r: ', r)
 
     let leftpos = l >= r ? r : l
     let rightpos = r > l ? r : l
@@ -125,8 +123,7 @@ class TimeSlider extends React.Component {
   setIntermittentMapDisplayYear() {
 
     let pos = document.getElementById('middleHandleOutputGlyph').offsetLeft
-    // @Matt DEBUG
-    console.log('pos: ', pos)
+    if (!pos) { return }
 
     let widthRatio = pos / this.sliderSize
 
@@ -277,21 +274,21 @@ class TimeSlider extends React.Component {
             <span id="leftHandleOutput" className="range-handle" >
               <span id="leftHandleOutputText"></span>
             </span>
-            <span id="leftHandleOutputGlyph" className="edge-glyph-tag inner-glyph" >
+            <span id="leftHandleOutputGlyph" className="glyph-tag edge-glyph-tag inner-glyph" >
               <FaTag />
             </span>
 
             <span id="middleHandleOutput" className="range-handle handle-overlap" >
               <span id="middleHandleOutputText"></span>
             </span>
-            <span id="middleHandleOutputGlyph" className="center-glyph-tag inner-glyph" >
+            <span id="middleHandleOutputGlyph" className="glyph-tag center-glyph-tag inner-glyph" >
               <FaTag />
             </span>
 
             <span id="rightHandleOutput" className="range-handle" >
               <span id="rightHandleOutputText"></span>
             </span>
-            <span id="rightHandleOutputGlyph" className="edge-glyph-tag inner-glyph" >
+            <span id="rightHandleOutputGlyph" className="glyph-tag edge-glyph-tag inner-glyph" >
               <FaTag />
             </span>
 
