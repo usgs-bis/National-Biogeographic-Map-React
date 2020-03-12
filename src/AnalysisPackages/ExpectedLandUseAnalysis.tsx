@@ -53,7 +53,7 @@ const EMPTY_CHARTS = {
 }
 
 const ExpectedLandUseAnalysisPackage: FunctionComponent<IExpectedLandUseAnalysisPackageProps> = (props, ref) => {
-  const [timeSliderState, setTimeSliderState] = useContext(TimeSliderContext)
+  const [, setTimeSliderState] = useContext(TimeSliderContext)
   const [loading, setLoading] = useState(false)
   const [charts, setCharts] = useState(EMPTY_CHARTS)
   const [error, setError] = useState(false)

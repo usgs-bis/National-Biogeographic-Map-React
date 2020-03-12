@@ -116,6 +116,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
 
     useEffect(() => {
       props.onRef({print})
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isOpen])
 
     const initilize = () => {
