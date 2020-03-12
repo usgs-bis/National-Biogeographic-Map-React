@@ -1,5 +1,4 @@
-import React, { FunctionComponent, useState, useContext, useEffect, useImperativeHandle, useRef, forwardRef, useCallback } from 'react'
-import L from 'leaflet'
+import React, { FunctionComponent, useState, useContext, useEffect, useImperativeHandle, useRef, forwardRef } from 'react'
 import { BarLoader } from 'react-spinners'
 
 import withSharedAnalysisCharacteristics from './AnalysisPackage'
@@ -7,6 +6,7 @@ import ComparisonChart from '../Charts/ComparisonChart'
 import './AnalysisPackages.css'
 import AppConfig from '../config'
 import { TimeSliderContext } from '../Contexts/TimeSliderContext'
+import { TimeEnabledLayer, defaultTimeDimension } from './TimeEnabledLayer'
 
 const SB_URL = 'https://www.sciencebase.gov/catalog/item/5b685d1ce4b006a11f75b0a8?format=json'
 const FIRSTLEAF_URL = AppConfig.REACT_APP_BIS_API + '/api/v1/phenology/place/firstleaf'
@@ -21,42 +21,8 @@ let sb_properties = {
 }
 
 const layers = [
-  {
-    title: 'Average Leaf PRISM',
-    layer: L.tileLayer.wms(
-      'https://geoserver.usanpn.org/geoserver/si-x/wms',
-      {
-        format: 'image/png',
-        layers: 'average_leaf_prism',
-        opacity: .5,
-        transparent: true
-      }
-    ),
-    legend: {
-      imageUrl: 'https://geoserver.usanpn.org/geoserver/si-x/wms??service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=average_leaf_prism'
-    },
-    timeEnabled: true,
-    checked: false,
-    sb_item: '591c6ec6e4b0a7fdb43dea8a'
-  },
-  {
-    title: 'Average Bloom PRISM',
-    layer: L.tileLayer.wms(
-      'https://geoserver.usanpn.org/geoserver/si-x/wms',
-      {
-        format: 'image/png',
-        layers: 'average_bloom_prism',
-        opacity: .5,
-        transparent: true
-      }
-    ),
-    legend: {
-      imageUrl: 'https://geoserver.usanpn.org/geoserver/si-x/wms??service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=average_bloom_prism'
-    },
-    timeEnabled: true,
-    checked: false,
-    sb_item: '5ac3b12ee4b0e2c2dd0c2b95'
-  }
+  new TimeEnabledLayer('Average Leaf PRISM', 'https://geoserver.usanpn.org/geoserver/si-x/wms', 'average_leaf_prism', '591c6ec6e4b0a7fdb43dea8a'),
+  new TimeEnabledLayer('Average Bloom PRISM', 'https://geoserver.usanpn.org/geoserver/si-x/wms', 'average_bloom_prism', '5ac3b12ee4b0e2c2dd0c2b95'),
 ]
 
 interface IFirstLeafBloomComparisonAnalysisPackageProps {
@@ -84,6 +50,7 @@ const FirstLeafBloomComparisonAnalysisPackage: FunctionComponent<IFirstLeafBloom
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
   const [didSubmit, setDidSubmit] = useState(false)
+  const [timeDimension, setTimeDimension] = useState(defaultTimeDimension)
 
   const ComparisonChartRef = useRef<any>(null)
   const featureRef = useRef(props.feature)
@@ -101,6 +68,13 @@ const FirstLeafBloomComparisonAnalysisPackage: FunctionComponent<IFirstLeafBloom
         setTimeout(submitAnalysis, 3000)
       }
     }
+    const fetchTimeDimension = async () => {
+      const res = await Promise.all(layers.map(l => l.getTimeDimension()))
+      const minVal = Math.min(...res.map(td => td.minVal))
+      const maxVal = Math.max(...res.map(td => td.maxVal))
+      setTimeDimension({ minVal, maxVal, step: res[0].step })
+    }
+    fetchTimeDimension()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -118,14 +92,11 @@ const FirstLeafBloomComparisonAnalysisPackage: FunctionComponent<IFirstLeafBloom
   }, [props.feature])
 
   useEffect(() => {
-    console.log('prioBap change', props.isPriorityBap)
     if (props.isPriorityBap) {
-      setTimeSliderState({display: true, minSliderValue: 1982, maxSliderValue: 2018})
-    } else {
-      setTimeSliderState({display: false})
+      setTimeSliderState({minSliderValue: 1982, maxSliderValue: 2018})
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.isPriorityBap])
+  }, [props.isPriorityBap, timeDimension])
 
   const featureChange = () => {
     if (props.feature) {

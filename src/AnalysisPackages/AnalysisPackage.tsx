@@ -2,10 +2,11 @@ import './AnalysisPackages.css'
 import CustomToolTip from '../ToolTip/ToolTip'
 import Dialog from 'react-dialog'
 import InfoSign from '../InfoSign/InfoSign'
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useContext } from 'react'
 import {Collapse, Button} from 'reactstrap'
 import {FormGroup, Label} from 'reactstrap'
 import {Glyphicon} from 'react-bootstrap'
+import { TimeSliderContext } from '../Contexts/TimeSliderContext'
 
 export interface IAnalysisPackageProps {
   onRef: Function
@@ -32,6 +33,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
   const AnalysisPackageInstance = React.createRef<{print: Function}>()
 
   const HOC: React.FunctionComponent<IAnalysisPackageProps> = (props: IAnalysisPackageProps) => {
+    const [, setTimeSliderState] = useContext(TimeSliderContext)
     const [sbProperties, setSbProperties] = useState(sb_properties)
     const [error, setError] = useState()
     const [layers, setLayers] = useState(layers_init)
@@ -47,7 +49,6 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
     const [prettyJson, setPrettyJson] = useState(false)
     const [isPriorityBap, setIsPriorityBap] = useState(props.priorityBap === props.bapId)
 
-    // BL TODO: probably needs to be useRef
     let shareState: any = {}
     let initialized = useRef(false)
     let jsonData: any = null
@@ -64,6 +65,9 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
           }
         )
       initilize()
+      if (isPriorityBap) {
+        setTimeSliderState({ display: true })
+      }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -93,6 +97,9 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
         if (layers.length && !getOnLayers().length) {
           let firstLayer = layers[0]
           toggleLayer(firstLayer)
+          setTimeSliderState({ display: firstLayer.timeEnabled })
+        } else {
+          setTimeSliderState({ display: false })
         }
         setIsOpen(true)
         setIsPriorityBap(true)

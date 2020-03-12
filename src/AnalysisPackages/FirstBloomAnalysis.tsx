@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle, FunctionComponent, useContext } from 'react'
-import L from 'leaflet'
 import { BarLoader } from 'react-spinners'
 
 import withSharedAnalysisCharacteristics from './AnalysisPackage'
@@ -10,6 +9,7 @@ import './AnalysisPackages.css'
 import AppConfig from '../config'
 import { IChart } from '../Charts/Chart'
 import { TimeSliderContext } from '../Contexts/TimeSliderContext'
+import { TimeEnabledLayer, defaultTimeDimension } from './TimeEnabledLayer'
 
 const SB_URL = 'https://www.sciencebase.gov/catalog/item/5abd5fede4b081f61abfc472?format=json'
 const FIRSTBLOOM_URL = AppConfig.REACT_APP_BIS_API + '/api/v1/phenology/place/firstbloom'
@@ -21,24 +21,7 @@ let sb_properties = {
 }
 
 const layers = [
-  {
-    title: 'Average Bloom PRISM',
-    layer: L.tileLayer.wms(
-      'https://geoserver.usanpn.org/geoserver/si-x/wms',
-      {
-        format: 'image/png',
-        layers: 'average_bloom_prism',
-        opacity: .5,
-        transparent: true
-      }
-    ),
-    legend: {
-      imageUrl: 'https://geoserver.usanpn.org/geoserver/si-x/wms??service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=average_bloom_prism'
-    },
-    timeEnabled: true,
-    checked: false,
-    sb_item: '5ac3b12ee4b0e2c2dd0c2b95'
-  }
+  new TimeEnabledLayer('Average Bloom PRISM', 'https://geoserver.usanpn.org/geoserver/si-x/wms', 'average_bloom_prism', '5ac3b12ee4b0e2c2dd0c2b95')
 ]
 
 export interface IFirstBloomAnalysisPackageProps {
@@ -75,6 +58,7 @@ const FirstBloomAnalysisPackage: FunctionComponent<IFirstBloomAnalysisPackagePro
   const [error, setError] = useState(false)
   const [bucketSize, setBucketSize] = useState(3)
   const [didSubmit, setDidSubmit] = useState(false)
+  const [timeDimension, setTimeDimension] = useState(defaultTimeDimension)
 
   const HistogramChartRef = useRef<any>(null)
   const RidgelinePlotChartRef= useRef<any>(null)
@@ -95,7 +79,12 @@ const FirstBloomAnalysisPackage: FunctionComponent<IFirstBloomAnalysisPackagePro
         setTimeout(submitAnalysis, 3000)
       }
     }
-    setTimeSliderState({display: true, minSliderValue: 1982, maxSliderValue: 2018})
+    const [layer] = layers
+    const fetchTimeDimension = async () => {
+      const timeDimension = await layer.getTimeDimension()
+      setTimeDimension(timeDimension)
+    }
+    fetchTimeDimension()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -115,12 +104,10 @@ const FirstBloomAnalysisPackage: FunctionComponent<IFirstBloomAnalysisPackagePro
 
   useEffect(() => {
     if (props.isPriorityBap) {
-      setTimeSliderState({display: true, minSliderValue: 1982, maxSliderValue: 2018})
-    } else {
-      setTimeSliderState({display: false})
+      setTimeSliderState({ minSliderValue: timeDimension.minVal, maxSliderValue: timeDimension.maxVal })
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.isPriorityBap])
+  }, [props.isPriorityBap, timeDimension])
 
   const featureChange = () => {
     if (props.feature) {

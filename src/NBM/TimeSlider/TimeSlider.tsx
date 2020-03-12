@@ -43,7 +43,7 @@ const TimeSlider: React.FunctionComponent = () => {
     let right = getPositionFromYear(rightYear, width)
     rightUpdate(right, width)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [windowSize, state.display])
+  }, [windowSize, state.display, state.minSliderValue, state.maxSliderValue])
 
   const playTimeout = useRef<any>()
   useEffect(() => {
@@ -99,6 +99,9 @@ const TimeSlider: React.FunctionComponent = () => {
   }
 
   const getPositionFromYear = (year: number, width: number) => {
+    if (year < minSliderValue) {
+      return 0
+    }
     const position = ((year - minSliderValue) / (maxSliderValue - minSliderValue)) * width
     return position >= width ? width : position
   }

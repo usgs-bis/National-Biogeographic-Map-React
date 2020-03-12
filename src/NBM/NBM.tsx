@@ -24,15 +24,6 @@ const DEV_MODE = AppConfig.REACT_APP_DEV
 const ENV = AppConfig.REACT_APP_ENV
 const BUFFER = .5
 
-//is the total range of data for slider,
-// not the range of the analysis window
-const YEAR_RANGES = {
-  'bap1': {min: 1981, max: 2018},
-  'bap2': {min: 1981, max: 2018},
-  'bap3': {min: 1981, max: 2018},
-  'bap10': {min: 2001, max: 2061}
-}
-
 export interface INBMProps {
   // @Matt TODO: do we need this?
   className: string

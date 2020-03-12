@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle, FunctionComponent, useContext } from 'react'
-import L from 'leaflet'
 import { BarLoader } from 'react-spinners'
 
 import withSharedAnalysisCharacteristics from './AnalysisPackage'
@@ -8,9 +7,9 @@ import HistogramChart from '../Charts/HistogramChart'
 import RidgelinePlotChart from '../Charts/RidgelinePlotChart'
 import './AnalysisPackages.css'
 import AppConfig from '../config'
-// import xml2js from 'xml2js'
 import { IChart } from '../Charts/Chart'
 import { TimeSliderContext } from '../Contexts/TimeSliderContext'
+import { TimeEnabledLayer, defaultTimeDimension } from './TimeEnabledLayer'
 
 const SB_URL = 'https://www.sciencebase.gov/catalog/item/58bf0b61e4b014cc3a3a9c10?format=json'
 const FIRSTLEAF_URL = AppConfig.REACT_APP_BIS_API + '/api/v1/phenology/place/firstleaf'
@@ -22,25 +21,7 @@ let sb_properties = {
 }
 
 const layers = [
-  {
-    title: 'Average Leaf PRISM',
-    layer: L.tileLayer.wms(
-      'https://geoserver.usanpn.org/geoserver/si-x/wms',
-      {
-        format: 'image/png',
-        layers: 'average_leaf_prism',
-        opacity: .5,
-        transparent: true
-      }
-    ),
-    legend: {
-      imageUrl: 'https://geoserver.usanpn.org/geoserver/si-x/wms??service=wms&request=GetLegendGraphic&' +
-        'format=image%2Fpng&layer=average_leaf_prism'
-    },
-    timeEnabled: true,
-    checked: false,
-    sb_item: '591c6ec6e4b0a7fdb43dea8a'
-  }
+  new TimeEnabledLayer('Average Leaf PRISM', 'https://geoserver.usanpn.org/geoserver/si-x/wms', 'average_leaf_prism', '591c6ec6e4b0a7fdb43dea8a'),
 ]
 
 export interface IFirstLeafAnalysisPackageProps {
@@ -77,6 +58,7 @@ const FirstLeafAnalysisPackage: FunctionComponent<IFirstLeafAnalysisPackageProps
   const [error, setError] = useState(false)
   const [bucketSize, setBucketSize] = useState(3)
   const [didSubmit, setDidSubmit] = useState(false)
+  const [timeDimension, setTimeDimension] = useState(defaultTimeDimension)
 
   const HistogramChartRef = useRef<any>(null)
   const RidgelinePlotChartRef = useRef<any>(null)
@@ -97,7 +79,12 @@ const FirstLeafAnalysisPackage: FunctionComponent<IFirstLeafAnalysisPackageProps
         setTimeout(submitAnalysis, 3000)
       }
     }
-    setTimeSliderState({display: true, minSliderValue: 1982, maxSliderValue: 2018})
+    const [layer] = layers
+    const fetchTimeDimension = async () => {
+      const timeDimension = await layer.getTimeDimension()
+      setTimeDimension(timeDimension)
+    }
+    fetchTimeDimension()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -117,12 +104,10 @@ const FirstLeafAnalysisPackage: FunctionComponent<IFirstLeafAnalysisPackageProps
 
   useEffect(() => {
     if (props.isPriorityBap) {
-      setTimeSliderState({display: true, minSliderValue: 1982, maxSliderValue: 2018})
-    } else {
-      setTimeSliderState({display: false})
+      setTimeSliderState({ minSliderValue: timeDimension.minVal, maxSliderValue: timeDimension.maxVal })
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.isPriorityBap])
+  }, [props.isPriorityBap, timeDimension])
 
   const featureChange = () => {
     if (props.feature) {

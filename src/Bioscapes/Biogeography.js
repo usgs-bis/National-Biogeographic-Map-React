@@ -9,7 +9,7 @@ import EcosystemProtectionAnalysis from "../AnalysisPackages/EcosystemProtection
 import PhenologyAnalysis from "../AnalysisPackages/PhenologyAnalysis";
 import OBISAnalysis from "../AnalysisPackages/OBISAnalysis";
 import BadNeighborAnalysis from "../AnalysisPackages/BadNeighborAnalysis";
-import ExpectedLandUseAnalysis from "../AnalysisPackages/ExpectedLandUseAnanlysis";
+import ExpectedLandUseAnalysis from '../AnalysisPackages/ExpectedLandUseAnalysis'
 import NVCSHierarchyByPixel from "../AnalysisPackages/NVCSHierarchyByPixel";
 import NVCSSummaryByRegion from "../AnalysisPackages/NVCSSummaryByRegion";
 import AppConfig from "../config";
