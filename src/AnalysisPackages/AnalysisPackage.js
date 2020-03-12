@@ -5,7 +5,7 @@ import React from 'react'
 import {Button, Collapse, FormGroup, Label} from 'reactstrap'
 import {FaTerminal, FaExclamationCircle, FaChevronDown, FaChevronRight} from 'react-icons/fa'
 import {IoMdOpen} from 'react-icons/io'
-import {Tooltip} from 'reactstrap'
+import {UncontrolledTooltip} from 'reactstrap'
 
 const withSharedAnalysisCharacteristics = (AnalysisPackage,
   layers,
@@ -263,19 +263,19 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
                 }
               </span>
               <span>
-                <Button id={`openBapWindow${this.props.bapId}`} className='bap-window-button'
+                <Button id={`openBapWindow${this.props.bapId}`} className='icon-btn bap-window-button'
                   style={{display: this.state.bapWindowOpen ? 'none' : 'inline-block'}}
                   onClick={() => {this.setState({bapWindowOpen: !this.state.bapWindowOpen})}}>
                   <IoMdOpen />
                 </Button>
-                <Button id={`viewJsonWindow${this.props.bapId}`} className='bap-window-button'
+                <Button id={`viewJsonWindow${this.props.bapId}`} className='icon-btn bap-window-button'
                   style={{display: this.state.jsonWindowOpen || !this.jsonData ? 'none' : 'inline-block'}}
                   onClick={() => {this.setState({jsonWindowOpen: !this.state.jsonWindowOpen})}}>
                   <FaTerminal />
                 />
                 </Button>
-                <Tooltip placement="top" target={`openBapWindow${this.props.bapId}`} >View Bap in new window</Tooltip>
-                <Tooltip placement="top" target={`viewJsonWindow${this.props.bapId}`} >View the raw JSON used for analysis</Tooltip>
+                <UncontrolledTooltip placement="top" target={`openBapWindow${this.props.bapId}`} >View Bap in new window</UncontrolledTooltip>
+                <UncontrolledTooltip placement="top" target={`viewJsonWindow${this.props.bapId}`} >View the raw JSON used for analysis</UncontrolledTooltip>
 
               </span>
             </div>
@@ -593,9 +593,9 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
               readOnly={true} checked={this.props.bapId === this.props.priorityBap}
               onClick={() => {this.props.setPriorityBap(this.props.bapId)}} >
             </input>
-            <Tooltip placement="top" target={`pBapToolTip${this.props.bapId}`} >
+            <UncontrolledTooltip placement="top" target={`pBapToolTip${this.props.bapId}`} >
               { this.props.bapId === this.props.priorityBap ? '' : 'Select Priority Bap' }
-            </Tooltip>
+            </UncontrolledTooltip>
           </div>
           <Collapse className="settings-dropdown" isOpen={this.state.isOpen && this.state.isEnabled}>
             <AnalysisPackage

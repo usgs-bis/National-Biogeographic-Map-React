@@ -5,6 +5,7 @@ import Control from 'react-leaflet-control'
 import Dialog from 'react-dialog'
 import InfoSign from '../InfoSign/InfoSign'
 import L, {LatLngBoundsExpression, Layer} from 'leaflet'
+import Legend from '../Legend/Legend'
 import LocationOverlay from './LocationOverylays/LocationOverlay'
 import React, {FunctionComponent, useState, useEffect, useRef, useContext} from 'react'
 import TimeSlider from './TimeSlider/TimeSlider'
@@ -500,13 +501,17 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
               circle: false
             }}
           />
+          // @Matt TODO: #current make enabledLayers a context
+          <Control position="topright">
+            <Legend />
+          </Control>
           {DEV_MODE &&
             <Control position="topright">
-              <label className="mb-0 pt-1 rounded" title="Upload a shp file">
-                <span className="add-more-label" onClick={handleShow}>
+              <div className="leaflet-bar" title="Upload a shp file">
+                <button onClick={handleShow}>
                   <FaCloudUploadAlt className="inner-glyph" />
-                </span>
-              </label>
+                </button>
+              </div>
             </Control>
           }
         </FeatureGroup>

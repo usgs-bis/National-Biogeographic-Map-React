@@ -8,7 +8,7 @@ import SearchBar from './SearchBar'
 import TerrestrialEcosystems2011 from '../Bioscapes/TerrestrialEcosystems2011'
 import loadingGif from './ajax-loader.gif'
 import speechBubble from './bubble.png'
-import {Tooltip} from 'reactstrap'
+import {UncontrolledTooltip} from 'reactstrap'
 
 export interface ILeftPanelProps {
   results: any[],
@@ -36,7 +36,6 @@ export interface ILeftPanelState {
   results: any[],
   bioscape: any,
   loading: boolean,
-  enabledLayers: any[],
   shareText: string,
   displayHelpPopup: boolean,
   showDescription: boolean,
@@ -68,7 +67,6 @@ class LeftPanel extends React.Component<ILeftPanelProps, ILeftPanelState> {
       results: props.results,
       bioscape: props.bioscape,
       loading: false,
-      enabledLayers: [],
       shareText: 'Share',
       displayHelpPopup: false,
       showDescription: false,
@@ -204,17 +202,17 @@ class LeftPanel extends React.Component<ILeftPanelProps, ILeftPanelState> {
             </div>
             <div className="panel-buttons">
               <button id="ShareTooltip" className="submit-analysis-btn" onClick={this.share}>{this.state.shareText}</button>
-              <Tooltip target="ShareTooltip" placement="top" >
+              <UncontrolledTooltip target="ShareTooltip" placement="top" >
                 Share this map by copying a url to your clipboard.
-              </Tooltip>
+              </UncontrolledTooltip>
               <input className="share-url-input" type="text"></input>
 
               <button id="ReportTooltip" className="submit-analysis-btn" onClick={this.report}>
                 <PDFReport onRef={(ref: PDFReport) => (this.pdfReportRef = ref)} getShareUrl={this.props.shareState}></PDFReport>
               </button>
-              <Tooltip target="ReportTooltip" placement="top" text={''} >
+              <UncontrolledTooltip target="ReportTooltip" placement="top" text={''} >
                 Only expanded sections will appear in the PDF and all user selections/filters will be reflected.
-              </Tooltip>
+              </UncontrolledTooltip>
             </div>
             {this.state.loading && <div className="pdf-loading-gif">
               <img src={loadingGif} alt="Loading..."></img>
@@ -250,10 +248,7 @@ class LeftPanel extends React.Component<ILeftPanelProps, ILeftPanelState> {
               }
             </div>
           </div>
-          <SearchBar
-            {...this.props}
-            enabledLayers={this.state.enabledLayers}>
-          </SearchBar>
+          <SearchBar {...this.props} />
         </div>
         {this.state.displayHelpPopup && <div className="bap-popup" id="baphHelpPopup">
           <img src={speechBubble} alt="Speech Bubble"></img>

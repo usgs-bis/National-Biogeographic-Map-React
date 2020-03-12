@@ -8,7 +8,7 @@ import TableChart from '../Charts/TableChart'
 import withSharedAnalysisCharacteristics from './AnalysisPackage'
 import {BarLoader} from 'react-spinners'
 import {TiledMapLayer} from 'esri-leaflet'
-import {Tooltip} from 'reactstrap'
+import {UncontrolledTooltip} from 'reactstrap'
 
 const SB_URL = 'https://www.sciencebase.gov/catalog/item/5b86d48ce4b0702d0e7962b5?format=json'
 const SPECIES_URL = AppConfig.REACT_APP_BIS_API + '/api/v1/gapmetrics/species/protection?feature_id='
@@ -356,11 +356,20 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                 }
 
                 let chartTitle = `${tableType} in ${this.props.feature.properties.feature_name} (${preData.length})`
-                let chartData = [
-                    ['Species Name',
-                        <span id="Range_Title_Target">Range  <Tooltip target="Range_Title_Target" text={'Known Range Map'} > </Tooltip></span>,
-                        <span id="Habitat_Title_Target">Habitat <Tooltip target="Habitat_Title_Target" text={'Predicted Habitat Map'} > </Tooltip></span>,
-                    ]]
+                let chartData = [[
+                    'Species Name',
+                    (
+                        <>
+                            <span id="Range_Title_Target">Range</span>
+                            <UncontrolledTooltip target="Range_Title_Target" >Known Range Map</UncontrolledTooltip>
+                        </>
+                    ), (
+                        <>
+                            <span id="Habitat_Title_Target">Habitat</span>
+                            <UncontrolledTooltip target="Habitat_Title_Target" >Predicted Habitat Map</UncontrolledTooltip>
+                        </>
+                    )
+                ]]
                 let protectedPercent = ''
 
                 const gapSelection = this.state.gapSelection
@@ -368,12 +377,21 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                     preData = preData.filter((d) => {return d[gapSelection.status] === gapSelection.range})
                     if (gapSelection.status === this.gap12StatusGroup) chartTitle = `${preData.length} ${tableType} with ${gapSelection.range}% within GAP Status 1 & 2 in ${this.props.feature.properties.feature_name}`
                     if (gapSelection.status === this.gap123StatusGroup) chartTitle = `${preData.length} ${tableType} with ${gapSelection.range}% within GAP Status 1, 2 & 3 in ${this.props.feature.properties.feature_name}`
-                    chartData = [
-                        ['Species Name',
-                            'Protected',
-                            <span id="Range_Title_Target">Range  <Tooltip target="Range_Title_Target" text={'Known Range Map'} > </Tooltip></span>,
-                            <span id="Habitat_Title_Target">Habitat <Tooltip target="Habitat_Title_Target" text={'Predicted Habitat Map'} > </Tooltip></span>,
-                        ]]
+                    chartData = [[
+                        'Species Name',
+                        'Protected',
+                        (
+                            <>
+                                <span id="Range_Title_Target">Range</span>
+                                <UncontrolledTooltip target="Range_Title_Target" >Known Range Map</UncontrolledTooltip>
+                            </>
+                        ), (
+                            <>
+                                <span id="Habitat_Title_Target">Habitat</span>
+                                <UncontrolledTooltip target="Habitat_Title_Target" >Predicted Habitat Map</UncontrolledTooltip>
+                            </>
+                        )
+                    ]]
                 }
 
                 for (let row of preData) {
@@ -382,30 +400,42 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                         if (gapSelection.status === this.gap12StatusGroup) protectedPercent = `${parseFloat(row.status_1_2).toFixed(2)}%`
                         if (gapSelection.status === this.gap123StatusGroup) protectedPercent = `${parseFloat(row.status_1_2_3).toFixed(2)}%`
                     }
-                    const radio1 = <span className="no-sort">
-                        <input
-                            id={`Range_${row.sppcode}`}
-                            style={{marginLeft: '10px'}}
-                            type="radio"
-                            name={'sp_radio'}
-                            checked={this.previous_row_sppcode === row.sppcode && this.previous_type === 'Species Range'}
-                            onClick={(e) => {that.changeFilter(e, 'Species Range', row.sppcode)}}
-                            onChange={() => {}}
-                            value={`${row.common_name} (${row.scientific_name}) ${row.sppcode} v1`} />
-                        <Tooltip target={`Range_${row.sppcode}`} text={'Known Range Map'} placement={preData.length === 1 ? 'right' : null} > </Tooltip>
+                    const radio1 = (
+                        <span className="no-sort">
+                            <input
+                                id={`Range_${row.sppcode}`}
+                                style={{marginLeft: '10px'}}
+                                type="radio"
+                                name={'sp_radio'}
+                                checked={this.previous_row_sppcode === row.sppcode && this.previous_type === 'Species Range'}
+                                onClick={(e) => {that.changeFilter(e, 'Species Range', row.sppcode)}}
+                                onChange={() => {}}
+                                value={`${row.common_name} (${row.scientific_name}) ${row.sppcode} v1`}
+                            />
+                            <UncontrolledTooltip
+                                target={`Range_${row.sppcode}`}
+                                placement={preData.length === 1 ? 'right' : null}
+                            >Known Range Map</UncontrolledTooltip>
 
-                    </span>
-                    const radio2 = <span className="no-sort">
-                        <input
-                            id={`Habitat_${row.sppcode}`}
-                            type="radio"
-                            name={'sp_radio'}
-                            checked={this.previous_row_sppcode === row.sppcode && this.previous_type === 'Habitat Map'}
-                            onClick={(e) => {that.changeFilter(e, 'Habitat Map', row.sppcode)}}
-                            onChange={() => {}}
-                            value={`${row.common_name} (${row.scientific_name}) ${row.sppcode} v1`} />
-                        <Tooltip target={`Habitat_${row.sppcode}`} text={'Predicted Habitat Map'} placement={preData.length === 1 ? 'right' : null} > </Tooltip>
-                    </span>
+                        </span>
+                    )
+                    const radio2 = (
+                        <span className="no-sort">
+                            <input
+                                id={`Habitat_${row.sppcode}`}
+                                type="radio"
+                                name={'sp_radio'}
+                                checked={this.previous_row_sppcode === row.sppcode && this.previous_type === 'Habitat Map'}
+                                onClick={(e) => {that.changeFilter(e, 'Habitat Map', row.sppcode)}}
+                                onChange={() => {}}
+                                value={`${row.common_name} (${row.scientific_name}) ${row.sppcode} v1`}
+                            />
+                            <UncontrolledTooltip
+                                target={`Habitat_${row.sppcode}`}
+                                placement={preData.length === 1 ? 'right' : null}
+                            >Predicted Habitat Map</UncontrolledTooltip>
+                        </span>
+                    )
 
                     if (protectedPercent) {
                         chartData.push([name, protectedPercent, radio1, radio2,])

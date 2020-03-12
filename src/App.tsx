@@ -4,6 +4,7 @@ import * as turf from '@turf/turf'
 import AlertBox from './AlertBox/AlertBox'
 import AppConfig from './config'
 import BasemapContext from './Contexts/BasemapContext'
+import EnabledLayersContext from './Contexts/EnabledLayersContext'
 import Footer from './Footer/Footer'
 import Header from './Header/Header'
 import L from 'leaflet'
@@ -83,6 +84,8 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
   const [basemap, setBasemap] = useState(() => {
     return bioscapeMap[bioscape].basemaps.find((m: any) => m.serviceUrl === hashState?.basemapServiceUrl)
   })
+
+  const [enabledLayers, setEnabledLayers] = useState([])
 
   const [state, setState] = useState(() => {
 
@@ -637,6 +640,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
       <Header title={state.bioscape.title} description={state.bioscape.description} />
       <AlertBox />
       <div id="content-area">
+      <EnabledLayersContext.Provider value={{enabledLayers, setEnabledLayers}}>
       <BasemapContext.Provider value={[basemap, setBasemap]} >
         <Resizable
           className="panel-area"
@@ -693,6 +697,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
           />
         </div>
       </BasemapContext.Provider>
+      </EnabledLayersContext.Provider>
       </div>
       <Footer />
     </div>

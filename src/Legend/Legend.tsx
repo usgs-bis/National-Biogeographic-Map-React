@@ -1,14 +1,18 @@
 import ArcgisLegend from './ArcgisLegend'
 import Dialog from 'react-dialog'
-import React, {FunctionComponent, useState} from 'react'
+import React, {FunctionComponent, useState, useEffect, useContext} from 'react'
 import WmsLegend from './WmsLegend'
-import {Button, Tooltip} from 'reactstrap'
+import {Button, UncontrolledTooltip} from 'reactstrap'
 import {FaKey} from 'react-icons/fa'
 
 import './Legend.css'
+import EnabledLayersContext from '../Contexts/EnabledLayersContext'
 
-// @Matt TODO: #current update
-const Legend: FunctionComponent<{ enabledLayers: any[] }> = ({ enabledLayers }) => {
+// @Matt TODO: #current move to map
+// @Matt TODO: #current disable/hide if there is nothing in the legend
+const Legend: FunctionComponent = () => {
+
+  const {enabledLayers} = useContext(EnabledLayersContext)
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
@@ -27,10 +31,10 @@ const Legend: FunctionComponent<{ enabledLayers: any[] }> = ({ enabledLayers }) 
 
   return (
     <div>
-      <Button id="LegendTooltip" className='submit-analysis-btn placeholder-button' onClick={toggleDialog} >
+      <Button id="LegendTooltip" className='submit-analysis-btn icon-btn' onClick={toggleDialog} >
         <FaKey />
       </Button>
-      <Tooltip target="LegendTooltip" placement="left" >Legend</Tooltip>
+      <UncontrolledTooltip target="LegendTooltip" placement="left" >Legend</UncontrolledTooltip>
       { isDialogOpen &&
         <Dialog
           height={450}

@@ -1,9 +1,8 @@
 import './SearchBar.css'
 import BasemapContext from '../Contexts/BasemapContext'
-import Legend from '../Legend/Legend'
 import React, { FunctionComponent, useState, useEffect, useContext } from 'react'
 import speechBubble from './bubble.png'
-import {Button, ButtonGroup, Tooltip} from 'reactstrap'
+import {Button, ButtonGroup, UncontrolledTooltip} from 'reactstrap'
 import {Collapse, CardBody, Card} from 'reactstrap'
 import {IoMdSettings} from 'react-icons/io'
 import {RadioGroup} from '../CustomRadio/CustomRadio'
@@ -18,14 +17,13 @@ export interface ISearchBarProps {
   }
   mapClicked: boolean
   textSearchHandler: Function
-  enabledLayers: any
   submitHandler: Function
   bioscape: any
   results: any[]
 }
 
 const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
-  const { initBaps, point, mapClicked, textSearchHandler, enabledLayers, submitHandler, bioscape, results } = props
+  const { initBaps, point, mapClicked, textSearchHandler, submitHandler, bioscape, results } = props
 
   const [basemap, setBasemap] = useContext(BasemapContext)
   const [basemapOptions] = useState(() => {
@@ -98,13 +96,10 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
     <div>
       <div className="nbm-flex-row">
         <div className="settings-btn-group nbm-flex-column">
-          <Button id="settings-tooltip" onClick={toggleBasemapDropdown} className="submit-analysis-btn placeholder-button" >
+          <Button id="settings-tooltip" onClick={toggleBasemapDropdown} className="submit-analysis-btn icon-btn" >
             <IoMdSettings />
           </Button>
-          <Tooltip target="settings-tooltip" placement="right" >Settings</Tooltip>
-        </div>
-        <div className="settings-btn-group nbm-flex-column">
-          <Legend enabledLayers={enabledLayers} />
+          <UncontrolledTooltip target="settings-tooltip" placement="right" >Settings</UncontrolledTooltip>
         </div>
         <div className="nbm-flex-column-big">
           <input

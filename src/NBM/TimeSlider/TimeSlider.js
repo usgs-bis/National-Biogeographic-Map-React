@@ -1,6 +1,6 @@
 import './TimeSlider.scss'
 import React from 'react'
-import {FaTag, FaPlay, FaPause} from 'react-icons/fa'
+import {FaTag, FaRegPlayCircle, FaPause} from 'react-icons/fa'
 
 // only used initial values for now
 const minSliderValue = 1981
@@ -47,19 +47,19 @@ class TimeSlider extends React.Component {
 
   componentDidMount() {
 
-    // when the other components load it changes the space avaiable for the time slider
-    // looking for a better way
+    // when the other components load it changes the space avaiable for the
+    // time slider looking for a better way
     for (let i = 1; i < 6; i++) {
       setTimeout(() => {
         this.initHandlePos()
       }, 1500 * i)
     }
+
     window.addEventListener('resize', this.initHandlePos)
+
     this.dragElement(document.getElementById('leftHandleOutputGlyph'))
     this.dragElement(document.getElementById('rightHandleOutputGlyph'))
     this.dragElement(document.getElementById('middleHandleOutputGlyph'))
-
-
   }
 
   componentWillUnmount() {
@@ -72,12 +72,13 @@ class TimeSlider extends React.Component {
       this.sliderSize = document.getElementById('rangeSliderContainer').clientWidth
       this.initHandlePos()
     }
+
     // Per usability - hide slider if N/A
     if (!enableLookup[this.props.priorityBap]) {
       document.getElementById('range-slider').style.opacity = '0.0'
       this.enabled = false
-      //           this.state.playing = false;
     }
+
     else {
       document.getElementById('range-slider').style.opacity = '1.0'
       this.enabled = true
@@ -204,7 +205,6 @@ class TimeSlider extends React.Component {
 
     elmnt.onmousedown = dragMouseDown
 
-
     function dragMouseDown(e) {
       e = e || window.event
       e.preventDefault()
@@ -230,7 +230,8 @@ class TimeSlider extends React.Component {
       that.setIntermittentYearRange()
     }
 
-    function closeDragElement() {
+    function closeDragElement(e) {
+      e.preventDefault()
       /* stop moving when mouse button is released:*/
       document.onmouseup = null
       document.onmousemove = null
@@ -242,7 +243,6 @@ class TimeSlider extends React.Component {
       }
     }
   }
-
 
   render() {
     return (
@@ -258,7 +258,7 @@ class TimeSlider extends React.Component {
                 data-placement="top"
                 title={this.state.playing ? 'Pause' : 'Play'}
               /> :
-              <FaPlay
+              <FaRegPlayCircle
                 onClick={this.playTimeSlider}
                 className="play-glyph inner-glyph"
                 glyph={this.state.playGlyph}
@@ -296,7 +296,7 @@ class TimeSlider extends React.Component {
 
           <span className="range-values" style={{right: '10px'}}>{this.maxSliderValue}</span>
         </section>
-      </div >
+      </div>
     )
   }
 

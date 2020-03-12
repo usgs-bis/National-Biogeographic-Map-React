@@ -28,24 +28,24 @@
     padding-bottom: 5px;
 }
 
-.chart-headers{
-text-align: center;
-padding-top: 15px;
+.chart-headers {
+    text-align: center;
+    padding-top: 15px;
 }
-.submit-analysis-btn{
+.submit-analysis-btn {
     margin: 2%;
     color: white;
     background: grey;
     border-radius: 5px;
 }
 
-.bucket-size-div{
+.bucket-size-div {
     width: 90%;
     margin: auto;
     text-align: left;
 }
 
-.chart-footers{
+.chart-footers {
     padding-bottom: 10px;
     padding-top: 10px;
 }
@@ -124,26 +124,25 @@ font-style: italic;
     margin-left: 5px;
 }
 
-.analysis-dropdown-content{
+.analysis-dropdown-content {
     border-bottom: 3px solid #555;
     padding: 10px;
     background-color: rgba(10, 10, 15, .2);
     color: white;
 }
 
-.small-padding{
+.small-padding {
     padding: 5px 0 5px 0;
 }
 
-.bap-window-button{
+.bap-window-button {
     display: inline-block;
-    border-radius: 5PX;
     margin-left: 5px;
     margin-right: 5px;
     float: right;
 }
 
-.bap-popout-window{
+.bap-popout-window {
     z-index: 999;
     background-color: #555;
     opacity: 1;
@@ -151,23 +150,23 @@ font-style: italic;
     min-height: 300px;
 }
 
-.priority-bap-raido{
+.priority-bap-raido {
     float: right;
     width: 18px;
     height: 18px;
 }
 
-.bap-title-content{
+.bap-title-content {
 display: inline-flex;
 }
 
-.title-info-icon{
+.title-info-icon {
     margin-left: 5px;
     font-size: 14px;
     /* color: rgb(107, 153, 197); */
 }
 
-.sbinfo-popout-window{
+.sbinfo-popout-window {
     z-index: 999;
     opacity: 1;
     background-color: #555;
@@ -177,14 +176,14 @@ display: inline-flex;
     min-height: 270px;
 }
 
-.sbinfo-popout-window h4{
+.sbinfo-popout-window h4 {
     font-size: 20px;
 }
-.sbinfo-popout-window h3{
+.sbinfo-popout-window h3 {
     font-size: 18px;
 }
 
-.analysis-error{
+.analysis-error {
     background-color: rgba(10, 10, 15, .2);
     font-size: 14px;
     color: white;
@@ -192,7 +191,7 @@ display: inline-flex;
     text-align: center;
 }
 
-.dividing-line{
+.dividing-line {
     clear: both;
     border-top: 1px solid rgba(245, 245, 245, .2);
     margin-top: 15px;
@@ -202,7 +201,7 @@ display: inline-flex;
     color:yellow !important;
 }
 
-.JSON-text-area{
+.JSON-text-area {
     display: block;
     padding: 9.5px;
     margin: 0 0 10px;
@@ -218,30 +217,30 @@ display: inline-flex;
     text-align: left;
 
 }
-.JSON-container{
+.JSON-container {
     padding: 20px;
     color: black;
     overflow: hidden;
 }
 
-.JSON-text-container{
+.JSON-text-container {
     margin-top: 15px;
     overflow-y: scroll;
     max-height: 50vh;
     border-radius: 4px;
 }
 
-.JSON-text-header{
+.JSON-text-header {
     font-size: medium;
 }
-.JSON-text-header input{
+.JSON-text-header input {
     vertical-align: top;
     margin-left: 5px;
 }
 
 
 
-.JSON-text-container{
+.JSON-text-container {
     scrollbar-width: thin;
 }
 
