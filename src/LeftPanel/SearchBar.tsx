@@ -1,6 +1,6 @@
 import './SearchBar.css'
 import CustomToolTip from '../ToolTip/ToolTip'
-import Legend from '../Legend/Legend'
+// import Legend from '../Legend/Legend'
 import React, { FunctionComponent, useState, useEffect, useContext } from 'react'
 import speechBubble from './bubble.png'
 import {Button, ButtonGroup} from 'reactstrap'
@@ -26,7 +26,7 @@ export interface ISearchBarProps {
 }
 
 const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
-  const { initBaps, point, mapClicked, textSearchHandler, enabledLayers, submitHandler, bioscape, results } = props
+  const { initBaps, point, mapClicked, textSearchHandler, submitHandler, bioscape, results } = props
 
   const [basemap, setBasemap] = useContext(BasemapContext)
   const [basemapOptions] = useState(() => {
