@@ -1,4 +1,4 @@
-import './App.css'
+import './App.scss'
 import './CustomDialog/CustomDialog.css'
 import * as turf from '@turf/turf'
 import AlertBox from './AlertBox/AlertBox'
@@ -9,6 +9,8 @@ import Footer from './Footer/Footer'
 import Header from './Header/Header'
 import L from 'leaflet'
 import LeftPanel from './LeftPanel/LeftPanel'
+import Legend from './Legend/Legend'
+import LegendContext, {ILegendContext} from './Contexts/LegendContext'
 import NBM from './NBM/NBM'
 import React, {FunctionComponent, useState, useEffect, useRef} from 'react'
 import Resizable from 're-resizable'
@@ -86,6 +88,13 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
   })
 
   const [enabledLayers, setEnabledLayers] = useState([])
+
+  const [legendState, setLegendState] = useState<ILegendContext>({
+    hasLegend: false,
+    setHasLegend: (state: boolean) => setLegendState((prev) => Object.assign({}, prev, {hasLegend: state})),
+    toggleLegend: () => {},
+    setToggleLegend: (_toggle: Function) => setLegendState((prev) => Object.assign({}, prev, {toggleLegend: _toggle}))
+  })
 
   const [state, setState] = useState(() => {
 
@@ -640,6 +649,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
       <Header title={state.bioscape.title} description={state.bioscape.description} />
       <AlertBox />
       <div id="content-area">
+      <LegendContext.Provider value={legendState}>
       <EnabledLayersContext.Provider value={{enabledLayers, setEnabledLayers}}>
       <BasemapContext.Provider value={[basemap, setBasemap]} >
         <Resizable
@@ -696,8 +706,10 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
             initPoint={hashState?.point}
           />
         </div>
+        <Legend />
       </BasemapContext.Provider>
       </EnabledLayersContext.Provider>
+      </LegendContext.Provider>
       </div>
       <Footer />
     </div>

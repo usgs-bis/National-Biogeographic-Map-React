@@ -3,7 +3,7 @@ import Dialog from 'react-dialog'
 import InfoSign from '../InfoSign/InfoSign'
 import React from 'react'
 import {Button, Collapse, FormGroup, Label} from 'reactstrap'
-import {FaTerminal, FaExclamationCircle, FaChevronDown, FaChevronRight} from 'react-icons/fa'
+import {FaCode, FaExclamationCircle, FaChevronDown, FaChevronRight} from 'react-icons/fa'
 import {IoMdOpen} from 'react-icons/io'
 import {UncontrolledTooltip} from 'reactstrap'
 
@@ -19,7 +19,6 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
         sb_properties: sb_properties,
         submitted: false,
         canOpen: false,
-        // @Matt TODO: #current check this functionality
         isOpen: props.priorityBap === props.bapId,
         value: [],
         layers: layers,
@@ -265,14 +264,15 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage,
               <span>
                 <Button id={`openBapWindow${this.props.bapId}`} className='icon-btn bap-window-button'
                   style={{display: this.state.bapWindowOpen ? 'none' : 'inline-block'}}
-                  onClick={() => {this.setState({bapWindowOpen: !this.state.bapWindowOpen})}}>
+                  onClick={() => {this.setState({bapWindowOpen: !this.state.bapWindowOpen})}}
+                >
                   <IoMdOpen />
                 </Button>
                 <Button id={`viewJsonWindow${this.props.bapId}`} className='icon-btn bap-window-button'
                   style={{display: this.state.jsonWindowOpen || !this.jsonData ? 'none' : 'inline-block'}}
-                  onClick={() => {this.setState({jsonWindowOpen: !this.state.jsonWindowOpen})}}>
-                  <FaTerminal />
-                />
+                  onClick={() => {this.setState({jsonWindowOpen: !this.state.jsonWindowOpen})}}
+                >
+                  <FaCode />
                 </Button>
                 <UncontrolledTooltip placement="top" target={`openBapWindow${this.props.bapId}`} >View Bap in new window</UncontrolledTooltip>
                 <UncontrolledTooltip placement="top" target={`viewJsonWindow${this.props.bapId}`} >View the raw JSON used for analysis</UncontrolledTooltip>

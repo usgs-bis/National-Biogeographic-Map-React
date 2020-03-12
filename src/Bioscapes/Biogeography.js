@@ -1,19 +1,20 @@
-import React from "react";
-import "../LeftPanel/LeftPanel.css";
-import NFHPAnalysis from "../AnalysisPackages/NFHPAnalysis";
-import FirstLeafAnalysis from "../AnalysisPackages/FirstLeafAnalysis";
-import FirstBloomAnalysis from "../AnalysisPackages/FirstBloomAnalysis";
-import FirstLeafBloomComparisonAnalysis from "../AnalysisPackages/FirstLeafBloomComparisonAnalysis";
-import SpeciesProtectionAnalysis from "../AnalysisPackages/SpeciesProtectionAnalysis";
-import EcosystemProtectionAnalysis from "../AnalysisPackages/EcosystemProtectionAnalysis";
-import PhenologyAnalysis from "../AnalysisPackages/PhenologyAnalysis";
-import OBISAnalysis from "../AnalysisPackages/OBISAnalysis";
-import BadNeighborAnalysis from "../AnalysisPackages/BadNeighborAnalysis";
-import ExpectedLandUseAnalysis from "../AnalysisPackages/ExpectedLandUseAnanlysis";
-import NVCSHierarchyByPixel from "../AnalysisPackages/NVCSHierarchyByPixel";
-import NVCSSummaryByRegion from "../AnalysisPackages/NVCSSummaryByRegion";
-import AppConfig from "../config";
-const DEV_MODE = AppConfig.REACT_APP_DEV;
+import '../LeftPanel/LeftPanel.css'
+import AppConfig from '../config'
+import BadNeighborAnalysis from '../AnalysisPackages/BadNeighborAnalysis'
+import EcosystemProtectionAnalysis from '../AnalysisPackages/EcosystemProtectionAnalysis'
+import ExpectedLandUseAnalysis from '../AnalysisPackages/ExpectedLandUseAnanlysis'
+import FirstBloomAnalysis from '../AnalysisPackages/FirstBloomAnalysis'
+import FirstLeafAnalysis from '../AnalysisPackages/FirstLeafAnalysis'
+import FirstLeafBloomComparisonAnalysis from '../AnalysisPackages/FirstLeafBloomComparisonAnalysis'
+import NFHPAnalysis from '../AnalysisPackages/NFHPAnalysis'
+import NVCSHierarchyByPixel from '../AnalysisPackages/NVCSHierarchyByPixel'
+import NVCSSummaryByRegion from '../AnalysisPackages/NVCSSummaryByRegion'
+import OBISAnalysis from '../AnalysisPackages/OBISAnalysis'
+import PhenologyAnalysis from '../AnalysisPackages/PhenologyAnalysis'
+import React from 'react'
+import SpeciesProtectionAnalysis from '../AnalysisPackages/SpeciesProtectionAnalysis'
+
+const DEV_MODE = AppConfig.REACT_APP_DEV
 
 class Biogeography extends React.Component {
     constructor(props) {
@@ -31,15 +32,10 @@ class Biogeography extends React.Component {
 
         }
         this.submit = this.submit.bind(this)
-        this.share = this.share.bind(this);
-        this.report = this.report.bind(this);
-        this.getDefaultPriorityBap = this.getDefaultPriorityBap.bind(this);
-        this.loaderRef = React.createRef();
-    }
-
-
-    componentDidMount() {
-        this.props.onRef(this)
+        this.share = this.share.bind(this)
+        this.report = this.report.bind(this)
+        this.getDefaultPriorityBap = this.getDefaultPriorityBap.bind(this)
+        this.loaderRef = React.createRef()
     }
 
     submit(e) {
@@ -75,7 +71,7 @@ class Biogeography extends React.Component {
 
     // given any feature set the default priority bap
     getDefaultPriorityBap() {
-        return ""     // update BCB-1103 "default to no baps open or priority" the folling logic might still be helpful in the future
+        return ''     // update BCB-1103 "default to no baps open or priority" the folling logic might still be helpful in the future
         // if (this.props.feature) {
         //     if (this.props.feature.properties.feature_id.includes('OBIS_Areas')) {
         //         return 'bap8'
@@ -101,7 +97,7 @@ class Biogeography extends React.Component {
                         yearMin={this.props.rangeYearMin}
                         yearMax={this.props.rangeYearMax}
                         priorityBap={this.props.priorityBap}
-                        bapId={`bap1`}
+                        bapId={'bap1'}
                         initBap={(this.props.initBaps || {})['bap1']}
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
                         setBapState={this.props.setBapState}
@@ -116,7 +112,7 @@ class Biogeography extends React.Component {
                         yearMin={this.props.rangeYearMin}
                         yearMax={this.props.rangeYearMax}
                         priorityBap={this.props.priorityBap}
-                        bapId={`bap2`}
+                        bapId={'bap2'}
                         initBap={(this.props.initBaps || {})['bap2']}
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
                         setBapState={this.props.setBapState}
@@ -131,7 +127,7 @@ class Biogeography extends React.Component {
                         yearMin={this.props.rangeYearMin}
                         yearMax={this.props.rangeYearMax}
                         priorityBap={this.props.priorityBap}
-                        bapId={`bap3`}
+                        bapId={'bap3'}
                         initBap={(this.props.initBaps || {})['bap3']}
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
                         setBapState={this.props.setBapState}
@@ -144,7 +140,7 @@ class Biogeography extends React.Component {
                         setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
-                        bapId={`bap4`}
+                        bapId={'bap4'}
                         initBap={(this.props.initBaps || {})['bap4']}
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
                         setBapState={this.props.setBapState}
@@ -157,7 +153,7 @@ class Biogeography extends React.Component {
                         setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
-                        bapId={`bap5`}
+                        bapId={'bap5'}
                         initBap={(this.props.initBaps || {})['bap5']}
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
                         setBapState={this.props.setBapState}
@@ -170,7 +166,7 @@ class Biogeography extends React.Component {
                         setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
-                        bapId={`bap6`}
+                        bapId={'bap6'}
                         initBap={(this.props.initBaps || {})['bap6']}
                         getDefaultPriorityBap={this.getDefaultPriorityBap} setBapState={this.props.setBapState}
                     />
@@ -182,7 +178,7 @@ class Biogeography extends React.Component {
                         setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
-                        bapId={`bap7`}
+                        bapId={'bap7'}
                         initBap={(this.props.initBaps || {})['bap7']}
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
                         setBapState={this.props.setBapState}
@@ -195,7 +191,7 @@ class Biogeography extends React.Component {
                         setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
-                        bapId={`bap8`}
+                        bapId={'bap8'}
                         initBap={(this.props.initBaps || {})['bap8']}
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
                         setBapState={this.props.setBapState}
@@ -208,7 +204,7 @@ class Biogeography extends React.Component {
                         setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
-                        bapId={`bap9`}
+                        bapId={'bap9'}
                         initBap={(this.props.initBaps || {})['bap9']}
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
                         setBapState={this.props.setBapState}
@@ -219,11 +215,11 @@ class Biogeography extends React.Component {
                         onRef={ref => (this.ExpectedLandUseAnalysis = ref)}
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
                         setPriorityBap={this.props.setPriorityBap}
-                        yearMin={`2001`}
-                        yearMax={`2061`}
+                        yearMin={'2001'}
+                        yearMax={'2061'}
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
-                        bapId={`bap10`}
+                        bapId={'bap10'}
                         initBap={(this.props.initBaps || {})['bap10']}
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
                         setBapState={this.props.setBapState}
@@ -236,7 +232,7 @@ class Biogeography extends React.Component {
                         setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
-                        bapId={`bap11`}
+                        bapId={'bap11'}
                         initBap={(this.props.initBaps || {})['bap11']}
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
                         setBapState={this.props.setBapState}
@@ -251,7 +247,7 @@ class Biogeography extends React.Component {
                         setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
                         priorityBap={this.props.priorityBap}
-                        bapId={`bap12`}
+                        bapId={'bap12'}
                         initBap={(this.props.initBaps || {})['bap12']}
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
                         setBapState={this.props.setBapState}
@@ -259,7 +255,7 @@ class Biogeography extends React.Component {
                     />
                 </div> }
             </div>
-        );
+        )
     }
 }
-export default Biogeography;
+export default Biogeography

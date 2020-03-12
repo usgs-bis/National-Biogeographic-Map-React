@@ -5,7 +5,6 @@ import Control from 'react-leaflet-control'
 import Dialog from 'react-dialog'
 import InfoSign from '../InfoSign/InfoSign'
 import L, {LatLngBoundsExpression, Layer} from 'leaflet'
-import Legend from '../Legend/Legend'
 import LocationOverlay from './LocationOverylays/LocationOverlay'
 import React, {FunctionComponent, useState, useEffect, useRef, useContext} from 'react'
 import TimeSlider from './TimeSlider/TimeSlider'
@@ -13,10 +12,12 @@ import loadingGif from './loading.gif'
 import shp from 'shpjs'
 import {EditControl} from 'react-leaflet-draw'
 import {FaCloudUploadAlt} from 'react-icons/fa'
+import {FaKey} from 'react-icons/fa'
 import {isEmpty} from 'lodash'
 
 // @ts-ignore
 import {Map, TileLayer, WMSTileLayer, Marker, Popup, GeoJSON, FeatureGroup, ZoomControl} from 'react-leaflet'
+import LegendContext from '../Contexts/LegendContext'
 
 const DEV_MODE = AppConfig.REACT_APP_DEV
 
@@ -65,6 +66,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
   const {setMap} = props
 
   const [basemap] = useContext(BasemapContext)
+  const {toggleLegend, hasLegend} = useContext(LegendContext)
 
   const [point, setPoint] = useState(() => {
     if (!props.initPoint) return null
@@ -501,15 +503,20 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
               circle: false
             }}
           />
-          // @Matt TODO: #current make enabledLayers a context
-          <Control position="topright">
-            <Legend />
-          </Control>
+          { hasLegend &&
+            <Control position="topright">
+              <div className="leaflet-bar" title="Legend">
+                <button onClick={() => toggleLegend()}>
+                  <FaKey />
+                </button>
+              </div>
+            </Control>
+          }
           {DEV_MODE &&
             <Control position="topright">
               <div className="leaflet-bar" title="Upload a shp file">
                 <button onClick={handleShow}>
-                  <FaCloudUploadAlt className="inner-glyph" />
+                  <FaCloudUploadAlt />
                 </button>
               </div>
             </Control>

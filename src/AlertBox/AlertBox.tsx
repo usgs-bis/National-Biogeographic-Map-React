@@ -3,9 +3,8 @@ import React, {FunctionComponent, useState, useEffect} from 'react'
 import {Alert} from 'reactstrap'
 import AppConfig from '../config'
 
-// @Matt TODO: #current re-test
 const AlertBox: FunctionComponent = () => {
-  const [apiCheck, setApiCheck] = useState<null|string>(null)
+  const [apiCheck, setApiCheck] = useState<null|string>('This is a test')
 
   useEffect(() => {
     console.log('api check effect')
@@ -25,11 +24,9 @@ const AlertBox: FunctionComponent = () => {
   }, [])
 
   const apiBox = () => {
-    if (apiCheck) {
       return (
-        <Alert bsStyle="danger" className="app-alert">{apiCheck}</Alert>
+        <Alert color="danger" className="app-alert">{apiCheck}</Alert>
       )
-    }
   }
 
   return (
