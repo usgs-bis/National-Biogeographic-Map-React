@@ -1,6 +1,6 @@
-import React from "react";
-import * as d3 from "d3";
-import "./Chart.css"
+import React from 'react'
+import * as d3 from 'd3'
+import './Chart.css'
 
 class ComparisonChart extends React.Component {
     constructor(props) {
@@ -10,12 +10,8 @@ class ComparisonChart extends React.Component {
             config: null,
             data: null
         }
-        this.drawChart = this.drawChart.bind(this);
+        this.drawChart = this.drawChart.bind(this)
         this.print = this.print.bind(this)
-    }
-
-    componentDidMount() {
-        this.props.onRef(this)
     }
 
     componentDidUpdate() {
@@ -61,47 +57,47 @@ class ComparisonChart extends React.Component {
         const chart = d3.select(`#${id}ChartContainer`)
 
         // Remove older renderings
-        chart.selectAll("text").remove()
-        chart.select(`#${id}Chart`).selectAll("div").remove()
-        chart.select(".svg-container-chart").remove()
+        chart.selectAll('text').remove()
+        chart.select(`#${id}Chart`).selectAll('div').remove()
+        chart.select('.svg-container-chart').remove()
 
         if (!id || !config || !data || !data.leaf || !data.bloom) return
 
         // Title
-        chart.select(`#${id}Title`).append("text")
-            .text(config.chart.title);
+        chart.select(`#${id}Title`).append('text')
+            .text(config.chart.title)
 
         // Subtitle
-        chart.select(`#${id}Subtitle`).append("text")
-            .text(config.chart.subtitle);
+        chart.select(`#${id}Subtitle`).append('text')
+            .text(config.chart.subtitle)
 
         chart.transition()
 
         const years = Object.getOwnPropertyNames(data.leaf)
 
-        data = processData([data.leaf, data.bloom]);
+        data = processData([data.leaf, data.bloom])
 
         const dataNest = d3.nest()
-            .key(function (d) { return d.year; })
-            .entries(data);
+            .key(function (d) { return d.year })
+            .entries(data)
 
-        dataNest.reverse();
+        dataNest.reverse()
 
         // This will specify the aspect ratio not the actual size of the chart.
         // The svg is responsive and will scale to fill parent.
         const width = 480,
             height = 40 * years.length,
             opacityHover = 1,
-            otherOpacityOnHover = .8;
+            otherOpacityOnHover = .8
 
         // Define x and y type and scales
-        const x = d3.scaleLinear().range([0, width]);
-        const y = d3.scaleBand().range([height, 0]);
+        const x = d3.scaleLinear().range([0, width])
+        const y = d3.scaleBand().range([height, 0])
 
         // Determine domain 
         let domain = getMinMax(dataNest)
-        x.domain([domain.dayMin - 3, domain.dayMax + 3]);
-        y.domain(years.map(function (y) { return y.toString(); }))
+        x.domain([domain.dayMin - 3, domain.dayMax + 3])
+        y.domain(years.map(function (y) { return y.toString() }))
 
         // Create the x-axis
         const xAxis = d3.axisBottom(x)
@@ -113,163 +109,163 @@ class ComparisonChart extends React.Component {
 
         // Create a responsive svg element
         const svg = chart.select(`#${id}Chart`)
-            .append("div")
-            .classed("svg-container-chart", true)
-            .append("svg")
-            .attr("preserveAspectRatio", "xMinYMin meet")
-            .attr("viewBox", "0 " + parseInt(-1 * config.margins.top) + " " + (width + config.margins.left + config.margins.right) + " " + (height + config.margins.top + config.margins.bottom))
-            .classed("svg-content-responsive", true)
-            .attr("version", "1.1")
-            .attr("baseProfile", "full")
-            .attr("xmlns", "http://www.w3.org/2000/svg")
-            .append("g")
-            .attr("transform", "translate(" + config.margins.left + "," + 0 + ")");
+            .append('div')
+            .classed('svg-container-chart', true)
+            .append('svg')
+            .attr('preserveAspectRatio', 'xMinYMin meet')
+            .attr('viewBox', '0 ' + parseInt(-1 * config.margins.top) + ' ' + (width + config.margins.left + config.margins.right) + ' ' + (height + config.margins.top + config.margins.bottom))
+            .classed('svg-content-responsive', true)
+            .attr('version', '1.1')
+            .attr('baseProfile', 'full')
+            .attr('xmlns', 'http://www.w3.org/2000/svg')
+            .append('g')
+            .attr('transform', 'translate(' + config.margins.left + ',' + 0 + ')')
 
         // Add the x-axis to the svg
-        svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + height + ")")
-            .attr("font-size", "11px")
-            .call(xAxis);
+        svg.append('g')
+            .attr('class', 'x axis')
+            .attr('transform', 'translate(0,' + height + ')')
+            .attr('font-size', '11px')
+            .call(xAxis)
 
         // Add the y-axis to the svg
-        svg.append("g")
-            .attr("transform", "translate(" + -1 + "," + 0 + ")")
-            .attr("class", "y axis")
-            .attr("font-size", "11px")
-            .call(yAxis);
+        svg.append('g')
+            .attr('transform', 'translate(' + -1 + ',' + 0 + ')')
+            .attr('class', 'y axis')
+            .attr('font-size', '11px')
+            .call(yAxis)
 
         // Add the horizontal bars
-        const compare = svg.selectAll("smooth")
+        const compare = svg.selectAll('smooth')
             .data(dataNest)
             .enter()
-            .append("g")
-            .attr("transform", function (d, i) { return "translate(" + 0 + "," + parseInt((i * y.bandwidth()) - 16) + ")" })
+            .append('g')
+            .attr('transform', function (d, i) { return 'translate(' + 0 + ',' + parseInt((i * y.bandwidth()) - 16) + ')' })
             .each(function (year) {
                 year.y = d3.scaleLinear()
-                    .domain([0, d3.max(year.values, function (d) { return d.value; })])
+                    .domain([0, d3.max(year.values, function (d) { return d.value })])
                     .range([y.bandwidth(), 0])
             })
 
         // add the line
-        compare.append("line")
-            .attr("stroke", "rgb(56, 155, 198)")
-            .attr("stroke-width", "3")
-            .attr("x1", function (d) { return x(d.values[0].DOY); })
-            .attr("x2", function (d) { return x(d.values[1].DOY); })
-            .attr("y1", 37)
-            .attr("y2", 37);
+        compare.append('line')
+            .attr('stroke', 'rgb(56, 155, 198)')
+            .attr('stroke-width', '3')
+            .attr('x1', function (d) { return x(d.values[0].DOY) })
+            .attr('x2', function (d) { return x(d.values[1].DOY) })
+            .attr('y1', 37)
+            .attr('y2', 37)
 
         // add left leaf circle
-        const leaf = compare.append("circle")
-            .attr("r", 8)
-            .attr("cx", function (d) {
-                return x(d.values[0].DOY);
+        const leaf = compare.append('circle')
+            .attr('r', 8)
+            .attr('cx', function (d) {
+                return x(d.values[0].DOY)
             })
-            .attr("cy", 37)
-            .attr("fill", "green")
+            .attr('cy', 37)
+            .attr('fill', 'green')
 
         // add right bloom circle
-        const bloom = compare.append("circle")
-            .attr("r", 8)
-            .attr("cx", function (d) {
-                return x(d.values[1].DOY);
+        const bloom = compare.append('circle')
+            .attr('r', 8)
+            .attr('cx', function (d) {
+                return x(d.values[1].DOY)
             })
-            .attr("cy", 37)
-            .attr("fill", "yellow")
+            .attr('cy', 37)
+            .attr('fill', 'yellow')
 
         // Add a div inside chart for tooltips
         const tooltip = d3.select('#d3chartTooltip')
 
-        compare.append("text")
-            .attr("x", function (d) {
-                return x(((d.values[1].DOY + d.values[0].DOY) / 2) - 4);
+        compare.append('text')
+            .attr('x', function (d) {
+                return x(((d.values[1].DOY + d.values[0].DOY) / 2) - 4)
             })
-            .attr("y", 27)
-            .attr("dy", ".35em")
-            .attr("font-size", "12px")
-            .text(function (d) { return parseInt((d.values[1].DOY - d.values[0].DOY)) + " Days" });
+            .attr('y', 27)
+            .attr('dy', '.35em')
+            .attr('font-size', '12px')
+            .text(function (d) { return parseInt((d.values[1].DOY - d.values[0].DOY)) + ' Days' })
 
 
         // Add tooltip functionality on mouseOver
-        leaf.on("mouseover", function (d) {
+        leaf.on('mouseover', function (d) {
             chart.selectAll('circle')
-                .style("opacity", otherOpacityOnHover);
+                .style('opacity', otherOpacityOnHover)
             d3.select(this)
-                .style("opacity", opacityHover);
+                .style('opacity', opacityHover)
             tooltip.transition()
                 .duration(200)
-                .style("opacity", .9);
+                .style('opacity', .9)
             tooltip.html(toolTipLabel(d, 'LEAF'))
-                .style("left", (d3.event.pageX) + "px")
-                .style("top", (d3.event.pageY - 28) + "px")
-                .style("border", `3px solid green`);
-        });
+                .style('left', (d3.event.pageX) + 'px')
+                .style('top', (d3.event.pageY - 28) + 'px')
+                .style('border', '3px solid green')
+        })
 
         // Add tooltip functionality on mouseOut
-        leaf.on("mouseout", function (d) {
+        leaf.on('mouseout', function (d) {
             d3.select(this)
-                .attr("stroke-width", "1")
-                .attr("stroke", "rgb(0, 0, 0,.2)");
+                .attr('stroke-width', '1')
+                .attr('stroke', 'rgb(0, 0, 0,.2)')
             chart.selectAll('circle')
-                .style("opacity", opacityHover);
+                .style('opacity', opacityHover)
             tooltip.transition()
                 .duration(500)
-                .style("opacity", 0);
-        });
+                .style('opacity', 0)
+        })
 
         // Add tooltip functionality on mouseOver
-        bloom.on("mouseover", function (d) {
+        bloom.on('mouseover', function (d) {
             chart.selectAll('circle')
-                .style("opacity", otherOpacityOnHover);
+                .style('opacity', otherOpacityOnHover)
             d3.select(this)
-                .style("opacity", opacityHover);
+                .style('opacity', opacityHover)
             tooltip.transition()
                 .duration(200)
-                .style("opacity", .9);
+                .style('opacity', .9)
             tooltip.html(toolTipLabel(d, 'BLOOM'))
-                .style("left", (d3.event.pageX) + "px")
-                .style("top", (d3.event.pageY - 28) + "px")
-                .style("border", `3px solid yellow`);
-        });
+                .style('left', (d3.event.pageX) + 'px')
+                .style('top', (d3.event.pageY - 28) + 'px')
+                .style('border', '3px solid yellow')
+        })
 
         // Add tooltip functionality on mouseOut
-        bloom.on("mouseout", function (d) {
+        bloom.on('mouseout', function (d) {
             d3.select(this)
-                .attr("stroke-width", "1")
-                .attr("stroke", "rgb(0, 0, 0,.2)");
+                .attr('stroke-width', '1')
+                .attr('stroke', 'rgb(0, 0, 0,.2)')
             chart.selectAll('circle')
-                .style("opacity", opacityHover);
+                .style('opacity', opacityHover)
             tooltip.transition()
                 .duration(500)
-                .style("opacity", 0);
-        });
+                .style('opacity', 0)
+        })
 
         // Add a label for the x-axis.
-        svg.append("g")
-            .append("text")
-            .attr("y", height + config.margins.top + 20)
-            .attr("x", width / 2)
-            .attr("fill", "rgb(0, 0, 0)")
-            .attr("font-size", "14px")
-            .style("text-anchor", "middle")
-            .text(config.xAxis.label);
+        svg.append('g')
+            .append('text')
+            .attr('y', height + config.margins.top + 20)
+            .attr('x', width / 2)
+            .attr('fill', 'rgb(0, 0, 0)')
+            .attr('font-size', '14px')
+            .style('text-anchor', 'middle')
+            .text(config.xAxis.label)
 
         // Add a label for the y-axis.
-        svg.append("g")
-            .append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 0 - config.margins.left)
-            .attr("x", 0 - (height / 2))
-            .attr("dy", "1em")
-            .attr("fill", "rgb(0, 0, 0)")
-            .attr("font-size", "14px")
-            .style("text-anchor", "middle")
-            .text(config.yAxis.label);
+        svg.append('g')
+            .append('text')
+            .attr('transform', 'rotate(-90)')
+            .attr('y', 0 - config.margins.left)
+            .attr('x', 0 - (height / 2))
+            .attr('dy', '1em')
+            .attr('fill', 'rgb(0, 0, 0)')
+            .attr('font-size', '14px')
+            .style('text-anchor', 'middle')
+            .text(config.yAxis.label)
 
         function toolTipLabel(d, type) {
-            let idx = type === "LEAF" ? 0 : 1;
-            let title = type === "LEAF" ? "First Leaf" : "First Bloom"
+            let idx = type === 'LEAF' ? 0 : 1
+            let title = type === 'LEAF' ? 'First Leaf' : 'First Bloom'
 
             return `
                     <b>${title}</b><br>
@@ -281,9 +277,9 @@ class ComparisonChart extends React.Component {
         }
 
         function dateFromDay(year, day) {
-            const formatTime = d3.timeFormat("%b %d");
-            let date = new Date(year, 0);
-            return formatTime(new Date(date.setDate(day)));
+            const formatTime = d3.timeFormat('%b %d')
+            let date = new Date(year, 0)
+            return formatTime(new Date(date.setDate(day)))
         }
 
         function processData(rawData) {
@@ -303,13 +299,13 @@ class ComparisonChart extends React.Component {
             return processedData
 
             function getSum(total, num) {
-                return total + num;
+                return total + num
             }
         };
 
         function getMinMax(rawData) {
-            let min = 365;
-            let max = 0;
+            let min = 365
+            let max = 0
             for (let i = 0; i < rawData.length; i++) {
                 for (let j = 0; j < rawData[i].values.length; j++) {
                     let v = rawData[i].values[j].DOY
@@ -333,7 +329,7 @@ class ComparisonChart extends React.Component {
             try {
                 const canvasContainer = d3.select(`#${id}ChartContainer`)
                     .append('div')
-                    .attr("class", `${id}Class`)
+                    .attr('class', `${id}Class`)
                     .html(`<canvas id="canvas${id}" width="800" height="800" style="position: fixed;"></canvas>`)
 
                 //firefox issue where svgs wont draw to image without a width and height
@@ -341,20 +337,20 @@ class ComparisonChart extends React.Component {
                 const currentWidth = d3.select(`#${id}ChartContainer .svg-container-chart`).node().clientWidth
                 const currentHeight = d3.select(`#${id}ChartContainer .svg-container-chart`).node().clientHeight
                 d3.select(`#${id}ChartContainer .svg-container-chart svg`)
-                    .attr("height", currentHeight)
-                    .attr("width", currentWidth)
+                    .attr('height', currentHeight)
+                    .attr('width', currentWidth)
 
-                const canvas = document.getElementById(`canvas${id}`);
-                const image = new Image();
+                const canvas = document.getElementById(`canvas${id}`)
+                const image = new Image()
                 image.onload = () => {
-                    canvas.getContext("2d").drawImage(image, 0, 0, 800, 800);
+                    canvas.getContext('2d').drawImage(image, 0, 0, 800, 800)
                     canvasContainer.remove()
                     d3.select(`#${id}ChartContainer .svg-container-chart svg`)
-                        .attr("height", null)
-                        .attr("width", null)
+                        .attr('height', null)
+                        .attr('width', null)
                     resolve(canvas.toDataURL())
                 }
-                const svg = "data:image/svg+xml," + d3.select(`#${id}ChartContainer .svg-container-chart`).html()
+                const svg = 'data:image/svg+xml,' + d3.select(`#${id}ChartContainer .svg-container-chart`).html()
                 image.src = svg
             }
             catch (error) { reject(error) }
@@ -369,22 +365,22 @@ class ComparisonChart extends React.Component {
                     <div>
                         <div id={id + 'ChartContainer'} className="chart-container">
                             <div
-                                style={{ display: this.props.config.chart.title ? "block" : "none" }}
+                                style={{ display: this.props.config.chart.title ? 'block' : 'none' }}
                                 id={id + 'Title'} className="title"></div>
                             <div
-                                style={{ display: this.props.config.chart.subtitle ? "block" : "none" }}
+                                style={{ display: this.props.config.chart.subtitle ? 'block' : 'none' }}
                                 id={id + 'Subtitle'} className="subtitle"></div>
                             <div id={id + 'Chart'} className="chart"></div>
                         </div>
                     </div>
-                );
+                )
             }
         }
         return (
             <div>
                 {divs()}
             </div>
-        );
+        )
     }
 }
-export default ComparisonChart;
+export default ComparisonChart

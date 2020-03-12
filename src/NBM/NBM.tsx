@@ -24,15 +24,6 @@ const DEV_MODE = AppConfig.REACT_APP_DEV
 const ENV = AppConfig.REACT_APP_ENV
 const BUFFER = .5
 
-//is the total range of data for slider,
-// not the range of the analysis window
-const YEAR_RANGES = {
-  'bap1': {min: 1981, max: 2018},
-  'bap2': {min: 1981, max: 2018},
-  'bap3': {min: 1981, max: 2018},
-  'bap10': {min: 2001, max: 2061}
-}
-
 export interface INBMProps {
   // @Matt TODO: do we need this?
   className: string
@@ -50,11 +41,6 @@ export interface INBMProps {
   parentDrawHandler: Function
   applicationVersion: string
   bioscapeName: string
-  setYearRange: Function
-  setMapDisplayYear: Function
-  setMapDisplayYearFade: Function
-  rangeYearMax: number
-  rangeYearMin: number
   priorityBap: any
 }
 
@@ -85,7 +71,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
   const map = useRef<Map>()
 
   // @Matt TODO: #next all things in functioncomponents can't do it this way
-  let clickable = true
+  let clickableRef = useRef(true)
   let layerError = false
 
   useEffect(() => {
@@ -184,7 +170,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
   }, [props.feature])
 
   const handleClick = (e: any) => {
-    if (!clickable) return
+    if (!clickableRef.current) return
 
     setPoint([e.latlng.lat, e.latlng.lng])
 
@@ -196,7 +182,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
   }
 
   const handleMouseMove = (e: any) => {
-    if (!clickable) {
+    if (!clickableRef.current) {
       locationOverlay.setLocation(null, null)
     }
     else {
@@ -225,14 +211,14 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
   }
 
   const disableDragging = () => {
-    clickable = false
+    clickableRef.current = false
     if (map.current) {
       map.current.leafletElement.dragging.disable()
     }
   }
 
   const enableDragging = () => {
-    clickable = true
+    clickableRef.current = true
     map?.current?.leafletElement.dragging.enable()
   }
 
@@ -461,16 +447,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
         <MapMarker point={point} />
         {geojson()}
         <div className="global-time-slider" onMouseOver={disableDragging} onMouseOut={enableDragging}>
-          {props.bioscapeName !== 'terrestrial-ecosystems-2011' && <TimeSlider
-            setMapDisplayYear={props.setMapDisplayYear}
-            setMapDisplayYearFade={props.setMapDisplayYearFade}
-            setYearRange={props.setYearRange}
-            rangeYearMax={props.rangeYearMax}
-            rangeYearMin={props.rangeYearMin}
-            mapDisplayYear={props.mapDisplayYear}
-            priorityBap={props.priorityBap}
-            bapYearRanges={YEAR_RANGES}
-          />}
+          {props.bioscapeName !== 'terrestrial-ecosystems-2011' && <TimeSlider/>}
         </div>
         <div className="attribution" onClick={() => {setAttributionOpen(!attributionOpen)}} onMouseOver={disableDragging} onMouseOut={enableDragging}>
           <span className="attribution-info" style={{color: 'rgb(107, 153, 197)'}}>

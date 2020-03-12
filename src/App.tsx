@@ -18,6 +18,7 @@ import nvcsBioscape from './Bioscapes/terrestrial-ecosystems-2011.json'
 import packageJson from '../package.json'
 import states from './states.json'
 import useLocationHash from './Hooks/LocationHashHook'
+import { TimeSliderContext, defaultTimeSliderProps, ITimeSliderContext } from './Contexts/TimeSliderContext'
 
 // @Matt TODO: implement eslint
 export interface IBioscapeProps {
@@ -91,9 +92,6 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
       bioscapeName: bioscape,
       results: [],
       feature: {} as IFeature,
-      rangeYearMin: 2000,
-      mapDisplayYear: 2005,
-      rangeYearMax: 2010,
       map: null as any,
       analysisLayers: [] as any[],
       priorityBap: null,
@@ -106,9 +104,6 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
     }
 
     if (hashState) {
-      s.rangeYearMin = hashState.timeSlider.rangeYearMin
-      s.rangeYearMax = hashState.timeSlider.rangeYearMax
-      s.mapDisplayYear = hashState.timeSlider.mapDisplayYear
       s.priorityBap = hashState.priorityBap
       s.lat = hashState.point.lat
       s.lng = hashState.point.lng
@@ -118,6 +113,23 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
 
     return s
   })
+
+  const [timeSlider, setTimeSlider] = useState(() => {
+    let initTsState = defaultTimeSliderProps
+    if (hashState) {
+      const { rangeYearMax, rangeYearMin, mapDisplayYear } = hashState.timeSlider
+      initTsState = {
+        ...initTsState,
+        rangeYearMin,
+        rangeYearMax,
+        mapDisplayYear,
+      }
+    }
+    return initTsState
+  })
+  const updateTimeSliderState = (newState: Partial<ITimeSliderContext>) => {
+    setTimeSlider((prev) => Object.assign({}, prev, {...newState}))
+  }
 
   useEffect(() => {
     console.log('bioscape effect')
@@ -153,7 +165,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
       console.log('set hash effect')
       let tmpState: IShareState = {
         basemapServiceUrl: basemap.serviceUrl,
-        timeSlider: {rangeYearMin: state.rangeYearMin, rangeYearMax: state.rangeYearMax, mapDisplayYear: state.mapDisplayYear},
+        timeSlider: {rangeYearMin: timeSlider.rangeYearMin, rangeYearMax: timeSlider.rangeYearMax, mapDisplayYear: timeSlider.mapDisplayYear},
         priorityBap: state.priorityBap,
         baps,
         point: {lat: state.lat, lng: state.lng, elv: state.elv}
@@ -170,7 +182,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
     return () => {
       clearTimeout(hashTimeout.current)
     }
-  }, [baps, state, basemap, setHash])
+  }, [baps, state, basemap, setHash, timeSlider])
 
   useEffect(() => {
     console.log('initState effect')
@@ -182,6 +194,52 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hashState])
+
+  // changes the map display year.
+  useEffect(() => {
+    const analysisLayers = state.analysisLayers
+    if (!analysisLayers.length) {
+      return
+    }
+    analysisLayers.forEach((item: any) => {
+      if (!item.timeEnabled) {
+        return
+      }
+      if (!timeSlider.play) {
+        item.layer.setParams({
+          time: `${timeSlider.mapDisplayYear}-01-01`
+        })
+        return
+      }
+      // when the time slider is playing
+      // unfortunate that we need to use timeouts to acount for rendering time
+      // for a smooth transition. on 'load' is network only, not time it takes to paint
+      const currentOpacity = Number(item.layer.options.opacity).toFixed(2)
+      const clone = cloneLayer(item.layer)
+      clone.setParams({time: item.layer.wmsParams.time})
+      clone.setOpacity(0)
+      clone.addTo(state.map.current.leafletElement)
+      // weird case where layer 'load' doesent fire and clone doesnt get removed.
+      setTimeout(() => {state.map.current.leafletElement.removeLayer(clone)}, 5000)
+
+      clone.on('load', () => {
+        setTimeout(() => {
+          clone.setOpacity(currentOpacity)
+          item.layer.setOpacity(0)
+          item.layer.setParams({time: `${timeSlider.mapDisplayYear}-01-01`})
+        }, 150)
+        clone.off('load')
+      })
+
+      item.layer.on('load', () => {
+        setTimeout(() => {
+          layerTransitionFade(item.layer, clone, currentOpacity)
+        }, 250)
+        item.layer.off('load')
+      })
+    })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timeSlider.mapDisplayYear, timeSlider.play])
 
   const shareState = () => {
     if (state.feature) {
@@ -525,70 +583,6 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
 
   }, 250)
 
-  const setYearRange = (years: any) => {
-    setState((prev) => Object.assign({}, prev, {
-      rangeYearMin: years[0],
-      rangeYearMax: years[1]
-    }))
-  }
-
-  const setMapDisplayYear = (year: any) => {
-    setState((prev) => Object.assign({}, prev, {
-      mapDisplayYear: year
-    }))
-
-    if (state.analysisLayers.length !== 0) {
-      state.analysisLayers.forEach((item: any) => {
-        if (item.timeEnabled) {
-          item.layer.setParams(
-            {
-              time: `${year}-01-01`
-            }
-          )
-        }
-      })
-    }
-  }
-
-  // changes the map display year.
-  // unfortunate that we need to use timeouts to acount for rendering time
-  // for a smooth transition. on 'load' is network only, not time it takes to paint
-  const setMapDisplayYearFade = (year: any) => {
-    setState((prev) => Object.assign({}, prev, {
-      mapDisplayYear: year
-    }))
-
-    if (state.analysisLayers) {
-      state.analysisLayers.forEach((item) => {
-        if (item.timeEnabled) {
-          let currentOpacity = Number(item.layer.options.opacity).toFixed(2)
-          let clone = cloneLayer(item.layer)
-          clone.setParams({time: item.layer.wmsParams.time})
-          clone.setOpacity(0)
-          clone.addTo(state.map.current.leafletElement)
-          // weird case where layer 'load' doesent fire and clone doesnt get removed.
-          setTimeout(() => {state.map.current.leafletElement.removeLayer(clone)}, 5000)
-
-          clone.on('load', () => {
-            setTimeout(() => {
-              clone.setOpacity(currentOpacity)
-              item.layer.setOpacity(0)
-              item.layer.setParams({time: `${year}-01-01`})
-            }, 150)
-            clone.off('load')
-          })
-
-          item.layer.on('load', () => {
-            setTimeout(() => {
-              layerTransitionFade(item.layer, clone, currentOpacity)
-            }, 250)
-            item.layer.off('load')
-          })
-        }
-      })
-    }
-  }
-
   // brings layer 1 up and layer 2 down; removes layer 2.
   const layerTransitionFade = (layer: any, layer2: any, targetOpacity: any) => {
     let currentOpacityLayer = Math.round((layer.options.opacity + Number.EPSILON) * 100) / 100
@@ -638,15 +632,14 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
       <AlertBox />
       <div id="content-area">
       <BasemapContext.Provider value={[basemap, setBasemap]} >
+      <TimeSliderContext.Provider value={[timeSlider, updateTimeSliderState]}>
         <Resizable
           className="panel-area"
           enable={{top: false, right: true, bottom: false, left: false, topRight: false, bottomRight: false, bottomLeft: false, topLeft: false}}
           defaultSize={{width: 540}}
           minWidth={250}
           maxWidth={1000}
-          onResizeStop={() => {
-            state.map.current.leafletElement.invalidateSize(); setMapDisplayYear(state.mapDisplayYear + 1); setMapDisplayYear(state.mapDisplayYear - 1)
-          }}
+          onResizeStop={() => { state.map.current.leafletElement.invalidateSize() }}
         >
           <LeftPanel
             bioscape={state.bioscape}
@@ -655,8 +648,6 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
             submitHandler={submitHandler}
             feature={state.feature}
             mapClicked={state.mapClicked}
-            rangeYearMin={state.rangeYearMin}
-            rangeYearMax={state.rangeYearMax}
             updateAnalysisLayers={updateAnalysisLayers}
             setPriorityBap={setPriorityBap}
             shareState={shareState}
@@ -677,14 +668,9 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
             feature={state.feature}
             parentClickHandler={handleMapClick}
             parentDrawHandler={handleDrawnPolygon}
-            setYearRange={setYearRange}
-            setMapDisplayYear={setMapDisplayYear}
-            setMapDisplayYearFade={setMapDisplayYearFade}
             analysisLayers={state.analysisLayers}
             setMap={setMap}
-            rangeYearMax={state.rangeYearMax}
-            rangeYearMin={state.rangeYearMin}
-            mapDisplayYear={state.mapDisplayYear}
+            mapDisplayYear={timeSlider.mapDisplayYear}
             bioscapeName={state.bioscapeName}
             applicationVersion={REACT_VERSION}
             priorityBap={state.priorityBap}
@@ -692,6 +678,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
             initPoint={hashState?.point}
           />
         </div>
+      </TimeSliderContext.Provider>
       </BasemapContext.Provider>
       </div>
       <Footer />
