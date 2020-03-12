@@ -72,7 +72,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
     }, [])
 
     useEffect(() => {
-      console.log('AnalysisPackage featureChange ', initialized.current)
+      console.log('AnalysisPackage featureChange effect', props.bapId)
       // feature change
       if (!initialized.current) {
         return
@@ -120,7 +120,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
     }, [isOpen])
 
     const initilize = () => {
-      let newLayers = layers
+      let newLayers = [...layers]
 
       newLayers.forEach((layer) => {
         if (layer.sb_item) {
@@ -164,7 +164,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
     }
 
     const toggleLayer = (layer: any, opacity?: number) => {
-      let newLayers = layers
+      let newLayers = [...layers]
       if (layer && !layer.disabled) {
         for (let l of newLayers) {
           // always toggle the layer clicked
@@ -264,7 +264,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
     const setOpacity = (layer: any, event: any) => {
       layer.layer.setOpacity(event.target.value)
       layer.layer.options.opacity = event.target.value
-      let newLayers = layers
+      let newLayers = [...layers]
       setLayers(newLayers)
       setShareState(shareState)
     }
