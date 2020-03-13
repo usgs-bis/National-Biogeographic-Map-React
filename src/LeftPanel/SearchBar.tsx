@@ -4,7 +4,7 @@ import React, { FunctionComponent, useState, useEffect, useContext } from 'react
 import speechBubble from './bubble.png'
 import {Button, ButtonGroup, UncontrolledTooltip} from 'reactstrap'
 import {Collapse, CardBody, Card} from 'reactstrap'
-import {IoMdSettings} from 'react-icons/io'
+import {IoMdSettings, IoMdRefresh} from 'react-icons/io'
 import {RadioGroup} from '../CustomRadio/CustomRadio'
 import {isEmpty} from 'lodash'
 
@@ -104,12 +104,13 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
           <Button id="settings-tooltip" onClick={toggleBasemapDropdown} className="submit-analysis-btn icon-btn" >
             <IoMdSettings />
           </Button>
-          <UncontrolledTooltip target="settings-tooltip" placement="right" >Settings</UncontrolledTooltip>
+          <UncontrolledTooltip target="settings-tooltip" >Settings</UncontrolledTooltip>
         </div>
         <div className="settings-btn-group nbm-flex-column">
-          <Button className='submit-analysis-btn placeholder-button' onClick={reset} >
-            reset!
+          <Button id="reset-tooltip" className="submit-analysis-btn icon-btn" onClick={reset} >
+            <IoMdRefresh />
           </Button>
+          <UncontrolledTooltip target="reset-tooltip" >Reset Map</UncontrolledTooltip>
         </div>
         <div className="nbm-flex-column-big">
           <input
