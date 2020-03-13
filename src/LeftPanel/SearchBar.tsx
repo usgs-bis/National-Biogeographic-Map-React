@@ -92,6 +92,11 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
     setBasemap(e)
   }
 
+  const reset = () => {
+    window.location.hash = ''
+    window.location.reload()
+  }
+
   return (
     <div>
       <div className="nbm-flex-row">
@@ -100,6 +105,11 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
             <IoMdSettings />
           </Button>
           <UncontrolledTooltip target="settings-tooltip" placement="right" >Settings</UncontrolledTooltip>
+        </div>
+        <div className="settings-btn-group nbm-flex-column">
+          <Button className='submit-analysis-btn placeholder-button' onClick={reset} >
+            reset!
+          </Button>
         </div>
         <div className="nbm-flex-column-big">
           <input

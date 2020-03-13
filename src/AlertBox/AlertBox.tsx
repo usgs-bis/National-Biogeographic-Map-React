@@ -24,9 +24,11 @@ const AlertBox: FunctionComponent = () => {
   }, [])
 
   const apiBox = () => {
+    if (apiCheck) {
       return (
         <Alert color="danger" className="app-alert">{apiCheck}</Alert>
       )
+    }
   }
 
   return (

@@ -1,7 +1,7 @@
-import React from "react";
-import * as d3 from "d3";
+import React from 'react'
+import * as d3 from 'd3'
 
-import "./Chart.css"
+import './Chart.css'
 
 class HistogramChart extends React.Component {
     constructor(props) {
@@ -12,12 +12,14 @@ class HistogramChart extends React.Component {
             data: null,
             bucketSize: null
         }
-        this.drawChart = this.drawChart.bind(this);
+        this.drawChart = this.drawChart.bind(this)
         this.print = this.print.bind(this)
     }
 
     componentDidMount() {
-        this.props.onRef(this)
+        if (this.props.onRef) {
+            this.props.onRef(this)
+        }
     }
 
     componentDidUpdate() {
@@ -57,19 +59,19 @@ class HistogramChart extends React.Component {
         const chart = d3.select(`#${id}ChartContainer`)
 
         // Remove older renderings
-        chart.selectAll("text").remove()
-        chart.select(`#${id}Svg`).selectAll("g").remove()
+        chart.selectAll('text').remove()
+        chart.select(`#${id}Svg`).selectAll('g').remove()
 
         if (!id || !config || !data) return
 
 
         // Title
-        chart.select(`#${id}Title`).append("text")
-            .text(config.chart.title);
+        chart.select(`#${id}Title`).append('text')
+            .text(config.chart.title)
 
         // Subtitle
-        chart.select(`#${id}Subtitle`).append("text")
-            .text(config.chart.subtitle);
+        chart.select(`#${id}Subtitle`).append('text')
+            .text(config.chart.subtitle)
 
         chart.transition()
 
@@ -78,25 +80,25 @@ class HistogramChart extends React.Component {
         const width = 480,
             height = 400,
             opacityHover = 1,
-            otherOpacityOnHover = .8;
+            otherOpacityOnHover = .8
 
         // Define x and y type and scales
-        const x = d3.scaleLinear().rangeRound([0, width]);
-        const y = d3.scaleLinear().range([height, 0]);
+        const x = d3.scaleLinear().rangeRound([0, width])
+        const y = d3.scaleLinear().range([height, 0])
 
         const years = Object.getOwnPropertyNames(data)
 
         //  TODO globals for tooltip, will want to change
-        let totalCount = 0;
-        const startYear = years[0];
-        const endYear = years[years.length - 1];
+        let totalCount = 0
+        const startYear = years[0]
+        const endYear = years[years.length - 1]
 
         data = processData(data, bucketSize)
 
         // Get and set domain
         const domain = getDomain(data)
-        x.domain([domain.xMin + 1, domain.xMax + 2]);
-        y.domain([0, domain.yMax]);
+        x.domain([domain.xMin + 1, domain.xMax + 2])
+        y.domain([0, domain.yMax])
 
         // Create the x-axis
         const xAxis = d3.axisBottom(x)
@@ -108,40 +110,40 @@ class HistogramChart extends React.Component {
 
         // Create a responsive svg element
         const svg = chart.select(`#${id}Svg`)
-            .attr("preserveAspectRatio", "xMinYMin meet")
-            .attr("viewBox", "0 0 " + (width + config.margins.left + config.margins.right) + " " + (height + config.margins.top + config.margins.bottom))
-            .classed("svg-content-responsive", true)
-            .attr("version", "1.1")
-            .attr("baseProfile", "full")
-            .attr("xmlns", "http://www.w3.org/2000/svg")
-            .append("g")
-            .attr("transform", "translate(" + config.margins.left + "," + 0 + ")");
+            .attr('preserveAspectRatio', 'xMinYMin meet')
+            .attr('viewBox', '0 0 ' + (width + config.margins.left + config.margins.right) + ' ' + (height + config.margins.top + config.margins.bottom))
+            .classed('svg-content-responsive', true)
+            .attr('version', '1.1')
+            .attr('baseProfile', 'full')
+            .attr('xmlns', 'http://www.w3.org/2000/svg')
+            .append('g')
+            .attr('transform', 'translate(' + config.margins.left + ',' + 0 + ')')
 
         // Add the x-axis to the svg
-        svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + height + ")")
-            .attr("font-size", "11px")
-            .call(xAxis);
+        svg.append('g')
+            .attr('class', 'x axis')
+            .attr('transform', 'translate(0,' + height + ')')
+            .attr('font-size', '11px')
+            .call(xAxis)
 
         // Add the y-axis to the svg
-        svg.append("g")
-            .attr("transform", "translate(" + -1 + "," + 0 + ")")
-            .attr("class", "y axis")
-            .attr("font-size", "11px")
-            .call(yAxis);
+        svg.append('g')
+            .attr('transform', 'translate(' + -1 + ',' + 0 + ')')
+            .attr('class', 'y axis')
+            .attr('font-size', '11px')
+            .call(yAxis)
 
         // Add the histogram bars
-        const bars = svg.selectAll(".bar")
+        const bars = svg.selectAll('.bar')
             .data(data)
-            .enter().append("rect")
-            .attr("class", "bar")
-            .attr("fill", "rgb(56, 155, 198)")
-            .attr("stroke", "rgb(0, 0, 0)")
-            .attr("x", function (d) { return x(d.day); })
-            .attr("width", width / (1 + (domain.xMax - domain.xMin)))
-            .attr("y", function (d) { return y(d.count); })
-            .attr("height", function (d) { return height - y(d.count); })
+            .enter().append('rect')
+            .attr('class', 'bar')
+            .attr('fill', 'rgb(56, 155, 198)')
+            .attr('stroke', 'rgb(0, 0, 0)')
+            .attr('x', function (d) { return x(d.day) })
+            .attr('width', width / (1 + (domain.xMax - domain.xMin)))
+            .attr('y', function (d) { return y(d.count) })
+            .attr('height', function (d) { return height - y(d.count) })
 
         // Add a div inside chart for tooltips
         const tooltip = d3.select('#d3chartTooltip')
@@ -149,50 +151,50 @@ class HistogramChart extends React.Component {
 
 
         // Add tooltip functionality on mouseOver
-        bars.on("mouseover", function (d) {
+        bars.on('mouseover', function (d) {
             chart.selectAll('rect')
-                .style("opacity", otherOpacityOnHover);
+                .style('opacity', otherOpacityOnHover)
             d3.select(this)
-                .style("opacity", opacityHover);
+                .style('opacity', opacityHover)
             tooltip.transition()
                 .duration(200)
-                .style("opacity", .9);
+                .style('opacity', .9)
             tooltip.html(toolTipLabel(d, bucketSize))
-                .style("left", (d3.event.pageX) + "px")
-                .style("top", (d3.event.pageY - 28) + "px")
-                .style("border", `3px solid rgb(56, 155, 198)`);
-        });
+                .style('left', (d3.event.pageX) + 'px')
+                .style('top', (d3.event.pageY - 28) + 'px')
+                .style('border', '3px solid rgb(56, 155, 198)')
+        })
 
         // Add tooltip functionality on mouseOut
-        bars.on("mouseout", function (d) {
+        bars.on('mouseout', function (d) {
             chart.selectAll('rect')
-                .style("opacity", opacityHover);
+                .style('opacity', opacityHover)
             tooltip.transition()
                 .duration(500)
-                .style("opacity", 0);
-        });
+                .style('opacity', 0)
+        })
 
         // Add a label for the x-axis.
-        svg.append("g")
-            .append("text")
-            .attr("y", height + config.margins.top + 25)
-            .attr("x", width / 2)
-            .attr("fill", "rgb(0, 0, 0)")
-            .attr("font-size", "14px")
-            .style("text-anchor", "middle")
-            .text(config.xAxis.label);
+        svg.append('g')
+            .append('text')
+            .attr('y', height + config.margins.top + 25)
+            .attr('x', width / 2)
+            .attr('fill', 'rgb(0, 0, 0)')
+            .attr('font-size', '14px')
+            .style('text-anchor', 'middle')
+            .text(config.xAxis.label)
 
         // Add a label for the y-axis.
-        svg.append("g")
-            .append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 0 - config.margins.left)
-            .attr("x", 0 - (height / 2))
-            .attr("dy", "1em")
-            .attr("fill", "rgb(0, 0, 0)")
-            .attr("font-size", "14px")
-            .style("text-anchor", "middle")
-            .text(config.yAxis.label);
+        svg.append('g')
+            .append('text')
+            .attr('transform', 'rotate(-90)')
+            .attr('y', 0 - config.margins.left)
+            .attr('x', 0 - (height / 2))
+            .attr('dy', '1em')
+            .attr('fill', 'rgb(0, 0, 0)')
+            .attr('font-size', '14px')
+            .style('text-anchor', 'middle')
+            .text(config.yAxis.label)
 
         function emptyYear() {
             let year = new Array(366)
@@ -205,11 +207,11 @@ class HistogramChart extends React.Component {
         function processData(rawData, factor) {
             let days_of_year = emptyYear()
             let processedData = []
-            totalCount = 0;
+            totalCount = 0
             for (let currentYear in rawData) {
                 for (let i = 0; i < rawData[currentYear].length; i++) {
                     days_of_year[rawData[currentYear][i]] += 1
-                    totalCount++;
+                    totalCount++
                 }
             }
             let bucket_days_of_year = transformData(days_of_year, factor)
@@ -234,26 +236,26 @@ class HistogramChart extends React.Component {
         };
 
         function getDomain(rawData) {
-            let xMin = 365;
-            let xMax = 0;
-            let yMax = 0;
+            let xMin = 365
+            let xMax = 0
+            let yMax = 0
             for (let i = 0; i < rawData.length; i++) {
                 let c = rawData[i].count
-                if (c > yMax) { yMax = c; }
-                if (c > 0 && i < xMin) { xMin = i; }
-                else if (c > 0 && i > xMax) { xMax = i; }
+                if (c > yMax) { yMax = c }
+                if (c > 0 && i < xMin) { xMin = i }
+                else if (c > 0 && i > xMax) { xMax = i }
             }
-            return { xMin: xMin, xMax: xMax, yMax: yMax };
+            return { xMin: xMin, xMax: xMax, yMax: yMax }
         };
 
 
         function toolTipLabel(d, bucketSize) {
-            var percentage = parseInt(parseInt(d.count) / parseInt(totalCount) * 100);
+            var percentage = parseInt(parseInt(d.count) / parseInt(totalCount) * 100)
             if (percentage < 1) {
-                percentage = '< 1';
+                percentage = '< 1'
             }
             else {
-                percentage = percentage.toString();
+                percentage = percentage.toString()
             }
             let count = `Number of Grid Cells: <label>${parseInt(d.count)} </label> of <label>${parseInt(totalCount)} </label> ( ~ ${percentage}%)<br />  Number of Grid Cells = values that occur ${dateFromDay(2018, (d.day * bucketSize) + 1)} to ${dateFromDay(2018, (d.day * bucketSize) + bucketSize)} for all selected years (${startYear} to ${endYear}). <br />`
             if (bucketSize === 1) {
@@ -265,9 +267,9 @@ class HistogramChart extends React.Component {
         }
 
         function dateFromDay(year, day) {
-            const formatTime = d3.timeFormat("%b %d");
-            let date = new Date(year, 0);
-            return formatTime(new Date(date.setDate(day)));
+            const formatTime = d3.timeFormat('%b %d')
+            let date = new Date(year, 0)
+            return formatTime(new Date(date.setDate(day)))
         }
 
     }
@@ -281,25 +283,25 @@ class HistogramChart extends React.Component {
                 const currentWidth = d3.select(`#${id}ChartContainer .svg-container-chart`).node().clientWidth
                 const currentHeight = d3.select(`#${id}ChartContainer .svg-container-chart`).node().clientHeight
                 d3.select(`#${id}ChartContainer .svg-container-chart svg`)
-                    .attr("height", currentHeight)
-                    .attr("width", currentWidth)
+                    .attr('height', currentHeight)
+                    .attr('width', currentWidth)
 
                 const canvasContainer = d3.select(`#${id}ChartContainer`)
                     .append('div')
-                    .attr("class", `${id}Class`)
+                    .attr('class', `${id}Class`)
                     .html(`<canvas id="canvas${id}" width="${currentWidth}" height="${currentHeight}" style="position: fixed;"></canvas>`)
 
-                const canvas = document.getElementById(`canvas${id}`);
-                const image = new Image();
+                const canvas = document.getElementById(`canvas${id}`)
+                const image = new Image()
                 image.onload = () => {
-                    canvas.getContext("2d").drawImage(image, 0, 0, currentWidth, currentHeight);
+                    canvas.getContext('2d').drawImage(image, 0, 0, currentWidth, currentHeight)
                     canvasContainer.remove()
                     d3.select(`#${id}ChartContainer .svg-container-chart svg`)
-                        .attr("height", null)
-                        .attr("width", null)
+                        .attr('height', null)
+                        .attr('width', null)
                     resolve(canvas.toDataURL())
                 }
-                const svg = "data:image/svg+xml," + d3.select(`#${id}ChartContainer .svg-container-chart`).html().replace(/#/g, '%23')
+                const svg = 'data:image/svg+xml,' + d3.select(`#${id}ChartContainer .svg-container-chart`).html().replace(/#/g, '%23')
                 image.src = svg
             }
             catch (error) {
@@ -316,10 +318,10 @@ class HistogramChart extends React.Component {
                     <div>
                         <div id={id + 'ChartContainer'} className="chart-container">
                             <div
-                                style={{ display: this.props.config.chart.title ? "block" : "none" }}
+                                style={{ display: this.props.config.chart.title ? 'block' : 'none' }}
                                 id={id + 'Title'} className="title"></div>
                             <div
-                                style={{ display: this.props.config.chart.subtitle ? "block" : "none" }}
+                                style={{ display: this.props.config.chart.subtitle ? 'block' : 'none' }}
                                 id={id + 'Subtitle'} className="subtitle"></div>
                             <div id={id + 'Chart'} className="chart">
                                 <div className="svg-container-chart">
@@ -330,14 +332,14 @@ class HistogramChart extends React.Component {
                             </div>
                         </div>
                     </div>
-                );
+                )
             }
         }
         return (
             <div>
                 {divs()}
             </div>
-        );
+        )
     }
 }
-export default HistogramChart;
+export default HistogramChart

@@ -1,6 +1,6 @@
 {
   "name": "biogeography",
-  "version": "2.15.2",
+  "version": "2.16.1",
   "homepage": "/biogeography/",
   "private": true,
   "dependencies": {
@@ -29,7 +29,8 @@
     "react-table": "^6.11.5",
     "reactstrap": "8.4.1",
     "shpjs": "^3.4.3",
-    "typescript": "3.8.3"
+    "typescript": "3.8.3",
+    "xml2js": "^0.4.23"
   },
   "devDependencies": {
     "@turf/turf": "^5.1.6",

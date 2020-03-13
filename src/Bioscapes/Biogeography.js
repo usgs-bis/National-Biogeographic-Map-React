@@ -94,8 +94,8 @@ class Biogeography extends React.Component {
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
                         setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
-                        yearMin={this.props.rangeYearMin}
-                        yearMax={this.props.rangeYearMax}
+                        // yearMin={this.props.rangeYearMin}
+                        // yearMax={this.props.rangeYearMax}
                         priorityBap={this.props.priorityBap}
                         bapId={'bap1'}
                         initBap={(this.props.initBaps || {})['bap1']}
@@ -109,8 +109,6 @@ class Biogeography extends React.Component {
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
                         setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
-                        yearMin={this.props.rangeYearMin}
-                        yearMax={this.props.rangeYearMax}
                         priorityBap={this.props.priorityBap}
                         bapId={'bap2'}
                         initBap={(this.props.initBaps || {})['bap2']}
@@ -124,8 +122,8 @@ class Biogeography extends React.Component {
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
                         setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
-                        yearMin={this.props.rangeYearMin}
-                        yearMax={this.props.rangeYearMax}
+                        // yearMin={this.props.rangeYearMin}
+                        // yearMax={this.props.rangeYearMax}
                         priorityBap={this.props.priorityBap}
                         bapId={'bap3'}
                         initBap={(this.props.initBaps || {})['bap3']}
