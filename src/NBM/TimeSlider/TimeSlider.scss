@@ -145,18 +145,29 @@ input.map-display-slider[type='range']::-webkit-slider-thumb {
 }
 
 .global-time-slider .inner-glyph{
-
   position: absolute;
   z-index: 9999;
-  left: 8px;
   color: white;
+}
+
+.play-glyph{
+  cursor: pointer;
+  top: 3px;
+  left: 4px !important;
+  font-size: 22px !important;
 }
 
 .glyph-tag {
   top: 4px;
+  cursor: move;
+  cursor: grab;
 
   svg {
     vertical-align: top;
+  }
+
+  &:active {
+    cursor: grabbing;
   }
 }
 
@@ -186,11 +197,4 @@ input.map-display-slider[type='range']::-webkit-slider-thumb {
   width: 300px;
   border-radius: 9px;
   top: 0px;
-}
-
-
-.play-glyph{
-  top: 3px;
-  left: 4px !important;
-  font-size: 22px !important;
 }

@@ -182,21 +182,27 @@ const TimeSlider: React.FunctionComponent = () => {
             <span className="range-handle" >
               {leftYear}
             </span>
-            <FaTag />
+            <span className="glyph-tag edge-glyph-tag inner-glyph" >
+              <FaTag />
+            </span>
           </span>
 
           <span onMouseDown={(e) => onMouseDown(e, displayYearUpdate)} className="inner-glyph" style={{left: displayYearHandlePosition + 'px'}} >
             <span className="range-handle handle-overlap">
               {displayYear}
             </span>
-            <FaTag />
+            <span className="glyph-tag center-glyph-tag inner-glyph" >
+              <FaTag />
+            </span>
           </span>
 
           <span onMouseDown={(e) => onMouseDown(e, rightUpdate)} className="inner-glyph" style={{left: rightPosition + 'px'}}>
             <span className="range-handle" >
               {rightYear}
             </span>
-            <FaTag />
+            <span className="glyph-tag edge-glyph-tag inner-glyph" >
+              <FaTag />
+            </span>
           </span>
         </span>
         <span className="range-values" style={{right: '10px'}}>{maxSliderValue}</span>
