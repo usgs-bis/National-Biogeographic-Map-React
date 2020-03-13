@@ -64,7 +64,7 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
     }
   }, [mapClicked, point.lat, point.lng, textInput])
 
-  // @Matt TODO: test that this works
+  // @Matt TODO: #current test that this works
   const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
     textSearchHandler(e.currentTarget.value)
   }
@@ -92,6 +92,7 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
     setBasemap(e)
   }
 
+  // @Matt TODO: #current can we do this without a reload?
   const reset = () => {
     window.location.hash = ''
     window.location.reload()

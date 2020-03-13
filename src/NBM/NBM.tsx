@@ -18,6 +18,7 @@ import {isEmpty} from 'lodash'
 // @ts-ignore
 import {Map, TileLayer, WMSTileLayer, Marker, Popup, GeoJSON, FeatureGroup, ZoomControl} from 'react-leaflet'
 import LegendContext from '../Contexts/LegendContext'
+import _ from 'lodash'
 
 const DEV_MODE = AppConfig.REACT_APP_DEV
 
@@ -60,7 +61,6 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
   })
   const [attributionOpen, setAttributionOpen] = useState(false)
   const [showUploadDialog, setShowUploadDialog] = useState(false)
-  // @Matt TODO: do something with the uploading?
   const [uploadError, setUploadError] = useState('')
   const [uploading, setUploading] = useState(false)
   const [oldOverlay, setOldOverlay] = useState<Layer>()
@@ -72,9 +72,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
   const locationOverlay = useRef<LocationOverlay>(null)
   const map = useRef<Map>(null)
 
-  // @Matt TODO: #next all things in functioncomponents can't do it this way
   let clickableRef = useRef(true)
-  let layerError = false
 
   useEffect(() => {
     console.log('api version effect')
@@ -194,19 +192,14 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
 
   // @Matt TODO: #next user drawn polygons still load the single data point, need to disallow that
 
-  const handleLoadError = (err: any) => {
-    let prevErr = layerError
-    layerError = true
-    // sometimes reduces the bounce on a hard refresh.
-    if (!prevErr && layerError) {
-      // @Matt TODO: #next this toast isn't very performant, need to replace with a better version
-      /* toast.notify( */
-      /*   <div> */
-      /*     <h4>Error loading layer <i>{e.target.options.layers}</i> from <br /> <br />{e.target._url}</h4> */
-      /*   </div>, {duration: 15000, position: 'top'} */
-      /* ) */
-    }
-  }
+  const handleLoadError = _.debounce((err: any) => {
+    // @Matt TODO: #current this toast isn't very performant, need to replace with a better version
+    /* toast.notify( */
+    /*   <div> */
+    /*     <h4>Error loading layer <i>{e.target.options.layers}</i> from <br /> <br />{e.target._url}</h4> */
+    /*   </div>, {duration: 15000, position: 'top'} */
+    /* ) */
+  }, 200)
 
   const handleMouseOut = () => {
     locationOverlay?.current?.setLocation(null, null)

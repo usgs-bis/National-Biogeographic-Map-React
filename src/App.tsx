@@ -23,7 +23,6 @@ import states from './states.json'
 import useLocationHash from './Hooks/LocationHashHook'
 import { TimeSliderContext, defaultTimeSliderProps, ITimeSliderContext } from './Contexts/TimeSliderContext'
 
-// @Matt TODO: implement eslint
 export interface IBioscapeProps {
   biogeography: any
   'nbm-react': any
