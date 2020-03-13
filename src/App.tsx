@@ -76,11 +76,7 @@ const numberWithCommas = (x: number) => {
 const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }) => {
 
   // @Matt TODO: do something with the errorState
-  const [errorState, setErrorState] = useState(null)
-  useEffect(() => {
-    console.log(errorState)
-  }, [errorState])
-
+  const [errorState, setErrorState] = useState<Error>()
   const [hashState, setHash] = useLocationHash()
 
   const [baps, setBaps] = useState(hashState?.baps)
@@ -641,7 +637,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
   return (
     <div className="vwrapper">
       <Header title={state.bioscape.title} description={state.bioscape.description} />
-      <AlertBox />
+      <AlertBox errorMsg={errorState?.message}/>
       <div id="content-area">
       <LegendContext.Provider value={legendState}>
       <EnabledLayersContext.Provider value={{enabledLayers, setEnabledLayers}}>
