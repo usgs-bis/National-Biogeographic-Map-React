@@ -83,16 +83,21 @@ svg {
     height: 13px;
 }
 
+$icon-btn-size: 2.1rem;
 .icon-btn {
-    display: flex;
-    height: 35px;
-    width: 35px;
-    padding: 0.5rem;
+    height: $icon-btn-size;
+    width: $icon-btn-size;
+    padding: 0;
+
+    $icon-btn-svg-size: 3 / 4 * $icon-btn-size;
+    svg {
+        height: $icon-btn-svg-size;
+        width: $icon-btn-svg-size;
+        vertical-align: middle;
+    }
 }
 
 .leaflet-bar button {
-    display: flex;
-    justify-content: center;
     padding: 0;
     background-color: #fff;
     border: none;
@@ -106,5 +111,11 @@ svg {
     svg {
         width: 14px;
         height: 14px;
+        vertical-align: sub;
+    }
+
+    .leaflet-touch & {
+        width: 30px;
+        height: 30px;
     }
 }

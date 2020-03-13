@@ -1,9 +1,7 @@
+import './InfoSign.scss'
 import React, {FunctionComponent, useState} from 'react'
 import {FaInfoCircle} from 'react-icons/fa'
 import {UncontrolledTooltip} from 'reactstrap'
-
-
-import './InfoSign.css'
 
 export interface IInfoSignProps {
   onClick?: any
