@@ -1,10 +1,10 @@
-import React, {FunctionComponent, useState, useEffect, useRef, forwardRef, useImperativeHandle, useContext} from 'react'
-import {BarLoader} from 'react-spinners'
-import L from 'leaflet'
 import * as turf from '@turf/turf'
-import withSharedAnalysisCharacteristics from './AnalysisPackage'
-import HorizontalBarChart from '../Charts/HorizontalBarChart'
 import AppConfig from '../config'
+import HorizontalBarChart from '../Charts/HorizontalBarChart'
+import L from 'leaflet'
+import React, {useState, useEffect, useRef, forwardRef, useImperativeHandle, useContext, Ref} from 'react'
+import withSharedAnalysisCharacteristics from './AnalysisPackage'
+import {BarLoader} from 'react-spinners'
 import {TimeEnabledLayer, defaultTimeDimension} from './TimeEnabledLayer'
 import {TimeSliderContext} from '../Contexts/TimeSliderContext'
 
@@ -52,7 +52,7 @@ const EMPTY_CHARTS = {
   barChart: {id: '', config: {}, data: null}
 }
 
-const ExpectedLandUseAnalysisPackage: FunctionComponent<IExpectedLandUseAnalysisPackageProps> = (props, ref) => {
+const ExpectedLandUseAnalysisPackage = (props: IExpectedLandUseAnalysisPackageProps, ref: Ref<any>) => {
   const [, setTimeSliderState] = useContext(TimeSliderContext)
   const [loading, setLoading] = useState(false)
   const [charts, setCharts] = useState(EMPTY_CHARTS)

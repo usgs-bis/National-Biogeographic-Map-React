@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle, FunctionComponent, useContext } from 'react'
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle, useContext, Ref } from 'react'
 import { BarLoader } from 'react-spinners'
 
 import withSharedAnalysisCharacteristics from './AnalysisPackage'
@@ -51,7 +51,7 @@ const EMPTY_CHARTS = {
   boxAndWhisker: { id: '', config: {}, data: null }
 }
 
-const FirstLeafAnalysisPackage: FunctionComponent<IFirstLeafAnalysisPackageProps> = (props: IFirstLeafAnalysisPackageProps, ref) => {
+const FirstLeafAnalysisPackage = (props: IFirstLeafAnalysisPackageProps, ref: Ref<any>) => {
   const [timeSliderState, setTimeSliderState] = useContext(TimeSliderContext)
   const [charts, setCharts] = useState<IFirstLeafAnalysisPackageCharts>(EMPTY_CHARTS)
   const [loading, setLoading] = useState(false)
@@ -151,7 +151,7 @@ const FirstLeafAnalysisPackage: FunctionComponent<IFirstLeafAnalysisPackageProps
               props.canOpen(false)
             }
           },
-          (error) => {
+          (_error) => {
             setLoading(false)
             setError(true)
           }
@@ -185,7 +185,7 @@ const FirstLeafAnalysisPackage: FunctionComponent<IFirstLeafAnalysisPackageProps
               props.canOpen(false)
             }
           },
-          (error) => {
+          (_error) => {
             setLoading(false)
             setError(true)
           }

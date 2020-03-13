@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle, FunctionComponent, useContext } from 'react'
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle, useContext, Ref } from 'react'
 import { BarLoader } from 'react-spinners'
 
 import withSharedAnalysisCharacteristics from './AnalysisPackage'
@@ -37,6 +37,7 @@ export interface IFirstBloomAnalysisPackageProps {
   getAnalysisLayers: Function
   handleBapError: Function
   getBapContents: Function
+
 }
 
 export interface IFirstBloomAnalysisPackageCharts {
@@ -51,7 +52,7 @@ const EMPTY_CHARTS = {
   boxAndWhisker: { id: '', config: {}, data: null }
 }
 
-const FirstBloomAnalysisPackage: FunctionComponent<IFirstBloomAnalysisPackageProps> = (props, ref) => {
+const FirstBloomAnalysisPackage = (props: IFirstBloomAnalysisPackageProps, ref: Ref<any>) => {
   const [timeSliderState, setTimeSliderState] = useContext(TimeSliderContext)
   const [charts, setCharts] = useState<IFirstBloomAnalysisPackageCharts>(EMPTY_CHARTS)
   const [loading, setLoading] = useState(false)
@@ -151,7 +152,7 @@ const FirstBloomAnalysisPackage: FunctionComponent<IFirstBloomAnalysisPackagePro
               props.canOpen(false)
             }
           },
-          (error) => {
+          () => {
             setLoading(false)
             setError(true)
           }

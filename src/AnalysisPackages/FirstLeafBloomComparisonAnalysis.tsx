@@ -1,12 +1,11 @@
-import React, { FunctionComponent, useState, useContext, useEffect, useImperativeHandle, useRef, forwardRef } from 'react'
-import { BarLoader } from 'react-spinners'
-
-import withSharedAnalysisCharacteristics from './AnalysisPackage'
-import ComparisonChart from '../Charts/ComparisonChart'
 import './AnalysisPackages.css'
 import AppConfig from '../config'
-import { TimeSliderContext } from '../Contexts/TimeSliderContext'
-import { TimeEnabledLayer, defaultTimeDimension } from './TimeEnabledLayer'
+import ComparisonChart from '../Charts/ComparisonChart'
+import React, {useState, useContext, useEffect, useImperativeHandle, useRef, forwardRef, Ref} from 'react'
+import withSharedAnalysisCharacteristics from './AnalysisPackage'
+import {BarLoader} from 'react-spinners'
+import {TimeEnabledLayer, defaultTimeDimension} from './TimeEnabledLayer'
+import {TimeSliderContext} from '../Contexts/TimeSliderContext'
 
 const SB_URL = 'https://www.sciencebase.gov/catalog/item/5b685d1ce4b006a11f75b0a8?format=json'
 const FIRSTLEAF_URL = AppConfig.REACT_APP_BIS_API + '/api/v1/phenology/place/firstleaf'
@@ -26,7 +25,7 @@ const layers = [
 ]
 
 interface IFirstLeafBloomComparisonAnalysisPackageProps {
-  initBap: { didSubmit: boolean }
+  initBap: {didSubmit: boolean}
   setShareState: Function
   feature: any
   isEnabled: Function
@@ -41,10 +40,10 @@ interface IFirstLeafBloomComparisonAnalysisPackageProps {
 }
 
 const EMPTY_CHARTS = {
-  ComparisonChart: { id: '', config: {}, data: null }
+  ComparisonChart: {id: '', config: {}, data: null}
 }
 
-const FirstLeafBloomComparisonAnalysisPackage: FunctionComponent<IFirstLeafBloomComparisonAnalysisPackageProps> = (props, ref) => {
+const FirstLeafBloomComparisonAnalysisPackage = (props: IFirstLeafBloomComparisonAnalysisPackageProps, ref: Ref<any>) => {
   const [timeSliderState, setTimeSliderState] = useContext(TimeSliderContext)
   const [charts, setCharts] = useState(EMPTY_CHARTS)
   const [loading, setLoading] = useState(false)
@@ -57,7 +56,7 @@ const FirstLeafBloomComparisonAnalysisPackage: FunctionComponent<IFirstLeafBloom
 
   useImperativeHandle(ref, () => ({
     print: print
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }), [])
 
   useEffect(() => {
@@ -72,10 +71,10 @@ const FirstLeafBloomComparisonAnalysisPackage: FunctionComponent<IFirstLeafBloom
       const res = await Promise.all(layers.map(l => l.getTimeDimension()))
       const minVal = Math.min(...res.map(td => td.minVal))
       const maxVal = Math.max(...res.map(td => td.maxVal))
-      setTimeDimension({ minVal, maxVal, step: res[0].step })
+      setTimeDimension({minVal, maxVal, step: res[0].step})
     }
     fetchTimeDimension()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -88,14 +87,14 @@ const FirstLeafBloomComparisonAnalysisPackage: FunctionComponent<IFirstLeafBloom
     clearCharts()
     featureChange()
     featureRef.current = props.feature
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.feature])
 
   useEffect(() => {
     if (props.isPriorityBap) {
       setTimeSliderState({minSliderValue: 1982, maxSliderValue: 2018})
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.isPriorityBap, timeDimension])
 
   const featureChange = () => {
@@ -124,19 +123,19 @@ const FirstLeafBloomComparisonAnalysisPackage: FunctionComponent<IFirstLeafBloom
       setError(false)
       clearCharts()
       let firstLeafFetch = fetch(FIRSTLEAF_URL + `?year_min=${timeSliderState.rangeYearMin}&year_max=${timeSliderState.rangeYearMax}&feature_id=${feature.properties.feature_id}&token=${PUBLIC_TOKEN}`)
-        .then(res => { return res.json() },
-          (error) => {
+        .then(res => {return res.json()},
+          (_error) => {
             setError(true)
           })
       let firstBloomFetch = fetch(FIRSTBLOOM_URL + `?year_min=${timeSliderState.rangeYearMin}&year_max=${timeSliderState.rangeYearMax}&feature_id=${feature.properties.feature_id}&token=${PUBLIC_TOKEN}`)
-        .then(res => { return res.json() },
-          (error) => {
+        .then(res => {return res.json()},
+          (_error) => {
             setError(true)
           })
       Promise.all([firstLeafFetch, firstBloomFetch]).then(results => {
         if (results && results.length === 2) {
           props.setBapJson(results)
-          const charts = getCharts({ ComparisonChart: { leaf: results[0], bloom: results[1] } }, feature.properties.feature_name)
+          const charts = getCharts({ComparisonChart: {leaf: results[0], bloom: results[1]}}, feature.properties.feature_name)
           setCharts(charts)
           setLoading(false)
           setDidSubmit(true)
@@ -153,26 +152,26 @@ const FirstLeafBloomComparisonAnalysisPackage: FunctionComponent<IFirstLeafBloom
       setError(false)
       clearCharts()
       const request = {
-        headers: new Headers({ 'Content-Type': 'application/json'}),
+        headers: new Headers({'Content-Type': 'application/json'}),
         method: 'post',
         body: JSON.stringify({
           geojson: feature.geometry
         })
       }
       let firstLeafFetch = fetch(FIRSTLEAF_POLY_URL + `?year_min=${timeSliderState.rangeYearMin}&year_max=${timeSliderState.rangeYearMax}&token=${PUBLIC_TOKEN}`, request)
-        .then(res => { return res.json() },
-          (error) => {
+        .then(res => {return res.json()},
+          (_error) => {
             setError(true)
           })
       let firstBloomFetch = fetch(FIRSTBLOOM_POLY_URL + `?year_min=${timeSliderState.rangeYearMin}&year_max=${timeSliderState.rangeYearMax}&token=${PUBLIC_TOKEN}`, request)
-        .then(res => { return res.json() },
-          (error) => {
+        .then(res => {return res.json()},
+          (_error) => {
             setError(true)
           })
       Promise.all([firstLeafFetch, firstBloomFetch]).then(results => {
         if (results && results.length === 2) {
           props.setBapJson(results)
-          const charts = getCharts({ ComparisonChart: { leaf: results[0], bloom: results[1] } }, feature.properties.feature_name)
+          const charts = getCharts({ComparisonChart: {leaf: results[0], bloom: results[1]}}, feature.properties.feature_name)
           setCharts(charts)
           setLoading(false)
           setDidSubmit(true)
@@ -207,12 +206,12 @@ const FirstLeafBloomComparisonAnalysisPackage: FunctionComponent<IFirstLeafBloom
       let lastYear = Object.keys(data.bloom)[Object.keys(data.bloom).length - 1]
       const chartId = 'FL_FB_Comparison'
       const chartConfig = {
-        margins: { left: 80, right: 20, top: 20, bottom: 70 },
-        chart: { title: `First Bloom Spring Index/First Leaf Spring Index for  ${featureName}`, subtitle: `By Year for the Period ${firstYear} to ${lastYear}` },
-        xAxis: { label: 'Day of Year' },
-        yAxis: { label: 'Year' }
+        margins: {left: 80, right: 20, top: 20, bottom: 70},
+        chart: {title: `First Bloom Spring Index/First Leaf Spring Index for  ${featureName}`, subtitle: `By Year for the Period ${firstYear} to ${lastYear}`},
+        xAxis: {label: 'Day of Year'},
+        yAxis: {label: 'Year'}
       }
-      charts.ComparisonChart = { id: chartId, config: chartConfig, data: data }
+      charts.ComparisonChart = {id: chartId, config: chartConfig, data: data}
     }
 
     return newCharts
@@ -225,13 +224,13 @@ const FirstLeafBloomComparisonAnalysisPackage: FunctionComponent<IFirstLeafBloom
         ComparisonChartRef.current.print(charts.ComparisonChart.id)
           .then((img: any) => {
             return [
-              { stack: props.getSBItemForPrint() },
-              { text: ComparisonChartRef.current.props.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
-              { text: ComparisonChartRef.current.props.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
-              { image: img, alignment: 'center', width: 450 },
-              { text: 'First Leaf / First Bloom Spring Index Comparison data were provided by the', style: 'annotation', margin: [5, 10, 5, 0] },
-              { text: 'USA National Phenology Network', style: 'annotationLink', margin: [5, 0, 5, 0], link: 'https://www.usanpn.org' },
-              { text: `Data retrieved ${new Date().toDateString()}`, style: 'annotation', margin: [5, 0, 5, 0] }
+              {stack: props.getSBItemForPrint()},
+              {text: ComparisonChartRef.current.props.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2]},
+              {text: ComparisonChartRef.current.props.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10]},
+              {image: img, alignment: 'center', width: 450},
+              {text: 'First Leaf / First Bloom Spring Index Comparison data were provided by the', style: 'annotation', margin: [5, 10, 5, 0]},
+              {text: 'USA National Phenology Network', style: 'annotationLink', margin: [5, 0, 5, 0], link: 'https://www.usanpn.org'},
+              {text: `Data retrieved ${new Date().toDateString()}`, style: 'annotation', margin: [5, 0, 5, 0]}
             ]
           })
       ]
