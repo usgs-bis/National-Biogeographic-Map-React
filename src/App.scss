@@ -1,14 +1,16 @@
-
+svg {
+    vertical-align: baseline;
+}
 
 .panel-area {
     background-color: #555;
     color: white;
     /* scrollbar-width: none; hides scroll bar on firefox */
 }
-/* ::-webkit-scrollbar { 
+/* ::-webkit-scrollbar {
     display: none;  hides scroll bar on chrome
-    width: 0px;  /* remove scrollbar space 
-    background: transparent;  /* optional: just make scrollbar invisible 
+    width: 0px;  /* remove scrollbar space
+    background: transparent;  /* optional: just make scrollbar invisible
 } */
 @media only screen and (max-width: 700px) {
     .vwrapper {
@@ -79,4 +81,30 @@
     display: block;
     width: 13px;
     height: 13px;
+}
+
+.icon-btn {
+    display: flex;
+    height: 35px;
+    width: 35px;
+    padding: 0.5rem;
+}
+
+.leaflet-bar button {
+    display: flex;
+    justify-content: center;
+    padding: 0;
+    background-color: #fff;
+    border: none;
+    border-radius: 4px;
+    width: 26px;
+    height: 26px;
+    text-align: center;
+    text-decoration: none;
+    color: #464646;
+
+    svg {
+        width: 14px;
+        height: 14px;
+    }
 }

@@ -1,12 +1,12 @@
-import React, { FunctionComponent, useState, useEffect, useRef, forwardRef, useImperativeHandle, useContext } from 'react'
-import { BarLoader } from 'react-spinners'
-import L from 'leaflet'
 import * as turf from '@turf/turf'
-import withSharedAnalysisCharacteristics from './AnalysisPackage'
-import HorizontalBarChart from '../Charts/HorizontalBarChart'
 import AppConfig from '../config'
-import { TimeEnabledLayer, defaultTimeDimension } from './TimeEnabledLayer'
-import { TimeSliderContext } from '../Contexts/TimeSliderContext'
+import HorizontalBarChart from '../Charts/HorizontalBarChart'
+import L from 'leaflet'
+import React, {useState, useEffect, useRef, forwardRef, useImperativeHandle, useContext, Ref} from 'react'
+import withSharedAnalysisCharacteristics from './AnalysisPackage'
+import {BarLoader} from 'react-spinners'
+import {TimeEnabledLayer, defaultTimeDimension} from './TimeEnabledLayer'
+import {TimeSliderContext} from '../Contexts/TimeSliderContext'
 
 const SB_URL = 'https://www.sciencebase.gov/catalog/item/5a87249de4b00f54eb3a2e1e?format=json'
 const EXPECTED_LAND_USE_ENDPOINT = AppConfig.REACT_APP_BIS_API + '/api/v1/expectedlanduse/'
@@ -18,21 +18,21 @@ const sb_properties = {
 const layers = [
   new TimeEnabledLayer('Expected Land Use over time 2001-2061', 'https://dev-blm.sciencebase.gov/geoserver/bcb/wms', 'expected_land_use', '5a87249de4b00f54eb3a2e1e'),
   {
-  title: 'Expected Land Use 2061',
-  layer: L.tileLayer.wms(
-    'https://sciencebase.usgs.gov/geoserver/bcb/wms',
-    {
-      layers: 'classified_chance_of_development',
-      format: 'image/png',
-      opacity: .5,
-      transparent: true
-    }
-  ),
-  legend: {
-    imageUrl: 'https://sciencebase.usgs.gov/geoserver/bcb/wms?service=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=classified_chance_of_development'
-  },
-  checked: false,
-  sb_item: '5a87249de4b00f54eb3a2e1e'
+    title: 'Expected Land Use 2061',
+    layer: L.tileLayer.wms(
+      'https://sciencebase.usgs.gov/geoserver/bcb/wms',
+      {
+        layers: 'classified_chance_of_development',
+        format: 'image/png',
+        opacity: .5,
+        transparent: true
+      }
+    ),
+    legend: {
+      imageUrl: 'https://sciencebase.usgs.gov/geoserver/bcb/wms?service=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=classified_chance_of_development'
+    },
+    checked: false,
+    sb_item: '5a87249de4b00f54eb3a2e1e'
   }
 ]
 
@@ -49,10 +49,10 @@ export interface IExpectedLandUseAnalysisPackageProps {
 }
 
 const EMPTY_CHARTS = {
-  barChart: { id: '', config: {}, data: null }
+  barChart: {id: '', config: {}, data: null}
 }
 
-const ExpectedLandUseAnalysisPackage: FunctionComponent<IExpectedLandUseAnalysisPackageProps> = (props, ref) => {
+const ExpectedLandUseAnalysisPackage = (props: IExpectedLandUseAnalysisPackageProps, ref: Ref<any>) => {
   const [, setTimeSliderState] = useContext(TimeSliderContext)
   const [loading, setLoading] = useState(false)
   const [charts, setCharts] = useState(EMPTY_CHARTS)
@@ -63,7 +63,7 @@ const ExpectedLandUseAnalysisPackage: FunctionComponent<IExpectedLandUseAnalysis
 
   useImperativeHandle(ref, () => ({
     print: print
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }), [])
 
   useEffect(() => {
@@ -74,7 +74,7 @@ const ExpectedLandUseAnalysisPackage: FunctionComponent<IExpectedLandUseAnalysis
       setTimeDimension(timeDimension)
     }
     fetchTimeDimension()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -83,14 +83,14 @@ const ExpectedLandUseAnalysisPackage: FunctionComponent<IExpectedLandUseAnalysis
 
   useEffect(() => {
     featureChange()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.feature])
 
   useEffect(() => {
     if (props.isPriorityBap) {
-      setTimeSliderState({ minSliderValue: timeDimension.minVal, maxSliderValue: timeDimension.maxVal })
+      setTimeSliderState({minSliderValue: timeDimension.minVal, maxSliderValue: timeDimension.maxVal})
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.isPriorityBap, timeDimension])
 
   const featureChange = () => {
@@ -137,7 +137,7 @@ const ExpectedLandUseAnalysisPackage: FunctionComponent<IExpectedLandUseAnalysis
   const getCharts = (datas: any) => {
 
     let newCharts = EMPTY_CHARTS
-    
+
     const labels = [
       {short: '0%', long: 'No Threat - 0%', color: '#CCCCCC'},
       {short: '1-33%', long: 'Low Threat - 1 to 33%', color: '#48A908'},
@@ -145,32 +145,32 @@ const ExpectedLandUseAnalysisPackage: FunctionComponent<IExpectedLandUseAnalysis
       {short: '67-100%', long: 'High Threat - 67 to 100%', color: '#EC2D1A'}
     ]
 
-    for (let key in charts ) {
-      if(key === 'barChart') {
+    for (let key in charts) {
+      if (key === 'barChart') {
         const data = datas.result
         const chartId = 'ExpectedLandUse_BarChart'
         const chartConfig = {
-          margins: { left: 100, right: 20, top: 20, bottom: 70 },
-          chart: { title: 'Expected Land Use Change' },
-          xAxis: { key: 'area', label: 'Area (acres)', ticks: 5, },
-          yAxis: { key: 'value', label: 'Threat', ticks: 4, tickFormat: (d: any, idx: number) => { return labels[idx + 1].short } },
-          tooltip: { label: (d: any, idx: any) => { return `<p>${d.label.long}: ${numberWithCommas(d.area)} acres</p>` } }
+          margins: {left: 100, right: 20, top: 20, bottom: 70},
+          chart: {title: 'Expected Land Use Change'},
+          xAxis: {key: 'area', label: 'Area (acres)', ticks: 5, },
+          yAxis: {key: 'value', label: 'Threat', ticks: 4, tickFormat: (_d: any, idx: number) => {return labels[idx + 1].short}},
+          tooltip: {label: (d: any) => {return `<p>${d.label.long}: ${numberWithCommas(d.area)} acres</p>`}}
         }
         const chartData = data.map((d: any, idx: number) => {
           return {
-          value: d.value,
-          area: (turf as any).convertArea(d.area, 'meters', 'acres'),
-          label: labels[idx],
-          color: labels[idx].color
+            value: d.value,
+            area: (turf as any).convertArea(d.area, 'meters', 'acres'),
+            label: labels[idx],
+            color: labels[idx].color
           }
         })
-        newCharts.barChart = { id: chartId, config: chartConfig, data: chartData }
+        newCharts.barChart = {id: chartId, config: chartConfig, data: chartData}
       }
     }
-  
+
     return newCharts
   }
-  
+
   const print = () => {
     const data: any = charts.barChart.data
     const dataCopy = data ? [...data] : data
@@ -180,11 +180,11 @@ const ExpectedLandUseAnalysisPackage: FunctionComponent<IExpectedLandUseAnalysis
         barChart.current.print(charts.barChart.id)
           .then((img: any) => {
             return [
-              { stack: props.getSBItemForPrint() },
-              { text: barChart.current.props.config.chart.title, style: 'chartTitle' },
-              { text: barChart.current.props.config.chart.subtitle, style: 'chartSubtitle' },
-              { image: img, alignment: 'center', width: 450 },
-              { text: noThreat ? `${noThreat.label.long}: ${numberWithCommas(noThreat.area)} acres` : '' }
+              {stack: props.getSBItemForPrint()},
+              {text: barChart.current.props.config.chart.title, style: 'chartTitle'},
+              {text: barChart.current.props.config.chart.subtitle, style: 'chartSubtitle'},
+              {image: img, alignment: 'center', width: 450},
+              {text: noThreat ? `${noThreat.label.long}: ${numberWithCommas(noThreat.area)} acres` : ''}
             ]
           })
       ]
@@ -198,19 +198,19 @@ const ExpectedLandUseAnalysisPackage: FunctionComponent<IExpectedLandUseAnalysis
     const noThreat = dataCopy ? dataCopy.splice(0, 1)[0] : dataCopy
     return (
       <div>
-      {props.getAnalysisLayers()}
-      {props.handleBapError(error)}
-      <div className="chartsDiv">
-        <HorizontalBarChart
-          ref={barChart}
-          data={dataCopy}
-          id={charts.barChart.id}
-          config={charts.barChart.config}
-        />
-        { noThreat && <div className="text-right mr-2">
-        { `${noThreat.label.long}: ${numberWithCommas(noThreat.area)} acres` }
-        </div> }
-      </div>
+        {props.getAnalysisLayers()}
+        {props.handleBapError(error)}
+        <div className="chartsDiv">
+          <HorizontalBarChart
+            ref={barChart}
+            data={dataCopy}
+            id={charts.barChart.id}
+            config={charts.barChart.config}
+          />
+          {noThreat && <div className="text-right mr-2">
+            {`${noThreat.label.long}: ${numberWithCommas(noThreat.area)} acres`}
+          </div>}
+        </div>
       </div>
     )
   }

@@ -1,7 +1,7 @@
-import React from "react";
-import "./Chart.css"
-import { Collapse, CardBody, Card } from 'reactstrap';
-import { Glyphicon } from "react-bootstrap";
+import './Chart.css'
+import React from 'react'
+import {Collapse, CardBody, Card} from 'reactstrap'
+import {FaChevronDown, FaChevronRight} from 'react-icons/fa'
 
 
 class AccordionChart extends React.Component {
@@ -26,7 +26,7 @@ class AccordionChart extends React.Component {
             this.data = this.props.data
             if (!this.state.collapse.length) {
                 this.setState({
-                    collapse: this.props.data.map((x) => false)
+                    collapse: this.props.data.map(() => false)
                 })
             }
         }
@@ -35,7 +35,7 @@ class AccordionChart extends React.Component {
     toggle(i) {
         let collapse = this.state.collapse
         collapse[i] = !collapse[i]
-        this.setState({ collapse: collapse });
+        this.setState({collapse: collapse})
     }
 
 
@@ -51,18 +51,23 @@ class AccordionChart extends React.Component {
             let title = Object.keys(data[i])[0]
             let body = data[i][title]
             let content = <div>
-                <div className={this.props.highlight === title ? "accordion-header-highlight" : "accordion-header"} onClick={() => { this.toggle(i) }} >
-                    <Glyphicon
-                        style={{ marginRight: '10px' }}
-                        className="analysis-dropdown-glyph"
-                        glyph={this.state.collapse[i] ? "menu-down" : "menu-right"}
-                    />
+                <div className={this.props.highlight === title ? 'accordion-header-highlight' : 'accordion-header'} onClick={() => {this.toggle(i)}} >
+                    { this.state.collapse[i] ?
+                        <FaChevronDown
+                            style={{marginRight: '10px'}}
+                            className="analysis-dropdown-glyph"
+                        /> :
+                        <FaChevronRight
+                            style={{marginRight: '10px'}}
+                            className="analysis-dropdown-glyph"
+                        />
+                    }
                     <span>{title}</span>
                 </div>
                 <Collapse isOpen={this.state.collapse[i]}>
                     <Card className="accordion-card">
                         <CardBody>
-                            <div dangerouslySetInnerHTML={{ __html: body }} />
+                            <div dangerouslySetInnerHTML={{__html: body}} />
                         </CardBody>
                     </Card>
                 </Collapse>
@@ -83,12 +88,12 @@ class AccordionChart extends React.Component {
                     <div>
                         <div id={id + 'ChartContainer'} className="chart-container">
                             <div
-                                style={{ display: this.props.config.chart.title ? "block" : "none" }}
+                                style={{display: this.props.config.chart.title ? 'block' : 'none'}}
                                 id={id + 'Title'} className="title">
                                 <span>{this.props.config.chart.title}</span>
                             </div>
                             <div
-                                style={{ display: this.props.config.chart.subtitle ? "block" : "none" }}
+                                style={{display: this.props.config.chart.subtitle ? 'block' : 'none'}}
                                 id={id + 'Subtitle'} className="subtitle">
                                 <span>{this.props.config.chart.subtitle}</span>
                             </div>
@@ -103,14 +108,14 @@ class AccordionChart extends React.Component {
                             </div>
                         </div>
                     </div>
-                );
+                )
             }
         }
         return (
             <div>
                 {divs()}
             </div>
-        );
+        )
     }
 }
-export default AccordionChart;
+export default AccordionChart

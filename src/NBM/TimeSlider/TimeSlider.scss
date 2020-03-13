@@ -1,0 +1,200 @@
+.range-values {
+  position: absolute;
+  color: white;
+  font-weight: bold;
+}
+
+.year-label {
+  padding-right: 5px;
+  font-weight: bold;
+}
+
+.range-input-values {
+  color: white;
+  text-align: left;
+  border-radius: 3px;
+  padding: 5px;
+  margin-top: 3px;
+  position: absolute;
+  height: 27px;
+  z-index: 99999;
+  margin-left: 5px;
+  background-color: rgba(10,10,15,.6);
+}
+
+section.range-slider {
+  margin-top: 2px;
+  border-radius: 3px;
+  padding: 5px 0 5px 0;
+  position: absolute;
+  width: 90%;
+  height: 27px;
+  text-align: center;
+  z-index: 2000;
+  margin-left: 5px;
+  background-color: rgba(10,10,15,.6);
+  top: 31px;
+}
+
+section.range-slider input {
+  pointer-events: none;
+  position: absolute;
+  overflow: hidden;
+  outline: none;
+  height: 18px;
+  padding: 0;
+  left: 0px;
+  background: none;
+  /* z-index: 5; */
+}
+
+section.range-slider input::-webkit-slider-thumb {
+  pointer-events: all;
+  position: relative;
+  z-index: 1;
+  outline: 0;
+}
+
+section.range-slider input::-moz-range-thumb {
+  pointer-events: all;
+  position: relative;
+  z-index: 10;
+  -moz-appearance: none;
+  width: 9px;
+}
+
+section.range-slider input::-moz-range-track {
+  position: relative;
+  z-index: -1;
+  background-color: rgba(0, 0, 0, 1);
+  border: 0;
+}
+section.range-slider input:last-of-type::-moz-range-track {
+  -moz-appearance: none;
+  background: none transparent;
+  border: 0;
+}
+section.range-slider input[type=range]::-moz-focus-outer {
+  border: 0;
+}
+
+input.map-display-slider[type='range'] {
+  background:rgba(0,0,0,0);
+  -webkit-appearance: progressbar-vertical;
+}
+input.map-display-slider[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  background:black;
+  height:16px;
+  width:16px;
+  border-radius: 8px;
+}
+.svg-time-slider {
+  top: 0px;
+  left: 0;
+  display: -webkit-flex;
+  display: flex;
+  position: relative;
+  height: 27px;
+  overflow: visible !important;
+}
+.slider-span{
+  position: absolute;
+  width: calc(100% - 120px);
+  left: 70px;
+}
+
+.range-slider-container {
+  /* width: calc(100% - 110px);
+  position: absolute;
+  left: 65px;
+  height: 18px; */
+  width: calc(100% - 120px);
+  position: absolute;
+  left: 70px;
+  height: 7px;
+  background: black;
+  border-radius: 9px;
+  top: 11px;
+
+}
+
+.range-handle{
+
+  position: absolute;
+  text-align: center;
+  color: #ffffff;
+  border-radius: 10px;
+  display: inline-block;
+  top: -27px;
+  left: -14px;
+  padding-left: 6px;
+  padding-right: 6px;
+  font-size: 12px;
+  background-color: rgba(10, 10, 15, .6);
+  min-width: 38px;
+  white-space: nowrap;
+  height: 15px;
+  padding-top: 0px;
+  line-height: 16px;
+}
+
+.handle-overlap{
+  top: -43px;
+}
+
+.global-time-slider .inner-glyph{
+  position: absolute;
+  z-index: 9999;
+  color: white;
+}
+
+.play-glyph{
+  cursor: pointer;
+  top: 3px;
+  left: 4px !important;
+  font-size: 22px !important;
+}
+
+.glyph-tag {
+  top: 4px;
+  cursor: move;
+  cursor: grab;
+
+  svg {
+    vertical-align: top;
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.center-glyph-tag {
+  background-color: black;
+  width: 10px;
+  height: 10px;
+  top: 4px;
+  font-size: 34px !important;
+  transform: scaleX(0.6) scaleY(1) rotate(225deg);
+}
+
+.edge-glyph-tag {
+  background-color: black;
+  width: 10px;
+  height: 10px;
+  font-size: 23px !important;
+  transform: scaleX(0.8) scaleY(1) rotate(225deg);
+}
+
+.slider-range-fill{
+  height: 7px;
+  background-color: lightblue;
+  z-index: 1;
+  position: absolute;
+  /* margin-top: 8px; */
+  width: 300px;
+  border-radius: 9px;
+  top: 0px;
+}

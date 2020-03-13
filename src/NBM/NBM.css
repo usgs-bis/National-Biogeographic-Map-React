@@ -30,12 +30,3 @@
     font-size: 18px;
     color: rgb(119,119,119,.5);
 }
-
-.leaflet-control label {
-    cursor: pointer;
-    width: 30px;
-    height: 30px;
-    line-height: 30px;
-    background-color: #fff;
-    text-align: center;
-}

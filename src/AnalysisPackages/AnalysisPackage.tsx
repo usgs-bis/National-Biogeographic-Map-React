@@ -1,12 +1,12 @@
 import './AnalysisPackages.css'
-import CustomToolTip from '../ToolTip/ToolTip'
 import Dialog from 'react-dialog'
 import InfoSign from '../InfoSign/InfoSign'
-import React, { useState, useEffect, useRef, useContext } from 'react'
-import {Collapse, Button} from 'reactstrap'
-import {FormGroup, Label} from 'reactstrap'
-import {Glyphicon} from 'react-bootstrap'
-import { TimeSliderContext } from '../Contexts/TimeSliderContext'
+import React, {useState, useEffect, useRef, useContext, FunctionComponent} from 'react'
+import {UncontrolledTooltip, Button, Collapse, FormGroup, Label} from 'reactstrap'
+import {FaCode, FaExclamationCircle, FaChevronDown, FaChevronRight} from 'react-icons/fa'
+import {IoMdOpen} from 'react-icons/io'
+import {TimeSliderContext} from '../Contexts/TimeSliderContext'
+
 
 export interface IAnalysisPackageProps {
   onRef: Function
@@ -39,7 +39,6 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
     const [layers, setLayers] = useState(layers_init)
     const [isOpen, setIsOpen] = useState(props.priorityBap === props.bapId)
     const [canOpen, setCanOpen] = useState(false)
-    const [glyph, setGlyph] = useState('menu-right')
     const [bapWindowOpen, setBapWindowOpen] = useState(false)
     const [isEnabled, setIsEnabled] = useState(true)
     const [sbInfoPopUp, setSbInfoPopUp] = useState(false)
@@ -52,7 +51,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
     let shareState: any = {}
     let initialized = useRef(false)
     let jsonData: any = null
-  
+
     useEffect(() => {
       fetch(sb_url)
         .then(res => res.json())
@@ -66,9 +65,9 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
         )
       initilize()
       if (isPriorityBap) {
-        setTimeSliderState({ display: true })
+        setTimeSliderState({display: true})
       }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
@@ -79,7 +78,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
       }
       resetBap()
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.feature])
 
     useEffect(() => {
@@ -97,15 +96,14 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
         if (layers.length && !getOnLayers().length) {
           let firstLayer = layers[0]
           toggleLayer(firstLayer)
-          setTimeSliderState({ display: firstLayer.timeEnabled })
+          setTimeSliderState({display: firstLayer.timeEnabled})
         } else {
-          setTimeSliderState({ display: false })
+          setTimeSliderState({display: false})
         }
         setIsOpen(true)
         setIsPriorityBap(true)
-        setGlyph('menu-down')
       }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.priorityBap])
 
     useEffect(() => {
@@ -116,7 +114,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
 
     useEffect(() => {
       props.onRef({print})
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isOpen])
 
     const initilize = () => {
@@ -144,7 +142,6 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
       // turn on the layers saved in the state
       if (props.initBap) {
         setIsOpen(props.initBap.isOpen)
-        setGlyph(props.initBap.isOpen ? 'menu-down' : 'menu-right')
         if (isPriorityBap) {
           layers.forEach((layer) => {
             // @ts-ignore: Object is possibly 'undefined'
@@ -229,7 +226,6 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
         props.setPriorityBap(props.bapId)
       }
       setIsOpen(!isOpen)
-      setGlyph(!isOpen ? 'menu-down' : 'menu-right')
     }
 
     const getSbContactInfo = (sbProps: any) => {
@@ -241,7 +237,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
           <span>{i.name ? `${i.name}  ` : ''}</span>
           <span>{i.email ? ` -  ${i.email}  ` : ''}</span>
           <span>{i.type ? ` -  ${i.type}  ` : ''}</span>
-    
+
         </div>)
       }
       return r
@@ -254,7 +250,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
       for (let i of c) {
         if (i.type === 'citation') {
           r.push(<div key={i.title}>
-          <div><a href={i.uri}>{i.title}</a></div>
+            <div><a href={i.uri}>{i.title}</a></div>
           </div>)
         }
       }
@@ -275,31 +271,32 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
           <div className="analysis-layers-dropdown">
             <span onClick={() => setLayersOpen(!layersOpen)} >
               {'Analysis Inputs'}
-              <Glyphicon
-                className="analysis-dropdown-glyph"
-                glyph={layersOpen ? 'menu-down' : 'menu-right'}
-              />
+              {layersOpen ?
+                <FaChevronDown className="analysis-dropdown-glyph" /> :
+                <FaChevronRight className="analysis-dropdown-glyph" />
+              }
             </span>
             <span>
-              <Button id={`openBapWindow${props.bapId}`} className='bap-window-button'
+              <Button id={`openBapWindow${props.bapId}`} className="icon-btn bap-window-button"
                 style={{display: bapWindowOpen ? 'none' : 'inline-block'}}
                 onClick={() => setBapWindowOpen(!bapWindowOpen)}
               >
-                <Glyphicon className="inner-glyph" glyph="resize-full"/>
+                <IoMdOpen />
               </Button>
-              <Button id={`viewJsonWindow${props.bapId}`} className='bap-window-button'
+              <Button id={`viewJsonWindow${props.bapId}`} className="icon-btn bap-window-button"
                 style={{display: jsonWindowOpen || !jsonData ? 'none' : 'inline-block'}}
                 onClick={() => setJsonWindowOpen(!jsonWindowOpen)}
               >
-                <Glyphicon className="inner-glyph" glyph="console"/>
+                <FaCode />
               </Button>
-              <CustomToolTip placement="top" target={`openBapWindow${props.bapId}`} text="View Bap in new window" ></CustomToolTip>
-              <CustomToolTip placement="top" target={`viewJsonWindow${props.bapId}`} text="View the raw JSON used for analysis" ></CustomToolTip>
+              <UncontrolledTooltip placement="top" target={`openBapWindow${props.bapId}`} >View Bap in new window</UncontrolledTooltip>
+              <UncontrolledTooltip placement="top" target={`viewJsonWindow${props.bapId}`} >View the raw JSON used for analysis</UncontrolledTooltip>
+
             </span>
           </div>
-  
+
           <Collapse className='analysis-dropdown-content' isOpen={layersOpen}>
-            { layers.map((l) => {
+            {layers.map((l) => {
               let layer = l
               let key: string = l.title
               return (
@@ -314,17 +311,17 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
                       disabled={layer.disabled ? true : false} />
                     {' ' + (layer.titlePrefix ? layer.titlePrefix : '') + layer.title}
                     <InfoSign onClick={(event: any) => {setSbInfoLayerPopUp({...sbInfoLayerPopUp, [key]: !sbInfoLayerPopUp[key]}); event.preventDefault()}}> </InfoSign>
-                    { sbInfoLayerPopUp[key] &&
+                    {sbInfoLayerPopUp[key] &&
                       <span onClick={(event) => event.preventDefault()}>
                         <Dialog
-                        isResizable={true}
-                        isDraggable={true}
-                        title={' ' + (layer.titlePrefix ? layer.titlePrefix : '') + layer.title}
-                        modal={false}
-                        onClose={() => setSbInfoLayerPopUp({...sbInfoLayerPopUp, [key]: false})}
+                          isResizable={true}
+                          isDraggable={true}
+                          title={' ' + (layer.titlePrefix ? layer.titlePrefix : '') + layer.title}
+                          modal={false}
+                          onClose={() => setSbInfoLayerPopUp({...sbInfoLayerPopUp, [key]: false})}
                         >
                           <div className="sbinfo-popout-window">
-                            { layer.sb_properties ?
+                            {layer.sb_properties ?
                               <div>
                                 <div dangerouslySetInnerHTML={{__html: layer.sb_properties.body}}></div>
                                 {getSbContactInfo(layer.sb_properties)}
@@ -385,7 +382,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
       }
       return (
         <div>
-          { bapWindowOpen &&
+          {bapWindowOpen &&
             <Dialog
               isResizable={true}
               isDraggable={true}
@@ -399,7 +396,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
             </Dialog>
           }
           {!bapWindowOpen && bapContent()}
-          { jsonWindowOpen &&
+          {jsonWindowOpen &&
             <Dialog
               isResizable={true}
               isDraggable={true}
@@ -435,17 +432,17 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
       var body = document.createElement('div')
       body.innerHTML = sbProperties.body
       let contents = htmlToPDFMake([], body)
-  
+
       let pdfDoc = []
       let text = []
       pdfDoc.push({text: sbProperties.title, style: 'analysisTitle', margin: [5, 2, 5, 20], pageBreak: 'before'})
-  
+
       for (let content of contents) {
         if (content.nodeName === '#text' && content.textContent) {
           let definition: any = {text: content.textContent, style: 'sbProperties', margin: [10, 2, 0, 2]}
           let parent = content.parentElement.nodeName
           let grandparent = content.parentElement.parentElement ? content.parentElement.parentElement.nodeName : null
-    
+
           if (parent === 'H1' || parent === 'H2' || parent === 'H3' || parent === 'H4') {
             definition.style = 'sbPropertiesTitle'
             definition.margin = [5, 5, 0, 5]
@@ -481,7 +478,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
         pdfDoc.push({text: sbProperties.link.url, style: 'annotationLink', margin: [15, 10, 5, 0], link: sbProperties.link.url})
       }
       // pdfDoc.push({ text: '', pageBreak: 'after' })
-  
+
       return pdfDoc
     }
 
@@ -509,7 +506,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
       if (error) {
         return (
           <div className='analysis-error'>
-            <Glyphicon style={{paddingRight: '5px', fontSize: '13px'}} className="inner-glyph" glyph="exclamation-sign" />
+            <FaExclamationCircle />
             There was an error producing this analysis. Please try again.
           </div>
         )
@@ -531,9 +528,10 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
       >
         <div className="bap-title-content" style={{width: '20px'}}>
           <span onClick={toggleDropdown} className="bapTitle">
-            <Glyphicon style={{display: canOpen ? 'inline-block' : 'none'}}
-              className="dropdown-glyph"
-              glyph={glyph} />
+            {isOpen ?
+              <FaChevronDown style={{display: canOpen ? 'inline-block' : 'none'}} className="dropdown-glyph" /> :
+              <FaChevronRight style={{display: canOpen ? 'inline-block' : 'none'}} className="dropdown-glyph" />
+            }
           </span>
         </div>
         <div className="bap-title-content" style={{width: 'calc(100% - 40px)'}}>
@@ -548,8 +546,11 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
           <input id={`pBapToolTip${props.bapId}`} className="priority-bap-raido"
             style={{display: canOpen ? 'block' : 'none'}} type='radio'
             readOnly={true} checked={props.bapId === props.priorityBap}
-            onClick={() => {props.setPriorityBap(props.bapId)}} ></input>
-          <CustomToolTip placement="top" target={`pBapToolTip${props.bapId}`} text={props.bapId === props.priorityBap ? '' : 'Select Priority Bap'} ></CustomToolTip>
+            onClick={() => {props.setPriorityBap(props.bapId)}} >
+          </input>
+          <UncontrolledTooltip placement="top" target={`pBapToolTip${props.bapId}`} >
+            {props.bapId === props.priorityBap ? '' : 'Select Priority Bap'}
+          </UncontrolledTooltip>
         </div>
         <Collapse className="settings-dropdown" isOpen={isOpen && isEnabled}>
           <AnalysisPackage
@@ -577,7 +578,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
             setBapJson={(data: any) => jsonData = data}
           />
         </Collapse>
-        { sbInfoPopUp &&
+        {sbInfoPopUp &&
           <Dialog
             isResizable={true}
             isDraggable={true}
@@ -590,7 +591,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
               {getSbContactInfo(sbProperties)}
               {getSbWebLinkInfo(sbProperties)}
               <br></br>
-              { sbProperties.link && 
+              {sbProperties.link &&
                 <div>
                   <a href={sbProperties.link.url}>{`${sbProperties.link.url}`}</a>
                 </div>

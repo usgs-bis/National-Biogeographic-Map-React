@@ -1,9 +1,13 @@
 import './AlertBox.scss'
 import React, {FunctionComponent, useState, useEffect} from 'react'
-import {Alert} from 'react-bootstrap'
+import {Alert, UncontrolledAlert} from 'reactstrap'
 import AppConfig from '../config'
 
-const AlertBox: FunctionComponent = () => {
+export interface IAlertBox {
+  errorMsg?: string
+}
+
+const AlertBox: FunctionComponent<IAlertBox> = ({ errorMsg }) => {
   const [apiCheck, setApiCheck] = useState<null|string>(null)
 
   useEffect(() => {
@@ -24,11 +28,22 @@ const AlertBox: FunctionComponent = () => {
   }, [])
 
   const apiBox = () => {
+
     if (apiCheck) {
       return (
-        <Alert bsStyle="danger" className="app-alert">{apiCheck}</Alert>
+        <Alert color="danger" className="app-alert">{apiCheck}</Alert>
       )
     }
+
+    if (errorMsg) {
+      return (
+        <UncontrolledAlert color="danger" className="app-alert">
+          <b>Sorry, there was an error!</b>
+          <div>{errorMsg}</div>
+        </UncontrolledAlert>
+      )
+    }
+
   }
 
   return (

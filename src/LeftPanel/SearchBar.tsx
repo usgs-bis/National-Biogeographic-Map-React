@@ -1,13 +1,11 @@
 import './SearchBar.css'
-import CustomToolTip from '../ToolTip/ToolTip'
-// import Legend from '../Legend/Legend'
+import BasemapContext from '../Contexts/BasemapContext'
 import React, { FunctionComponent, useState, useEffect, useContext } from 'react'
 import speechBubble from './bubble.png'
-import {Button, ButtonGroup} from 'reactstrap'
+import {Button, ButtonGroup, UncontrolledTooltip} from 'reactstrap'
 import {Collapse, CardBody, Card} from 'reactstrap'
-import {Glyphicon} from 'react-bootstrap'
+import {IoMdSettings, IoMdRefresh} from 'react-icons/io'
 import {RadioGroup} from '../CustomRadio/CustomRadio'
-import BasemapContext from '../Contexts/BasemapContext'
 import {isEmpty} from 'lodash'
 
 
@@ -19,7 +17,6 @@ export interface ISearchBarProps {
   }
   mapClicked: boolean
   textSearchHandler: Function
-  enabledLayers: any
   submitHandler: Function
   bioscape: any
   results: any[]
@@ -104,15 +101,16 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
     <div>
       <div className="nbm-flex-row">
         <div className="settings-btn-group nbm-flex-column">
-          <Button id="settings-tooltip" onClick={toggleBasemapDropdown} className="submit-analysis-btn placeholder-button" >
-            <Glyphicon className="inner-glyph" glyph="menu-hamburger" />
+          <Button id="settings-tooltip" onClick={toggleBasemapDropdown} className="submit-analysis-btn icon-btn" >
+            <IoMdSettings />
           </Button>
-          <CustomToolTip target="settings-tooltip" text="Settings" placement="right" ></CustomToolTip>
+          <UncontrolledTooltip target="settings-tooltip" >Settings</UncontrolledTooltip>
         </div>
         <div className="settings-btn-group nbm-flex-column">
-          <Button className='submit-analysis-btn placeholder-button' onClick={reset} >
-            reset!
+          <Button id="reset-tooltip" className="submit-analysis-btn icon-btn" onClick={reset} >
+            <IoMdRefresh />
           </Button>
+          <UncontrolledTooltip target="reset-tooltip" >Reset Map</UncontrolledTooltip>
         </div>
         <div className="nbm-flex-column-big">
           <input

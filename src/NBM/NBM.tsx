@@ -1,5 +1,4 @@
 import './NBM.css'
-import 'toasted-notes/src/styles.css'
 import AppConfig from '../config'
 import BasemapContext from '../Contexts/BasemapContext'
 import Control from 'react-leaflet-control'
@@ -12,11 +11,13 @@ import TimeSlider from './TimeSlider/TimeSlider'
 import loadingGif from './loading.gif'
 import shp from 'shpjs'
 import {EditControl} from 'react-leaflet-draw'
-import {Glyphicon} from 'react-bootstrap'
+import {FaCloudUploadAlt} from 'react-icons/fa'
+import {FaKey} from 'react-icons/fa'
 import {isEmpty} from 'lodash'
 
 // @ts-ignore
 import {Map, TileLayer, WMSTileLayer, Marker, Popup, GeoJSON, FeatureGroup, ZoomControl} from 'react-leaflet'
+import LegendContext from '../Contexts/LegendContext'
 
 const DEV_MODE = AppConfig.REACT_APP_DEV
 
@@ -51,6 +52,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
   const {setMap} = props
 
   const [basemap] = useContext(BasemapContext)
+  const {toggleLegend, hasLegend} = useContext(LegendContext)
 
   const [point, setPoint] = useState(() => {
     if (!props.initPoint) return null
@@ -63,12 +65,12 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
   const [uploading, setUploading] = useState(false)
   const [oldOverlay, setOldOverlay] = useState<Layer>()
   const [bounds, setBounds] = useState<LatLngBoundsExpression>([[21, -134], [51, -63]])
-  const [locationOverlay, setLocationOverlay] = useState()
   const [oldLayers, setOldLayers] = useState<any[]>([])
   const [APIVersion, setAPIVersion] = useState('')
   const [drawnpolygon, setDrawnpolygon] = useState<any>()
 
-  const map = useRef<Map>()
+  const locationOverlay = useRef<LocationOverlay>(null)
+  const map = useRef<Map>(null)
 
   // @Matt TODO: #next all things in functioncomponents can't do it this way
   let clickableRef = useRef(true)
@@ -183,10 +185,10 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
 
   const handleMouseMove = (e: any) => {
     if (!clickableRef.current) {
-      locationOverlay.setLocation(null, null)
+      locationOverlay?.current?.setLocation(null, null)
     }
     else {
-      locationOverlay.setLocation(e.latlng.lat, e.latlng.lng)
+      locationOverlay?.current?.setLocation(e.latlng.lat, e.latlng.lng)
     }
   }
 
@@ -207,7 +209,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
   }
 
   const handleMouseOut = () => {
-    locationOverlay.setLocation(null, null)
+    locationOverlay?.current?.setLocation(null, null)
   }
 
   const disableDragging = () => {
@@ -443,7 +445,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
         attribution=""
         zoomControl={false} >
         {renderBasemap()}
-        <LocationOverlay onRef={(ref: LocationOverlay) => setLocationOverlay(ref)} map={map} bioscapeName={props.bioscapeName} />
+        <LocationOverlay ref={locationOverlay} map={map} bioscapeName={props.bioscapeName} />
         <MapMarker point={point} />
         {geojson()}
         <div className="global-time-slider" onMouseOver={disableDragging} onMouseOut={enableDragging}>
@@ -478,11 +480,22 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
               circle: false
             }}
           />
+          { hasLegend &&
+            <Control position="topright">
+              <div className="leaflet-bar" title="Legend">
+                <button onClick={() => toggleLegend()}>
+                  <FaKey />
+                </button>
+              </div>
+            </Control>
+          }
           {DEV_MODE &&
             <Control position="topright">
-              <label className="mb-0 pt-1 rounded" title="Upload a shp file">
-                <span className="add-more-label" onClick={handleShow}><Glyphicon className="inner-glyph" glyph="upload" /></span>
-              </label>
+              <div className="leaflet-bar" title="Upload a shp file">
+                <button onClick={handleShow}>
+                  <FaCloudUploadAlt />
+                </button>
+              </div>
             </Control>
           }
         </FeatureGroup>

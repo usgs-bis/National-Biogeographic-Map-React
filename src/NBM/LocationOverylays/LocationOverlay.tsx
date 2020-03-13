@@ -10,7 +10,6 @@ const numberWithCommas = (x: number) => {
 }
 
 export interface ILocationOverlayProps {
-  onRef: any,
   map: any,
   bioscapeName: string,
 }
@@ -40,10 +39,6 @@ class LocationOverlay extends React.Component<ILocationOverlayProps, ILocationOv
     }
     this.map = null
     this.updateOffset = this.updateOffset.bind(this)
-  }
-
-  componentDidMount() {
-    this.props.onRef(this)
   }
 
   componentWillUnmount() {

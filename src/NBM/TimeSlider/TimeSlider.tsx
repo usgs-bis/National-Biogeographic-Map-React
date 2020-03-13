@@ -1,7 +1,7 @@
-import './TimeSlider.css'
-import React, { useState, useEffect, useContext, useRef } from 'react'
-import { Glyphicon } from 'react-bootstrap'
-import { TimeSliderContext } from '../../Contexts/TimeSliderContext'
+import './TimeSlider.scss'
+import React, {useState, useEffect, useContext, useRef} from 'react'
+import {TimeSliderContext} from '../../Contexts/TimeSliderContext'
+import {FaTag, FaRegPlayCircle, FaPause} from 'react-icons/fa'
 
 const TimeSlider: React.FunctionComponent = () => {
   const [state, setState] = useContext(TimeSliderContext)
@@ -42,7 +42,7 @@ const TimeSlider: React.FunctionComponent = () => {
 
     let right = getPositionFromYear(rightYear, width)
     rightUpdate(right, width)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [windowSize, state.display, state.minSliderValue, state.maxSliderValue])
 
   const playTimeout = useRef<any>()
@@ -52,14 +52,14 @@ const TimeSlider: React.FunctionComponent = () => {
       clearTimeout(playTimeout.current)
       return
     }
-    setState({ mapDisplayYear: displayYear })
+    setState({mapDisplayYear: displayYear})
     setDisplayYearHandlePosition(getPositionFromYear(displayYear, sliderSize))
     playTimeout.current = setTimeout(() => {
       setDisplayYear(nextYear(displayYear))
     }, 5000)
 
     return () => clearTimeout(playTimeout.current)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [displayYear, playing])
 
   useEffect(() => {
@@ -155,8 +155,22 @@ const TimeSlider: React.FunctionComponent = () => {
   return !state.display ? (<div></div>) : (
     <div>
       <section className="range-slider">
-        <Glyphicon onClick={playTimeSlider} className="play-glyph inner-glyph" glyph={playing ? 'pause' : 'play-circle'}
-          data-toggle="tooltip" data-placement="top" title={playing ? 'Pause' : 'Play'} />
+        { playing ?
+            <FaPause
+              onClick={playTimeSlider}
+              className="play-glyph inner-glyph"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Pause"
+            /> :
+            <FaRegPlayCircle
+              onClick={playTimeSlider}
+              className="play-glyph inner-glyph"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Play"
+            />
+        }
         <span className="range-values" style={{left: '30px'}}>{minSliderValue}</span>
         <span ref={slider} id="rangeSliderContainer" className="range-slider-container">
           <span className="slider-range-fill" style={{
@@ -168,21 +182,27 @@ const TimeSlider: React.FunctionComponent = () => {
             <span className="range-handle" >
               {leftYear}
             </span>
-            <Glyphicon className="edge-glyph-tag" glyph="tag" />
+            <span className="glyph-tag edge-glyph-tag inner-glyph" >
+              <FaTag />
+            </span>
           </span>
 
           <span onMouseDown={(e) => onMouseDown(e, displayYearUpdate)} className="inner-glyph" style={{left: displayYearHandlePosition + 'px'}} >
             <span className="range-handle handle-overlap">
               {displayYear}
             </span>
-            <Glyphicon className="center-glyph-tag" glyph="tag" />
+            <span className="glyph-tag center-glyph-tag inner-glyph" >
+              <FaTag />
+            </span>
           </span>
 
           <span onMouseDown={(e) => onMouseDown(e, rightUpdate)} className="inner-glyph" style={{left: rightPosition + 'px'}}>
             <span className="range-handle" >
               {rightYear}
             </span>
-            <Glyphicon className="edge-glyph-tag" glyph="tag" />
+            <span className="glyph-tag edge-glyph-tag inner-glyph" >
+              <FaTag />
+            </span>
           </span>
         </span>
         <span className="range-values" style={{right: '10px'}}>{maxSliderValue}</span>
