@@ -191,8 +191,6 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
     }
   }
 
-  // @Matt TODO: #next user drawn polygons still load the single data point, need to disallow that
-
   const handleLoadError = _.debounce((err: any) => {
     setLayerError(err)
     setLayerErrVisible(true)

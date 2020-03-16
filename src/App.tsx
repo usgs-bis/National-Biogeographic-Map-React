@@ -74,7 +74,6 @@ const numberWithCommas = (x: number) => {
 
 const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }) => {
 
-  // @Matt TODO: do something with the errorState
   const [errorState, setErrorState] = useState<Error>()
   const [hashState, setHash] = useLocationHash()
 
