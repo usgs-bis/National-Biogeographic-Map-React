@@ -1,6 +1,7 @@
 import './LeftPanel.css'
 import Biogeography from '../Bioscapes/Biogeography'
 import Dialog from 'react-dialog'
+import EnabledLayersContext from '../Contexts/EnabledLayersContext'
 import InfoSign from '../InfoSign/InfoSign'
 import PDFReport from '../PDF/PdfReport'
 import React, {FunctionComponent, useState, useRef, useEffect, useContext} from 'react'
@@ -9,7 +10,7 @@ import TerrestrialEcosystems2011 from '../Bioscapes/TerrestrialEcosystems2011'
 import loadingGif from './ajax-loader.gif'
 import speechBubble from './bubble.png'
 import {UncontrolledTooltip} from 'reactstrap'
-import EnabledLayersContext from '../Contexts/EnabledLayersContext'
+import {isEmpty} from 'lodash'
 
 export interface ILeftPanelProps {
   results: any[],
@@ -47,9 +48,9 @@ const LeftPanel: FunctionComponent<ILeftPanelProps> = (props) => {
 
   const [listenerAdded, setListenerAdded] = useState<boolean>(false)
 
-  const terrestrialRef = useRef<null|TerrestrialEcosystems2011>(null)
-  const biogeographyRef = useRef<null|Biogeography>(null)
-  const pdfReportRef = useRef<null|PDFReport>(null)
+  const terrestrialRef = useRef<null | TerrestrialEcosystems2011>(null)
+  const biogeographyRef = useRef<null | Biogeography>(null)
+  const pdfReportRef = useRef<null | PDFReport>(null)
 
   const [loading, setLoading] = useState(false)
   const [showDescription, setShowDescription] = useState(false)
@@ -80,7 +81,7 @@ const LeftPanel: FunctionComponent<ILeftPanelProps> = (props) => {
     // previous state and do not want to display the help popup ever. Otherwise,
     // we want to display it after a user has selected a feature but before they
     // pick a bap.
-    if (!listenerAdded && !props.priorityBap && props.feature && !props.initBaps) {
+    if (!listenerAdded && !props.priorityBap && !isEmpty(props.feature) && isEmpty(props.initBaps)) {
       setListenerAdded(true)
       setDisplayHelpPopup(true)
 
@@ -107,7 +108,8 @@ const LeftPanel: FunctionComponent<ILeftPanelProps> = (props) => {
         feature_state: props.feature.properties.state,
         feature_area: props.feature.properties.approxArea,
       })
-    )}
+      )
+    }
 
   }, [props.feature])
 
@@ -118,7 +120,8 @@ const LeftPanel: FunctionComponent<ILeftPanelProps> = (props) => {
         shareText: 'Error!',
         shareToolTipOpen: true
       })
-    )}
+      )
+    }
     else {
       setState((prev) => Object.assign({}, prev, {shareText: 'Done!'}))
     }
