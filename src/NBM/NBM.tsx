@@ -166,7 +166,6 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
       props.parentClickHandler({latlng: {lat: center.lat, lng: center.lng}}, true)
     }
 
-    // @Matt TODO: need a better fix then ignore
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.feature])
 

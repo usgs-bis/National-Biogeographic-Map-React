@@ -169,6 +169,9 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
   useEffect(() => {
     hashTimeout.current = setTimeout(() => {
       console.log('set hash effect')
+
+      if (_.isEmpty(state.feature)) { return }
+
       let tmpState: IShareState = {
         basemapServiceUrl: basemap.serviceUrl,
         timeSlider: {rangeYearMin: timeSlider.rangeYearMin, rangeYearMax: timeSlider.rangeYearMax, mapDisplayYear: timeSlider.mapDisplayYear},
@@ -182,13 +185,15 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
       if (state.feature?.properties?.userDefined) {
         tmpState.userDefined = {geom: state.feature.geometry}
       }
+
       setHash(tmpState)
     }, 1000)
 
     return () => {
       clearTimeout(hashTimeout.current)
     }
-  }, [baps, state, basemap, setHash, timeSlider])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [baps, state, basemap, timeSlider])
 
   useEffect(() => {
     console.log('initState effect')
@@ -631,7 +636,6 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
     setState((prev) => Object.assign({}, prev, { priorityBap: bapId }))
   }
 
-  // @Matt TODO: need to use contexts to pass props down?
   return (
     <div className="vwrapper">
       <Header title={state.bioscape.title} description={state.bioscape.description} />
