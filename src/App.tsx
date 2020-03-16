@@ -23,7 +23,6 @@ import states from './states.json'
 import useLocationHash from './Hooks/LocationHashHook'
 import { TimeSliderContext, defaultTimeSliderProps, ITimeSliderContext } from './Contexts/TimeSliderContext'
 
-// @Matt TODO: implement eslint
 export interface IBioscapeProps {
   biogeography: any
   'nbm-react': any
@@ -75,7 +74,6 @@ const numberWithCommas = (x: number) => {
 
 const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }) => {
 
-  // @Matt TODO: do something with the errorState
   const [errorState, setErrorState] = useState<Error>()
   const [hashState, setHash] = useLocationHash()
 
@@ -673,7 +671,6 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
 
         <div id="map-area">
           <NBM
-            className="relative-map"
             overlay={state.overlay}
             feature={state.feature}
             parentClickHandler={handleMapClick}

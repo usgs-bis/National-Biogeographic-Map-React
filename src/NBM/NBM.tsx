@@ -5,11 +5,14 @@ import Control from 'react-leaflet-control'
 import Dialog from 'react-dialog'
 import InfoSign from '../InfoSign/InfoSign'
 import L, {LatLngBoundsExpression, Layer} from 'leaflet'
+import LegendContext from '../Contexts/LegendContext'
 import LocationOverlay from './LocationOverylays/LocationOverlay'
 import React, {FunctionComponent, useState, useEffect, useRef, useContext} from 'react'
 import TimeSlider from './TimeSlider/TimeSlider'
+import _ from 'lodash'
 import loadingGif from './loading.gif'
 import shp from 'shpjs'
+import {Alert} from 'reactstrap'
 import {EditControl} from 'react-leaflet-draw'
 import {FaCloudUploadAlt} from 'react-icons/fa'
 import {FaKey} from 'react-icons/fa'
@@ -17,17 +20,13 @@ import {isEmpty} from 'lodash'
 
 // @ts-ignore
 import {Map, TileLayer, WMSTileLayer, Marker, Popup, GeoJSON, FeatureGroup, ZoomControl} from 'react-leaflet'
-import LegendContext from '../Contexts/LegendContext'
 
-const DEV_MODE = AppConfig.REACT_APP_DEV
-
-
-const ENV = AppConfig.REACT_APP_ENV
+const API_VERSION_URL = AppConfig.REACT_APP_BIS_API + '/api'
 const BUFFER = .5
+const DEV_MODE = AppConfig.REACT_APP_DEV
+const ENV = AppConfig.REACT_APP_ENV
 
 export interface INBMProps {
-  // @Matt TODO: do we need this?
-  className: string
   initPoint: null | {
     lat: number,
     lng: number
@@ -45,11 +44,14 @@ export interface INBMProps {
   priorityBap: any
 }
 
-const API_VERSION_URL = AppConfig.REACT_APP_BIS_API + '/api'
-
 const NBM: FunctionComponent<INBMProps> = (props) => {
 
   const {setMap} = props
+
+  const [layerError, setLayerError] = useState<null|any>()
+  const [layerErrVisible, setLayerErrVisible] = useState(false)
+
+  const onLayerErrDismiss = () => setLayerErrVisible(false)
 
   const [basemap] = useContext(BasemapContext)
   const {toggleLegend, hasLegend} = useContext(LegendContext)
@@ -60,7 +62,6 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
   })
   const [attributionOpen, setAttributionOpen] = useState(false)
   const [showUploadDialog, setShowUploadDialog] = useState(false)
-  // @Matt TODO: do something with the uploading?
   const [uploadError, setUploadError] = useState('')
   const [uploading, setUploading] = useState(false)
   const [oldOverlay, setOldOverlay] = useState<Layer>()
@@ -72,9 +73,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
   const locationOverlay = useRef<LocationOverlay>(null)
   const map = useRef<Map>(null)
 
-  // @Matt TODO: #next all things in functioncomponents can't do it this way
   let clickableRef = useRef(true)
-  let layerError = false
 
   useEffect(() => {
     console.log('api version effect')
@@ -192,21 +191,10 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
     }
   }
 
-  // @Matt TODO: #next user drawn polygons still load the single data point, need to disallow that
-
-  const handleLoadError = (err: any) => {
-    let prevErr = layerError
-    layerError = true
-    // sometimes reduces the bounce on a hard refresh.
-    if (!prevErr && layerError) {
-      // @Matt TODO: #next this toast isn't very performant, need to replace with a better version
-      /* toast.notify( */
-      /*   <div> */
-      /*     <h4>Error loading layer <i>{e.target.options.layers}</i> from <br /> <br />{e.target._url}</h4> */
-      /*   </div>, {duration: 15000, position: 'top'} */
-      /* ) */
-    }
-  }
+  const handleLoadError = _.debounce((err: any) => {
+    setLayerError(err)
+    setLayerErrVisible(true)
+  }, 200)
 
   const handleMouseOut = () => {
     locationOverlay?.current?.setLocation(null, null)
@@ -432,6 +420,14 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
 
   return (
     <>
+      { layerError &&
+        <Alert className="app-alert" color="danger" toggle={onLayerErrDismiss} isOpen={layerErrVisible}>
+          <div>
+            <b>Error loading layer <i>{layerError.target.options.layers}</i> from:</b>
+            <div>{layerError.target._url}</div>
+          </div>
+        </Alert>
+      }
       <Map ref={map}
         onClick={handleClick}
         bounds={bounds}
@@ -449,7 +445,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
         <MapMarker point={point} />
         {geojson()}
         <div className="global-time-slider" onMouseOver={disableDragging} onMouseOut={enableDragging}>
-          {props.bioscapeName !== 'terrestrial-ecosystems-2011' && <TimeSlider/>}
+          {props.bioscapeName !== 'terrestrial-ecosystems-2011' && <TimeSlider />}
         </div>
         <div className="attribution" onClick={() => {setAttributionOpen(!attributionOpen)}} onMouseOver={disableDragging} onMouseOut={enableDragging}>
           <span className="attribution-info" style={{color: 'rgb(107, 153, 197)'}}>
@@ -480,7 +476,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
               circle: false
             }}
           />
-          { hasLegend &&
+          {hasLegend &&
             <Control position="topright">
               <div className="leaflet-bar" title="Legend">
                 <button onClick={() => toggleLegend()}>

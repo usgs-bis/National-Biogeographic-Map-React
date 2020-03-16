@@ -64,7 +64,6 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
     }
   }, [mapClicked, point.lat, point.lng, textInput])
 
-  // @Matt TODO: test that this works
   const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
     textSearchHandler(e.currentTarget.value)
   }

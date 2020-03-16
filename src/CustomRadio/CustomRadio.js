@@ -1,7 +1,6 @@
-import './CustomRadio.css'
+import './CustomRadio.scss'
 import React from 'react'
-import {MdCheckBoxOutlineBlank, MdCheckBox} from 'react-icons/md'
-
+import {FaRegSquare, FaRegCheckSquare} from 'react-icons/fa'
 
 class RadioButton extends React.Component {
     handleClick(){
@@ -10,16 +9,10 @@ class RadioButton extends React.Component {
 
     render() {
         return (
-            <div onClick={this.handleClick.bind(this)}>
+            <div className="custom-radio-box" onClick={this.handleClick.bind(this)}>
                 { this.props.isChecked ?
-                    <MdCheckBox
-                        style={{textAlign: 'right', justifyContent: 'center'}}
-                        className="nbm-flex-column"
-                    /> :
-                    <MdCheckBoxOutlineBlank
-                        style={{textAlign: 'right', justifyContent: 'center'}}
-                        className="nbm-flex-column"
-                    />
+                    <FaRegCheckSquare /> :
+                    <FaRegSquare />
                 }
             </div>
         )
