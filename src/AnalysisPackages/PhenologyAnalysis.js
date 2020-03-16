@@ -114,7 +114,7 @@ class PhenologyAnalysisPackage extends React.Component {
     turnOnLayer(layer, style, date) {
         layers[0]['legend']['imageUrl'] = baseLegendUrl + `&layer=${layer}&style=${style}`
 
-        // this will get flipped to turn on the layer in analysysPackage 
+        // this will get flipped to turn on the layer in analysysPackage
         layers[0].checked = false
         if (this.props.isOpen) {
             this.props.toggleLayer(layers[0])
@@ -157,7 +157,7 @@ class PhenologyAnalysisPackage extends React.Component {
         return fetch(url)
             .then(res => { return res.text() })
             .then(str => new DOMParser().parseFromString(str, 'text/xml'))
-            .catch(error => {
+            .catch(() => {
                 this.setState({
                     error: true
                 })
@@ -173,7 +173,7 @@ class PhenologyAnalysisPackage extends React.Component {
             }
         }
 
-        const parseSld = sld => {
+        const parseSld = (sld) => {
             let sldJson = {
                 layer: sld.getElementsByTagName('sld:Name')[0].textContent,
                 styles: []
@@ -241,35 +241,41 @@ class PhenologyAnalysisPackage extends React.Component {
                 layers.forEach(layer => {
                     fetches.push(this.getFetch(`https://geoserver.usanpn.org/geoserver/wms?layers=${layer.name}&request=GetStyles&service=wms&version=1.1.1`))
                 })
-                Promise.all(fetches).then(results => {
-                    if (results) {
-                        const slds = results.map(res => {
-                            return parseSld(res)
-                        })
-                        layers.forEach(layer => {
-                            const layerSld = slds.find(sld => sld.layer === layer.name)
-                            if (!layerSld) {
-                                return
-                            }
-                            layer.species.forEach(species => {
-                                const style = layerSld.styles.find(s => s.name === species.style)
-                                if (style) {
-                                    species.legend = style.colorMapEntries
-                                }
+                Promise
+                    .all(fetches)
+                    .then(results => {
+                        if (results) {
+                            const slds = results.map(res => {
+                                return parseSld(res)
                             })
-                        })
-                        this.setState({
-                            data: layers,
-                            loading: false,
-                            didSubmit: true
-                        }, () => {
-                            this.getCharts(this.state.data, this.state.selectedIndex)
-                        })
-                    } else {
-                        this.props.isEnabled(false)
-                        this.props.canOpen(false)
-                    }
-                })
+
+                            layers.forEach(layer => {
+                                const layerSld = slds.find(sld => sld.layer === layer.name)
+                                if (!layerSld) {
+                                    return
+                                }
+                                layer.species.forEach(species => {
+                                    const style = layerSld.styles.find(s => s.name === species.style)
+                                    if (style) {
+                                        species.legend = style.colorMapEntries
+                                    }
+                                })
+                            })
+                            this.setState({
+                                data: layers,
+                                loading: false,
+                                didSubmit: true
+                            }, () => {
+                                this.getCharts(this.state.data, this.state.selectedIndex)
+                            })
+                        } else {
+                            this.props.isEnabled(false)
+                            this.props.canOpen(false)
+                        }
+                    })
+                    .catch((err) => {
+                        console.error(err)
+                    })
             })
     }
 
@@ -332,7 +338,7 @@ class PhenologyAnalysisPackage extends React.Component {
                             <div className="title">{speciesName}</div>
                             {controls}
                             {
-                                styles.length ? 
+                                styles.length ?
                                     (<ChartLegend items={species.legend.map(item => {return {key: `${species.style}_${item.quantity}`, ...item}})} border={true}/>) :
                                     (<div className="text-center">
                                         <img src={baseLegendUrl + `&layer=${layerName}&style=${species.style}`} alt="Legend" style={{maxWidth: '100%'}}></img>

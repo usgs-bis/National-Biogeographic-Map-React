@@ -672,7 +672,6 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
 
         <div id="map-area">
           <NBM
-            className="relative-map"
             overlay={state.overlay}
             feature={state.feature}
             parentClickHandler={handleMapClick}

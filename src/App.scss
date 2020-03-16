@@ -1,3 +1,5 @@
+@import './AlertBox/AlertBox.scss';
+
 svg {
     vertical-align: baseline;
 }
@@ -64,10 +66,6 @@ svg {
         background-color: orange;
         flex: 1 1 200px;
     }
-}
-
-.relative-map {
-    position: relative;
 }
 
 .tooltip{

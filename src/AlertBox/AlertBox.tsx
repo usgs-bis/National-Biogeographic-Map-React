@@ -1,4 +1,3 @@
-import './AlertBox.scss'
 import React, {FunctionComponent, useState, useEffect} from 'react'
 import {Alert, UncontrolledAlert} from 'reactstrap'
 import AppConfig from '../config'
