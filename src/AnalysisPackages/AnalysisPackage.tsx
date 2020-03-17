@@ -122,11 +122,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
 
       newLayers.forEach((layer) => {
         if (layer.sb_item) {
-          fetch(`https://www.sciencebase.gov/catalog/item/${layer.sb_item}?format=json`, {
-            headers: {
-              'Cache-Control': 'no-store'
-            }
-          })
+          fetch(`https://www.sciencebase.gov/catalog/item/${layer.sb_item}?format=json`)
             .then(res => res.json())
             .then(
               (result) => {
