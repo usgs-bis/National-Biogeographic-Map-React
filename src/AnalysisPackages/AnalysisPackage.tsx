@@ -23,6 +23,7 @@ export interface IAnalysisPackageProps {
   point: any
   yearMin: number
   yearMax: number
+  devBap?: boolean
 }
 
 const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
@@ -535,6 +536,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
             <span onClick={toggleDropdown}>
               {sbProperties.title}
             </span>
+            {props.devBap && <i className="text-white"> (Dev Only)</i>}
             {<InfoSign onClick={() => setSbInfoPopUp(!sbInfoPopUp)}> </InfoSign>}
           </span>
         </div>
