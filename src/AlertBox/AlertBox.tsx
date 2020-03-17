@@ -1,13 +1,15 @@
-import React, {FunctionComponent, useState, useEffect} from 'react'
-import {Alert, UncontrolledAlert} from 'reactstrap'
 import AppConfig from '../config'
+import React, {FunctionComponent, useState, useEffect} from 'react'
+import {Alert} from 'reactstrap'
 
 export interface IAlertBox {
-  errorMsg?: string
+  error?: Error
 }
 
-const AlertBox: FunctionComponent<IAlertBox> = ({ errorMsg }) => {
+const AlertBox: FunctionComponent<IAlertBox> = ({ error }) => {
   const [apiCheck, setApiCheck] = useState<null|string>(null)
+
+  const [showError, setShowError] = useState(false)
 
   useEffect(() => {
     console.log('api check effect')
@@ -26,6 +28,14 @@ const AlertBox: FunctionComponent<IAlertBox> = ({ errorMsg }) => {
       })
   }, [])
 
+  useEffect(() => {
+    if (error?.message) {
+      setShowError(true)
+    }
+  }, [error])
+
+  const onDismissError = () => setShowError(false)
+
   const apiBox = () => {
 
     if (apiCheck) {
@@ -34,12 +44,12 @@ const AlertBox: FunctionComponent<IAlertBox> = ({ errorMsg }) => {
       )
     }
 
-    if (errorMsg) {
+    if (error?.message) {
       return (
-        <UncontrolledAlert color="danger" className="app-alert">
+        <Alert color="danger" className="app-alert" toggle={onDismissError} isOpen={showError}>
           <b>Sorry, there was an error!</b>
-          <div>{errorMsg}</div>
-        </UncontrolledAlert>
+          <div>{error.message}</div>
+        </Alert>
       )
     }
 
