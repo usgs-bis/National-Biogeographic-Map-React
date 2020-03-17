@@ -14,14 +14,15 @@ import LegendContext, {ILegendContext} from './Contexts/LegendContext'
 import NBM from './NBM/NBM'
 import React, {FunctionComponent, useState, useEffect, useRef} from 'react'
 import Resizable from 're-resizable'
-import _ from 'lodash'
+import _, {isEmpty} from 'lodash'
 import cloneLayer from 'leaflet-clonelayer'
+import geojsonhint from '@mapbox/geojsonhint'
 import nbmBioscape from './Bioscapes/biogeography.json'
 import nvcsBioscape from './Bioscapes/terrestrial-ecosystems-2011.json'
 import packageJson from '../package.json'
 import states from './states.json'
 import useLocationHash from './Hooks/LocationHashHook'
-import { TimeSliderContext, defaultTimeSliderProps, ITimeSliderContext } from './Contexts/TimeSliderContext'
+import {TimeSliderContext, defaultTimeSliderProps, ITimeSliderContext} from './Contexts/TimeSliderContext'
 
 export interface IBioscapeProps {
   biogeography: any
@@ -38,7 +39,7 @@ export interface IFeature {
 }
 
 export interface IShareState {
-  feature?: { feature_id: string }
+  feature?: {feature_id: string}
   basemapServiceUrl: string
   timeSlider: {
     rangeYearMin: number
@@ -52,7 +53,7 @@ export interface IShareState {
     lng: number
     elv?: number
   }
-  userDefined?: { geom: any }
+  userDefined?: {geom: any}
 }
 
 const ELEVATION_SOURCE = 'https://nationalmap.gov/epqs/pqs.php?'
@@ -72,9 +73,10 @@ const numberWithCommas = (x: number) => {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }
 
-const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }) => {
+const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) => {
 
   const [errorState, setErrorState] = useState<Error>()
+
   const [hashState, setHash] = useLocationHash()
 
   const [baps, setBaps] = useState(hashState?.baps)
@@ -123,7 +125,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
   const [timeSlider, setTimeSlider] = useState(() => {
     let initTsState = defaultTimeSliderProps
     if (hashState) {
-      const { rangeYearMax, rangeYearMin, mapDisplayYear } = hashState.timeSlider
+      const {rangeYearMax, rangeYearMin, mapDisplayYear} = hashState.timeSlider
       initTsState = {
         ...initTsState,
         rangeYearMin,
@@ -161,7 +163,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
     }))
     document.title = state.bioscape.title
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.bioscape.title, state.feature])
 
   const hashTimeout = useRef<any>()
@@ -170,7 +172,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
     hashTimeout.current = setTimeout(() => {
       console.log('set hash effect')
 
-      if (_.isEmpty(state.feature)) { return }
+      if (_.isEmpty(state.feature)) {return }
 
       let tmpState: IShareState = {
         basemapServiceUrl: basemap.serviceUrl,
@@ -192,7 +194,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
     return () => {
       clearTimeout(hashTimeout.current)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [baps, state, basemap, timeSlider])
 
   useEffect(() => {
@@ -203,7 +205,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
     } else if (hashState?.feature) {
       submitHandler(hashState.feature, true)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hashState])
 
   // changes the map display year.
@@ -249,7 +251,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
         item.layer.off('load')
       })
     })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeSlider.mapDisplayYear, timeSlider.play])
 
   const shareState = () => {
@@ -267,7 +269,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
 
   const setBapState = (bapId: string, bapState: any) => {
     if (!_.isEqual(baps?.[bapId], bapState)) {
-      setBaps((prev: any) => Object.assign({}, prev, { [bapId]: bapState }))
+      setBaps((prev: any) => Object.assign({}, prev, {[bapId]: bapState}))
     }
   }
 
@@ -289,7 +291,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
     map.current.leafletElement.getPane('summarizationPane').style.zIndex = 402
     map.current.leafletElement.getPane('overlayPane').style.zIndex = 403
 
-    setState((prev) => Object.assign({}, prev, { map: map }))
+    setState((prev) => Object.assign({}, prev, {map: map}))
   }
 
   const handleDrawnPolygon = (geom: any, init: any) => {
@@ -318,7 +320,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
         }))
       }
     } else {
-      setState((prev) => Object.assign({}, prev, { feature: null }))
+      setState((prev) => Object.assign({}, prev, {feature: null}))
     }
   }
 
@@ -445,16 +447,20 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
           result.properties.approxArea = getApproxArea(result.geometry)
           result.geometry = parseGeom(result.geometry)
           result.properties = countyStateLookup([result.properties])[0]
-          try {
-            // Need this to validate result
-            L.geoJSON(result)
-            setState((prev) => Object.assign({}, prev, {
-              feature: result,
-              mapClicked: false
-            }))
-          } catch(err) {
-            setErrorState(err)
+
+          if (!result.type) { result.type = 'Feature' }
+
+          const hints = geojsonhint.hint(result)
+
+          if (!isEmpty(hints)) {
+            setErrorState(new Error(`GeoJSON validation error: ${hints[0].message}`))
+            return
           }
+
+          setState((prev) => Object.assign({}, prev, {
+            feature: result,
+            mapClicked: false
+          }))
         }
         else {
           setState((prev) => Object.assign({}, prev, {
@@ -474,7 +480,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
 
   const sendFeatureRequestFromOverlay = (results: any) => {
     let overlay = state.overlay
-    if (!overlay) { return }
+    if (!overlay) {return }
 
     for (let i = 0; i < results.length; i++) {
       let feature = results[i]
@@ -492,7 +498,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
     fetch(POINT_SEARCH_API + `lat=${e.latlng.lat}&lng=${e.latlng.lng}`)
       .then(res => res.json())
       .then((result) => {
-        if (!result || !result.hits) { return }
+        if (!result || !result.hits) {return }
 
         if (state.overlay) {
           sendFeatureRequestFromOverlay(result.hits.hits.map((a: any) => a['_source']['properties']))
@@ -555,7 +561,7 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
         let identifiedElevationValue = result.USGS_Elevation_Point_Query_Service
         let elev = identifiedElevationValue.Elevation_Query.Elevation
         elev = elev > -400 ? numberWithCommas(parseInt(elev)) : 'No Data'
-        setState((prev) => Object.assign({}, prev, { elv: elev }))
+        setState((prev) => Object.assign({}, prev, {elv: elev}))
       })
       .catch(setErrorState)
   }
@@ -629,71 +635,71 @@ const App: FunctionComponent<{ bioscape: keyof IBioscapeProps }> = ({ bioscape }
   }
 
   const updateAnalysisLayers = (layers: any) => {
-    setState((prev) => Object.assign({}, prev, { analysisLayers: layers, }))
+    setState((prev) => Object.assign({}, prev, {analysisLayers: layers, }))
   }
 
   const setPriorityBap = (bapId: any) => {
-    setState((prev) => Object.assign({}, prev, { priorityBap: bapId }))
+    setState((prev) => Object.assign({}, prev, {priorityBap: bapId}))
   }
 
   return (
     <div className="vwrapper">
       <Header title={state.bioscape.title} description={state.bioscape.description} />
-      <AlertBox errorMsg={errorState?.message}/>
+      <AlertBox error={errorState} />
       <div id="content-area">
-      <LegendContext.Provider value={legendState}>
-      <EnabledLayersContext.Provider value={{enabledLayers, setEnabledLayers}}>
-      <BasemapContext.Provider value={[basemap, setBasemap]} >
-      <TimeSliderContext.Provider value={[timeSlider, updateTimeSliderState]}>
-        <Resizable
-          className="panel-area"
-          enable={{top: false, right: true, bottom: false, left: false, topRight: false, bottomRight: false, bottomLeft: false, topLeft: false}}
-          defaultSize={{width: 540}}
-          minWidth={250}
-          maxWidth={1000}
-          onResizeStop={() => { state.map.current.leafletElement.invalidateSize() }}
-        >
-          <LeftPanel
-            bioscape={state.bioscape}
-            results={state.results}
-            textSearchHandler={handleSearchBox}
-            submitHandler={submitHandler}
-            feature={state.feature}
-            mapClicked={state.mapClicked}
-            updateAnalysisLayers={updateAnalysisLayers}
-            setPriorityBap={setPriorityBap}
-            shareState={shareState}
-            setBapState={setBapState}
-            map={state.map}
-            initBaps={hashState?.baps}
-            priorityBap={state.priorityBap}
-            bioscapeName={state.bioscapeName}
-            point={{lat: state.lat, lng: state.lng, elv: state.elv}}
-            overlay={state.overlay}
-          />
-        </Resizable>
+        <LegendContext.Provider value={legendState}>
+          <EnabledLayersContext.Provider value={{enabledLayers, setEnabledLayers}}>
+            <BasemapContext.Provider value={[basemap, setBasemap]} >
+              <TimeSliderContext.Provider value={[timeSlider, updateTimeSliderState]}>
+                <Resizable
+                  className="panel-area"
+                  enable={{top: false, right: true, bottom: false, left: false, topRight: false, bottomRight: false, bottomLeft: false, topLeft: false}}
+                  defaultSize={{width: 540}}
+                  minWidth={250}
+                  maxWidth={1000}
+                  onResizeStop={() => {state.map.current.leafletElement.invalidateSize()}}
+                >
+                  <LeftPanel
+                    bioscape={state.bioscape}
+                    results={state.results}
+                    textSearchHandler={handleSearchBox}
+                    submitHandler={submitHandler}
+                    feature={state.feature}
+                    mapClicked={state.mapClicked}
+                    updateAnalysisLayers={updateAnalysisLayers}
+                    setPriorityBap={setPriorityBap}
+                    shareState={shareState}
+                    setBapState={setBapState}
+                    map={state.map}
+                    initBaps={hashState?.baps}
+                    priorityBap={state.priorityBap}
+                    bioscapeName={state.bioscapeName}
+                    point={{lat: state.lat, lng: state.lng, elv: state.elv}}
+                    overlay={state.overlay}
+                  />
+                </Resizable>
 
-        <div id="map-area">
-          <NBM
-            overlay={state.overlay}
-            feature={state.feature}
-            parentClickHandler={handleMapClick}
-            parentDrawHandler={handleDrawnPolygon}
-            analysisLayers={state.analysisLayers}
-            setMap={setMap}
-            mapDisplayYear={timeSlider.mapDisplayYear}
-            bioscapeName={state.bioscapeName}
-            applicationVersion={REACT_VERSION}
-            priorityBap={state.priorityBap}
-            clickDrivenEvent={state.clickDrivenEvent}
-            initPoint={hashState?.point}
-          />
-        </div>
-        <Legend />
-      </TimeSliderContext.Provider>
-      </BasemapContext.Provider>
-      </EnabledLayersContext.Provider>
-      </LegendContext.Provider>
+                <div id="map-area">
+                  <NBM
+                    overlay={state.overlay}
+                    feature={state.feature}
+                    parentClickHandler={handleMapClick}
+                    parentDrawHandler={handleDrawnPolygon}
+                    analysisLayers={state.analysisLayers}
+                    setMap={setMap}
+                    mapDisplayYear={timeSlider.mapDisplayYear}
+                    bioscapeName={state.bioscapeName}
+                    applicationVersion={REACT_VERSION}
+                    priorityBap={state.priorityBap}
+                    clickDrivenEvent={state.clickDrivenEvent}
+                    initPoint={hashState?.point}
+                  />
+                </div>
+                <Legend />
+              </TimeSliderContext.Provider>
+            </BasemapContext.Provider>
+          </EnabledLayersContext.Provider>
+        </LegendContext.Provider>
       </div>
       <Footer />
     </div>
