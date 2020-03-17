@@ -4,6 +4,7 @@
   "homepage": "/biogeography/",
   "private": true,
   "dependencies": {
+    "@mapbox/geojsonhint": "3.0.0",
     "bootstrap": "4.4.1",
     "d3": "5.15.0",
     "esri-leaflet": "^2.3.3",
