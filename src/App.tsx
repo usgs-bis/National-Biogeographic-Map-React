@@ -273,19 +273,6 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
     }
   }
 
-  /* const overlayChanged = (e: any) => { */
-  /*   setState((prev) => Object.assign({}, prev, { overlay: e })) */
-
-  /*   if (state.lat && state.lng) { */
-  /*     handleMapClick({ */
-  /*       latlng: { */
-  /*         lat: state.lat, */
-  /*         lng: state.lng */
-  /*       } */
-  /*     }, false) */
-  /*   } */
-  /* } */
-
   const setMap = (map: any) => {
     map.current.leafletElement.createPane('summarizationPane')
     map.current.leafletElement.getPane('summarizationPane').style.zIndex = 402
@@ -450,17 +437,26 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
 
           if (!result.type) { result.type = 'Feature' }
 
-          const hints = geojsonhint.hint(result)
+          try {
+            // To ensure we don't crash the app if it is invalid
+            L.geoJSON(result)
 
-          if (!isEmpty(hints)) {
-            setErrorState(new Error(`GeoJSON validation error: ${hints[0].message}`))
-            return
+            setState((prev) => Object.assign({}, prev, {
+              feature: result,
+              mapClicked: false
+            }))
+          } catch (err) {
+            const hints = geojsonhint.hint(result)
+            if (!isEmpty(hints)) {
+              console.log('GeoJSON validation errors:')
+              console.log(hints)
+              setErrorState(new Error(`GeoJSON validation error: ${hints[0].message}`))
+              return
+            }
+
+            setErrorState(err)
           }
 
-          setState((prev) => Object.assign({}, prev, {
-            feature: result,
-            mapClicked: false
-          }))
         }
         else {
           setState((prev) => Object.assign({}, prev, {
