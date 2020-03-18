@@ -22,14 +22,14 @@ const layers = [
         title: 'PAD-US v1.4 GAP Status Code',
         layer: new TiledMapLayer({
             url: 'https://gis1.usgs.gov/arcgis/rest/services/PADUS1_4/GAP_Status_Code/MapServer',
-            opacity: .5
+            opacity: .8
         }),
         legend: {
             arcgisUrl: 'https://gis1.usgs.gov/arcgis/rest/services/PADUS1_4/GAP_Status_Code/MapServer/legend?f=pjson',
             layers: [0]
         },
         checked: false,
-        disabled: true,
+        disabled: false,
         sb_item: '56bba50ce4b08d617f657956'
     },
     {
@@ -673,7 +673,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                             <div className="anotations">
                                 In this analysis the same thresholds are used to summarize protection status using GAP Status 1, 2, and 3 lands for those who consider multiple use lands as protected for their analyses.<br /><br />
                                 <span>
-                                    * 17% represents the 2020 target threshold for protection of terrestrial ecosystems agreed upon by Parties to the Conservation on Biological Diversity during the Aichi Convention.
+                                    * 17% represents the 2020 target threshold for protection of terrestrial ecosystems agreed upon by Parties to the Conservation on Biological Diversity during the Aichi Convention.&nbsp;
                                     <a href="https://www.cbd.int/sp/targets/" target="_blank" rel="noopener noreferrer">https://www.cbd.int/sp/targets/</a>
                                 </span>
                             </div>
