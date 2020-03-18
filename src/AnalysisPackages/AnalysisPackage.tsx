@@ -309,6 +309,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
                     <span className={layer.disabled ? 'text-muted' : ''}>{' ' + (layer.titlePrefix ? layer.titlePrefix : '') + layer.title}</span>
                     <InfoSign onClick={(event: any) => {setSbInfoLayerPopUp({...sbInfoLayerPopUp, [key]: !sbInfoLayerPopUp[key]}); event.preventDefault()}}> </InfoSign>
                   </Label>
+                  <br/>
                   {sbInfoLayerPopUp[key] &&
                     <Dialog
                       isResizable={true}
