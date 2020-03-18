@@ -40,6 +40,7 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
   const [focused, setFocused] = useState(false)
   const [layersDropdownOpen, setLayersDropdownOpen] = useState(false)
   const [displayHelpPopup, setDisplayHelpPopup] = useState(isEmpty(initBaps))
+  const [searchWatermark, setSearchWatermark] = useState('Search for a place of interest or click on the map')
 
   let textInput: HTMLInputElement|null = null
 
@@ -61,6 +62,7 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
     if (mapClicked) {
       textInput?.focus()
       setFocused(true)
+      setSearchWatermark(`Lat: ${point.lat.toFixed(5)}, Lng: ${point.lng.toFixed(5)}`)
     }
   }, [mapClicked, point.lat, point.lng, textInput])
 
@@ -117,8 +119,8 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
             onClick={onFocus}
             onBlur={onBlur}
             onKeyUp={handleKeyUp}
-            className="input-box"
-            placeholder="Search for a place of interest or click on the map"
+            className="input-box px-2"
+            placeholder={searchWatermark}
             type="text"
           />
         </div>
