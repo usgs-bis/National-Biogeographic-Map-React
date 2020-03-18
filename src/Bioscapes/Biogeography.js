@@ -57,7 +57,7 @@ class Biogeography extends React.Component {
         charts.push(this.OBISAnalysis.print())
         if (DEV_MODE) {
             charts.push(this.PhenologyAnalysis.print())
-            charts.push(this.BadNeighborAnalysis.print())
+            // charts.push(this.BadNeighborAnalysis.print())
             charts.push(this.ExpectedLandUseAnalysis.print())
             charts.push(this.NVCSHierarchyByPixel.print())
             charts.push(this.NVCSSummaryByRegion.print())
