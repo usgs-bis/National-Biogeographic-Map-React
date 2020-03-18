@@ -1,4 +1,3 @@
-import '../LeftPanel/LeftPanel.css'
 import AppConfig from '../config'
 import BadNeighborAnalysis from '../AnalysisPackages/BadNeighborAnalysis'
 import EcosystemProtectionAnalysis from '../AnalysisPackages/EcosystemProtectionAnalysis'

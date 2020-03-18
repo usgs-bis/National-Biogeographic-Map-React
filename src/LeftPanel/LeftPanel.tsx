@@ -1,4 +1,4 @@
-import './LeftPanel.css'
+import './LeftPanel.scss'
 import Biogeography from '../Bioscapes/Biogeography'
 import Dialog from 'react-dialog'
 import EnabledLayersContext from '../Contexts/EnabledLayersContext'

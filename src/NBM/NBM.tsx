@@ -7,7 +7,7 @@ import InfoSign from '../InfoSign/InfoSign'
 import L, {LatLngBoundsExpression, Layer} from 'leaflet'
 import LegendContext from '../Contexts/LegendContext'
 import LocationOverlay from './LocationOverylays/LocationOverlay'
-import React, {FunctionComponent, useState, useEffect, useRef, useContext} from 'react'
+import React, {FunctionComponent, useState, useEffect, useRef, useContext, MutableRefObject} from 'react'
 import TimeSlider from './TimeSlider/TimeSlider'
 import _ from 'lodash'
 import loadingGif from './loading.gif'
@@ -32,7 +32,7 @@ export interface INBMProps {
     lng: number
   },
   feature: any
-  setMap: Function
+  map: MutableRefObject<Map>
   analysisLayers: any[]
   mapDisplayYear: number
   overlay: any
@@ -46,7 +46,7 @@ export interface INBMProps {
 
 const NBM: FunctionComponent<INBMProps> = (props) => {
 
-  const {setMap} = props
+  const {map} = props
 
   const [layerError, setLayerError] = useState<null|any>()
   const [layerErrVisible, setLayerErrVisible] = useState(false)
@@ -71,8 +71,6 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
   const [drawnpolygon, setDrawnpolygon] = useState<any>()
 
   const locationOverlay = useRef<LocationOverlay>(null)
-  const map = useRef<Map>(null)
-
   let clickableRef = useRef(true)
 
   useEffect(() => {
@@ -117,7 +115,9 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
       L.control.attribution({position: 'topleft'}).addTo(map.current.leafletElement)
     }, ENV === 'Local' ? 1500 : 250)
 
-    setMap(map)
+    map.current.leafletElement.createPane('summarizationPane')
+    map.current.leafletElement.getPane('summarizationPane').style.zIndex = 402
+    map.current.leafletElement.getPane('overlayPane').style.zIndex = 403
 
     // @Matt TODO: need a better fix then ignore
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -126,7 +126,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
   useEffect(() => {
     console.log('fitbounds effect')
     map?.current?.leafletElement.fitBounds(bounds)
-  }, [bounds])
+  }, [bounds, map])
 
   useEffect(() => {
     console.log('layer adding/removing effect')
@@ -145,7 +145,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
       }
     }
     setOldLayers(currentLayers)
-  }, [props.analysisLayers, props.mapDisplayYear, oldLayers])
+  }, [map, props.analysisLayers, props.mapDisplayYear, oldLayers])
 
   useEffect(() => {
     console.log('overlay effect')
@@ -156,7 +156,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
       setOldOverlay(props.overlay)
       map?.current?.leafletElement.addLayer(props.overlay)
     }
-  }, [props.overlay, oldOverlay])
+  }, [map, props.overlay, oldOverlay])
 
   useEffect(() => {
     console.log('feature effect')

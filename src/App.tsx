@@ -24,6 +24,9 @@ import states from './states.json'
 import useLocationHash from './Hooks/LocationHashHook'
 import {TimeSliderContext, defaultTimeSliderProps, ITimeSliderContext} from './Contexts/TimeSliderContext'
 
+// @ts-ignore
+import {Map} from 'react-leaflet'
+
 export interface IBioscapeProps {
   biogeography: any
   'nbm-react': any
@@ -83,6 +86,8 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
   const [basemap, setBasemap] = useState(() => {
     return bioscapeMap[bioscape].basemaps.find((m: any) => m.serviceUrl === hashState?.basemapServiceUrl)
   })
+
+  const map = useRef<Map>(null)
 
   const [enabledLayers, setEnabledLayers] = useState([])
 
@@ -210,6 +215,8 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
 
   // changes the map display year.
   useEffect(() => {
+    console.log('Timeslider year effect')
+
     const analysisLayers = state.analysisLayers
     if (!analysisLayers.length) {
       return
@@ -231,9 +238,9 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
       const clone = cloneLayer(item.layer)
       clone.setParams({time: item.layer.wmsParams.time})
       clone.setOpacity(0)
-      clone.addTo(state.map.current.leafletElement)
+      clone.addTo(map.current.leafletElement)
       // weird case where layer 'load' doesent fire and clone doesnt get removed.
-      setTimeout(() => {state.map.current.leafletElement.removeLayer(clone)}, 5000)
+      setTimeout(() => {map.current.leafletElement.removeLayer(clone)}, 5000)
 
       clone.on('load', () => {
         setTimeout(() => {
@@ -271,14 +278,6 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
     if (!_.isEqual(baps?.[bapId], bapState)) {
       setBaps((prev: any) => Object.assign({}, prev, {[bapId]: bapState}))
     }
-  }
-
-  const setMap = (map: any) => {
-    map.current.leafletElement.createPane('summarizationPane')
-    map.current.leafletElement.getPane('summarizationPane').style.zIndex = 402
-    map.current.leafletElement.getPane('overlayPane').style.zIndex = 403
-
-    setState((prev) => Object.assign({}, prev, {map: map}))
   }
 
   const handleDrawnPolygon = (geom: any, init: any) => {
@@ -619,7 +618,7 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
     // Idealy we would only remove clone here but about 5% of the time layer 'load' doesnt fire
     // see comment in setMapDisplayYear above
     else {
-      state.map.current.leafletElement.removeLayer(layer2)
+      map.current.leafletElement.removeLayer(layer2)
     }
 
     // This shouldn't happen, but does when cycling the map. this is crude, but
@@ -653,42 +652,42 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
                   defaultSize={{width: 540}}
                   minWidth={250}
                   maxWidth={1000}
-                  onResizeStop={() => {state.map.current.leafletElement.invalidateSize()}}
+                  onResizeStop={() => {map.current.leafletElement.invalidateSize()}}
                 >
                   <LeftPanel
                     bioscape={state.bioscape}
-                    results={state.results}
-                    textSearchHandler={handleSearchBox}
-                    submitHandler={submitHandler}
+                    bioscapeName={state.bioscapeName}
                     feature={state.feature}
+                    initBaps={hashState?.baps}
+                    map={map}
                     mapClicked={state.mapClicked}
-                    updateAnalysisLayers={updateAnalysisLayers}
+                    overlay={state.overlay}
+                    point={{lat: state.lat, lng: state.lng, elv: state.elv}}
+                    priorityBap={state.priorityBap}
+                    results={state.results}
+                    setBapState={setBapState}
                     setPriorityBap={setPriorityBap}
                     shareState={shareState}
-                    setBapState={setBapState}
-                    map={state.map}
-                    initBaps={hashState?.baps}
-                    priorityBap={state.priorityBap}
-                    bioscapeName={state.bioscapeName}
-                    point={{lat: state.lat, lng: state.lng, elv: state.elv}}
-                    overlay={state.overlay}
+                    submitHandler={submitHandler}
+                    textSearchHandler={handleSearchBox}
+                    updateAnalysisLayers={updateAnalysisLayers}
                   />
                 </Resizable>
 
                 <div id="map-area">
                   <NBM
-                    overlay={state.overlay}
+                    analysisLayers={state.analysisLayers}
+                    applicationVersion={REACT_VERSION}
+                    bioscapeName={state.bioscapeName}
+                    clickDrivenEvent={state.clickDrivenEvent}
                     feature={state.feature}
+                    initPoint={hashState?.point}
+                    map={map}
+                    mapDisplayYear={timeSlider.mapDisplayYear}
+                    overlay={state.overlay}
                     parentClickHandler={handleMapClick}
                     parentDrawHandler={handleDrawnPolygon}
-                    analysisLayers={state.analysisLayers}
-                    setMap={setMap}
-                    mapDisplayYear={timeSlider.mapDisplayYear}
-                    bioscapeName={state.bioscapeName}
-                    applicationVersion={REACT_VERSION}
                     priorityBap={state.priorityBap}
-                    clickDrivenEvent={state.clickDrivenEvent}
-                    initPoint={hashState?.point}
                   />
                 </div>
                 <Legend />
