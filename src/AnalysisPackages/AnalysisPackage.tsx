@@ -306,7 +306,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
                       checked={layer.checked}
                       type="checkbox"
                       disabled={layer.disabled ? true : false} />
-                    {' ' + (layer.titlePrefix ? layer.titlePrefix : '') + layer.title}
+                    <span className={layer.disabled ? 'text-muted' : ''}>{' ' + (layer.titlePrefix ? layer.titlePrefix : '') + layer.title}</span>
                     <InfoSign onClick={(event: any) => {setSbInfoLayerPopUp({...sbInfoLayerPopUp, [key]: !sbInfoLayerPopUp[key]}); event.preventDefault()}}> </InfoSign>
                     {sbInfoLayerPopUp[key] &&
                       <span onClick={(event) => event.preventDefault()}>
@@ -345,6 +345,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
                     min="0"
                     max="1"
                     value={layer.layer.options.opacity}
+                    disabled={layer.disabled ? true : false} 
                   />
                 </FormGroup>
               )
