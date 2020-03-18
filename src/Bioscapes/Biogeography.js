@@ -89,13 +89,65 @@ class Biogeography extends React.Component {
         return (
             <div>
                 <div className="nbm-flex-row-no-padding">
+                    <EcosystemProtectionAnalysis
+                        onRef={ref => (this.EcosystemProtectionAnalysis = ref)}
+                        updateAnalysisLayers={this.props.updateAnalysisLayers}
+                        setPriorityBap={this.props.setPriorityBap}
+                        feature={this.props.feature}
+                        priorityBap={this.props.priorityBap}
+                        bapId={'bap5'}
+                        initBap={(this.props.initBaps || {})['bap5']}
+                        getDefaultPriorityBap={this.getDefaultPriorityBap}
+                        setBapState={this.props.setBapState}
+                    />
+                </div>
+                <div className="nbm-flex-row-no-padding">
+                    <SpeciesProtectionAnalysis
+                        onRef={ref => (this.SpeciesProtectionAnalysis = ref)}
+                        updateAnalysisLayers={this.props.updateAnalysisLayers}
+                        setPriorityBap={this.props.setPriorityBap}
+                        feature={this.props.feature}
+                        priorityBap={this.props.priorityBap}
+                        bapId={'bap6'}
+                        initBap={(this.props.initBaps || {})['bap6']}
+                        getDefaultPriorityBap={this.getDefaultPriorityBap} setBapState={this.props.setBapState}
+                    />
+                </div>
+                <div className="nbm-flex-row-no-padding">
+                    <NVCSHierarchyByPixel
+                        onRef={ref => (this.NVCSHierarchyByPixel = ref)}
+                        updateAnalysisLayers={this.props.updateAnalysisLayers}
+                        setPriorityBap={this.props.setPriorityBap}
+                        feature={this.props.feature}
+                        priorityBap={this.props.priorityBap}
+                        bapId={'bap11'}
+                        initBap={(this.props.initBaps || {})['bap11']}
+                        getDefaultPriorityBap={this.getDefaultPriorityBap}
+                        setBapState={this.props.setBapState}
+                        point={this.props.point}
+                        overlay={this.props.overlay}
+                    />
+                </div>
+                <div className="nbm-flex-row-no-padding">
+                    <NVCSSummaryByRegion
+                        onRef={ref => (this.NVCSSummaryByRegion = ref)}
+                        updateAnalysisLayers={this.props.updateAnalysisLayers}
+                        setPriorityBap={this.props.setPriorityBap}
+                        feature={this.props.feature}
+                        priorityBap={this.props.priorityBap}
+                        bapId={'bap12'}
+                        initBap={(this.props.initBaps || {})['bap12']}
+                        getDefaultPriorityBap={this.getDefaultPriorityBap}
+                        setBapState={this.props.setBapState}
+                        overlay={this.props.overlay}
+                    />
+                </div>
+                <div className="nbm-flex-row-no-padding">
                     <FirstLeafAnalysis
                         onRef={ref => (this.FirstLeafAnalysis = ref)}
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
                         setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
-                        // yearMin={this.props.rangeYearMin}
-                        // yearMax={this.props.rangeYearMax}
                         priorityBap={this.props.priorityBap}
                         bapId={'bap1'}
                         initBap={(this.props.initBaps || {})['bap1']}
@@ -122,8 +174,6 @@ class Biogeography extends React.Component {
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
                         setPriorityBap={this.props.setPriorityBap}
                         feature={this.props.feature}
-                        // yearMin={this.props.rangeYearMin}
-                        // yearMax={this.props.rangeYearMax}
                         priorityBap={this.props.priorityBap}
                         bapId={'bap3'}
                         initBap={(this.props.initBaps || {})['bap3']}
@@ -145,44 +195,6 @@ class Biogeography extends React.Component {
                     />
                 </div>
                 <div className="nbm-flex-row-no-padding">
-                    <EcosystemProtectionAnalysis
-                        onRef={ref => (this.EcosystemProtectionAnalysis = ref)}
-                        updateAnalysisLayers={this.props.updateAnalysisLayers}
-                        setPriorityBap={this.props.setPriorityBap}
-                        feature={this.props.feature}
-                        priorityBap={this.props.priorityBap}
-                        bapId={'bap5'}
-                        initBap={(this.props.initBaps || {})['bap5']}
-                        getDefaultPriorityBap={this.getDefaultPriorityBap}
-                        setBapState={this.props.setBapState}
-                    />
-                </div>
-                <div className="nbm-flex-row-no-padding">
-                    <SpeciesProtectionAnalysis
-                        onRef={ref => (this.SpeciesProtectionAnalysis = ref)}
-                        updateAnalysisLayers={this.props.updateAnalysisLayers}
-                        setPriorityBap={this.props.setPriorityBap}
-                        feature={this.props.feature}
-                        priorityBap={this.props.priorityBap}
-                        bapId={'bap6'}
-                        initBap={(this.props.initBaps || {})['bap6']}
-                        getDefaultPriorityBap={this.getDefaultPriorityBap} setBapState={this.props.setBapState}
-                    />
-                </div>
-                { DEV_MODE && <div className="nbm-flex-row-no-padding">
-                    <PhenologyAnalysis
-                        onRef={ref => (this.PhenologyAnalysis = ref)}
-                        updateAnalysisLayers={this.props.updateAnalysisLayers}
-                        setPriorityBap={this.props.setPriorityBap}
-                        feature={this.props.feature}
-                        priorityBap={this.props.priorityBap}
-                        bapId={'bap7'}
-                        initBap={(this.props.initBaps || {})['bap7']}
-                        getDefaultPriorityBap={this.getDefaultPriorityBap}
-                        setBapState={this.props.setBapState}
-                    />
-                </div> }
-                <div className="nbm-flex-row-no-padding">
                     <OBISAnalysis
                         onRef={ref => (this.OBISAnalysis = ref)}
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
@@ -196,6 +208,20 @@ class Biogeography extends React.Component {
                     />
                 </div>
                 { DEV_MODE && <div className="nbm-flex-row-no-padding">
+                    <PhenologyAnalysis
+                        onRef={ref => (this.PhenologyAnalysis = ref)}
+                        updateAnalysisLayers={this.props.updateAnalysisLayers}
+                        setPriorityBap={this.props.setPriorityBap}
+                        feature={this.props.feature}
+                        priorityBap={this.props.priorityBap}
+                        bapId={'bap7'}
+                        initBap={(this.props.initBaps || {})['bap7']}
+                        getDefaultPriorityBap={this.getDefaultPriorityBap}
+                        setBapState={this.props.setBapState}
+                        devBap={true}
+                    />
+                </div> }
+                { DEV_MODE && <div className="nbm-flex-row-no-padding">
                     <BadNeighborAnalysis
                         onRef={ref => (this.BadNeighborAnalysis = ref)}
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
@@ -206,6 +232,7 @@ class Biogeography extends React.Component {
                         initBap={(this.props.initBaps || {})['bap9']}
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
                         setBapState={this.props.setBapState}
+                        devBap={true}
                     />
                 </div> }
                 { DEV_MODE && <div className="nbm-flex-row-no-padding">
@@ -221,35 +248,7 @@ class Biogeography extends React.Component {
                         initBap={(this.props.initBaps || {})['bap10']}
                         getDefaultPriorityBap={this.getDefaultPriorityBap}
                         setBapState={this.props.setBapState}
-                    />
-                </div> }
-                { DEV_MODE && <div className="nbm-flex-row-no-padding">
-                    <NVCSHierarchyByPixel
-                        onRef={ref => (this.NVCSHierarchyByPixel = ref)}
-                        updateAnalysisLayers={this.props.updateAnalysisLayers}
-                        setPriorityBap={this.props.setPriorityBap}
-                        feature={this.props.feature}
-                        priorityBap={this.props.priorityBap}
-                        bapId={'bap11'}
-                        initBap={(this.props.initBaps || {})['bap11']}
-                        getDefaultPriorityBap={this.getDefaultPriorityBap}
-                        setBapState={this.props.setBapState}
-                        point={this.props.point}
-                        overlay={this.props.overlay}
-                    />
-                </div> }
-                { DEV_MODE && <div className="nbm-flex-row-no-padding">
-                    <NVCSSummaryByRegion
-                        onRef={ref => (this.NVCSSummaryByRegion = ref)}
-                        updateAnalysisLayers={this.props.updateAnalysisLayers}
-                        setPriorityBap={this.props.setPriorityBap}
-                        feature={this.props.feature}
-                        priorityBap={this.props.priorityBap}
-                        bapId={'bap12'}
-                        initBap={(this.props.initBaps || {})['bap12']}
-                        getDefaultPriorityBap={this.getDefaultPriorityBap}
-                        setBapState={this.props.setBapState}
-                        overlay={this.props.overlay}
+                        devBap={true}
                     />
                 </div> }
             </div>

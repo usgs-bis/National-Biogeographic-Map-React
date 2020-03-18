@@ -23,6 +23,7 @@ export interface IAnalysisPackageProps {
   point: any
   yearMin: number
   yearMax: number
+  devBap?: boolean
 }
 
 const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
@@ -122,11 +123,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
 
       newLayers.forEach((layer) => {
         if (layer.sb_item) {
-          fetch(`https://www.sciencebase.gov/catalog/item/${layer.sb_item}?format=json`, {
-            headers: {
-              'Cache-Control': 'no-store'
-            }
-          })
+          fetch(`https://www.sciencebase.gov/catalog/item/${layer.sb_item}?format=json`)
             .then(res => res.json())
             .then(
               (result) => {
@@ -539,6 +536,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
             <span onClick={toggleDropdown}>
               {sbProperties.title}
             </span>
+            {props.devBap && <i className="text-white"> (Dev Only)</i>}
             {<InfoSign onClick={() => setSbInfoPopUp(!sbInfoPopUp)}> </InfoSign>}
           </span>
         </div>
