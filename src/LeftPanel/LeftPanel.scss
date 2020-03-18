@@ -56,7 +56,7 @@
     font-weight: bold;
 }
 
-.button-group {  
+.button-group {
     width: 100%;
     font-size: 14px;
     max-height: 200px;
@@ -79,7 +79,6 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    /* scrollbar-width: none; hides scroll bar on firefox */
 }
 
 .panel-header{
@@ -89,11 +88,6 @@
 }
 
 .left-panel-header{
-    /* height: fit-content;
-    position: absolute;
-    background-color: #555;
-    width: 100%;
-    z-index: 999999; */
     border-bottom: 2px solid #424243;
 }
 
@@ -154,14 +148,15 @@
     flex-basis: 100%;
     flex: 8;
 }
-.analysis-package-container{
+
+.analysis-package-container {
     padding-right: 15px;
     padding-left: 10px;
     padding-top: 10px;
     width : 100%;
 }
 
-.share-url-input{
+.share-url-input {
     display: none;
 }
 
@@ -272,4 +267,27 @@
     background-color: white;
     border-radius: 60px;
 
+}
+
+.panel-area {
+    background-color: #555;
+    color: white;
+    padding-right: 2px;
+    scrollbar-color: #919191 transparent;
+}
+
+::-webkit-scrollbar {
+    background-color: transparent;  // optional: just make scrollbar invisible
+    width: 13px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #919191;
+    border-radius: 10px;
+}
+.analysis-package-container::-webkit-scrollbar-thumb {
+    border: 3px solid #555;
+}
+.rt-tbody::-webkit-scrollbar-thumb {
+    border: 3px solid #323235;
 }

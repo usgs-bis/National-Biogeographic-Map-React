@@ -1,5 +1,4 @@
 import React from "react";
-import "../LeftPanel/LeftPanel.css";
 import NVCSHierarchyByPixel from "../AnalysisPackages/NVCSHierarchyByPixel";
 import NVCSSummaryByRegion from "../AnalysisPackages/NVCSSummaryByRegion";
 

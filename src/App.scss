@@ -4,16 +4,6 @@ svg {
     vertical-align: baseline;
 }
 
-.panel-area {
-    background-color: #555;
-    color: white;
-    /* scrollbar-width: none; hides scroll bar on firefox */
-}
-/* ::-webkit-scrollbar {
-    display: none;  hides scroll bar on chrome
-    width: 0px;  /* remove scrollbar space
-    background: transparent;  /* optional: just make scrollbar invisible
-} */
 @media only screen and (max-width: 700px) {
     .vwrapper {
         display: flex;
