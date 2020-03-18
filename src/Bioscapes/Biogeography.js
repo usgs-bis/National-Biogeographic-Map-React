@@ -1,5 +1,5 @@
 import AppConfig from '../config'
-import BadNeighborAnalysis from '../AnalysisPackages/BadNeighborAnalysis'
+// import BadNeighborAnalysis from '../AnalysisPackages/BadNeighborAnalysis'
 import EcosystemProtectionAnalysis from '../AnalysisPackages/EcosystemProtectionAnalysis'
 import ExpectedLandUseAnalysis from '../AnalysisPackages/ExpectedLandUseAnalysis'
 import FirstBloomAnalysis from '../AnalysisPackages/FirstBloomAnalysis'
@@ -220,7 +220,8 @@ class Biogeography extends React.Component {
                         devBap={true}
                     />
                 </div> }
-                { DEV_MODE && <div className="nbm-flex-row-no-padding">
+                {/* Per Steve A. request remove this from all environments BCB-1420 */}
+                {/* { DEV_MODE && <div className="nbm-flex-row-no-padding">
                     <BadNeighborAnalysis
                         onRef={ref => (this.BadNeighborAnalysis = ref)}
                         updateAnalysisLayers={this.props.updateAnalysisLayers}
@@ -233,7 +234,7 @@ class Biogeography extends React.Component {
                         setBapState={this.props.setBapState}
                         devBap={true}
                     />
-                </div> }
+                </div> } */}
                 { DEV_MODE && <div className="nbm-flex-row-no-padding">
                     <ExpectedLandUseAnalysis
                         onRef={ref => (this.ExpectedLandUseAnalysis = ref)}

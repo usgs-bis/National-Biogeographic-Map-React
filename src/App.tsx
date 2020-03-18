@@ -73,7 +73,9 @@ const bioscapeMap: IBioscapeProps = {
 }
 
 const numberWithCommas = (x: number) => {
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  const parts = x.toString().split('.')
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  return parts.join('.')
 }
 
 const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) => {
