@@ -221,7 +221,7 @@ class Biogeography extends React.Component {
                         devBap={true}
                     />
                 </div> }
-                {/* Per Steve A. request remove this from all environments */}
+                {/* Per Steve A. request remove this from all environments BCB-1420 */}
                 {/* { DEV_MODE && <div className="nbm-flex-row-no-padding">
                     <BadNeighborAnalysis
                         onRef={ref => (this.BadNeighborAnalysis = ref)}
