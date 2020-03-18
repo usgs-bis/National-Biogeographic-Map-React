@@ -1,6 +1,6 @@
 import '../LeftPanel/LeftPanel.css'
 import AppConfig from '../config'
-import BadNeighborAnalysis from '../AnalysisPackages/BadNeighborAnalysis'
+// import BadNeighborAnalysis from '../AnalysisPackages/BadNeighborAnalysis'
 import EcosystemProtectionAnalysis from '../AnalysisPackages/EcosystemProtectionAnalysis'
 import ExpectedLandUseAnalysis from '../AnalysisPackages/ExpectedLandUseAnalysis'
 import FirstBloomAnalysis from '../AnalysisPackages/FirstBloomAnalysis'
