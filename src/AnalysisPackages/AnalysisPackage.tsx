@@ -308,36 +308,34 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
                       disabled={layer.disabled ? true : false} />
                     <span className={layer.disabled ? 'text-muted' : ''}>{' ' + (layer.titlePrefix ? layer.titlePrefix : '') + layer.title}</span>
                     <InfoSign onClick={(event: any) => {setSbInfoLayerPopUp({...sbInfoLayerPopUp, [key]: !sbInfoLayerPopUp[key]}); event.preventDefault()}}> </InfoSign>
-                    {sbInfoLayerPopUp[key] &&
-                      <span onClick={(event) => event.preventDefault()}>
-                        <Dialog
-                          isResizable={true}
-                          isDraggable={true}
-                          title={' ' + (layer.titlePrefix ? layer.titlePrefix : '') + layer.title}
-                          modal={false}
-                          onClose={() => setSbInfoLayerPopUp({...sbInfoLayerPopUp, [key]: false})}
-                        >
-                          <div className="sbinfo-popout-window">
-                            {layer.sb_properties ?
-                              <div>
-                                <div dangerouslySetInnerHTML={{__html: layer.sb_properties.body}}></div>
-                                {getSbContactInfo(layer.sb_properties)}
-                                {getSbWebLinkInfo(layer.sb_properties)}
-                                <br></br>
-                                {<div><a href={layer.sb_properties.link.url}>{`${layer.sb_properties.link.url}`}</a></div>}
-                              </div>
-                              :
-                              <div>
-                                <div>{'This item is not currently documented in ScienceBase. You may contact the Biogeographic Characterization Branch to request this information: bcb@usgs.gov'}</div>
-                                <br></br>
-                                <br></br>
-                              </div>
-                            }
-                          </div>
-                        </Dialog>
-                      </span>
-                    }
                   </Label>
+                  {sbInfoLayerPopUp[key] &&
+                    <Dialog
+                      isResizable={true}
+                      isDraggable={true}
+                      title={' ' + (layer.titlePrefix ? layer.titlePrefix : '') + layer.title}
+                      modal={false}
+                      onClose={() => setSbInfoLayerPopUp({...sbInfoLayerPopUp, [key]: false})}
+                    >
+                      <div className="sbinfo-popout-window">
+                        {layer.sb_properties ?
+                          <div>
+                            <div dangerouslySetInnerHTML={{__html: layer.sb_properties.body}}></div>
+                            {getSbContactInfo(layer.sb_properties)}
+                            {getSbWebLinkInfo(layer.sb_properties)}
+                            <br></br>
+                            {<div><a href={layer.sb_properties.link.url}>{`${layer.sb_properties.link.url}`}</a></div>}
+                          </div>
+                          :
+                          <div>
+                            <div>{'This item is not currently documented in ScienceBase. You may contact the Biogeographic Characterization Branch to request this information: bcb@usgs.gov'}</div>
+                            <br></br>
+                            <br></br>
+                          </div>
+                        }
+                      </div>
+                    </Dialog>
+                  }
                   <input style={{width: '50%'}}
                     onChange={(event: any) => setOpacity(layer, event)}
                     type="range"
