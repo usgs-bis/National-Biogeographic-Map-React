@@ -4,10 +4,6 @@ import { select, scalePoint, scaleLinear, min, max, axisBottom, axisLeft, timeFo
 import './Chart.css'
 import { IChart, IDataSummary } from './Chart'
 
-export interface IBoxAndWhiskerChartProps extends IChart {
-
-}
-
 interface IBoxPlotData {
   key: number
   counts: number[]
@@ -22,7 +18,7 @@ interface IBoxPlotData {
   }[]
 }
 
-const BoxAndWhiskerChart = forwardRef((props: IBoxAndWhiskerChartProps, ref) => {
+const BoxAndWhiskerChart = forwardRef((props: IChart, ref) => {
   const chartContainer = useRef<HTMLDivElement>(null)
   const chartSvg = useRef<SVGSVGElement>(null)
   useImperativeHandle(ref, () => ({
@@ -380,15 +376,15 @@ const BoxAndWhiskerChart = forwardRef((props: IBoxAndWhiskerChartProps, ref) => 
       { props.data &&
         <div>
           <div ref={chartContainer} id={props.id + 'ChartContainer'} className="chart-container">
-            <div style={{ display: props.config.chart.title ? 'block' : 'none' }} id={props.id + 'Title'} className="title">
+            <div style={{ display: props.config.chart.title ? 'block' : 'none' }} className="title">
               <span className="text">{props.config.chart.title}</span>
             </div>
-            <div style={{ display: props.config.chart.subtitle ? 'block' : 'none' }} id={props.id + 'Subtitle'} className="subtitle">
+            <div style={{ display: props.config.chart.subtitle ? 'block' : 'none' }} className="subtitle">
               <span className="text">{props.config.chart.subtitle}</span>
             </div>
             <div id={props.id + 'Chart'} className="chart">
               <div className="svg-container-chart">
-                <svg ref={chartSvg} id={props.id + 'Svg'} width={'100%'} height={'100%'}>
+                <svg ref={chartSvg} width={'100%'} height={'100%'}>
                 </svg>
               </div>
             </div>
