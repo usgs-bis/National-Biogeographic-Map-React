@@ -168,6 +168,7 @@ const HistogramChart = forwardRef((props: IHistogramChartProps, ref) => {
       .style('text-anchor', 'middle')
       .text(config.yAxis.label)
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props, chartContainer.current, chartSvg.current])
 
   const processData = (rawData: any, factor: number) => {
