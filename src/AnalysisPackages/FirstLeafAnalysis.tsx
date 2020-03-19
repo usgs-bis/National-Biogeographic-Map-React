@@ -279,11 +279,11 @@ const FirstLeafAnalysisPackage = (props: IFirstLeafAnalysisPackageProps, ref: Re
               {
                 width: 'auto',
                 stack: [
-                  { text: HistogramChartRef.current.props.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
-                  { text: HistogramChartRef.current.props.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
+                  { text: charts.histogram.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
+                  { text: charts.histogram.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
                   { image: contents[0], alignment: 'center', width: 250 },
-                  { text: BoxAndWhiskerChartRef.current.props.config.chart.title, style: 'chartTitle', margin: [5, 20, 5, 2] },
-                  { text: BoxAndWhiskerChartRef.current.props.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
+                  { text: charts.boxAndWhisker.config.chart.title, style: 'chartTitle', margin: [5, 20, 5, 2] },
+                  { text: charts.boxAndWhisker.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
                   { image: contents[1], alignment: 'center', width: 250 }
                 ]
               },
@@ -291,8 +291,8 @@ const FirstLeafAnalysisPackage = (props: IFirstLeafAnalysisPackageProps, ref: Re
               {
                 width: 'auto',
                 stack: [
-                  { text: RidgelinePlotChartRef.current.props.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
-                  { text: RidgelinePlotChartRef.current.props.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
+                  { text: charts.ridgelinePlot.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
+                  { text: charts.ridgelinePlot.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
                   { image: contents[2], alignment: 'center', width: 250 },
                   { text: 'First Leaf Spring Index data was provided by the', style: 'annotation', margin: [5, 10, 5, 0] },
                   { text: 'USA National Phenology Network', style: 'annotationLink', margin: [5, 0, 5, 0], link: 'https://www.usanpn.org' },

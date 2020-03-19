@@ -6,6 +6,7 @@ import withSharedAnalysisCharacteristics from './AnalysisPackage'
 import {BarLoader} from 'react-spinners'
 import {TimeEnabledLayer, defaultTimeDimension} from './TimeEnabledLayer'
 import {TimeSliderContext} from '../Contexts/TimeSliderContext'
+import { IChart } from '../Charts/Chart'
 
 const SB_URL = 'https://www.sciencebase.gov/catalog/item/5b685d1ce4b006a11f75b0a8?format=json'
 const FIRSTLEAF_URL = AppConfig.REACT_APP_BIS_API + '/api/v1/phenology/place/firstleaf'
@@ -45,7 +46,7 @@ const EMPTY_CHARTS = {
 
 const FirstLeafBloomComparisonAnalysisPackage = (props: IFirstLeafBloomComparisonAnalysisPackageProps, ref: Ref<any>) => {
   const [timeSliderState, setTimeSliderState] = useContext(TimeSliderContext)
-  const [charts, setCharts] = useState(EMPTY_CHARTS)
+  const [charts, setCharts] = useState<{ComparisonChart: IChart}>(EMPTY_CHARTS)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
   const [didSubmit, setDidSubmit] = useState(false)
@@ -207,7 +208,7 @@ const FirstLeafBloomComparisonAnalysisPackage = (props: IFirstLeafBloomCompariso
       const chartId = 'FL_FB_Comparison'
       const chartConfig = {
         margins: {left: 80, right: 20, top: 20, bottom: 70},
-        chart: {title: `First Bloom Spring Index/First Leaf Spring Index for  ${featureName}`, subtitle: `By Year for the Period ${firstYear} to ${lastYear}`},
+        chart: {title: `First Leaf / First Bloom Spring Index for  ${featureName}`, subtitle: `By Year for the Period ${firstYear} to ${lastYear}`},
         xAxis: {label: 'Day of Year'},
         yAxis: {label: 'Year'}
       }
@@ -218,15 +219,14 @@ const FirstLeafBloomComparisonAnalysisPackage = (props: IFirstLeafBloomCompariso
   }
 
   const print = () => {
-    console.log('wer ere')
     if (charts.ComparisonChart.data) {
       return [
         ComparisonChartRef.current.print(charts.ComparisonChart.id)
           .then((img: any) => {
             return [
               {stack: props.getSBItemForPrint()},
-              {text: ComparisonChartRef.current.props.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2]},
-              {text: ComparisonChartRef.current.props.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10]},
+              {text: charts.ComparisonChart.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2]},
+              {text: charts.ComparisonChart.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10]},
               {image: img, alignment: 'center', width: 450},
               {text: 'First Leaf / First Bloom Spring Index Comparison data were provided by the', style: 'annotation', margin: [5, 10, 5, 0]},
               {text: 'USA National Phenology Network', style: 'annotationLink', margin: [5, 0, 5, 0], link: 'https://www.usanpn.org'},
