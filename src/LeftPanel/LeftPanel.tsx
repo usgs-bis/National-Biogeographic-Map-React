@@ -210,7 +210,10 @@ const LeftPanel: FunctionComponent<ILeftPanelProps> = (props) => {
               Only expanded sections will appear in the PDF and all user selections/filters will be reflected.
             </UncontrolledTooltip>
             <Alert isOpen={reportAlertOpen} toggle={onReportAlertDismiss}>
-              No report can be generated until you have expanded at least one section.
+              No report can be generated until you have expanded at least one
+              section.  If you still get this error message after expanding a
+              section, ensure you have run any applicable analysis in that
+              section.
             </Alert>
           </div>
           {loading && <div className="pdf-loading-gif">
