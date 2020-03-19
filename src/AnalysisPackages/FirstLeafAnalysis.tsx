@@ -282,8 +282,8 @@ const FirstLeafAnalysisPackage = (props: IFirstLeafAnalysisPackageProps, ref: Re
                   { text: charts.histogram.config.chart.title, style: 'chartTitle', margin: [5, 2, 5, 2] },
                   { text: charts.histogram.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
                   { image: contents[0], alignment: 'center', width: 250 },
-                  { text: BoxAndWhiskerChartRef.current.props.config.chart.title, style: 'chartTitle', margin: [5, 20, 5, 2] },
-                  { text: BoxAndWhiskerChartRef.current.props.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
+                  { text: charts.boxAndWhisker.config.chart.title, style: 'chartTitle', margin: [5, 20, 5, 2] },
+                  { text: charts.boxAndWhisker.config.chart.subtitle, style: 'chartSubtitle', margin: [5, 2, 5, 10] },
                   { image: contents[1], alignment: 'center', width: 250 }
                 ]
               },

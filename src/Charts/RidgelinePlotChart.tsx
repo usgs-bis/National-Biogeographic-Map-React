@@ -1,19 +1,10 @@
 import React, { forwardRef, useRef, useImperativeHandle, useEffect } from 'react'
 import { select, nest, scaleLinear, scaleBand, axisBottom, axisLeft, timeFormat, max, area, curveBasis, event } from 'd3'
 import './Chart.css'
-import { IChart } from './Chart'
+import { IChart, IDataSummary } from './Chart'
 
 export interface IRidgelinePlotChartProps extends IChart {
   bucketSize: number
-}
-
-interface IDataSummary {
-  [key: string]: {
-    mean: number
-    median: number
-    maximum: number
-    minimum: number
-  }
 }
 
 const RidgelinePlotChart = forwardRef((props: IRidgelinePlotChartProps, ref) => {
