@@ -427,7 +427,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
     const getSBItemForPrint = () => {
       var body = document.createElement('div')
       body.innerHTML = sbProperties.body
-      let contents = htmlToPDFMake([], body)
+      let contents = sbProperties.body ? htmlToPDFMake([], body) : []
 
       let pdfDoc = []
       let text = []
