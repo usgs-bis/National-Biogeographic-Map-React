@@ -8,7 +8,6 @@ import TableChart from '../Charts/TableChart'
 import withSharedAnalysisCharacteristics from './AnalysisPackage'
 import {BarLoader} from 'react-spinners'
 import {TiledMapLayer} from 'esri-leaflet'
-import {UncontrolledTooltip} from 'reactstrap'
 
 const SB_URL = 'https://www.sciencebase.gov/catalog/item/5b86d48ce4b0702d0e7962b5?format=json'
 const SPECIES_URL = AppConfig.REACT_APP_BIS_API + '/api/v1/gapmetrics/species/protection?feature_id='
@@ -226,7 +225,7 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
         let otherTitle = layerTitle === 'Species Range' ? 'Habitat Map' : 'Species Range'
 
         let layer = layers.find((l) => {return l.title === layerTitle})
-        layer['legend']['imageUrl'] = ['legend']['baseLegendUrl'] + `&layer=${e.currentTarget.value}`
+        layer['legend']['imageUrl'] = layer['legend']['baseLegendUrl'] + `&layer=${e.currentTarget.value}`
 
         layer.checked = false
         layers.find((l) => {return l.title === otherTitle}).checked = false
@@ -359,15 +358,12 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                 let chartData = [[
                     'Species Name',
                     (
-                        <>
-                            <span id="Range_Title_Target">Range</span>
-                            <UncontrolledTooltip target="Range_Title_Target" >Known Range Map</UncontrolledTooltip>
-                        </>
+                        <span
+                            id="Range_Title_Target"
+                            title="Known Range Map"
+                        >Range</span>
                     ), (
-                        <>
-                            <span id="Habitat_Title_Target">Habitat</span>
-                            <UncontrolledTooltip target="Habitat_Title_Target" >Predicted Habitat Map</UncontrolledTooltip>
-                        </>
+                        <span id="Habitat_Title_Target" title="Predicted Habitat Map">Habitat</span>
                     )
                 ]]
                 let protectedPercent = ''
@@ -382,13 +378,11 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                         'Protected',
                         (
                             <>
-                                <span id="Range_Title_Target">Range</span>
-                                <UncontrolledTooltip target="Range_Title_Target" >Known Range Map</UncontrolledTooltip>
+                                <span id="Range_Title_Target" title="Known Range Map">Range</span>
                             </>
                         ), (
                             <>
-                                <span id="Habitat_Title_Target">Habitat</span>
-                                <UncontrolledTooltip target="Habitat_Title_Target" >Predicted Habitat Map</UncontrolledTooltip>
+                                <span id="Habitat_Title_Target" title="Predicted Habitat Map">Habitat</span>
                             </>
                         )
                     ]]
@@ -411,11 +405,8 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                                 onClick={(e) => {that.changeFilter(e, 'Species Range', row.sppcode)}}
                                 onChange={() => {}}
                                 value={`${row.common_name} (${row.scientific_name}) ${row.sppcode} v1`}
+                                title="Known Range Map"
                             />
-                            <UncontrolledTooltip
-                                target={`Range_${row.sppcode}`}
-                                placement={preData.length === 1 ? 'right' : null}
-                            >Known Range Map</UncontrolledTooltip>
 
                         </span>
                     )
@@ -429,11 +420,8 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                                 onClick={(e) => {that.changeFilter(e, 'Habitat Map', row.sppcode)}}
                                 onChange={() => {}}
                                 value={`${row.common_name} (${row.scientific_name}) ${row.sppcode} v1`}
+                                title="Predicted Habitat Map"
                             />
-                            <UncontrolledTooltip
-                                target={`Habitat_${row.sppcode}`}
-                                placement={preData.length === 1 ? 'right' : null}
-                            >Predicted Habitat Map</UncontrolledTooltip>
                         </span>
                     )
 
