@@ -9,7 +9,7 @@ import SearchBar from './SearchBar'
 import TerrestrialEcosystems2011 from '../Bioscapes/TerrestrialEcosystems2011'
 import loadingGif from './ajax-loader.gif'
 import speechBubble from './bubble.png'
-import {UncontrolledTooltip} from 'reactstrap'
+import {UncontrolledTooltip, Alert} from 'reactstrap'
 import {isEmpty} from 'lodash'
 
 export interface ILeftPanelProps {
@@ -47,6 +47,9 @@ export interface ILeftPanelState {
 const LeftPanel: FunctionComponent<ILeftPanelProps> = (props) => {
 
   const [listenerAdded, setListenerAdded] = useState<boolean>(false)
+
+  const [reportAlertOpen, setReportAlertOpen] = useState(false)
+  const onReportAlertDismiss = () => setReportAlertOpen(false)
 
   const terrestrialRef = useRef<null | TerrestrialEcosystems2011>(null)
   const biogeographyRef = useRef<null | Biogeography>(null)
@@ -148,6 +151,13 @@ const LeftPanel: FunctionComponent<ILeftPanelProps> = (props) => {
         charts = biogeographyRef.current.report()
       }
     }
+
+    if (!charts.some((c: any[]) => c.length !== 0)) {
+      setReportAlertOpen(true)
+      setLoading(false)
+      return
+    }
+
     let name = state.feature_name + `${state.feature_state ? ', ' + state.feature_state.abbreviation : ''}`
     pdfReportRef?.current?.generateReport(name, state.feature_class, props.point, state.feature_area, props.map.current, charts)
       .then(() => {
@@ -196,9 +206,12 @@ const LeftPanel: FunctionComponent<ILeftPanelProps> = (props) => {
             <button id="ReportTooltip" className="submit-analysis-btn" onClick={report}>
               <PDFReport ref={pdfReportRef} getShareUrl={props.shareState}></PDFReport>
             </button>
-            <UncontrolledTooltip target="ReportTooltip" placement="top" text={''} >
+            <UncontrolledTooltip target="ReportTooltip" placement="top" >
               Only expanded sections will appear in the PDF and all user selections/filters will be reflected.
             </UncontrolledTooltip>
+            <Alert isOpen={reportAlertOpen} toggle={onReportAlertDismiss}>
+              No report can be generated until you have expanded at least one section.
+            </Alert>
           </div>
           {loading && <div className="pdf-loading-gif">
             <img src={loadingGif} alt="Loading..."></img>

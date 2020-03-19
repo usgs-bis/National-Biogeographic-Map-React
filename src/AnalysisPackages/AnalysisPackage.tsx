@@ -343,7 +343,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
                     min="0"
                     max="1"
                     value={layer.layer.options.opacity}
-                    disabled={layer.disabled ? true : false} 
+                    disabled={layer.disabled ? true : false}
                   />
                 </FormGroup>
               )
@@ -514,7 +514,6 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
       if (AnalysisPackageInstance.current && isOpen) {
         return AnalysisPackageInstance.current.print()
       }
-      return []
     }
 
     return (
