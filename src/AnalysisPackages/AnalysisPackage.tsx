@@ -1,7 +1,7 @@
 import './AnalysisPackages.css'
 import Dialog from 'react-dialog'
 import InfoSign from '../InfoSign/InfoSign'
-import React, {useState, useEffect, useRef, useContext, FunctionComponent} from 'react'
+import React, {useState, useEffect, useRef, useContext} from 'react'
 import {UncontrolledTooltip, Button, Collapse, FormGroup, Label} from 'reactstrap'
 import {FaCode, FaExclamationCircle, FaChevronDown, FaChevronRight} from 'react-icons/fa'
 import {IoMdOpen} from 'react-icons/io'
@@ -309,7 +309,6 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
                     <span className={layer.disabled ? 'text-muted' : ''}>{' ' + (layer.titlePrefix ? layer.titlePrefix : '') + layer.title}</span>
                     <InfoSign onClick={(event: any) => {setSbInfoLayerPopUp({...sbInfoLayerPopUp, [key]: !sbInfoLayerPopUp[key]}); event.preventDefault()}}> </InfoSign>
                   </Label>
-                  <br/>
                   {sbInfoLayerPopUp[key] &&
                     <Dialog
                       isResizable={true}

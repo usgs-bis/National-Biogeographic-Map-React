@@ -1,4 +1,4 @@
-text {
+text, span.text {
     font-size: 14px;
     color:rgb(204, 204, 204);
     fill:rgb(204, 204, 204) !important;
@@ -11,7 +11,7 @@ text {
 .chart-container {
     text-align: center;
 }
-.chart-container .title text {
+.chart-container .title text, .chart-container .title span.text {
     font-size: 18px;
 }
 .chart-container .subtitle, .chart-container .title {
@@ -21,7 +21,7 @@ text {
     padding-top: 10px;
 }
 
-.chart-container .subtitle text {
+.chart-container .subtitle text, .chart-container .subtitle span.text {
     font-size: 14px;
 }
 

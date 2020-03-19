@@ -218,7 +218,6 @@ const FirstLeafBloomComparisonAnalysisPackage = (props: IFirstLeafBloomCompariso
   }
 
   const print = () => {
-    console.log('wer ere')
     if (charts.ComparisonChart.data) {
       return [
         ComparisonChartRef.current.print(charts.ComparisonChart.id)
