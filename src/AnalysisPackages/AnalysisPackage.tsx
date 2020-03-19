@@ -309,7 +309,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
                     <span className={layer.disabled ? 'text-muted' : ''}>{' ' + (layer.titlePrefix ? layer.titlePrefix : '') + layer.title}</span>
                     <InfoSign onClick={(event: any) => {setSbInfoLayerPopUp({...sbInfoLayerPopUp, [key]: !sbInfoLayerPopUp[key]}); event.preventDefault()}}> </InfoSign>
                   </Label>
-                  <br/>
+                  <br />
                   {sbInfoLayerPopUp[key] &&
                     <Dialog
                       isResizable={true}
@@ -344,7 +344,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
                     min="0"
                     max="1"
                     value={layer.layer.options.opacity}
-                    disabled={layer.disabled ? true : false} 
+                    disabled={layer.disabled ? true : false}
                   />
                 </FormGroup>
               )
@@ -515,7 +515,6 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
       if (AnalysisPackageInstance.current && isOpen) {
         return AnalysisPackageInstance.current.print()
       }
-      return []
     }
 
     return (

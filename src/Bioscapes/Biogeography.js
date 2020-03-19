@@ -48,20 +48,32 @@ class Biogeography extends React.Component {
     report() {
 
         let charts = []
-        charts.push(this.FirstLeafAnalysis.print())
-        charts.push(this.FirstBloomAnalysis.print())
-        charts.push(this.FirstLeafBloomComparisonAnalysis.print())
-        charts.push(this.NFHPAnalysis.print())
-        charts.push(this.EcosystemProtectionAnalysis.print())
-        charts.push(this.SpeciesProtectionAnalysis.print())
-        charts.push(this.OBISAnalysis.print())
+
+        const baps = [
+            this.FirstLeafAnalysis,
+            this.FirstBloomAnalysis,
+            this.FirstLeafBloomComparisonAnalysis,
+            this.NFHPAnalysis,
+            this.EcosystemProtectionAnalysis,
+            this.SpeciesProtectionAnalysis,
+            this.OBISAnalysis,
+        ]
         if (DEV_MODE) {
-            charts.push(this.PhenologyAnalysis.print())
-            // charts.push(this.BadNeighborAnalysis.print())
-            charts.push(this.ExpectedLandUseAnalysis.print())
-            charts.push(this.NVCSHierarchyByPixel.print())
-            charts.push(this.NVCSSummaryByRegion.print())
+            baps.push(this.PhenologyAnalysis)
+            // baps.push(this.BadNeighborAnalysis)
+            baps.push(this.ExpectedLandUseAnalysis)
+            baps.push(this.NVCSHierarchyByPixel)
+            baps.push(this.NVCSSummaryByRegion)
         }
+
+        // @Matt TODO: there has to be a better way to know if any of the results are going to be included?
+        // We should be able to disable the button in this case, as opposed to showing an alert
+        baps.forEach((b) => {
+            const pr = b.print()
+            if (pr) {
+                charts.push(pr)
+            }
+        })
 
 
         return charts
