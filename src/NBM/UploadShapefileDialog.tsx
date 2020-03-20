@@ -1,11 +1,9 @@
+import './UploadShapefileDialog.scss'
 import Dialog from 'react-dialog'
 import React, {FunctionComponent, useState} from 'react'
 import geojsonhint from '@mapbox/geojsonhint'
 import shp from 'shpjs'
-import {Alert} from 'reactstrap'
-
-// @Matt TODO: #current make better
-import loadingGif from './loading.gif'
+import {Alert, Spinner} from 'reactstrap'
 
 export interface IUploadShapefileDialog {
   showUploadDialog: boolean
@@ -29,34 +27,37 @@ const UploadShapefileDialog: FunctionComponent<IUploadShapefileDialog> = ({
   }
 
   const handleGeojson = (geojson: any) => {
-    const hints = geojsonhint.hint(geojson)
+    try {
+      const geometry = geojson.type === 'FeatureCollection' ? geojson = geojson.features[0].geometry : geojson.geometry
+      geometry.crs = {type: 'name', properties: {name: 'EPSG:4326'}}
+      if (geometry.type !== 'Polygon' && geometry.type !== 'MultiPolygon') {
+        setUploadError('Only Polygons are accepted for upload.')
+        setUploading(false)
+        return
+      }
+      setUploadError(null)
+      handleClose()
 
-    if (hints.length !== 0) {
-      setUploadError(`GeoJSON Validation Error: ${hints[0].message}`)
+      handleUploadedGeojson(geojson, geometry)
+    } catch(err) {
       setUploading(false)
-      return
-    }
+      const hints = geojsonhint.hint(geojson)
 
-    const geometry = geojson.type === 'FeatureCollection' ? geojson = geojson.features[0].geometry : geojson.geometry
-    geometry.crs = {type: 'name', properties: {name: 'EPSG:4326'}}
-    if (geometry.type !== 'Polygon' && geometry.type !== 'MultiPolygon') {
-      setUploadError('Only Polygons are accepted for upload.')
-      setUploading(false)
-      return
-    }
-    setUploadError(null)
-    handleClose()
+      if (hints.length !== 0) {
+        setUploadError(`GeoJSON Validation Error: ${hints[0].message}`)
+        return
+      }
 
-    handleUploadedGeojson(geojson, geometry)
+      setUploadError(err.message)
+    }
   }
 
+  // @Matt TODO: #current big uploads don't hash, kill the url, and can't get data
   const parseGeojsonFile = (file: Blob) => {
     const fileReader = new FileReader()
     fileReader.onload = (event) => {
       const result = event?.target?.result as string
       const geojson = JSON.parse(result)
-      // @Matt DEBUG
-      debugger
       handleGeojson(geojson)
     }
     fileReader.readAsText(file)
@@ -119,7 +120,6 @@ const UploadShapefileDialog: FunctionComponent<IUploadShapefileDialog> = ({
 
   if (showUploadDialog) {
 
-    // @Matt TODO: #current fix the help info to make shapefile uploading more clear
     return (
       <Dialog
         title={'Upload a shapefile'}
@@ -135,20 +135,20 @@ const UploadShapefileDialog: FunctionComponent<IUploadShapefileDialog> = ({
             <li>Valid .shp, .shx, .dbf, and .prj files must be included.</li>
             <li>Most common coordinate systems are supported.</li>
           </ul>
-          {uploadError &&
-            <Alert color="danger">
+          { uploadError &&
+            <Alert color="danger" >
               <b>Sorry, there was an error!</b>
               <div>{uploadError}</div>
             </Alert>
           }
-          <label className="mb-0 pt-1 rounded float-right" title="Upload a shp file">
-            <span className="btn submit-analysis-btn">Upload</span>
-            <input type="file" name="file-upload" id="file-upload" accept=".zip, .json, .geojson" style={{display: 'none'}}
-              onChange={uploadFile} />
-          </label>
-          {uploading &&
-            <img src={loadingGif} alt="Loading..."></img>
-          }
+          <div className="upload-controls">
+            { uploading && <Spinner color="primary" className="uploading-spinner" /> }
+            <label className="mb-0 pt-1 rounded float-right" title="Upload a shp file">
+              <span className="btn submit-analysis-btn">Upload</span>
+              <input type="file" name="file-upload" id="file-upload" accept=".zip, .json, .geojson" style={{display: 'none'}}
+                onChange={uploadFile} />
+            </label>
+          </div>
         </div>
       </Dialog>
 
