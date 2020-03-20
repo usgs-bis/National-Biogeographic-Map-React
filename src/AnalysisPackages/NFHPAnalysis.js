@@ -2,7 +2,7 @@ import React from 'react'
 import { DynamicMapLayer } from 'esri-leaflet'
 import { BarLoader } from 'react-spinners'
 import HorizontalBarChart from '../Charts/HorizontalBarChart'
-import './AnalysisPackages.css'
+import './AnalysisPackages.scss'
 import withSharedAnalysisCharacteristics from './AnalysisPackage'
 import AppConfig from '../config'
 

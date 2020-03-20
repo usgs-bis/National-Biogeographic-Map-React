@@ -2,7 +2,7 @@ import React from 'react'
 import L from 'leaflet'
 import { BarLoader } from 'react-spinners'
 import { RadioButton } from '../CustomRadio/CustomRadio'
-import './AnalysisPackages.css'
+import './AnalysisPackages.scss'
 import withSharedAnalysisCharacteristics from './AnalysisPackage'
 import ChartLegend from '../Charts/ChartLegend'
 

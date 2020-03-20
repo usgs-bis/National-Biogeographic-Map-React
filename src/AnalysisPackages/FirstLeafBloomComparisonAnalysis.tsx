@@ -1,4 +1,4 @@
-import './AnalysisPackages.css'
+import './AnalysisPackages.scss'
 import AppConfig from '../config'
 import ComparisonChart from '../Charts/ComparisonChart'
 import React, {useState, useContext, useEffect, useImperativeHandle, useRef, forwardRef, Ref} from 'react'

@@ -3,7 +3,7 @@ import React from 'react'
 import { BarLoader } from 'react-spinners'
 
 import SpeciesCountChart from '../Charts/SpeciesCountChart'
-import './AnalysisPackages.css'
+import './AnalysisPackages.scss'
 
 import withSharedAnalysisCharacteristics from './AnalysisPackage'
 
