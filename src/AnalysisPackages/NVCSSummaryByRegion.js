@@ -1,4 +1,4 @@
-import './AnalysisPackages.css'
+import './AnalysisPackages.scss'
 import L from 'leaflet'
 import React from 'react'
 import TableChart from '../Charts/TableChart'
