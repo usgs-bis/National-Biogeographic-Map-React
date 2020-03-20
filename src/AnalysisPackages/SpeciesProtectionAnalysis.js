@@ -376,15 +376,8 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                     chartData = [[
                         'Species Name',
                         'Protected',
-                        (
-                            <>
-                                <span id="Range_Title_Target" title="Known Range Map">Range</span>
-                            </>
-                        ), (
-                            <>
-                                <span id="Habitat_Title_Target" title="Predicted Habitat Map">Habitat</span>
-                            </>
-                        )
+                        <span id="Range_Title_Target" title="Known Range Map">Range</span>,
+                        <span id="Habitat_Title_Target" title="Predicted Habitat Map">Habitat</span>,
                     ]]
                 }
 
@@ -398,7 +391,6 @@ class SpeciesProtectionAnalysisPackage extends React.Component {
                         <span className="no-sort">
                             <input
                                 id={`Range_${row.sppcode}`}
-                                style={{marginLeft: '10px'}}
                                 type="radio"
                                 name={'sp_radio'}
                                 checked={this.previous_row_sppcode === row.sppcode && this.previous_type === 'Species Range'}
