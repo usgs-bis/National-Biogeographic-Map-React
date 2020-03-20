@@ -1,10 +1,10 @@
-import './AnalysisPackages.css'
+import './AnalysisPackages.scss'
 import Dialog from 'react-dialog'
 import InfoSign from '../InfoSign/InfoSign'
 import React, {useState, useEffect, useRef, useContext} from 'react'
 import {UncontrolledTooltip, Button, Collapse, FormGroup, Label} from 'reactstrap'
-import {FaCode, FaExclamationCircle, FaChevronDown, FaChevronRight} from 'react-icons/fa'
-import {IoMdOpen} from 'react-icons/io'
+import {FaExclamationCircle, FaChevronDown, FaChevronRight, FaCloudDownloadAlt} from 'react-icons/fa'
+import {IoMdOpen, IoMdCode} from 'react-icons/io'
 import {TimeSliderContext} from '../Contexts/TimeSliderContext'
 
 
@@ -48,10 +48,10 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
     const [sbInfoLayerPopUp, setSbInfoLayerPopUp] = useState<{[key: string]: boolean}>({})
     const [prettyJson, setPrettyJson] = useState(false)
     const [isPriorityBap, setIsPriorityBap] = useState(props.priorityBap === props.bapId)
+    const [jsonData, setBapJson] = useState<any>(null)
 
     let shareState: any = {}
     let initialized = useRef(false)
-    let jsonData: any = null
 
     useEffect(() => {
       fetch(sb_url)
@@ -208,7 +208,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
     }
 
     const resetBap = () => {
-      jsonData = null
+      setBapJson(null)
       if (isOpen) {
         toggleDropdown()
       }
@@ -284,7 +284,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
                 style={{display: jsonWindowOpen || !jsonData ? 'none' : 'inline-block'}}
                 onClick={() => setJsonWindowOpen(!jsonWindowOpen)}
               >
-                <FaCode />
+                <IoMdCode />
               </Button>
               <UncontrolledTooltip placement="top" target={`openBapWindow${props.bapId}`} >View Bap in new window</UncontrolledTooltip>
               <UncontrolledTooltip placement="top" target={`viewJsonWindow${props.bapId}`} >View the raw JSON used for analysis</UncontrolledTooltip>
@@ -401,19 +401,26 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
               onClose={() => setJsonWindowOpen(false)}
             >
               <div className="bap-popout-window">
-                <div className="JSON-container">
-                  <div className="JSON-text-header">
-                    <a className="download-json-link" href={getDownloadLink()} download={'JSON_' + sbProperties.title} >Download</a>
-                    <label htmlFor="prettyCheckbox">{'Pretty JSON '}  </label>
-                    <input checked={prettyJson}
-                      onClick={() => setPrettyJson(!prettyJson)}
-                      onChange={() => {}}
-                      type="checkbox" id="prettyCheckbox" name="prettyCheckbox" />
+                <div className="container mt-2">
+                  <div className="row align-items-center justify-content-end">
+                    <div className="col-auto no-padding">
+                      <input checked={prettyJson}
+                        onClick={() => setPrettyJson(!prettyJson)}
+                        onChange={() => {}}
+                        type="checkbox" id="prettyCheckbox" name="prettyCheckbox" />
+                      <label className="mb-0 ml-1" htmlFor="prettyCheckbox">Pretty JSON</label>
+                    </div>
+                    <div className="col-auto">
+                      <a id={`jsonDownload${props.bapId}`} className="btn btn-small btn-secondary icon-btn" href={getDownloadLink()} download={'JSON_' + sbProperties.title}><FaCloudDownloadAlt/></a>
+                      <UncontrolledTooltip placement="top" target={`jsonDownload${props.bapId}`}>Download JSON</UncontrolledTooltip>
+                    </div>
                   </div>
-                  <div className="JSON-text-container">
-                    <div className="JSON-text-area">
-                      {!prettyJson && JSON.stringify(jsonData, undefined, 0)}
-                      {prettyJson && <pre dangerouslySetInnerHTML={{__html: syntaxHighlight(JSON.stringify(jsonData, undefined, 4))}}></pre>}
+                  <div className="row mt-2">
+                    <div className="col">
+                      <div className="border border-white rounded p-2 json-display">
+                        {!prettyJson && JSON.stringify(jsonData, undefined, 0)}
+                        {prettyJson && <pre dangerouslySetInnerHTML={{__html: syntaxHighlight(JSON.stringify(jsonData, undefined, 4))}}></pre>}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -571,7 +578,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
             handleBapError={handleBapError}
             isOpen={isOpen}
             isPriorityBap={isPriorityBap}
-            setBapJson={(data: any) => jsonData = data}
+            setBapJson={(data: any) => setBapJson(data)}
           />
         </Collapse>
         {sbInfoPopUp &&

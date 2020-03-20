@@ -2,7 +2,7 @@ import React from 'react'
 import { BarLoader } from 'react-spinners'
 import L from 'leaflet'
 import AccordionChart from '../Charts/AccordionChart'
-import './AnalysisPackages.css'
+import './AnalysisPackages.scss'
 import withSharedAnalysisCharacteristics from './AnalysisPackage'
 import AppConfig from '../config'
 
