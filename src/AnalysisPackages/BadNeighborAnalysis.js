@@ -3,7 +3,7 @@ import {BarLoader} from 'react-spinners'
 import withSharedAnalysisCharacteristics from './AnalysisPackage'
 import DonutChart from '../Charts/DonutChart'
 import TableChart from '../Charts/TableChart'
-import './AnalysisPackages.css'
+import './AnalysisPackages.scss'
 import AppConfig from '../config'
 
 const SB_URL = 'https://www.sciencebase.gov/catalog/item/5cc34cbae4b09b8c0b7606b9?format=json'

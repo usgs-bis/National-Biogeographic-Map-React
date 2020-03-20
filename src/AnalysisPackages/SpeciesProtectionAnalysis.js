@@ -1,4 +1,4 @@
-import './AnalysisPackages.css'
+import './AnalysisPackages.scss'
 import AppConfig from '../config'
 import ChartLegend from '../Charts/ChartLegend'
 import DonutChart from '../Charts/DonutChart'
