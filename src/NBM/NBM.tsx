@@ -9,9 +9,8 @@ import LegendContext from '../Contexts/LegendContext'
 import LocationOverlay from './LocationOverylays/LocationOverlay'
 import React, {FunctionComponent, useState, useEffect, useRef, useContext, MutableRefObject} from 'react'
 import TimeSlider from './TimeSlider/TimeSlider'
+import UploadShapefileDialog from './UploadShapefileDialog'
 import _ from 'lodash'
-import loadingGif from './loading.gif'
-import shp from 'shpjs'
 import {Alert} from 'reactstrap'
 import {EditControl} from 'react-leaflet-draw'
 import {FaCloudUploadAlt} from 'react-icons/fa'
@@ -23,7 +22,6 @@ import {Map, TileLayer, WMSTileLayer, Marker, Popup, GeoJSON, FeatureGroup, Zoom
 
 const API_VERSION_URL = AppConfig.REACT_APP_BIS_API + '/api'
 const BUFFER = .5
-const DEV_MODE = AppConfig.REACT_APP_DEV
 const ENV = AppConfig.REACT_APP_ENV
 
 export interface INBMProps {
@@ -48,7 +46,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
 
   const {map} = props
 
-  const [layerError, setLayerError] = useState<null|any>()
+  const [layerError, setLayerError] = useState<null | any>()
   const [layerErrVisible, setLayerErrVisible] = useState(false)
 
   const onLayerErrDismiss = () => setLayerErrVisible(false)
@@ -60,15 +58,14 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
     if (!props.initPoint) return null
     return [props.initPoint?.lat, props.initPoint?.lng]
   })
-  const [attributionOpen, setAttributionOpen] = useState(false)
-  const [showUploadDialog, setShowUploadDialog] = useState(false)
-  const [uploadError, setUploadError] = useState('')
-  const [uploading, setUploading] = useState(false)
-  const [oldOverlay, setOldOverlay] = useState<Layer>()
-  const [bounds, setBounds] = useState<LatLngBoundsExpression>([[21, -134], [51, -63]])
-  const [oldLayers, setOldLayers] = useState<any[]>([])
+
   const [APIVersion, setAPIVersion] = useState('')
+  const [attributionOpen, setAttributionOpen] = useState(false)
+  const [bounds, setBounds] = useState<LatLngBoundsExpression>([[21, -134], [51, -63]])
   const [drawnpolygon, setDrawnpolygon] = useState<any>()
+  const [oldLayers, setOldLayers] = useState<any[]>([])
+  const [oldOverlay, setOldOverlay] = useState<Layer>()
+  const [showUploadDialog, setShowUploadDialog] = useState(false)
 
   const locationOverlay = useRef<LocationOverlay>(null)
   let clickableRef = useRef(true)
@@ -218,6 +215,14 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
     props.parentDrawHandler(geom)
   }
 
+  const handleUploadedGeojson = (geojson: any, geometry: any) => {
+    userDrawnPolygonStart()
+    const layer = L.geoJSON(geojson)
+    map?.current?.leafletElement.fitBounds(layer.getBounds())
+    enableDragging()
+    props.parentDrawHandler(geometry)
+  }
+
   const userDrawnPolygonStart = () => {
     setPoint(null)
     props.parentDrawHandler(null)
@@ -228,83 +233,8 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
     disableDragging()
   }
 
-  const uploadFile = (event: any) => {
-    const file = event.target.files[0]
-    if (file.size > 5000000) {
-      setUploadError('File size is greater than 5MB')
-
-      return
-    }
-
-    setUploading(true)
-
-    try {
-      const fileNameArr = file.name.split('.')
-      const fileExt = fileNameArr[fileNameArr.length - 1]
-      if (fileExt === 'zip') {
-        parseShapefile(file)
-      } else if (fileExt === 'geojson' || fileExt === 'json') {
-        parseGeojsonFile(file)
-      } else {
-        setUploadError(`Uploads of files with the extension ${fileExt} are not supported.`)
-        setUploading(false)
-      }
-    } catch (ex) {
-      setUploadError('File read failure: ' + ex.message)
-      setUploading(false)
-    }
-    event.target.value = '' // make sure the user can upload the same file again
-  }
-
-  const parseShapefile = (file: Blob) => {
-    const fileReader = new FileReader()
-    fileReader.onload = () => {
-      shp(fileReader.result as string)
-        .then((geojson: any) => {
-          handleGeojson(geojson)
-        })
-        .catch((ex: any) => {
-          setUploadError('Shapefile parse issue: ' + ex.message)
-          setUploading(false)
-        })
-    }
-    fileReader.readAsArrayBuffer(file)
-  }
-
-  const parseGeojsonFile = (file: Blob) => {
-    const fileReader = new FileReader()
-    fileReader.onload = (event) => {
-      const result = event?.target?.result as string
-      const geojson = JSON.parse(result)
-      handleGeojson(geojson)
-    }
-    fileReader.readAsText(file)
-  }
-
-  const handleGeojson = (geojson: any) => {
-    const geometry = geojson.type === 'FeatureCollection' ? geojson = geojson.features[0].geometry : geojson.geometry
-    geometry.crs = {type: 'name', properties: {name: 'EPSG:4326'}}
-    if (geometry.type !== 'Polygon' && geometry.type !== 'MultiPolygon') {
-      setUploadError('Only Polygons are accepted for upload.')
-      setUploading(false)
-      return
-    }
-    handleClose()
-    userDrawnPolygonStart()
-    const layer = L.geoJSON(geojson)
-    map?.current?.leafletElement.fitBounds(layer.getBounds())
-    enableDragging()
-    props.parentDrawHandler(geometry)
-  }
-
-  const handleShow = () => {
+  const handleShowShapefile = () => {
     setShowUploadDialog(true)
-  }
-
-  const handleClose = () => {
-    setShowUploadDialog(false)
-    setUploadError('')
-    setUploading(false)
   }
 
   const geojson = () => {
@@ -384,42 +314,9 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
     )
   }
 
-  const uploadShapefileDialog = () => {
-    if (showUploadDialog) {
-      return (
-        <Dialog
-          title={'Upload a shapefile'}
-          modal={true}
-          onClose={handleClose}
-        >
-          <div className="sbinfo-popout-window">
-            <ul>
-              <li>Only shapefile (.shp) and GeoJSON (.json , .geojson) files under 5MB are accepted.</li>
-              <li>Your shapefile must be zipped into a '.zip' extension and be under 5MB.</li>
-              <li>Only the first <b>polygon</b> feature in your file will be used. Point and line geometries are not accepted.</li>
-              <li>Valid .shp, .shx, .dbf, and .prj files must be included.</li>
-              <li>Most common coordinate systems are supported.</li>
-            </ul>
-            {uploadError &&
-              <div className="text-danger"><b>Error: </b>{uploadError}</div>
-            }
-            <label className="mb-0 pt-1 rounded float-right" title="Upload a shp file">
-              <span className="btn submit-analysis-btn">Upload</span>
-              <input type="file" name="file-upload" id="file-upload" accept=".zip, .shp, json, .geojson" style={{display: 'none'}}
-                onChange={uploadFile} />
-            </label>
-            {uploading &&
-              <img src={loadingGif} alt="Loading..."></img>
-            }
-          </div>
-        </Dialog>
-      )
-    }
-  }
-
   return (
     <>
-      { layerError &&
+      {layerError &&
         <Alert className="app-alert" color="danger" toggle={onLayerErrDismiss} isOpen={layerErrVisible}>
           <div>
             <b>Error loading layer <i>{layerError.target.options.layers}</i> from:</b>
@@ -484,18 +381,20 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
               </div>
             </Control>
           }
-          {DEV_MODE &&
-            <Control position="topright">
-              <div className="leaflet-bar" title="Upload a shp file">
-                <button onClick={handleShow}>
-                  <FaCloudUploadAlt />
-                </button>
-              </div>
-            </Control>
-          }
+          <Control position="topright">
+            <div className="leaflet-bar" title="Upload a shp file">
+              <button onClick={handleShowShapefile}>
+                <FaCloudUploadAlt />
+              </button>
+            </div>
+          </Control>
         </FeatureGroup>
       </Map>
-      {DEV_MODE && uploadShapefileDialog()}
+      <UploadShapefileDialog
+        setShowUploadDialog={setShowUploadDialog}
+        showUploadDialog={showUploadDialog}
+        handleUploadedGeojson={handleUploadedGeojson}
+      />
     </>
   )
 }
