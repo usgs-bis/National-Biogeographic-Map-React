@@ -22,6 +22,7 @@ import {Map, TileLayer, WMSTileLayer, Marker, Popup, GeoJSON, FeatureGroup, Zoom
 
 const API_VERSION_URL = AppConfig.REACT_APP_BIS_API + '/api'
 const BUFFER = .5
+const DEV_MODE = AppConfig.REACT_APP_DEV
 const ENV = AppConfig.REACT_APP_ENV
 
 export interface INBMProps {
@@ -381,13 +382,15 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
               </div>
             </Control>
           }
-          <Control position="topright">
-            <div className="leaflet-bar" title="Upload a shp file">
-              <button onClick={handleShowShapefile}>
-                <FaCloudUploadAlt />
-              </button>
-            </div>
-          </Control>
+          {DEV_MODE &&
+            <Control position="topright">
+              <div className="leaflet-bar" title="Upload a shp file">
+                <button onClick={handleShowShapefile}>
+                  <FaCloudUploadAlt />
+                </button>
+              </div>
+            </Control>
+          }
         </FeatureGroup>
       </Map>
       <UploadShapefileDialog

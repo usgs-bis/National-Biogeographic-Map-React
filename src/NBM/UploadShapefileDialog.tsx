@@ -52,7 +52,7 @@ const UploadShapefileDialog: FunctionComponent<IUploadShapefileDialog> = ({
     }
   }
 
-  // @Matt TODO: #current big uploads don't hash, kill the url, and can't get data
+  // @Matt TODO: big uploads don't hash, kill the url, and can't get data
   const parseGeojsonFile = (file: Blob) => {
     const fileReader = new FileReader()
     fileReader.onload = (event) => {
