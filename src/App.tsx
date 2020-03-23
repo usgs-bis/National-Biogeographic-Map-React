@@ -182,7 +182,7 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
       if (_.isEmpty(state.feature)) {return }
 
       let tmpState: IShareState = {
-        basemapServiceUrl: basemap.serviceUrl,
+        basemapServiceUrl: basemap ? basemap.serviceUrl : '',
         timeSlider: {rangeYearMin: timeSlider.rangeYearMin, rangeYearMax: timeSlider.rangeYearMax, mapDisplayYear: timeSlider.mapDisplayYear},
         priorityBap: state.priorityBap,
         baps,
