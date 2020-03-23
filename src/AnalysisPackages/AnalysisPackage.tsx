@@ -551,9 +551,11 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
             readOnly={true} checked={props.bapId === props.priorityBap}
             onClick={() => {props.setPriorityBap(props.bapId)}} >
           </input>
-          <UncontrolledTooltip placement="top" target={`pBapToolTip${props.bapId}`} >
-            {props.bapId === props.priorityBap ? '' : 'Select Priority Bap'}
-          </UncontrolledTooltip>
+          { props.bapId !== props.priorityBap &&
+            <UncontrolledTooltip placement="top" target={`pBapToolTip${props.bapId}`} >
+              Select Priority Bap
+            </UncontrolledTooltip>
+          }
         </div>
         <Collapse className="settings-dropdown" isOpen={isOpen && isEnabled}>
           <AnalysisPackage
