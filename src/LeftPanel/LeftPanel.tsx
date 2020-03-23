@@ -3,7 +3,6 @@ import Biogeography from '../Bioscapes/Biogeography'
 import Dialog from 'react-dialog'
 import EnabledLayersContext from '../Contexts/EnabledLayersContext'
 import InfoSign from '../InfoSign/InfoSign'
-import PDFReport from '../PDF/PdfReport'
 import React, {FunctionComponent, useState, useRef, useEffect, useContext, useCallback} from 'react'
 import SearchBar from './SearchBar'
 import TerrestrialEcosystems2011 from '../Bioscapes/TerrestrialEcosystems2011'
@@ -11,6 +10,7 @@ import loadingGif from './ajax-loader.gif'
 import speechBubble from './bubble.png'
 import {UncontrolledTooltip, Alert} from 'reactstrap'
 import {isEmpty} from 'lodash'
+import generatePdfReport from '../PDF/generatePdfReport'
 
 export interface ILeftPanelProps {
   results: any[],
@@ -53,7 +53,6 @@ const LeftPanel: FunctionComponent<ILeftPanelProps> = (props) => {
 
   const terrestrialRef = useRef<null | TerrestrialEcosystems2011>(null)
   const biogeographyRef = useRef<null | Biogeography>(null)
-  const pdfReportRef = useRef<null | PDFReport>(null)
 
   const [loading, setLoading] = useState(false)
   const [showDescription, setShowDescription] = useState(false)
@@ -159,7 +158,7 @@ const LeftPanel: FunctionComponent<ILeftPanelProps> = (props) => {
     }
 
     let name = state.feature_name + `${state.feature_state ? ', ' + state.feature_state.abbreviation : ''}`
-    pdfReportRef?.current?.generateReport(name, state.feature_class, props.point, roundArea(), props.map.current, charts)
+    generatePdfReport(name, state.feature_class, props.point, roundArea(), props.map.current, charts, props.shareState())
       .then(() => {
         setTimeout(() => {
           setLoading(false)
@@ -214,7 +213,7 @@ const LeftPanel: FunctionComponent<ILeftPanelProps> = (props) => {
             <input className="share-url-input" type="text"></input>
 
             <button id="ReportTooltip" className="submit-analysis-btn" onClick={report}>
-              <PDFReport ref={pdfReportRef} getShareUrl={props.shareState}></PDFReport>
+              Report
             </button>
             <UncontrolledTooltip target="ReportTooltip" placement="top" >
               Only expanded sections will appear in the PDF and all user selections/filters will be reflected.

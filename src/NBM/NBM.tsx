@@ -135,6 +135,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
     }
 
     for (const newItem of currentLayers) {
+      newItem.layer.setZIndex(2) // make sure any analysis layers have a greater z-index than the basemap for printing
       map?.current?.leafletElement.addLayer(newItem.layer)
       if (newItem.timeEnabled) {
         newItem.layer.setParams({
