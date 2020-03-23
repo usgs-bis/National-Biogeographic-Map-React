@@ -1,0 +1,9 @@
+.upload-controls {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    .uploading-spinner {
+        margin-right: 10px;
+    }
+}
