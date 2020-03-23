@@ -4,7 +4,7 @@ import Dialog from 'react-dialog'
 import EnabledLayersContext from '../Contexts/EnabledLayersContext'
 import InfoSign from '../InfoSign/InfoSign'
 import PDFReport from '../PDF/PdfReport'
-import React, {FunctionComponent, useState, useRef, useEffect, useContext} from 'react'
+import React, {FunctionComponent, useState, useRef, useEffect, useContext, useCallback} from 'react'
 import SearchBar from './SearchBar'
 import TerrestrialEcosystems2011 from '../Bioscapes/TerrestrialEcosystems2011'
 import loadingGif from './ajax-loader.gif'
@@ -159,7 +159,7 @@ const LeftPanel: FunctionComponent<ILeftPanelProps> = (props) => {
     }
 
     let name = state.feature_name + `${state.feature_state ? ', ' + state.feature_state.abbreviation : ''}`
-    pdfReportRef?.current?.generateReport(name, state.feature_class, props.point, state.feature_area, props.map.current, charts)
+    pdfReportRef?.current?.generateReport(name, state.feature_class, props.point, roundArea(), props.map.current, charts)
       .then(() => {
         setTimeout(() => {
           setLoading(false)
@@ -177,6 +177,16 @@ const LeftPanel: FunctionComponent<ILeftPanelProps> = (props) => {
     props.updateAnalysisLayers(enabledLayers, bapId)
   }
 
+  const roundArea = useCallback((): string => {
+    if (state.feature_area === 'Unknown') { return 'Unknown' }
+
+    const rounded = parseInt(state.feature_area.replace(/,/g, ''))
+
+    const postfix = (rounded === 1 ? 'acre' : 'acres')
+
+    return `${rounded.toLocaleString('en-US')} ${postfix}`
+  }, [state.feature_area])
+
   const featureText = () => {
     if (state.feature_name) {
       return (
@@ -186,7 +196,7 @@ const LeftPanel: FunctionComponent<ILeftPanelProps> = (props) => {
           </div>
           <div className="panel-subtitle">
             <div className="category-text">Category: <span className="feature-text">  {state.feature_class}</span></div>
-            <div className="category-text">Approximate Area: <span className="feature-text">  {state.feature_area === 'Unknown' ? 'Unknown' : state.feature_area + ' acres'} </span></div>
+            <div className="category-text">Approximate Area: <span className="feature-text">{roundArea()}</span></div>
             <div className="category-text">Point of Interest: <span className="feature-text">
               {props.point && props.point.elv && props.point.lat && props.point.lng &&
                 <span>
