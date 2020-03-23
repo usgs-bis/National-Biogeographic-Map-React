@@ -65,7 +65,7 @@ class PDFReport extends React.Component {
                             alignment: 'left'
                         },
                         {
-                            text: ` ${area === 'Unknown' ? 'Unknown' : area + ' acres'} \n`,
+                            text: ` ${area} \n`,
                             style: 'chartSubtitle',
                             alignment: 'left'
                         },
@@ -140,7 +140,7 @@ class PDFReport extends React.Component {
                         let x = 0
                         let y = 0
 
-                        // mobile layout 
+                        // mobile layout
                         if (window.innerWidth <= 700) {
                             if (leftPannel.length) offset = leftPannel[0].clientHeight
                             x = markerRect.x
