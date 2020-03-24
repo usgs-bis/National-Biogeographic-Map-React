@@ -165,7 +165,8 @@ class NVCSHierarchyByPixelPackage extends React.Component {
             charts: {
                 pixelHierarchy: { id: '', config: {}, data: null }
             },
-            enabledLayer: null
+            enabledLayer: null,
+            result: null
         }
 
         this.print = this.print.bind(this)
@@ -187,6 +188,9 @@ class NVCSHierarchyByPixelPackage extends React.Component {
         // simple objects wont be the same bit the json representation should be
         if (JSON.stringify(prevProps.point) !== JSON.stringify(this.props.point)) {
             this.fetch()
+        }
+        if (this.state.result) {
+            this.props.setBapJson(this.state.result)
         }
         this.props.setShareState({})
     }
@@ -235,7 +239,8 @@ class NVCSHierarchyByPixelPackage extends React.Component {
                         const charts = this.getCharts({ pixelHierarchy: hbpData })
                         this.setState({
                             loading: false,
-                            charts: charts
+                            charts: charts,
+                            result: result
                         })
                         this.props.isEnabled(true)
                         this.props.canOpen(true)
@@ -245,7 +250,8 @@ class NVCSHierarchyByPixelPackage extends React.Component {
                             loading: false,
                             charts: {
                                 pixelHierarchy: { id: '', config: {}, data: null }
-                            }
+                            },
+                            result: result
                         })
                         this.props.isEnabled(false)
                         this.props.canOpen(false)
