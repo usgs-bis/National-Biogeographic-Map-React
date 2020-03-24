@@ -11,7 +11,6 @@ import React, {FunctionComponent, useState, useEffect, useRef, useContext, Mutab
 import TimeSlider from './TimeSlider/TimeSlider'
 import UploadShapefileDialog from './UploadShapefileDialog'
 import _ from 'lodash'
-import {Alert} from 'reactstrap'
 import {EditControl} from 'react-leaflet-draw'
 import {FaCloudUploadAlt} from 'react-icons/fa'
 import {FaKey} from 'react-icons/fa'
@@ -48,9 +47,12 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
   const {map} = props
 
   const [layerError, setLayerError] = useState<null | any>()
-  const [layerErrVisible, setLayerErrVisible] = useState(false)
 
-  const onLayerErrDismiss = () => setLayerErrVisible(false)
+  useEffect(() => {
+    if (!isEmpty(layerError)) {
+      console.error(layerError)
+    }
+  }, [layerError])
 
   const [basemap] = useContext(BasemapContext)
   const {toggleLegend, hasLegend} = useContext(LegendContext)
@@ -191,7 +193,6 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
 
   const handleLoadError = _.debounce((err: any) => {
     setLayerError(err)
-    setLayerErrVisible(true)
   }, 200)
 
   const handleMouseOut = () => {
@@ -318,14 +319,6 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
 
   return (
     <>
-      {layerError &&
-        <Alert className="app-alert" color="danger" toggle={onLayerErrDismiss} isOpen={layerErrVisible}>
-          <div>
-            <b>Error loading layer <i>{layerError.target.options.layers}</i> from:</b>
-            <div>{layerError.target._url}</div>
-          </div>
-        </Alert>
-      }
       <Map ref={map}
         onClick={handleClick}
         bounds={bounds}
