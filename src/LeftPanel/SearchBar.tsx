@@ -1,4 +1,4 @@
-import './SearchBar.css'
+import './SearchBar.scss'
 import BasemapContext from '../Contexts/BasemapContext'
 import React, { FunctionComponent, useState, useEffect, useContext } from 'react'
 import speechBubble from './bubble.png'
@@ -8,7 +8,7 @@ import {IoMdSettings, IoMdRefresh} from 'react-icons/io'
 import {RadioGroup} from '../CustomRadio/CustomRadio'
 import {isEmpty} from 'lodash'
 
-
+// @Matt TODO: #current add a header bar to search results
 export interface ISearchBarProps {
   initBaps: any[]
   point: {
@@ -126,10 +126,10 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
         </div>
       </div>
       <div className="nbm-flex-row" >
-        <div className="button-group" style={results.length > 0 && focused ? {} : {height: '0px'}}>
-          {(results.length > 0 && focused) ? <ButtonGroup vertical>
-            {results.map((d: any) => {
-              return (
+        <div className="button-group">
+          {(results.length > 0) &&
+            <ButtonGroup vertical>
+              {results.map((d: any) => (
                 <Button
                   className="sfr-button"
                   style={{whiteSpace: 'normal'}}
@@ -138,9 +138,8 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
                   key={d.feature_id}>
                   {d.feature_name}{d.state ? ', ' + d.state.name : ''} ({d.feature_class})
                 </Button>
-              )
-            })}
-            </ButtonGroup> : null
+              ))}
+            </ButtonGroup>
           }
         </div>
       </div>
