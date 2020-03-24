@@ -42,6 +42,7 @@ export interface IExpectedLandUseAnalysisPackageProps {
   isPriorityBap: boolean
   canOpen: Function
   isEnabled: Function
+  setBapJson: Function
   getSBItemForPrint: Function
   getAnalysisLayers: Function
   handleBapError: Function
@@ -118,6 +119,7 @@ const ExpectedLandUseAnalysisPackage = (props: IExpectedLandUseAnalysisPackagePr
           setError(true)
           return
         }
+        props.setBapJson(values)
         setCharts(getCharts(values))
         setLoading(false)
         props.isEnabled(true)
