@@ -229,6 +229,7 @@ class NVCSHierarchyByPixelPackage extends React.Component {
             .then(res => res.json())
             .then(
                 (result) => {
+                    this.props.setBapJson(result)
                     if (result && result.hits && result.hits.hits.length) {
                         const hbpData = result.hits.hits[0]['_source']['properties']
                         const charts = this.getCharts({ pixelHierarchy: hbpData })
