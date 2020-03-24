@@ -50,20 +50,20 @@ class Biogeography extends React.Component {
         let charts = []
 
         const baps = [
+            this.EcosystemProtectionAnalysis,
+            this.SpeciesProtectionAnalysis,
+            this.NVCSHierarchyByPixel,
+            this.NVCSSummaryByRegion,
             this.FirstLeafAnalysis,
             this.FirstBloomAnalysis,
             this.FirstLeafBloomComparisonAnalysis,
             this.NFHPAnalysis,
-            this.EcosystemProtectionAnalysis,
-            this.SpeciesProtectionAnalysis,
             this.OBISAnalysis,
         ]
         if (DEV_MODE) {
             baps.push(this.PhenologyAnalysis)
             // baps.push(this.BadNeighborAnalysis)
             baps.push(this.ExpectedLandUseAnalysis)
-            baps.push(this.NVCSHierarchyByPixel)
-            baps.push(this.NVCSSummaryByRegion)
         }
 
         // @Matt TODO: there has to be a better way to know if any of the results are going to be included?
