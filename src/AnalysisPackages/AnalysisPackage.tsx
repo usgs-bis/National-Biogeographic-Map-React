@@ -72,11 +72,12 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
     }, [])
 
     useEffect(() => {
-      console.log('AnalysisPackage featureChange effect', props.bapId)
-      // feature change
       if (!initialized.current) {
         return
       }
+
+      console.log(props.bapId, ':AnalysisPackage featureChange effect')
+      // feature change
       resetBap()
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -86,24 +87,24 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
       if (!initialized.current) {
         return
       }
-      console.log('prioBap Changed')
       // priorityBap has changed, this bap is not it
       if (props.priorityBap !== props.bapId) {
         toggleLayer(null)
         setIsPriorityBap(false)
+        return
       }
+      console.log(`${props.bapId} is new priorityBap`)
+
       // priorityBap has changed, this bap is it
-      else if (props.priorityBap === props.bapId) {
-        if (layers.length && !getOnLayers().length) {
-          let firstLayer = layers[0]
-          toggleLayer(firstLayer)
-          setTimeSliderState({display: firstLayer.timeEnabled})
-        } else {
-          setTimeSliderState({display: false})
-        }
-        setIsOpen(true)
-        setIsPriorityBap(true)
+      if (layers.length && !getOnLayers().length) {
+        let firstLayer = layers[0]
+        toggleLayer(firstLayer)
+        setTimeSliderState({display: firstLayer.timeEnabled})
+      } else {
+        setTimeSliderState({display: false})
       }
+      setIsOpen(true)
+      setIsPriorityBap(true)
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.priorityBap])
 
