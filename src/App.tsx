@@ -86,6 +86,7 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
   const map = useRef<Map>(null)
 
   const [enabledLayers, setEnabledLayers] = useState([])
+  const [mapLoading, setMapLoading] = useState(false)
 
   const [legendState, setLegendState] = useState<ILegendContext>({
     hasLegend: false,
@@ -94,8 +95,6 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
     setToggleLegend: (_toggle: Function) => setLegendState((prev) => Object.assign({}, prev, {toggleLegend: _toggle}))
   })
 
-  // @Matt TODO: #current set loading, unloading
-  const [mapLoading, setMapLoading] = useState(false)
 
   const [state, setState] = useState(() => {
 
@@ -309,7 +308,6 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
     }
   }
 
-  // @Matt TODO: #current show a loading indicator
   const submitHandler = async (feature: any, init: boolean) => {
     if (!feature.feature_id) return
     setMapLoading(true)
