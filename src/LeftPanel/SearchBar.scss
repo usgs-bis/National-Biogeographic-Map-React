@@ -1,0 +1,45 @@
+.settings-btn-group{
+  max-width: 50px;
+}
+
+@media only screen and (max-width: 700px) {
+  .popup{
+    position: fixed;
+    z-index: 99999;
+    left: 107px !important;
+    top: 100px;
+    width: 400px;
+    height: 220px;
+  }
+}
+
+.popup{
+  position: fixed;
+  z-index: 99999;
+  left: 539px;
+  top: 100px;
+  width: 400px;
+  height: 220px;
+}
+
+.popuptext{
+  color: black;
+  font-size: 21px;
+  line-height: 28px;
+  height: 100%;
+  margin: 10px;
+  position: absolute;
+  width: 66%;
+  margin-left: 107px;
+  text-align: center;
+  margin-top: 30px;
+}
+
+.popup img {
+  width: 400px;
+  position: absolute;
+}
+
+.button-group::-webkit-scrollbar-thumb {
+    border: 3px solid #555;
+}

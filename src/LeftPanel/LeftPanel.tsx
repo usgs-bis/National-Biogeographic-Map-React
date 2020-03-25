@@ -269,7 +269,7 @@ const LeftPanel: FunctionComponent<ILeftPanelProps> = (props) => {
         {featureText()}
         <div id='analysis-package-container' className="analysis-package-container">
 
-          {state.feature_name && <div className="analysis-available">Analyses available for {state.feature_name}</div>}
+          {state.feature_name && <div className="section-title">Analyses available for {state.feature_name}</div>}
           {!state.feature_name && <div className="analysis-package-text">Analysis Packages {state.feature_name}</div>}
           {
             props.bioscapeName === 'terrestrial-ecosystems-2011' ?

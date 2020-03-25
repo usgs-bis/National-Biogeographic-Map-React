@@ -1,13 +1,12 @@
-import './SearchBar.css'
+import './SearchBar.scss'
 import BasemapContext from '../Contexts/BasemapContext'
-import React, { FunctionComponent, useState, useEffect, useContext } from 'react'
+import React, { FunctionComponent, useState, useEffect, useContext, useRef } from 'react'
 import speechBubble from './bubble.png'
 import {Button, ButtonGroup, UncontrolledTooltip} from 'reactstrap'
 import {Collapse, CardBody, Card} from 'reactstrap'
 import {IoMdSettings, IoMdRefresh} from 'react-icons/io'
 import {RadioGroup} from '../CustomRadio/CustomRadio'
 import {isEmpty} from 'lodash'
-
 
 export interface ISearchBarProps {
   initBaps: any[]
@@ -42,7 +41,7 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
   const [displayHelpPopup, setDisplayHelpPopup] = useState(isEmpty(initBaps))
   const [searchWatermark, setSearchWatermark] = useState('Search for a place of interest or click on the map')
 
-  let textInput: HTMLInputElement|null = null
+  const textInput = useRef<null|HTMLInputElement>(null)
 
   const hideHelpPopup = () => setDisplayHelpPopup(false)
 
@@ -60,7 +59,7 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
 
   useEffect(() => {
     if (mapClicked) {
-      textInput?.focus()
+      textInput?.current?.focus()
       setFocused(true)
       setSearchWatermark(`Lat: ${point.lat.toFixed(5)}, Lng: ${point.lng.toFixed(5)}`)
     }
@@ -77,8 +76,8 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
   const onBlur = () => {
     setTimeout(() => {
       setFocused(false)
-      if (textInput) {
-        textInput.value = ''
+      if (textInput?.current) {
+        textInput.current.value = ''
       }
     }, 150)
   }
@@ -115,7 +114,7 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
         </div>
         <div className="nbm-flex-column-big">
           <input
-            ref={(input) => {textInput = input}}
+            ref={textInput}
             onClick={onFocus}
             onBlur={onBlur}
             onKeyUp={handleKeyUp}
@@ -126,23 +125,25 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
         </div>
       </div>
       <div className="nbm-flex-row" >
-        <div className="button-group" style={results.length > 0 && focused ? {} : {height: '0px'}}>
-          {(results.length > 0 && focused) ? <ButtonGroup vertical>
-            {results.map((d: any) => {
-              return (
-                <Button
-                  className="sfr-button"
-                  style={{whiteSpace: 'normal'}}
-                  onClick={() => {submitHandler(d)}}
-                  id={d.feature_id}
-                  key={d.feature_id}>
-                  {d.feature_name}{d.state ? ', ' + d.state.name : ''} ({d.feature_class})
-                </Button>
-              )
-            })}
-            </ButtonGroup> : null
-          }
-        </div>
+        {(results.length > 0) && focused &&
+          <>
+            <div className="section-title">Locations available for analysis</div>
+            <div className="button-group">
+              <ButtonGroup vertical>
+                {results.map((d: any) => (
+                  <Button
+                    className="sfr-button"
+                    style={{whiteSpace: 'normal'}}
+                    onClick={() => {submitHandler(d)}}
+                    id={d.feature_id}
+                    key={d.feature_id}>
+                    {d.feature_name}{d.state ? ', ' + d.state.name : ''} ({d.feature_class})
+                  </Button>
+                ))}
+              </ButtonGroup>
+            </div>
+          </>
+        }
       </div>
       <div className="nbm-flex-row-no-padding">
         <Collapse className="settings-dropdown" isOpen={layersDropdownOpen}>
