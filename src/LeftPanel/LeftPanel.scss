@@ -124,7 +124,7 @@
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    padding: 5px;
+    padding: 5px 10px;
     width: 100%;
 }
 
@@ -183,7 +183,7 @@
     margin: 5px;
 }
 
-.analysis-available{
+.section-title {
     color: #fcf301;
     font-size: 18px;
     font-weight: 500;
@@ -288,6 +288,8 @@
 .analysis-package-container::-webkit-scrollbar-thumb {
     border: 3px solid #555;
 }
-.rt-tbody::-webkit-scrollbar-thumb {
-    border: 3px solid #323235;
+.rt-tbody, .rt-table {
+    &::-webkit-scrollbar-thumb {
+        border: 3px solid #323235;
+    }
 }
