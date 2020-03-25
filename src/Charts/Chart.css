@@ -124,12 +124,12 @@ text, span.text {
     border-bottom: 1px solid #737272;
     text-align: left;
 }
-.analysis-chart-container tr:last-child{
+.analysis-chart-container tr:last-child {
     border-bottom: 0px solid #737272;
     text-align: left;
 }
 
-.analysis-chart-container thead{
+.analysis-chart-container thead {
 
     font-weight: bold;
     color: lightblue;
@@ -138,4 +138,5 @@ text, span.text {
 
 .ReactTable .rt-thead {
     overflow-y: scroll;
+    overflow-x: hidden;
 }
