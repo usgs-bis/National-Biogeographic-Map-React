@@ -54,6 +54,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
     let initialized = useRef(false)
 
     useEffect(() => {
+      // @Matt TODO: #current only do this on dialog open, make lazy
       fetch(sb_url)
         .then(res => res.json())
         .then(
@@ -122,6 +123,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
     const initilize = () => {
       let newLayers = [...layers]
 
+      // @Matt TODO: #current do this lazy if possible
       newLayers.forEach((layer) => {
         if (layer.sb_item) {
           fetch(`https://www.sciencebase.gov/catalog/item/${layer.sb_item}?format=json`)
