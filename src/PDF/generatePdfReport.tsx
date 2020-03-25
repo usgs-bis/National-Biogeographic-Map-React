@@ -193,16 +193,19 @@ const getTitleMap = (map: any): Promise<string> => {
   const leafletControlContainer: any = document.getElementsByClassName('leaflet-control-container')[0]
   const globalTimeSlider: any = document.getElementsByClassName('global-time-slider')[0]
   const locationOverlay: any = document.getElementsByClassName('location-overlay')[0]
+  const attributes: any = document.getElementsByClassName('attribution')[0]
   //map.leafletElement.zoomControl.getContainer().hidden = true
   leafletControlContainer.hidden = true
   globalTimeSlider.hidden = true
   locationOverlay.hidden = true
+  attributes.hidden = true
 
   return html2canvas(map.container, { useCORS: true, logging: true }).then((canvas) => {
     // map.leafletElement.zoomControl.getContainer().hidden = false
     leafletControlContainer.hidden = false
     globalTimeSlider.hidden = false
     locationOverlay.hidden = false
+    attributes.hidden = false
 
     // create a promise so the marker image can load
     // we store the marker png locally so the canvas does not become 'tainted' (CORS)
