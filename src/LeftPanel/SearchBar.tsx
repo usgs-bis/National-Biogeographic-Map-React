@@ -129,7 +129,7 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
           <>
           <div className="section-title">No locations found for analysis</div>
           { textInput.current?.value &&
-            <div className="no-results-tip">Try search for places including National Parks, Ecoregions, Landscape Conservation Cooperatives, Marine Protected Areas, States, Counties, National Forest and more.</div>
+            <div className="no-results-tip">Search for places including National Parks, Ecoregions, Landscape Conservation Cooperatives, Marine Protected Areas, States, Counties, National Forest and more.</div>
           }
           </>
         }
