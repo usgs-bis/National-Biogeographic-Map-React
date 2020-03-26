@@ -43,3 +43,9 @@
 .button-group::-webkit-scrollbar-thumb {
     border: 3px solid #555;
 }
+
+.no-results-tip {
+  padding: 10px;
+  background-color: rgba(10, 10, 15, .2);
+  color: white;
+}

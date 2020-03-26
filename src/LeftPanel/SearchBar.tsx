@@ -125,6 +125,14 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
         </div>
       </div>
       <div className="nbm-flex-row" >
+        {(results.length === 0) && (point.lng || textInput.current?.value) && focused &&
+          <>
+          <div className="section-title">No locations found for analysis</div>
+          { textInput.current?.value &&
+            <div className="no-results-tip">Search for places including National Parks, Ecoregions, Landscape Conservation Cooperatives, Marine Protected Areas, States, Counties, National Forest and more.</div>
+          }
+          </>
+        }
         {(results.length > 0) && focused &&
           <>
             <div className="section-title">Locations available for analysis</div>
