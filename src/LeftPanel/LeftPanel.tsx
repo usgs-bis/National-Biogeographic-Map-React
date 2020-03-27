@@ -44,18 +44,11 @@ export interface ILeftPanelState {
 
 const LeftPanel: FunctionComponent<ILeftPanelProps> = (props) => {
 
+  const [displayHelpPopup, setDisplayHelpPopup] = useState(false)
   const [listenerAdded, setListenerAdded] = useState<boolean>(false)
-
-  const [reportAlertOpen, setReportAlertOpen] = useState(false)
-  const onReportAlertDismiss = () => setReportAlertOpen(false)
-
-  const terrestrialRef = useRef<null | TerrestrialEcosystems2011>(null)
-  const biogeographyRef = useRef<null | Biogeography>(null)
-
   const [loading, setLoading] = useState(false)
+  const [reportAlertOpen, setReportAlertOpen] = useState(false)
   const [showDescription, setShowDescription] = useState(false)
-
-  // @Matt TODO: #current fix the phenology bap, it spins forever?
 
   const [state, setState] = useState<ILeftPanelState>({
     feature: null,
@@ -69,10 +62,13 @@ const LeftPanel: FunctionComponent<ILeftPanelProps> = (props) => {
     shareToolTipOpen: false,
   })
 
-  const [displayHelpPopup, setDisplayHelpPopup] = useState(false)
-  const disableHelpPopup = () => setDisplayHelpPopup(false)
+  const terrestrialRef = useRef<null | TerrestrialEcosystems2011>(null)
+  const biogeographyRef = useRef<null | Biogeography>(null)
 
   const {setEnabledLayers} = useContext(EnabledLayersContext)
+
+  const onReportAlertDismiss = () => setReportAlertOpen(false)
+  const disableHelpPopup = () => setDisplayHelpPopup(false)
 
   useEffect(() => {
     console.log('LeftPanel:listeners')
