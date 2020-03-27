@@ -21,7 +21,6 @@ import {FaKey} from 'react-icons/fa'
 import {isEmpty} from 'lodash'
 
 const API_VERSION_URL = AppConfig.REACT_APP_BIS_API + '/api'
-const BUFFER = .5
 const DEV_MODE = AppConfig.REACT_APP_DEV
 const ENV = AppConfig.REACT_APP_ENV
 
@@ -35,7 +34,7 @@ export interface INBMProps {
   analysisLayers: any[]
   mapDisplayYear: number
   overlay: any
-  parentClickHandler: Function
+  parentClickHandler: (lat: number, lng: number) => void
   parentDrawHandler: Function
   applicationVersion: string
   bioscapeName: string
@@ -89,19 +88,8 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
     if (!props.feature.type) {
       props.feature.type = 'Feature'
     }
-    let b = L.geoJSON(props.feature).getBounds()
 
-    let northEastLng = b.getNorthEast().lng + BUFFER
-    // zooms to features that cross 180 on the right side of map
-    if (northEastLng > 179) {
-      northEastLng = -50
-    }
-
-    const sw = b.getSouthWest()
-    setBounds([
-      [sw.lat - BUFFER, sw.lng - BUFFER],
-      [b.getNorthEast().lat + BUFFER, northEastLng]
-    ])
+    setBounds(L.geoJSON(props.feature).getBounds())
   }, [props.feature])
 
   useEffect(() => {
@@ -163,7 +151,6 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
     if (!isEmpty(props.feature) && !clickDriven) {
       const center = L.geoJSON(props.feature).getBounds().getCenter()
       setPoint([center.lat, center.lng])
-      props.parentClickHandler({latlng: {lat: center.lat, lng: center.lng}}, true)
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -172,13 +159,17 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
   const handleClick = (e: any) => {
     if (!clickableRef.current) return
 
-    setPoint([e.latlng.lat, e.latlng.lng])
+    let {lat, lng} = e.latlng
+    const offset = lng < 0 ? -180 : 180
+    lng = ((lng + offset) % 360) - offset
+
+    setPoint([lat, lng])
 
     if (drawnpolygon) {
       map?.current?.leafletElement.removeLayer(drawnpolygon)
       setDrawnpolygon(null)
     }
-    props.parentClickHandler(e)
+    props.parentClickHandler(lat, lng)
   }
 
   const handleMouseMove = (e: any) => {

@@ -19,6 +19,7 @@ import NBM from './NBM/NBM'
 import React, {FunctionComponent, useState, useEffect, useRef} from 'react'
 import Resizable from 're-resizable'
 import ResultsContext from './Contexts/ResultsContext'
+import SearchingContext from './Contexts/SearchingContext'
 import _ from 'lodash'
 import cloneLayer from 'leaflet-clonelayer'
 import geojsonhint from '@mapbox/geojsonhint'
@@ -84,6 +85,7 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
   const [errorState, setErrorState] = useState<Error>()
   const [mapLoading, setMapLoading] = useState(false)
   const [results, setResults] = useState([])
+  const [searching, isSearching] = useState(false)
 
   const [basemap, setBasemap] = useState(() => {
     return bioscapeMap[bioscape].basemaps.find((m: any) => m.serviceUrl === hashState?.basemapServiceUrl)
@@ -208,6 +210,7 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
     } else if (hashState?.feature) {
       submitHandler(hashState.feature, true)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hashState])
 
   // changes the map display year.
@@ -380,19 +383,19 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
     }
   }
 
-  const handleMapClick = (e: any, ignore: boolean) => {
-    getElevationFromPoint(e.latlng.lat, e.latlng.lng)
-    fetch(POINT_SEARCH_API + `lat=${e.latlng.lat}&lng=${e.latlng.lng}`)
+  const searchPoint = async (lat: number, lng: number) => {
+    isSearching(true)
+    fetch(POINT_SEARCH_API + `lat=${lat}&lng=${lng}`)
       .then(res => res.json())
-      .then((result) => {
+      .then((result: any) => {
         if (!result || !result.hits) {return }
 
         if (state.overlay) {
           sendFeatureRequestFromOverlay(result.hits.hits.map((a: any) => a['_source']['properties']))
           isClickDriven(true)
           setState((prev) => Object.assign({}, prev, {
-            lat: e.latlng.lat,
-            lng: e.latlng.lng,
+            lat: lat,
+            lng: lng,
           }))
         }
 
@@ -408,9 +411,9 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
 
           isClickDriven(true)
           setState((prev) => Object.assign({}, prev, {
-            lat: e.latlng.lat,
-            lng: e.latlng.lng,
-            mapClicked: !ignore,
+            lat: lat,
+            lng: lng,
+            mapClicked: true,
           }))
         } else {
           let r = result.hits.hits.map((a: any) => a['_source']['properties'])
@@ -418,26 +421,31 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
           setResults(r)
           isClickDriven(true)
           setState((prev) => Object.assign({}, prev, {
-            lat: e.latlng.lat,
-            lng: e.latlng.lng,
-            mapClicked: !ignore,
+            lat: lat,
+            lng: lng,
+            mapClicked: true,
           }))
         }
       })
       .catch(setErrorState)
+      .then(() => isSearching(false))
   }
 
-  const getElevationFromPoint = (lat: any, lng: any) => {
-
+  const getElevationFromPoint = (lat: number, lng: number) => {
     fetch(`${ELEVATION_SOURCE}x=${lng}&y=${lat}&units=Feet&output=json`)
       .then(res => res.json())
-      .then((result) => {
+      .then((result: any) => {
         let identifiedElevationValue = result.USGS_Elevation_Point_Query_Service
         let elev = identifiedElevationValue.Elevation_Query.Elevation
         elev = elev > -400 ? numberWithCommas(parseInt(elev)) : 'No Data'
         setState((prev) => Object.assign({}, prev, {elv: elev}))
       })
       .catch(setErrorState)
+  }
+
+  const handleMapClick = (lat: number, lng: number) => {
+    getElevationFromPoint(lat, lng)
+    searchPoint(lat, lng)
   }
 
   const updateAnalysisLayers = (layers: any) => {
@@ -460,6 +468,7 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
           [TimeSliderContext, [timeSlider, updateTimeSliderState]],
           [ResultsContext, {results, setResults}],
           [ClickDrivenContext, {clickDriven, isClickDriven}],
+          [SearchingContext, {searching, isSearching}],
         ]} >
           <Resizable
             className="panel-area"

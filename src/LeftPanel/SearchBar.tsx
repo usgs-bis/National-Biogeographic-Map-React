@@ -4,15 +4,15 @@ import BasemapContext from '../Contexts/BasemapContext'
 import ClickDrivenContext from '../Contexts/ClickDrivenContext'
 import React, { FunctionComponent, useState, useEffect, useContext, useRef, Dispatch, SetStateAction } from 'react'
 import ResultsContext from '../Contexts/ResultsContext'
+import SearchingContext from '../Contexts/SearchingContext'
 import _ from 'lodash'
 import speechBubble from './bubble.png'
-import {Button, ButtonGroup, UncontrolledTooltip} from 'reactstrap'
+import {Button, ButtonGroup, UncontrolledTooltip, Spinner} from 'reactstrap'
 import {Collapse, CardBody, Card} from 'reactstrap'
 import {IoMdSettings, IoMdRefresh} from 'react-icons/io'
 import {NVCS_FEATURE_LOOKUP} from '../App'
 import {RadioGroup} from '../CustomRadio/CustomRadio'
 import {countyStateLookup} from '../Utils/Utils'
-import {isEmpty} from 'lodash'
 
 const TEXT_SEARCH_API = AppConfig.REACT_APP_BIS_API + '/api/v1/places/search/text?q='
 const MIN_SEARCH_LENGTH = 4
@@ -32,11 +32,19 @@ export interface ISearchBarProps {
 const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
   const { initBaps, point, mapClicked, submitHandler, bioscape, setErrorState } = props
 
+
+  const [displayHelpPopup, setDisplayHelpPopup] = useState(_.isEmpty(initBaps))
+  const [focused, setFocused] = useState(false)
+  const [layersDropdownOpen, setLayersDropdownOpen] = useState(false)
+  const [searchWatermark, setSearchWatermark] = useState('Search for a place of interest or click on the map')
+
+  const {searching, isSearching} = useContext(SearchingContext)
   const [basemap, setBasemap] = useContext(BasemapContext)
   const {isClickDriven} = useContext(ClickDrivenContext)
+  const {results, setResults} = useContext(ResultsContext)
 
   const [basemapOptions] = useState(() => {
-    if (!isEmpty(basemap)) {
+    if (!_.isEmpty(basemap)) {
       return bioscape.basemaps.map((p: any) => {
         p.selected = (basemap?.serviceUrl === p.serviceUrl)
         return p
@@ -45,15 +53,6 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
       return bioscape.basemaps
     }
   })
-
-  const [displayHelpPopup, setDisplayHelpPopup] = useState(isEmpty(initBaps))
-  const [focused, setFocused] = useState(false)
-  const [layersDropdownOpen, setLayersDropdownOpen] = useState(false)
-  const [searchWatermark, setSearchWatermark] = useState('Search for a place of interest or click on the map')
-
-  // Matt TODO: #current add spinner when we are loading results
-  // @Matt TODO: #current add spinner when using click as well
-  const {results, setResults} = useContext(ResultsContext)
 
   const textInput = useRef<null|HTMLInputElement>(null)
 
@@ -87,6 +86,7 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
       return
     }
 
+    isSearching(true)
     fetch(TEXT_SEARCH_API + text)
       .then(res => res.json())
       .then((result) => {
@@ -104,6 +104,7 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
         isClickDriven(false)
       })
       .catch(setErrorState)
+      .then(() => isSearching(false))
 
   }, 250)
 
@@ -140,7 +141,7 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
   }
 
   const searchResults = () => {
-    if (!focused) return
+    if (!focused || searching) return
 
     if (results.length > 0) {
       return (
@@ -165,7 +166,7 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
     }
 
     const searchLen = textInput?.current?.value?.length || 0
-    if (searchLen < MIN_SEARCH_LENGTH) {
+    if (searchLen > 0  && searchLen < MIN_SEARCH_LENGTH) {
       return <div className="section-title">Please enter at least {MIN_SEARCH_LENGTH} characters</div>
     }
 
@@ -209,6 +210,14 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
         </div>
       </div>
       <div className="nbm-flex-row" >
+        { searching &&
+          <>
+            <div className="section-title">Searching...</div>
+            <div className="search-loading">
+              <Spinner color="secondary" />
+            </div>
+          </>
+        }
         {searchResults()}
       </div>
       <div className="nbm-flex-row-no-padding">
