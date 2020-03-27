@@ -89,7 +89,18 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
       props.feature.type = 'Feature'
     }
 
-    setBounds(L.geoJSON(props.feature).getBounds())
+    const b = L.geoJSON(props.feature).getBounds()
+    const ne = b.getNorthEast()
+    const sw = b.getSouthWest()
+
+    // Try to make the min 500 ft
+    const BUFFER = 0.005
+
+    setBounds([
+      [sw.lat - BUFFER, sw.lng - BUFFER],
+      [ne.lat + BUFFER, ne.lng + BUFFER]
+    ])
+
   }, [props.feature])
 
   useEffect(() => {
