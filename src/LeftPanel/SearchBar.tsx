@@ -15,6 +15,7 @@ import {countyStateLookup} from '../Utils/Utils'
 import {isEmpty} from 'lodash'
 
 const TEXT_SEARCH_API = AppConfig.REACT_APP_BIS_API + '/api/v1/places/search/text?q='
+const MIN_SEARCH_LENGTH = 4
 
 export interface ISearchBarProps {
   setErrorState: Dispatch<SetStateAction<Error | undefined>>
@@ -50,6 +51,8 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
   const [layersDropdownOpen, setLayersDropdownOpen] = useState(false)
   const [searchWatermark, setSearchWatermark] = useState('Search for a place of interest or click on the map')
 
+  // Matt TODO: #current add spinner when we are loading results
+  // @Matt TODO: #current add spinner when using click as well
   const {results, setResults} = useContext(ResultsContext)
 
   const textInput = useRef<null|HTMLInputElement>(null)
@@ -78,7 +81,7 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
 
   const handleSearchBox = _.debounce((text: any) => {
 
-    if (text.length < 5) {
+    if (text.length < MIN_SEARCH_LENGTH) {
       setResults([])
 
       return
@@ -136,6 +139,48 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
     window.location.reload()
   }
 
+  const searchResults = () => {
+    if (!focused) return
+
+    if (results.length > 0) {
+      return (
+          <>
+            <div className="section-title">Locations available for analysis</div>
+            <div className="button-group">
+              <ButtonGroup vertical>
+                {results.map((d: any) => (
+                  <Button
+                    className="sfr-button"
+                    style={{whiteSpace: 'normal'}}
+                    onClick={() => {submitHandler(d)}}
+                    id={d.feature_id}
+                    key={d.feature_id}>
+                    {d.feature_name}{d.state ? ', ' + d.state.name : ''} ({d.feature_class})
+                  </Button>
+                ))}
+              </ButtonGroup>
+            </div>
+          </>
+      )
+    }
+
+    const searchLen = textInput?.current?.value?.length || 0
+    if (searchLen < MIN_SEARCH_LENGTH) {
+      return <div className="section-title">Please enter at least {MIN_SEARCH_LENGTH} characters</div>
+    }
+
+    if (results.length === 0 && (point.lng || textInput.current?.value)) {
+      return (
+          <>
+            <div className="section-title">No locations found for analysis</div>
+            { textInput.current?.value &&
+              <div className="no-results-tip">Search for places including National Parks, Ecoregions, Landscape Conservation Cooperatives, Marine Protected Areas, States, Counties, National Forest and more.</div>
+            }
+          </>
+      )
+    }
+  }
+
   return (
     <div>
       <div className="nbm-flex-row">
@@ -164,33 +209,7 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
         </div>
       </div>
       <div className="nbm-flex-row" >
-        {(results.length === 0) && (point.lng || textInput.current?.value) && focused &&
-          <>
-          <div className="section-title">No locations found for analysis</div>
-          { textInput.current?.value &&
-            <div className="no-results-tip">Search for places including National Parks, Ecoregions, Landscape Conservation Cooperatives, Marine Protected Areas, States, Counties, National Forest and more.</div>
-          }
-          </>
-        }
-        {(results.length > 0) && focused &&
-          <>
-            <div className="section-title">Locations available for analysis</div>
-            <div className="button-group">
-              <ButtonGroup vertical>
-                {results.map((d: any) => (
-                  <Button
-                    className="sfr-button"
-                    style={{whiteSpace: 'normal'}}
-                    onClick={() => {submitHandler(d)}}
-                    id={d.feature_id}
-                    key={d.feature_id}>
-                    {d.feature_name}{d.state ? ', ' + d.state.name : ''} ({d.feature_class})
-                  </Button>
-                ))}
-              </ButtonGroup>
-            </div>
-          </>
-        }
+        {searchResults()}
       </div>
       <div className="nbm-flex-row-no-padding">
         <Collapse className="settings-dropdown" isOpen={layersDropdownOpen}>
