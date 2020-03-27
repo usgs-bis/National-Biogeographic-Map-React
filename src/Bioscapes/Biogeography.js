@@ -66,8 +66,6 @@ class Biogeography extends React.Component {
             baps.push(this.ExpectedLandUseAnalysis)
         }
 
-        // @Matt TODO: there has to be a better way to know if any of the results are going to be included?
-        // We should be able to disable the button in this case, as opposed to showing an alert
         baps.forEach((b) => {
             const pr = b.print()
             if (pr) {

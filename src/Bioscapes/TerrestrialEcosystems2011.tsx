@@ -5,8 +5,6 @@ import NVCSSummaryByRegion from '../AnalysisPackages/NVCSSummaryByRegion'
 
 export interface ITerrestrialEcosystems2011Props {
   point: any,
-  results: any[],
-  textSearchHandler: Function,
   submitHandler: Function,
   bioscape: any,
   updateAnalysisLayers: Function,
@@ -21,8 +19,6 @@ export interface ITerrestrialEcosystems2011Props {
 
 export interface ITerrestrialEcosystems2011State {
   submitHandler: Function,
-  results: any[],
-  textSearchHandler: Function,
   layersDropdownOpen: boolean,
   bioscape: any,
   updateAnalysisLayers: Function,
@@ -40,8 +36,6 @@ class TerrestrialEcosystems2011 extends React.Component<ITerrestrialEcosystems20
   constructor(props: ITerrestrialEcosystems2011Props) {
     super(props)
     this.state = {
-      results: props.results,
-      textSearchHandler: props.textSearchHandler,
       submitHandler: props.submitHandler,
       layersDropdownOpen: false,
       bioscape: props.bioscape,

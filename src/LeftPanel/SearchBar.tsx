@@ -1,32 +1,50 @@
 import './SearchBar.scss'
+import AppConfig from '../config'
 import BasemapContext from '../Contexts/BasemapContext'
-import React, { FunctionComponent, useState, useEffect, useContext, useRef } from 'react'
+import ClickDrivenContext from '../Contexts/ClickDrivenContext'
+import React, { FunctionComponent, useState, useEffect, useContext, useRef, Dispatch, SetStateAction } from 'react'
+import ResultsContext from '../Contexts/ResultsContext'
+import SearchingContext from '../Contexts/SearchingContext'
+import _ from 'lodash'
 import speechBubble from './bubble.png'
-import {Button, ButtonGroup, UncontrolledTooltip} from 'reactstrap'
+import {Button, ButtonGroup, UncontrolledTooltip, Spinner} from 'reactstrap'
 import {Collapse, CardBody, Card} from 'reactstrap'
 import {IoMdSettings, IoMdRefresh} from 'react-icons/io'
+import {NVCS_FEATURE_LOOKUP} from '../App'
 import {RadioGroup} from '../CustomRadio/CustomRadio'
-import {isEmpty} from 'lodash'
+import {countyStateLookup} from '../Utils/Utils'
+
+const TEXT_SEARCH_API = AppConfig.REACT_APP_BIS_API + '/api/v1/places/search/text?q='
+const MIN_SEARCH_LENGTH = 4
 
 export interface ISearchBarProps {
+  setErrorState: Dispatch<SetStateAction<Error | undefined>>
   initBaps: any[]
   point: {
     lat: number
     lng: number
   }
   mapClicked: boolean
-  textSearchHandler: Function
   submitHandler: Function
   bioscape: any
-  results: any[]
 }
 
 const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
-  const { initBaps, point, mapClicked, textSearchHandler, submitHandler, bioscape, results } = props
+  const { initBaps, point, mapClicked, submitHandler, bioscape, setErrorState } = props
 
+
+  const [displayHelpPopup, setDisplayHelpPopup] = useState(_.isEmpty(initBaps))
+  const [focused, setFocused] = useState(false)
+  const [layersDropdownOpen, setLayersDropdownOpen] = useState(false)
+  const [searchWatermark, setSearchWatermark] = useState('Search for a place of interest or click on the map')
+
+  const {searching, isSearching} = useContext(SearchingContext)
   const [basemap, setBasemap] = useContext(BasemapContext)
+  const {isClickDriven} = useContext(ClickDrivenContext)
+  const {results, setResults} = useContext(ResultsContext)
+
   const [basemapOptions] = useState(() => {
-    if (!isEmpty(basemap)) {
+    if (!_.isEmpty(basemap)) {
       return bioscape.basemaps.map((p: any) => {
         p.selected = (basemap?.serviceUrl === p.serviceUrl)
         return p
@@ -35,11 +53,6 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
       return bioscape.basemaps
     }
   })
-
-  const [focused, setFocused] = useState(false)
-  const [layersDropdownOpen, setLayersDropdownOpen] = useState(false)
-  const [displayHelpPopup, setDisplayHelpPopup] = useState(isEmpty(initBaps))
-  const [searchWatermark, setSearchWatermark] = useState('Search for a place of interest or click on the map')
 
   const textInput = useRef<null|HTMLInputElement>(null)
 
@@ -65,8 +78,38 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
     }
   }, [mapClicked, point.lat, point.lng, textInput])
 
+  const handleSearchBox = _.debounce((text: any) => {
+
+    if (text.length < MIN_SEARCH_LENGTH) {
+      setResults([])
+
+      return
+    }
+
+    isSearching(true)
+    fetch(TEXT_SEARCH_API + text)
+      .then(res => res.json())
+      .then((result) => {
+        let r = result.hits.hits.map((a: any) => a['_source']['properties'])
+
+        r = countyStateLookup(r)
+
+        if (bioscape.overlays) {
+          r = r.filter((a: any) => {
+            return NVCS_FEATURE_LOOKUP.includes(a.feature_class)
+          })
+        }
+
+        setResults(r)
+        isClickDriven(false)
+      })
+      .catch(setErrorState)
+      .then(() => isSearching(false))
+
+  }, 250)
+
   const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    textSearchHandler(e.currentTarget.value)
+    handleSearchBox(e.currentTarget.value)
   }
 
   const onFocus = () => {
@@ -97,6 +140,48 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
     window.location.reload()
   }
 
+  const searchResults = () => {
+    if (!focused || searching) return
+
+    if (results.length > 0) {
+      return (
+          <>
+            <div className="section-title">Locations available for analysis</div>
+            <div className="button-group">
+              <ButtonGroup vertical>
+                {results.map((d: any) => (
+                  <Button
+                    className="sfr-button"
+                    style={{whiteSpace: 'normal'}}
+                    onClick={() => {submitHandler(d)}}
+                    id={d.feature_id}
+                    key={d.feature_id}>
+                    {d.feature_name}{d.state ? ', ' + d.state.name : ''} ({d.feature_class})
+                  </Button>
+                ))}
+              </ButtonGroup>
+            </div>
+          </>
+      )
+    }
+
+    const searchLen = textInput?.current?.value?.length || 0
+    if (searchLen > 0  && searchLen < MIN_SEARCH_LENGTH) {
+      return <div className="section-title">Please enter at least {MIN_SEARCH_LENGTH} characters</div>
+    }
+
+    if (results.length === 0 && (point.lng || textInput.current?.value)) {
+      return (
+          <>
+            <div className="section-title">No locations found for analysis</div>
+            { textInput.current?.value &&
+              <div className="no-results-tip">Search for places including National Parks, Ecoregions, Landscape Conservation Cooperatives, Marine Protected Areas, States, Counties, National Forest and more.</div>
+            }
+          </>
+      )
+    }
+  }
+
   return (
     <div>
       <div className="nbm-flex-row">
@@ -125,33 +210,15 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
         </div>
       </div>
       <div className="nbm-flex-row" >
-        {(results.length === 0) && (point.lng || textInput.current?.value) && focused &&
+        { searching &&
           <>
-          <div className="section-title">No locations found for analysis</div>
-          { textInput.current?.value &&
-            <div className="no-results-tip">Search for places including National Parks, Ecoregions, Landscape Conservation Cooperatives, Marine Protected Areas, States, Counties, National Forest and more.</div>
-          }
-          </>
-        }
-        {(results.length > 0) && focused &&
-          <>
-            <div className="section-title">Locations available for analysis</div>
-            <div className="button-group">
-              <ButtonGroup vertical>
-                {results.map((d: any) => (
-                  <Button
-                    className="sfr-button"
-                    style={{whiteSpace: 'normal'}}
-                    onClick={() => {submitHandler(d)}}
-                    id={d.feature_id}
-                    key={d.feature_id}>
-                    {d.feature_name}{d.state ? ', ' + d.state.name : ''} ({d.feature_class})
-                  </Button>
-                ))}
-              </ButtonGroup>
+            <div className="section-title">Searching...</div>
+            <div className="search-loading">
+              <Spinner color="secondary" />
             </div>
           </>
         }
+        {searchResults()}
       </div>
       <div className="nbm-flex-row-no-padding">
         <Collapse className="settings-dropdown" isOpen={layersDropdownOpen}>

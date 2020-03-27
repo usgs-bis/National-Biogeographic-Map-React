@@ -8,7 +8,6 @@ import EnabledLayersContext from '../Contexts/EnabledLayersContext'
 import LegendContext from '../Contexts/LegendContext'
 import {isEmpty} from 'lodash'
 
-// @Matt TODO: disable/hide on new feature select
 const Legend: FunctionComponent = () => {
 
   const {enabledLayers} = useContext(EnabledLayersContext)
