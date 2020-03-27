@@ -120,8 +120,6 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
     map.current.leafletElement.getPane('summarizationPane').style.zIndex = 402
     map.current.leafletElement.getPane('overlayPane').style.zIndex = 403
 
-    // @Matt TODO: need a better fix then ignore
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [map])
 
   useEffect(() => {

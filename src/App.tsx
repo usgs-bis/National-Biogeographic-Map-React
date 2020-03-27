@@ -208,7 +208,6 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
     } else if (hashState?.feature) {
       submitHandler(hashState.feature, true)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hashState])
 
   // changes the map display year.
