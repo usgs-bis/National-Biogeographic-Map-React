@@ -309,6 +309,8 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
 
   const submitHandler = async (feature: any, init: boolean) => {
     if (!feature.feature_id) return
+
+    legendState.setHasLegend(false)
     setMapLoading(true)
     fetch(GET_FEATURE_API + feature.feature_id)
       .then((res) => res.json())

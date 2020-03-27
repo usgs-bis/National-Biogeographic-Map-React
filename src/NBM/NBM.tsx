@@ -1,6 +1,10 @@
+// @ts-ignore
+import {Map, TileLayer, WMSTileLayer, Marker, Popup, GeoJSON, FeatureGroup, ZoomControl} from 'react-leaflet'
+
 import './NBM.css'
 import AppConfig from '../config'
 import BasemapContext from '../Contexts/BasemapContext'
+import ClickDrivenContext from '../Contexts/ClickDrivenContext'
 import Control from 'react-leaflet-control'
 import Dialog from 'react-dialog'
 import InfoSign from '../InfoSign/InfoSign'
@@ -15,10 +19,6 @@ import {EditControl} from 'react-leaflet-draw'
 import {FaCloudUploadAlt} from 'react-icons/fa'
 import {FaKey} from 'react-icons/fa'
 import {isEmpty} from 'lodash'
-
-// @ts-ignore
-import {Map, TileLayer, WMSTileLayer, Marker, Popup, GeoJSON, FeatureGroup, ZoomControl} from 'react-leaflet'
-import ClickDrivenContext from '../Contexts/ClickDrivenContext'
 
 const API_VERSION_URL = AppConfig.REACT_APP_BIS_API + '/api'
 const BUFFER = .5
