@@ -1,8 +1,13 @@
+// @ts-ignore
+import {Map} from 'react-leaflet'
+
 import './App.scss'
 import './CustomDialog/CustomDialog.css'
 import AlertBox from './AlertBox/AlertBox'
 import AppConfig from './config'
 import BasemapContext from './Contexts/BasemapContext'
+import ClickDrivenContext from './Contexts/ClickDrivenContext'
+import ComposeContexts from './Contexts/ComposeContexts'
 import EnabledLayersContext from './Contexts/EnabledLayersContext'
 import Footer from './Footer/Footer'
 import Header from './Header/Header'
@@ -14,7 +19,7 @@ import NBM from './NBM/NBM'
 import React, {FunctionComponent, useState, useEffect, useRef} from 'react'
 import Resizable from 're-resizable'
 import ResultsContext from './Contexts/ResultsContext'
-import _, {isEmpty} from 'lodash'
+import _ from 'lodash'
 import cloneLayer from 'leaflet-clonelayer'
 import geojsonhint from '@mapbox/geojsonhint'
 import nbmBioscape from './Bioscapes/biogeography.json'
@@ -24,10 +29,6 @@ import useLocationHash from './Hooks/LocationHashHook'
 import {Spinner} from 'reactstrap'
 import {TimeSliderContext, defaultTimeSliderProps, ITimeSliderContext} from './Contexts/TimeSliderContext'
 import {getApproxArea, numberWithCommas, parseGeom, layerTransitionFade, countyStateLookup} from './Utils/Utils'
-
-// @ts-ignore
-import {Map} from 'react-leaflet'
-import ComposeContexts from './Contexts/ComposeContexts'
 
 export interface IBioscapeProps {
   biogeography: any
@@ -78,6 +79,7 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
   const [hashState, setHash] = useLocationHash()
 
   const [baps, setBaps] = useState(hashState?.baps)
+  const [clickDriven, isClickDriven] = useState(!_.isEmpty(hashState?.point?.lat))
   const [enabledLayers, setEnabledLayers] = useState([])
   const [errorState, setErrorState] = useState<Error>()
   const [mapLoading, setMapLoading] = useState(false)
@@ -106,7 +108,6 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
       map: null as any,
       analysisLayers: [] as any[],
       priorityBap: null,
-      clickDrivenEvent: false,
       lat: 0,
       lng: 0,
       elv: 0,
@@ -119,7 +120,6 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
       s.lat = hashState.point.lat
       s.lng = hashState.point.lng
       s.elv = hashState.point.elv
-      s.clickDrivenEvent = hashState.point.lat ? true : false
     }
 
     return s
@@ -334,7 +334,7 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
           } catch (err) {
             setMapLoading(false)
             const hints = geojsonhint.hint(result)
-            if (!isEmpty(hints)) {
+            if (!_.isEmpty(hints)) {
               console.log('GeoJSON validation errors:')
               console.log(hints)
               setErrorState(new Error(`GeoJSON validation error: ${hints[0].message}`))
@@ -388,10 +388,10 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
 
         if (state.overlay) {
           sendFeatureRequestFromOverlay(result.hits.hits.map((a: any) => a['_source']['properties']))
+          isClickDriven(true)
           setState((prev) => Object.assign({}, prev, {
             lat: e.latlng.lat,
             lng: e.latlng.lng,
-            clickDrivenEvent: true
           }))
         }
 
@@ -405,21 +405,21 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
 
           setResults(r)
 
+          isClickDriven(true)
           setState((prev) => Object.assign({}, prev, {
             lat: e.latlng.lat,
             lng: e.latlng.lng,
             mapClicked: !ignore,
-            clickDrivenEvent: true
           }))
         } else {
           let r = result.hits.hits.map((a: any) => a['_source']['properties'])
           r = countyStateLookup(r)
           setResults(r)
+          isClickDriven(true)
           setState((prev) => Object.assign({}, prev, {
             lat: e.latlng.lat,
             lng: e.latlng.lng,
             mapClicked: !ignore,
-            clickDrivenEvent: true
           }))
         }
       })
@@ -458,6 +458,7 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
           [BasemapContext, [basemap, setBasemap]],
           [TimeSliderContext, [timeSlider, updateTimeSliderState]],
           [ResultsContext, {results, setResults}],
+          [ClickDrivenContext, {clickDriven, isClickDriven}],
         ]} >
           <Resizable
             className="panel-area"
@@ -496,7 +497,6 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
               analysisLayers={state.analysisLayers}
               applicationVersion={REACT_VERSION}
               bioscapeName={state.bioscapeName}
-              clickDrivenEvent={state.clickDrivenEvent}
               feature={state.feature}
               initPoint={hashState?.point}
               map={map}

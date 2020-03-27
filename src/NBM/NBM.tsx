@@ -18,6 +18,7 @@ import {isEmpty} from 'lodash'
 
 // @ts-ignore
 import {Map, TileLayer, WMSTileLayer, Marker, Popup, GeoJSON, FeatureGroup, ZoomControl} from 'react-leaflet'
+import ClickDrivenContext from '../Contexts/ClickDrivenContext'
 
 const API_VERSION_URL = AppConfig.REACT_APP_BIS_API + '/api'
 const BUFFER = .5
@@ -34,7 +35,6 @@ export interface INBMProps {
   analysisLayers: any[]
   mapDisplayYear: number
   overlay: any
-  clickDrivenEvent: any
   parentClickHandler: Function
   parentDrawHandler: Function
   applicationVersion: string
@@ -55,6 +55,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
   }, [layerError])
 
   const [basemap] = useContext(BasemapContext)
+  const {clickDriven} = useContext(ClickDrivenContext)
   const {toggleLegend, hasLegend} = useContext(LegendContext)
 
   const [point, setPoint] = useState(() => {
@@ -160,8 +161,8 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
   }, [map, props.overlay, oldOverlay])
 
   useEffect(() => {
-    console.log('feature effect')
-    if (!isEmpty(props.feature) && !props.clickDrivenEvent) {
+    console.log('NBM:handle click driven effect')
+    if (!isEmpty(props.feature) && !clickDriven) {
       const center = L.geoJSON(props.feature).getBounds().getCenter()
       setPoint([center.lat, center.lng])
       props.parentClickHandler({latlng: {lat: center.lat, lng: center.lng}}, true)

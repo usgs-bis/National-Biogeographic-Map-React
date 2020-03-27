@@ -1,17 +1,18 @@
 import './SearchBar.scss'
 import AppConfig from '../config'
 import BasemapContext from '../Contexts/BasemapContext'
+import ClickDrivenContext from '../Contexts/ClickDrivenContext'
 import React, { FunctionComponent, useState, useEffect, useContext, useRef, Dispatch, SetStateAction } from 'react'
+import ResultsContext from '../Contexts/ResultsContext'
 import _ from 'lodash'
 import speechBubble from './bubble.png'
 import {Button, ButtonGroup, UncontrolledTooltip} from 'reactstrap'
 import {Collapse, CardBody, Card} from 'reactstrap'
 import {IoMdSettings, IoMdRefresh} from 'react-icons/io'
-import {RadioGroup} from '../CustomRadio/CustomRadio'
-import {isEmpty} from 'lodash'
-import {countyStateLookup} from '../Utils/Utils'
 import {NVCS_FEATURE_LOOKUP} from '../App'
-import ResultsContext from '../Contexts/ResultsContext'
+import {RadioGroup} from '../CustomRadio/CustomRadio'
+import {countyStateLookup} from '../Utils/Utils'
+import {isEmpty} from 'lodash'
 
 const TEXT_SEARCH_API = AppConfig.REACT_APP_BIS_API + '/api/v1/places/search/text?q='
 
@@ -31,6 +32,8 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
   const { initBaps, point, mapClicked, submitHandler, bioscape, setErrorState } = props
 
   const [basemap, setBasemap] = useContext(BasemapContext)
+  const {isClickDriven} = useContext(ClickDrivenContext)
+
   const [basemapOptions] = useState(() => {
     if (!isEmpty(basemap)) {
       return bioscape.basemaps.map((p: any) => {
@@ -95,11 +98,7 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
         }
 
         setResults(r)
-        // @Matt TODO: #current alternative to clickDrivenEvent?
-        /* setState((prev) => Object.assign({}, prev, { */
-        /*   clickDrivenEvent: false */
-        /* })) */
-
+        isClickDriven(false)
       })
       .catch(setErrorState)
 
