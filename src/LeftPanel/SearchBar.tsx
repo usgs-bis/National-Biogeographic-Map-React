@@ -1,28 +1,34 @@
 import './SearchBar.scss'
+import AppConfig from '../config'
 import BasemapContext from '../Contexts/BasemapContext'
-import React, { FunctionComponent, useState, useEffect, useContext, useRef } from 'react'
+import React, { FunctionComponent, useState, useEffect, useContext, useRef, Dispatch, SetStateAction } from 'react'
+import _ from 'lodash'
 import speechBubble from './bubble.png'
 import {Button, ButtonGroup, UncontrolledTooltip} from 'reactstrap'
 import {Collapse, CardBody, Card} from 'reactstrap'
 import {IoMdSettings, IoMdRefresh} from 'react-icons/io'
 import {RadioGroup} from '../CustomRadio/CustomRadio'
 import {isEmpty} from 'lodash'
+import {countyStateLookup} from '../Utils/Utils'
+import {NVCS_FEATURE_LOOKUP} from '../App'
+import ResultsContext from '../Contexts/ResultsContext'
+
+const TEXT_SEARCH_API = AppConfig.REACT_APP_BIS_API + '/api/v1/places/search/text?q='
 
 export interface ISearchBarProps {
+  setErrorState: Dispatch<SetStateAction<Error | undefined>>
   initBaps: any[]
   point: {
     lat: number
     lng: number
   }
   mapClicked: boolean
-  textSearchHandler: Function
   submitHandler: Function
   bioscape: any
-  results: any[]
 }
 
 const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
-  const { initBaps, point, mapClicked, textSearchHandler, submitHandler, bioscape, results } = props
+  const { initBaps, point, mapClicked, submitHandler, bioscape, setErrorState } = props
 
   const [basemap, setBasemap] = useContext(BasemapContext)
   const [basemapOptions] = useState(() => {
@@ -36,10 +42,12 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
     }
   })
 
+  const [displayHelpPopup, setDisplayHelpPopup] = useState(isEmpty(initBaps))
   const [focused, setFocused] = useState(false)
   const [layersDropdownOpen, setLayersDropdownOpen] = useState(false)
-  const [displayHelpPopup, setDisplayHelpPopup] = useState(isEmpty(initBaps))
   const [searchWatermark, setSearchWatermark] = useState('Search for a place of interest or click on the map')
+
+  const {results, setResults} = useContext(ResultsContext)
 
   const textInput = useRef<null|HTMLInputElement>(null)
 
@@ -65,8 +73,40 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
     }
   }, [mapClicked, point.lat, point.lng, textInput])
 
+  const handleSearchBox = _.debounce((text: any) => {
+
+    if (text.length < 5) {
+      setResults([])
+
+      return
+    }
+
+    fetch(TEXT_SEARCH_API + text)
+      .then(res => res.json())
+      .then((result) => {
+        let r = result.hits.hits.map((a: any) => a['_source']['properties'])
+
+        r = countyStateLookup(r)
+
+        if (bioscape.overlays) {
+          r = r.filter((a: any) => {
+            return NVCS_FEATURE_LOOKUP.includes(a.feature_class)
+          })
+        }
+
+        setResults(r)
+        // @Matt TODO: #current alternative to clickDrivenEvent?
+        /* setState((prev) => Object.assign({}, prev, { */
+        /*   clickDrivenEvent: false */
+        /* })) */
+
+      })
+      .catch(setErrorState)
+
+  }, 250)
+
   const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    textSearchHandler(e.currentTarget.value)
+    handleSearchBox(e.currentTarget.value)
   }
 
   const onFocus = () => {

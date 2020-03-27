@@ -3,7 +3,7 @@ import Biogeography from '../Bioscapes/Biogeography'
 import Dialog from 'react-dialog'
 import EnabledLayersContext from '../Contexts/EnabledLayersContext'
 import InfoSign from '../InfoSign/InfoSign'
-import React, {FunctionComponent, useState, useRef, useEffect, useContext, useCallback} from 'react'
+import React, {FunctionComponent, useState, useRef, useEffect, useContext, useCallback, Dispatch, SetStateAction} from 'react'
 import SearchBar from './SearchBar'
 import TerrestrialEcosystems2011 from '../Bioscapes/TerrestrialEcosystems2011'
 import loadingGif from './ajax-loader.gif'
@@ -13,7 +13,7 @@ import {isEmpty} from 'lodash'
 import generatePdfReport from '../PDF/generatePdfReport'
 
 export interface ILeftPanelProps {
-  results: any[],
+  setErrorState: Dispatch<SetStateAction<Error | undefined>>
   bioscape: any,
   priorityBap: any,
   feature: any,
@@ -24,7 +24,6 @@ export interface ILeftPanelProps {
   map: any,
   updateAnalysisLayers: any,
   mapClicked: boolean,
-  textSearchHandler: Function,
   submitHandler: Function,
   setPriorityBap: Function,
   setBapState: Function,
@@ -33,7 +32,6 @@ export interface ILeftPanelProps {
 
 export interface ILeftPanelState {
   feature_name: string,
-  results: any[],
   bioscape: any,
   shareText: string,
   feature: null | any,
@@ -57,6 +55,8 @@ const LeftPanel: FunctionComponent<ILeftPanelProps> = (props) => {
   const [loading, setLoading] = useState(false)
   const [showDescription, setShowDescription] = useState(false)
 
+  // @Matt TODO: #current fix the phenology bap, it spins forever?
+
   const [state, setState] = useState<ILeftPanelState>({
     feature: null,
     feature_name: '',
@@ -64,7 +64,6 @@ const LeftPanel: FunctionComponent<ILeftPanelProps> = (props) => {
     feature_class: '',
     feature_state: null,
     feature_area: '',
-    results: props.results,
     bioscape: props.bioscape,
     shareText: 'Share',
     shareToolTipOpen: false,

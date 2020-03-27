@@ -13,6 +13,7 @@ import LegendContext, {ILegendContext} from './Contexts/LegendContext'
 import NBM from './NBM/NBM'
 import React, {FunctionComponent, useState, useEffect, useRef} from 'react'
 import Resizable from 're-resizable'
+import ResultsContext from './Contexts/ResultsContext'
 import _, {isEmpty} from 'lodash'
 import cloneLayer from 'leaflet-clonelayer'
 import geojsonhint from '@mapbox/geojsonhint'
@@ -20,12 +21,13 @@ import nbmBioscape from './Bioscapes/biogeography.json'
 import nvcsBioscape from './Bioscapes/terrestrial-ecosystems-2011.json'
 import packageJson from '../package.json'
 import useLocationHash from './Hooks/LocationHashHook'
+import {Spinner} from 'reactstrap'
 import {TimeSliderContext, defaultTimeSliderProps, ITimeSliderContext} from './Contexts/TimeSliderContext'
-import {getApproxArea, numberWithCommas, parseGeom, countyStateLookup, layerTransitionFade} from './Utils/Utils'
+import {getApproxArea, numberWithCommas, parseGeom, layerTransitionFade, countyStateLookup} from './Utils/Utils'
 
 // @ts-ignore
 import {Map} from 'react-leaflet'
-import {Spinner} from 'reactstrap'
+import ComposeContexts from './Contexts/ComposeContexts'
 
 export interface IBioscapeProps {
   biogeography: any
@@ -61,10 +63,9 @@ export interface IShareState {
 
 const ELEVATION_SOURCE = 'https://nationalmap.gov/epqs/pqs.php?'
 const GET_FEATURE_API = AppConfig.REACT_APP_BIS_API + '/api/v1/places/search/feature?feature_id='
-const NVCS_FEATURE_LOOKUP = ['Landscape Conservation Cooperatives', 'US County', 'Ecoregion III', 'US States and Territories']
 const POINT_SEARCH_API = AppConfig.REACT_APP_BIS_API + '/api/v1/places/search/point?'
 const REACT_VERSION = 'v' + packageJson.version
-const TEXT_SEARCH_API = AppConfig.REACT_APP_BIS_API + '/api/v1/places/search/text?q='
+export const NVCS_FEATURE_LOOKUP = ['Landscape Conservation Cooperatives', 'US County', 'Ecoregion III', 'US States and Territories']
 
 const bioscapeMap: IBioscapeProps = {
   'biogeography': nbmBioscape,
@@ -73,20 +74,19 @@ const bioscapeMap: IBioscapeProps = {
 }
 
 const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) => {
-
-  const [errorState, setErrorState] = useState<Error>()
-
+  // Hashtate needs to be set first
   const [hashState, setHash] = useLocationHash()
 
   const [baps, setBaps] = useState(hashState?.baps)
+  const [enabledLayers, setEnabledLayers] = useState([])
+  const [errorState, setErrorState] = useState<Error>()
+  const [mapLoading, setMapLoading] = useState(false)
+  const [results, setResults] = useState([])
+
   const [basemap, setBasemap] = useState(() => {
     return bioscapeMap[bioscape].basemaps.find((m: any) => m.serviceUrl === hashState?.basemapServiceUrl)
   })
 
-  const map = useRef<Map>(null)
-
-  const [enabledLayers, setEnabledLayers] = useState([])
-  const [mapLoading, setMapLoading] = useState(false)
 
   const [legendState, setLegendState] = useState<ILegendContext>({
     hasLegend: false,
@@ -95,13 +95,13 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
     setToggleLegend: (_toggle: Function) => setLegendState((prev) => Object.assign({}, prev, {toggleLegend: _toggle}))
   })
 
+  const map = useRef<Map>(null)
 
   const [state, setState] = useState(() => {
 
     const s = {
       bioscape: bioscapeMap[bioscape],
       bioscapeName: bioscape,
-      results: [],
       feature: {} as IFeature,
       map: null as any,
       analysisLayers: [] as any[],
@@ -403,20 +403,21 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
             return NVCS_FEATURE_LOOKUP.includes(a.feature_class)
           })
 
+          setResults(r)
+
           setState((prev) => Object.assign({}, prev, {
             lat: e.latlng.lat,
             lng: e.latlng.lng,
-            results: r,
             mapClicked: !ignore,
             clickDrivenEvent: true
           }))
         } else {
           let r = result.hits.hits.map((a: any) => a['_source']['properties'])
           r = countyStateLookup(r)
+          setResults(r)
           setState((prev) => Object.assign({}, prev, {
             lat: e.latlng.lat,
             lng: e.latlng.lng,
-            results: r,
             mapClicked: !ignore,
             clickDrivenEvent: true
           }))
@@ -438,40 +439,6 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
       .catch(setErrorState)
   }
 
-  // @Matt TODO: refactor to leftpanel
-  const handleSearchBox = _.debounce((text: any) => {
-
-    if (text.length < 5) {
-      setState((prev) => Object.assign({}, prev, {
-        results: []
-      }))
-
-      return
-    }
-
-    fetch(TEXT_SEARCH_API + text)
-      .then(res => res.json())
-      .then((result) => {
-        let r = result.hits.hits.map((a: any) => a['_source']['properties'])
-
-        r = countyStateLookup(r)
-
-        if (state.bioscape.overlays) {
-          r = r.filter((a: any) => {
-            return NVCS_FEATURE_LOOKUP.includes(a.feature_class)
-          })
-        }
-
-        setState((prev) => Object.assign({}, prev, {
-          results: r,
-          clickDrivenEvent: false
-        }))
-
-      })
-      .catch(setErrorState)
-
-  }, 250)
-
   const updateAnalysisLayers = (layers: any) => {
     setState((prev) => Object.assign({}, prev, {analysisLayers: layers, }))
   }
@@ -485,64 +452,63 @@ const App: FunctionComponent<{bioscape: keyof IBioscapeProps}> = ({bioscape}) =>
       <Header title={state.bioscape.title} description={state.bioscape.description} />
       <AlertBox error={errorState} />
       <div id="content-area">
-        <LegendContext.Provider value={legendState}>
-          <EnabledLayersContext.Provider value={{enabledLayers, setEnabledLayers}}>
-            <BasemapContext.Provider value={[basemap, setBasemap]} >
-              <TimeSliderContext.Provider value={[timeSlider, updateTimeSliderState]}>
-                <Resizable
-                  className="panel-area"
-                  enable={{top: false, right: true, bottom: false, left: false, topRight: false, bottomRight: false, bottomLeft: false, topLeft: false}}
-                  defaultSize={{width: 540}}
-                  minWidth={250}
-                  maxWidth={1000}
-                  onResizeStop={() => {map.current.leafletElement.invalidateSize()}}
-                >
-                  <LeftPanel
-                    bioscape={state.bioscape}
-                    bioscapeName={state.bioscapeName}
-                    feature={state.feature}
-                    initBaps={hashState?.baps}
-                    map={map}
-                    mapClicked={state.mapClicked}
-                    overlay={state.overlay}
-                    point={{lat: state.lat, lng: state.lng, elv: state.elv}}
-                    priorityBap={state.priorityBap}
-                    results={state.results}
-                    setBapState={setBapState}
-                    setPriorityBap={setPriorityBap}
-                    shareState={shareState}
-                    submitHandler={submitHandler}
-                    textSearchHandler={handleSearchBox}
-                    updateAnalysisLayers={updateAnalysisLayers}
-                  />
-                </Resizable>
+        <ComposeContexts contexts={[
+          [LegendContext, legendState],
+          [EnabledLayersContext, {enabledLayers, setEnabledLayers}],
+          [BasemapContext, [basemap, setBasemap]],
+          [TimeSliderContext, [timeSlider, updateTimeSliderState]],
+          [ResultsContext, {results, setResults}],
+        ]} >
+          <Resizable
+            className="panel-area"
+            enable={{top: false, right: true, bottom: false, left: false, topRight: false, bottomRight: false, bottomLeft: false, topLeft: false}}
+            defaultSize={{width: 540}}
+            minWidth={250}
+            maxWidth={1000}
+            onResizeStop={() => {map.current.leafletElement.invalidateSize()}}
+          >
+            <LeftPanel
+              setErrorState={setErrorState}
+              bioscape={state.bioscape}
+              bioscapeName={state.bioscapeName}
+              feature={state.feature}
+              initBaps={hashState?.baps}
+              map={map}
+              mapClicked={state.mapClicked}
+              overlay={state.overlay}
+              point={{lat: state.lat, lng: state.lng, elv: state.elv}}
+              priorityBap={state.priorityBap}
+              setBapState={setBapState}
+              setPriorityBap={setPriorityBap}
+              shareState={shareState}
+              submitHandler={submitHandler}
+              updateAnalysisLayers={updateAnalysisLayers}
+            />
+          </Resizable>
 
-                <div id="map-area">
-                  { mapLoading &&
-                    <div className="map-loading">
-                      <Spinner color="secondary"/>
-                    </div>
-                  }
-                  <NBM
-                    analysisLayers={state.analysisLayers}
-                    applicationVersion={REACT_VERSION}
-                    bioscapeName={state.bioscapeName}
-                    clickDrivenEvent={state.clickDrivenEvent}
-                    feature={state.feature}
-                    initPoint={hashState?.point}
-                    map={map}
-                    mapDisplayYear={timeSlider.mapDisplayYear}
-                    overlay={state.overlay}
-                    parentClickHandler={handleMapClick}
-                    parentDrawHandler={handleDrawnPolygon}
-                    priorityBap={state.priorityBap}
-                  />
-                </div>
-                <Legend />
-              </TimeSliderContext.Provider>
-            </BasemapContext.Provider>
-          </EnabledLayersContext.Provider>
-        </LegendContext.Provider>
+          <div id="map-area">
+            {mapLoading &&
+              <div className="map-loading">
+                <Spinner color="secondary" />
+              </div>
+            }
+            <NBM
+              analysisLayers={state.analysisLayers}
+              applicationVersion={REACT_VERSION}
+              bioscapeName={state.bioscapeName}
+              clickDrivenEvent={state.clickDrivenEvent}
+              feature={state.feature}
+              initPoint={hashState?.point}
+              map={map}
+              mapDisplayYear={timeSlider.mapDisplayYear}
+              overlay={state.overlay}
+              parentClickHandler={handleMapClick}
+              parentDrawHandler={handleDrawnPolygon}
+              priorityBap={state.priorityBap}
+            />
+          </div>
+          <Legend />
+        </ComposeContexts>
       </div>
       <Footer />
     </div>
