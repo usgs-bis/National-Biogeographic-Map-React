@@ -437,6 +437,13 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
       body.innerHTML = sbProperties.body
       let contents = sbProperties.body ? htmlToPDFMake([], body) : []
 
+      const isListEl = (el: any): boolean => {
+        if (!el) {
+          return false
+        }
+        return el.nodeName === 'LI' ? true : isListEl(el.parentElement)
+      }
+
       let pdfDoc = []
       let text = []
       pdfDoc.push({text: sbProperties.title, style: 'analysisTitle', margin: [5, 2, 5, 20], pageBreak: 'before'})
@@ -446,6 +453,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
           let definition: any = {text: content.textContent, style: 'sbProperties', margin: [10, 2, 0, 2]}
           let parent = content.parentElement.nodeName
           let grandparent = content.parentElement.parentElement ? content.parentElement.parentElement.nodeName : null
+          let previousSibling = content.previousSibling
 
           if (parent === 'H1' || parent === 'H2' || parent === 'H3' || parent === 'H4') {
             definition.style = 'sbPropertiesTitle'
@@ -455,12 +463,19 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
           if (parent === 'U' || grandparent === 'U') {
             definition.decoration = 'underline'
             definition.bold = true
-            definition.text = content.textContent + ' '
+            definition.text = content.textContent + ''
           }
-          if (parent === 'LI') {
+          if (isListEl(content.parentElement) && (!previousSibling || previousSibling === 'LI')) {
             definition.margin[0] += 10
-            definition.text = '   •   ' + content.textContent
             definition.preserveLeadingSpaces = true
+            if(!definition.decoration) {
+              definition.text = '   •   ' + definition.text
+            } else {
+              definition.text = [
+                {text: '   •   ', margin: definition.margin, preserveLeadingSpaces: true},
+                {...definition}
+              ]
+            }
           }
           if (parent === 'A') {
             definition.style = 'annotationLink'
