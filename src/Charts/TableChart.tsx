@@ -1,7 +1,7 @@
 import './Chart.css'
 import 'react-table/react-table.css'
 import React, {FunctionComponent} from 'react'
-import ReactTable from 'react-table'
+import ReactTable, { ReactTableDefaults } from 'react-table'
 
 export interface ITableChart {
   data: any[]
@@ -65,6 +65,12 @@ const TableChart: FunctionComponent<ITableChart> = (props) => {
             }
         })
       }
+      column = {{
+        ...ReactTableDefaults.column,
+        // HACK: These overrides fix column header misalignment on 2 column React Tables, see also Chart.css line #144 BCB-1485
+        headerClassName: headers.length === 2 ? 'header-padding' : '',
+        resizable: headers.length === 2 ? false : true
+      }}
       showPagination={false}
       showPageSizeOptions={false}
       defaultSortMethod={sortTable}
