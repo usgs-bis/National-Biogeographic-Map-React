@@ -95,7 +95,7 @@ text, span.text {
     border-bottom: 1px solid #737272 !important
 }
 
-.rt-resizable-header-content{
+.rt-resizable-header-content, .rt-th div {
     white-space: normal;
     font-weight: 700;
     color: #add8e6;
@@ -140,3 +140,12 @@ text, span.text {
     overflow-y: scroll;
     overflow-x: hidden;
 }
+
+/* HACK: fixes column header misalignment on 2 column React Tables, see also TableChart.tsx line #70 BCB-1485 */
+.rt-tr .header-padding:not(:first-child) > div {
+    padding-left: 8px;
+}
+.bap-popout-window .rt-tr .header-padding:not(:first-child) > div {
+    padding-left: 0;
+}
+/* END HACK */
