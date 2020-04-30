@@ -11,7 +11,7 @@
     "d3": "5.15.0",
     "esri-leaflet": "^2.3.3",
     "html2canvas": "1.0.0-rc.5",
-    "jquery": "3.4.1",
+    "jquery": "3.5.0",
     "leaflet": "^1.6.0",
     "leaflet-clonelayer": "^1.0.7",
     "leaflet-draw": "^1.0.4",
