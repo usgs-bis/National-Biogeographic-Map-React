@@ -39,7 +39,7 @@
   "overlays": [
     {
       "title": "Omernik Level III Ecoregion",
-      "serviceUrl": "https://my-beta.usgs.gov/geoserver/bcb/wms",
+      "serviceUrl": " ",
       "sciencebaseId": "55c77f7be4b08400b1fd82d4",
       "featureClass": "Ecoregion III",
       "leafletProperties": {
@@ -52,7 +52,7 @@
     },
     {
       "title": "Landscape Conservation Cooperative",
-      "serviceUrl": "https://my-beta.usgs.gov/geoserver/bcb/wms",
+      "serviceUrl": " ",
       "sciencebaseId": "55b943ade4b09a3b01b65d78",
       "featureClass": "Landscape Conservation Cooperatives",
       "leafletProperties": {
@@ -64,7 +64,7 @@
     },
     {
       "title": "State",
-      "serviceUrl": "https://my-beta.usgs.gov/geoserver/bcb/wms",
+      "serviceUrl": " ",
       "featureClass": "US States and Territories",
       "leafletProperties": {
         "format": "image/png",
@@ -75,7 +75,7 @@
     },
     {
       "title": "County",
-      "serviceUrl": "https://my-beta.usgs.gov/geoserver/bcb/wms",
+      "serviceUrl": " ",
       "featureClass": "US County",
       "leafletProperties": {
         "format": "image/png",
