@@ -47,7 +47,7 @@ npm_build:
   # Use an internal image registry for the node image. The local image name
   # and tags match the official upstream image.
   # This variable is set in gitlab group vars
-  image: pkg.cr.usgs.gov/base-images/node:10.15
+  image: pkg.cr.usgs.gov/base-images/node:12.14
   tags:
     - docker
   script:
