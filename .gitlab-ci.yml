@@ -53,7 +53,7 @@ npm_build:
   script:
     - export PATH=${PWD}/node_modules/.bin:${PATH}
     - npm install
-    - npm --max_old_space_size=8192 run build
+    - npm run build
   artifacts:
     paths:
       - build
