@@ -47,7 +47,7 @@ npm_build:
   # Use an internal image registry for the node image. The local image name
   # and tags match the official upstream image.
   # This variable is set in gitlab group vars
-  image: ${SAS_IMAGES_URL}/node:12.14
+  image: pkg.cr.usgs.gov/base-images/node:10.15
   tags:
     - docker
   script:
@@ -68,7 +68,7 @@ npm_build:
 # The URL to the artifact is passed in the deployment trigger.
 #
 .artifactory_deploy:
-  image: code.chs.usgs.gov:5001/sas/ops/ci-pipeline/sas-deploy-tool:v1
+  image: pkg.cr.usgs.gov/base-images/sas-deploy-tool:latest
   stage: Package
   tags:
     - docker
@@ -129,7 +129,7 @@ upload_artifact_tag:
 #   - https://docs.gitlab.com/ee/ci/triggers/README.html
 #
 .deploy_trigger:
-  image: code.chs.usgs.gov:5001/sas/ops/docker/base-images/curl:master-latest
+  image: pkg.cr.usgs.gov/base-images/curl:latest
   stage: Deploy Trigger
   tags:
     - docker
