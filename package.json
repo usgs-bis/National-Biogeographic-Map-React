@@ -1,6 +1,6 @@
 {
   "name": "biogeography",
-  "version": "2.19.6",
+  "version": "2.19.7",
   "homepage": "/biogeography/",
   "private": true,
   "dependencies": {
@@ -14,13 +14,13 @@
     "jquery": "3.5.0",
     "leaflet": "^1.6.0",
     "leaflet-clonelayer": "^1.0.7",
-    "leaflet-draw": "^1.0.4",
+    "leaflet-draw": "^1.0.4",git
     "node-sass": "4.13.1",
     "pdfmake": "0.1.65",
     "popper.js": "1.16.1",
     "re-resizable": "^4.11.0",
     "react": "16.13.0",
-    "react-dialog": "github:dawsons-contractor-usgs-gov/react-dialog",
+    "react-dialog": "1.0.2",
     "react-dom": "16.13.0",
     "react-icons": "3.9.0",
     "react-leaflet": "2.6.3",
