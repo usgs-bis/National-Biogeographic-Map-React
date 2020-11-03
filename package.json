@@ -14,7 +14,7 @@
     "jquery": "3.5.0",
     "leaflet": "^1.6.0",
     "leaflet-clonelayer": "^1.0.7",
-    "leaflet-draw": "^1.0.4",git
+    "leaflet-draw": "^1.0.4",
     "node-sass": "4.13.1",
     "pdfmake": "0.1.65",
     "popper.js": "1.16.1",
