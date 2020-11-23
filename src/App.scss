@@ -51,6 +51,7 @@ svg {
 }
 
 @media only screen and (min-width: 700px) {
+    /* style changes when the screen gets larger*/
     .vwrapper {
         display: flex;
         flex-direction: column;
@@ -65,6 +66,8 @@ svg {
         background-color: green;
         flex: 1 1 auto;
         display: flex;
+        /* it seems that safari requires height tag */
+        height: 100%;
         min-height: 0px;
         min-width: 0px;
     }
