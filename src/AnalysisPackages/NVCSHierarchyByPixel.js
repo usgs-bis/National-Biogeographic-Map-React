@@ -30,7 +30,7 @@ const layers = [
         legend: {
             imageUrl: 'https://www.sciencebase.gov/geoserver/nvcs/wms?service=wms&request=GetLegendGraphic&format=image%2Fpng&layer=class'
         },
-        timeEnabled: true,
+        timeEnabled: false,
         checked: false,
         sb_item: '58d1b8ade4b0236b68f6b88e'
 
