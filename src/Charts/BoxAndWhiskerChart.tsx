@@ -1,5 +1,5 @@
 import React, { useRef, useImperativeHandle, forwardRef, useEffect } from 'react'
-import { select, scalePoint, scaleLinear, min, max, axisBottom, axisLeft, timeFormat, event } from 'd3'
+import { select, scalePoint, scaleLinear, min, max, axisBottom, axisLeft, timeFormat } from 'd3'
 
 import './Chart.css'
 import { IChart, IDataSummary } from './Chart'
@@ -211,8 +211,8 @@ const BoxAndWhiskerChart = forwardRef((props: IChart, ref) => {
         .duration(200)
         .style('opacity', .9)
       tooltip.html(toolTipLabel(d.key, dataSummary))
-        .style('left', (event.pageX) + 'px')
-        .style('top', (event.pageY - 28) + 'px')
+        .style('left', d.x + 'px')
+        .style('top', (d.y - 28) + 'px')
         .style('border', '3px solid rgb(56, 155, 198)')
     })
 

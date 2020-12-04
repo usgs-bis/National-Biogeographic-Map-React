@@ -132,8 +132,8 @@ const HistogramChart = forwardRef((props: IHistogramChartProps, ref) => {
         .duration(200)
         .style('opacity', .9)
       tooltip.html(toolTipLabel(d, totalCount, props.bucketSize, startYear, endYear))
-        .style('left', (d3.event.pageX) + 'px')
-        .style('top', (d3.event.pageY - 28) + 'px')
+        .style('left', (d.x) + 'px')
+        .style('top', (d.y - 28) + 'px')
         .style('border', '3px solid rgb(56, 155, 198)')
     })
 

@@ -1,7 +1,7 @@
 import React, { forwardRef, useRef, useImperativeHandle, useEffect } from 'react'
 import './Chart.css'
 import { IChart } from './Chart'
-import { select, nest, scaleLinear, scaleBand, axisBottom, timeFormat, axisLeft, max, event } from 'd3'
+import { select, nest, scaleLinear, scaleBand, axisBottom, timeFormat, axisLeft, max } from 'd3'
 
 interface IComparisonChartData {
   year: number
@@ -183,8 +183,8 @@ const ComparisonChart = forwardRef((props: IChart, ref) => {
         .duration(200)
         .style('opacity', .9)
       tooltip.html(toolTipLabel(d, 'LEAF'))
-        .style('left', (event.pageX) + 'px')
-        .style('top', (event.pageY - 28) + 'px')
+        .style('left', (d.x) + 'px')
+        .style('top', (d.y - 28) + 'px')
         .style('border', '3px solid green')
     })
 
@@ -210,8 +210,8 @@ const ComparisonChart = forwardRef((props: IChart, ref) => {
         .duration(200)
         .style('opacity', .9)
       tooltip.html(toolTipLabel(d, 'BLOOM'))
-        .style('left', (event.pageX) + 'px')
-        .style('top', (event.pageY - 28) + 'px')
+        .style('left', (d.x) + 'px')
+        .style('top', (d.y - 28) + 'px')
         .style('border', '3px solid yellow')
     })
 
