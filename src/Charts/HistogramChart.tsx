@@ -123,7 +123,7 @@ const HistogramChart = forwardRef((props: IHistogramChartProps, ref) => {
     const tooltip = d3.select('#d3chartTooltip')
 
     // Add tooltip functionality on mouseOver
-    bars.on('mouseover', function (d) {
+    bars.on('mouseover', function (event, d) {
       chart.selectAll('rect')
         .style('opacity', otherOpacityOnHover)
       d3.select(this)
@@ -132,8 +132,8 @@ const HistogramChart = forwardRef((props: IHistogramChartProps, ref) => {
         .duration(200)
         .style('opacity', .9)
       tooltip.html(toolTipLabel(d, totalCount, props.bucketSize, startYear, endYear))
-        .style('left', (d3.event.pageX) + 'px')
-        .style('top', (d3.event.pageY - 28) + 'px')
+        .style('left', (event.x) + 'px')
+        .style('top', (event.y - 28) + 'px')
         .style('border', '3px solid rgb(56, 155, 198)')
     })
 

@@ -1,5 +1,5 @@
 import React, { forwardRef, useRef, useImperativeHandle, useEffect } from 'react'
-import { select, nest, scaleLinear, scaleBand, axisBottom, axisLeft, timeFormat, max, area, curveBasis, event } from 'd3'
+import { select, nest, scaleLinear, scaleBand, axisBottom, axisLeft, timeFormat, max, area, curveBasis } from 'd3'
 import './Chart.css'
 import { IChart, IDataSummary } from './Chart'
 
@@ -192,7 +192,7 @@ const RidgelinePlotChart = forwardRef((props: IRidgelinePlotChartProps, ref) => 
     const tooltip = select('#d3chartTooltip')
 
     // Add tooltip functionality on mouseOver
-    path.on('mouseover', function (d) {
+    path.on('mouseover', function (event, d) {
       chart.selectAll('path')
         .style('opacity', otherOpacityOnHover)
       select(this)
@@ -204,8 +204,8 @@ const RidgelinePlotChart = forwardRef((props: IRidgelinePlotChartProps, ref) => 
         .duration(200)
         .style('opacity', .9)
       tooltip.html(toolTipLabel(d, dataSummary))
-        .style('left', (event.pageX) + 'px')
-        .style('top', (event.pageY - 28) + 'px')
+        .style('left', (event.x) + 'px')
+        .style('top', (event.y - 28) + 'px')
         .style('border', '3px solid rgb(217, 240, 163)')
     })
 
