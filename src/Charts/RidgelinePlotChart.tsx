@@ -192,7 +192,7 @@ const RidgelinePlotChart = forwardRef((props: IRidgelinePlotChartProps, ref) => 
     const tooltip = select('#d3chartTooltip')
 
     // Add tooltip functionality on mouseOver
-    path.on('mouseover', function (d) {
+    path.on('mouseover', function (event, d) {
       chart.selectAll('path')
         .style('opacity', otherOpacityOnHover)
       select(this)
@@ -204,8 +204,8 @@ const RidgelinePlotChart = forwardRef((props: IRidgelinePlotChartProps, ref) => 
         .duration(200)
         .style('opacity', .9)
       tooltip.html(toolTipLabel(d, dataSummary))
-        .style('left', (d.x) + 'px')
-        .style('top', (d.y - 28) + 'px')
+        .style('left', (event.x) + 'px')
+        .style('top', (event.y - 28) + 'px')
         .style('border', '3px solid rgb(217, 240, 163)')
     })
 

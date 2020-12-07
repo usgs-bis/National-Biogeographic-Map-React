@@ -202,7 +202,7 @@ const BoxAndWhiskerChart = forwardRef((props: IChart, ref) => {
       .attr('stroke-width', 1)
 
     // Add tooltip functionality on mouseOver
-    boxes.on('mouseover', function (d) {
+    boxes.on('mouseover', function (event, d) {
       chart.selectAll('rect')
         .style('opacity', otherOpacityOnHover)
       select(this)
@@ -211,8 +211,8 @@ const BoxAndWhiskerChart = forwardRef((props: IChart, ref) => {
         .duration(200)
         .style('opacity', .9)
       tooltip.html(toolTipLabel(d.key, dataSummary))
-        .style('left', d.x + 'px')
-        .style('top', (d.y - 28) + 'px')
+        .style('left', event.x + 'px')
+        .style('top', (event.y - 28) + 'px')
         .style('border', '3px solid rgb(56, 155, 198)')
     })
 

@@ -174,7 +174,7 @@ const ComparisonChart = forwardRef((props: IChart, ref) => {
       .text(function (d) { return parseInt((d.values[1].DOY - d.values[0].DOY) as any) + ' Days' })
 
     // Add tooltip functionality on mouseOver
-    leaf.on('mouseover', function (d) {
+    leaf.on('mouseover', function (event, d) {
       chart.selectAll('circle')
         .style('opacity', otherOpacityOnHover)
       select(this)
@@ -183,8 +183,8 @@ const ComparisonChart = forwardRef((props: IChart, ref) => {
         .duration(200)
         .style('opacity', .9)
       tooltip.html(toolTipLabel(d, 'LEAF'))
-        .style('left', (d.x) + 'px')
-        .style('top', (d.y - 28) + 'px')
+        .style('left', (event.x) + 'px')
+        .style('top', (event.y - 28) + 'px')
         .style('border', '3px solid green')
     })
 
@@ -201,7 +201,7 @@ const ComparisonChart = forwardRef((props: IChart, ref) => {
     })
 
     // Add tooltip functionality on mouseOver
-    bloom.on('mouseover', function (d) {
+    bloom.on('mouseover', function (event, d) {
       chart.selectAll('circle')
         .style('opacity', otherOpacityOnHover)
       select(this)
@@ -210,8 +210,8 @@ const ComparisonChart = forwardRef((props: IChart, ref) => {
         .duration(200)
         .style('opacity', .9)
       tooltip.html(toolTipLabel(d, 'BLOOM'))
-        .style('left', (d.x) + 'px')
-        .style('top', (d.y - 28) + 'px')
+        .style('left', (event.x) + 'px')
+        .style('top', (event.y - 28) + 'px')
         .style('border', '3px solid yellow')
     })
 
