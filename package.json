@@ -20,7 +20,7 @@
     "popper.js": "1.16.1",
     "re-resizable": "^4.11.0",
     "react": "16.13.0",
-    "react-dialog": "1.0.2",
+    "react-dialog": "git+https://code.usgs.gov/sas/bioscience/nbm/react-dialog.git",
     "react-dom": "16.13.0",
     "react-icons": "3.9.0",
     "react-leaflet": "2.6.3",
