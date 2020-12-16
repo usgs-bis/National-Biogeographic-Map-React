@@ -36,7 +36,7 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
   const [displayHelpPopup, setDisplayHelpPopup] = useState(_.isEmpty(initBaps))
   const [focused, setFocused] = useState(false)
   const [layersDropdownOpen, setLayersDropdownOpen] = useState(false)
-  const [searchWatermark, setSearchWatermark] = useState('Search for a place of interest or click on the map')
+  const [searchWatermark, setSearchWatermark] = useState('Search for National Parks, Ecoregions, Landscapes, States, Counties...')
 
   const {searching, isSearching} = useContext(SearchingContext)
   const [basemap, setBasemap] = useContext(BasemapContext)
