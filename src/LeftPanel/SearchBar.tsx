@@ -238,7 +238,7 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
       {displayHelpPopup &&
         <div className="popup" id="helpPopup">
           <img src={speechBubble} alt="Speech Bubble"></img>
-          <div className="popuptext" id="myPopup">Search for a place of interest or click on the map</div>
+          <div className="popuptext" id="myPopup">Search for national park, ecoregion, landscape, state, county or click on the map</div>
         </div>
       }
     </div>
