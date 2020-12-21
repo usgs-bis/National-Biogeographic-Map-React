@@ -36,7 +36,7 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
   const [displayHelpPopup, setDisplayHelpPopup] = useState(_.isEmpty(initBaps))
   const [focused, setFocused] = useState(false)
   const [layersDropdownOpen, setLayersDropdownOpen] = useState(false)
-  const [searchWatermark, setSearchWatermark] = useState('Search for a place of interest or click on the map')
+  const [searchWatermark, setSearchWatermark] = useState('Search for National Parks, Ecoregions, Landscapes, States, Counties...')
 
   const {searching, isSearching} = useContext(SearchingContext)
   const [basemap, setBasemap] = useContext(BasemapContext)
@@ -238,7 +238,7 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
       {displayHelpPopup &&
         <div className="popup" id="helpPopup">
           <img src={speechBubble} alt="Speech Bubble"></img>
-          <div className="popuptext" id="myPopup">Search for a place of interest or click on the map</div>
+          <div className="popuptext" id="myPopup">Search for national park, ecoregion, landscape, state, county or click on the map</div>
         </div>
       }
     </div>
