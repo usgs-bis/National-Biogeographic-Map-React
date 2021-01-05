@@ -36,7 +36,7 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
   const [displayHelpPopup, setDisplayHelpPopup] = useState(_.isEmpty(initBaps))
   const [focused, setFocused] = useState(false)
   const [layersDropdownOpen, setLayersDropdownOpen] = useState(false)
-  const [searchWatermark, setSearchWatermark] = useState('Search for National Parks, Ecoregions, Landscapes, States, Counties...')
+  const [searchWatermark, setSearchWatermark] = useState('Search for a named place to analyze')
 
   const {searching, isSearching} = useContext(SearchingContext)
   const [basemap, setBasemap] = useContext(BasemapContext)
@@ -175,7 +175,7 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
           <>
             <div className="section-title">No locations found for analysis</div>
             { textInput.current?.value &&
-              <div className="no-results-tip">Search for places including National Parks, Ecoregions, Landscape Conservation Cooperatives, Marine Protected Areas, States, Counties, National Forest and more.</div>
+              <div className="no-results-tip">Search by name for places to analyze. Named places currently include National Parks, Ecoregions, Landscape Conservation Cooperatives, Marine Protected Areas, National Forests, DOI Unified Regions, States, and Counties. You can also search by clicking on the map and selecting your named place from the drop-down list.</div>
             }
           </>
       )
@@ -238,7 +238,7 @@ const SearchBar: FunctionComponent<ISearchBarProps> = (props) => {
       {displayHelpPopup &&
         <div className="popup" id="helpPopup">
           <img src={speechBubble} alt="Speech Bubble"></img>
-          <div className="popuptext" id="myPopup">Search for national park, ecoregion, landscape, state, county or click on the map</div>
+          <div className="popuptext" id="myPopup">Search by name for places to analyze. Named places currently include National Parks, Ecoregions, Landscape Conservation Cooperatives, Marine Protected Areas, National Forests, DOI Unified Regions, States, and Counties. You can also search by clicking on the map and selecting your named place from the drop-down list.</div>
         </div>
       }
     </div>
