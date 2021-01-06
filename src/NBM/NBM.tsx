@@ -287,15 +287,15 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
             <div className="attrDiv">
               <strong>Mapping API: </strong>
               <a href="http://leafletjs.com" title="A JS library for interactive maps">{'Leaflet'}</a> powered by
-              <a href="https://www.esri.com">Esri</a>.
+              <a href="https://www.esri.com"> Esri</a>.
             </div>
             <div className="attrDiv">
-              <strong>Biogeography interface </strong>heavily influenced by: UW-Macrostrat project
-              <a href="https://github.com/UW-Macrostrat/gmna-app" >on Github</a>.
+              <strong>Biogeography interface </strong>heavily influenced by Macrostrat project
+              <a href="https://github.com/UW-Macrostrat/gmna-app"> on Github</a>.
             </div>
             <div className="attrDiv">
-              <strong>NatureServe Species Data: </strong>Natureserve. 2008. NatureServe Web Service. Arlington, VA. U.S.A.  Available
-              <a href="http://services.natureserve.org">http://services.natureserve.org</a>.
+              <strong>NatureServe Species Data: </strong>Natureserve. 2008. NatureServe Web Service. Arlington, VA. U.S.A. Available
+              <a href="http://services.natureserve.org"> http://services.natureserve.org</a>.
             </div>
             <div className="attrDiv">
               <strong>OpenStreetMap: </strong> © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors

@@ -24,20 +24,22 @@
 
 .popuptext{
   color: black;
-  font-size: 21px;
-  line-height: 28px;
+  font-size: 14px;
+  line-height: 16px;
   height: 100%;
   margin: 10px;
   position: absolute;
   width: 66%;
-  margin-left: 107px;
-  text-align: center;
+  margin-left: 130px;
+  text-align: left;
   margin-top: 30px;
+  display: inline-block;
 }
 
 .popup img {
-  width: 400px;
+  width: 450px;
   position: absolute;
+  height: fit-content;
 }
 
 .button-group::-webkit-scrollbar-thumb {
