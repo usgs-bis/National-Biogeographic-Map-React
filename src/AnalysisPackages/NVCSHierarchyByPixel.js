@@ -185,6 +185,12 @@ class NVCSHierarchyByPixelPackage extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
+        const lat = this.props.point.lat
+        const lng = this.props.point.lng
+        const feature = this.props.feature
+        if (feature && (!lat || !lng)) {
+            this.props.isEnabled(false)
+        }
         // simple objects wont be the same bit the json representation should be
         if (JSON.stringify(prevProps.point) !== JSON.stringify(this.props.point)) {
             this.fetch()
