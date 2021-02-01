@@ -89,7 +89,7 @@ class HorizontalBarChart extends React.Component {
         // Define x and y type and scales
         const x = d3.scaleLinear().range([0, width])
         const y = d3.scaleBand().range([height, 0])
-        const z = d3.scaleOrdinal(['rgb(90,143,41)', 'rgb(204,204,204)', 'rgb(66,66,67)'])
+        const z = d3.scaleOrdinal(['rgb(90,143,41)', 'rgb(204,204,204)', 'rgb(196,196,160)'])
         const stack = d3.stack()
 
         // Determine domain 

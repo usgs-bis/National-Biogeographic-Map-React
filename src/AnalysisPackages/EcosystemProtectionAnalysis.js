@@ -382,7 +382,7 @@ class EcosystemProtectionAnalysisPackage extends React.Component {
                                 return 'rgb(204,204,204)'
                             }
                             else if (d && d[1] - d[0] === d.data['Gap Status 4']) {
-                                return 'rgb(66,66,67)'
+                                return 'rgb(196,196,160)'
                             }
                             return 'black'
                         }
