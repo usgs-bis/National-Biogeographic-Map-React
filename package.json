@@ -1,6 +1,6 @@
 {
   "name": "biogeography",
-  "version": "2.19.15",
+  "version": "2.19.16",
   "homepage": "/biogeography/",
   "private": true,
   "dependencies": {
@@ -20,7 +20,7 @@
     "popper.js": "1.16.1",
     "re-resizable": "^4.11.0",
     "react": "16.13.0",
-    "react-dialog": "github:blohre-usgs/react-dialog",
+    "react-dialog": "github:usgs-bis/react-dialog",
     "react-dom": "16.13.0",
     "react-icons": "3.9.0",
     "react-leaflet": "2.6.3",
