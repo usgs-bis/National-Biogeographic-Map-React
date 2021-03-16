@@ -65,7 +65,7 @@ const withSharedAnalysisCharacteristics = (AnalysisPackage: any,
           }
         )
       initilize()
-      if (isPriorityBap && layers[0].timeEnabled) {
+      if (isPriorityBap && layers.length && layers[0].timeEnabled) {
         setTimeSliderState({display: true})
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
