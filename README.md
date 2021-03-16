@@ -37,7 +37,7 @@ https://www.sciencebase.gov/catalog/
 
 ## Configs:
 * Config values are loaded from `public/config.js`. This allows us to change the config at runtime and have one build for any environment. See the 
-[Tech Project Page](https://my.usgs.gov/confluence/pages/viewpage.action?spaceKey=fortproj&title=National+Biogeographic+Map+%28NBM%29+Technical+Project+Page) for config details.
+[Tech Project Page](https://doimspp.sharepoint.com/sites/usgs-fort-development/SitePages/BCB.aspx) for config details.
 
 ## To review and publish
 
