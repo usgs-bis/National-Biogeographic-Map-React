@@ -51,7 +51,7 @@ https://www.sciencebase.gov/catalog/
 
 ## Current Deploys:
 
-For the deploy process see the [Tech Project Page](https://my.usgs.gov/confluence/pages/viewpage.action?spaceKey=fortproj&title=National+Biogeographic+Map+%28NBM%29+Technical+Project+Page)
+For the deploy process see the [Tech Project Page](https://doimspp.sharepoint.com/sites/usgs-fort-development/SitePages/BCB.aspx)
 
 * ### Biogeography
 
