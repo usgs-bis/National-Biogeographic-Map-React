@@ -216,7 +216,7 @@ class Biogeography extends React.Component {
                         setBapState={this.props.setBapState}
                     />
                 </div>
-                {/* Per Steve A. request remove this from all environments BCB-1420 */}
+                {/* Per Steve A. request remove this from all environments BCB-1766 */}
                 {/*
                 { DEV_MODE && <div className="nbm-flex-row-no-padding">
                     <PhenologyAnalysis
