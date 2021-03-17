@@ -9,7 +9,7 @@ import NFHPAnalysis from '../AnalysisPackages/NFHPAnalysis'
 import NVCSHierarchyByPixel from '../AnalysisPackages/NVCSHierarchyByPixel'
 import NVCSSummaryByRegion from '../AnalysisPackages/NVCSSummaryByRegion'
 import OBISAnalysis from '../AnalysisPackages/OBISAnalysis'
-import PhenologyAnalysis from '../AnalysisPackages/PhenologyAnalysis'
+// import PhenologyAnalysis from '../AnalysisPackages/PhenologyAnalysis'
 import React from 'react'
 import SpeciesProtectionAnalysis from '../AnalysisPackages/SpeciesProtectionAnalysis'
 
@@ -61,7 +61,7 @@ class Biogeography extends React.Component {
             this.OBISAnalysis,
         ]
         if (DEV_MODE) {
-            baps.push(this.PhenologyAnalysis)
+            // baps.push(this.PhenologyAnalysis)
             // baps.push(this.BadNeighborAnalysis)
             baps.push(this.ExpectedLandUseAnalysis)
         }
@@ -216,6 +216,8 @@ class Biogeography extends React.Component {
                         setBapState={this.props.setBapState}
                     />
                 </div>
+                {/* Per Steve A. request remove this from all environments BCB-1766 */}
+                {/*
                 { DEV_MODE && <div className="nbm-flex-row-no-padding">
                     <PhenologyAnalysis
                         onRef={ref => (this.PhenologyAnalysis = ref)}
@@ -229,7 +231,7 @@ class Biogeography extends React.Component {
                         setBapState={this.props.setBapState}
                         devBap={true}
                     />
-                </div> }
+                </div> } */}
                 {/* Per Steve A. request remove this from all environments BCB-1420 */}
                 {/* { DEV_MODE && <div className="nbm-flex-row-no-padding">
                     <BadNeighborAnalysis
