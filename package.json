@@ -1,6 +1,6 @@
 {
   "name": "biogeography",
-  "version": "2.19.17",
+  "version": "2.19.18",
   "homepage": "/biogeography/",
   "private": true,
   "dependencies": {
