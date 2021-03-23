@@ -240,6 +240,11 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
   const handleShowShapefile = () => {
     setShowUploadDialog(true)
   }
+  
+  const resetDialogAndMouse = () => {
+    setAttributionOpen(false)
+    enableDragging()
+  }
 
   const geojson = () => {
     if (!isEmpty(props.feature)) {
@@ -280,7 +285,7 @@ const NBM: FunctionComponent<INBMProps> = (props) => {
         isDraggable={true}
         title={'Attributions'}
         modal={false}
-        onClose={() => setAttributionOpen(false)}
+        onClose={() => resetDialogAndMouse()}
       >
         <div className="sbinfo-popout-window">
           <div>
